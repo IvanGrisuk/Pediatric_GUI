@@ -1,0 +1,362 @@
+from tkinter import *
+from tkinter import ttk
+import sqlite3 as sq
+from tkinter.ttk import Combobox
+from tkinter import scrolledtext, messagebox
+
+
+def decoding_name(patient_data):
+    user = {
+        'name': None,
+        'birth_date': None,
+        'gender': None,
+        'amb_cart': None,
+        'patient_district': None,
+        'address': None
+    }
+    if ('Фамилия, имя, отчество пациента:' in patient_data or
+            '№ амб. карты' in patient_data or
+            '№ амбулаторной карты' in patient_data):
+        text = patient_data
+        try:
+            if 'Фамилия, имя, отчество пациента:' in text:
+                info = text.split()
+                counter = 0
+                for i in info:
+                    counter += 1
+
+                    if i == 'пациента:':
+                        user['name'] = f'{info[counter]} {info[counter + 1]}'
+                        if '№' not in info[counter + 2]:
+                            user['name'] += f' {info[counter + 2]}'
+                    elif i == 'рождения:':
+                        user['birth_date'] = info[counter]
+                    elif i == 'Пол:':
+                        if info[counter] == 'Жен.':
+                            user['gender'] = 'женский'
+                        elif info[counter] == 'Муж.':
+                            user['gender'] = 'мужской'
+                    elif i == 'карты:':
+                        user['amb_cart'] = info[counter]
+                    elif i == 'Участок:':
+                        user['patient_district'] = ''
+                        district = info[counter]
+                        for q in district:
+                            if q.isdigit():
+                                user['patient_district'] += q
+                    elif i == 'Адрес:':
+                        address = ''
+                        for q in info[counter:]:
+                            if ':' in q:
+                                break
+                            address += q + ' '
+                        user['address'] = address
+
+            elif '№ амб. карты' in text:
+                for i in text.split('\n'):
+                    if i.split()[0].isdigit():
+                        if len(i.split('  ')) == 8:
+                            info = i.split('  ')
+
+                            user['amb_cart'] = info[0]
+                            user['name'] = info[1]
+                            user['birth_date'] = info[2]
+                            user['address'] = info[4]
+                            user['patient_district'] = ''
+                            district = info[3]
+                            for q in district:
+                                if q.isdigit():
+                                    user['patient_district'] += q
+                            if len(info[1].split()) == 3:
+                                if info[1][-1] == 'ч':
+                                    user['gender'] = 'мужской'
+                                elif info[1][-1] == 'а':
+                                    user['gender'] = 'женский'
+                                else:
+                                    user['gender'] = 'мужской/женский'
+                            else:
+                                user['gender'] = 'мужской/женский'
+                            break
+                        else:
+                            info = i.split()
+                            user['amb_cart'] = info.pop(0)
+                            user['name'] = ''
+                            for i in range(3):
+                                if info[0].isalpha():
+                                    user['name'] += f'{info[0]} '
+                                    info.pop(0)
+                            user['birth_date'] = info.pop(0)
+                            user['patient_district'] = ''
+                            district = info.pop(0)
+                            for q in district:
+                                if q.isdigit():
+                                    user['patient_district'] += q
+                            user['address'] = ''
+                            for i in info[info.index('г'):]:
+                                if len(i) == 10 and '.' in i:
+                                    break
+                                else:
+                                    user['address'] += f'{i} '
+                            if len(user.get('name').split()) == 3:
+                                if user.get('name').split()[2][-1] == 'ч':
+                                    user['gender'] = 'мужской'
+                                elif user.get('name').split()[2][-1] == 'а':
+                                    user['gender'] = 'женский'
+                                else:
+                                    user['gender'] = 'мужской/женский'
+                            else:
+                                user['gender'] = 'мужской/женский'
+
+                            break
+
+            elif '№ амбулаторной карты' in text:
+
+                for i in text.split('\n'):
+                    if i.split()[0].isdigit():
+
+                        info = i.split()
+                        user['amb_cart'] = info.pop(0)
+                        user['name'] = ''
+                        for _ in range(3):
+                            if info[0].isalpha() or info[0] not in ('Ж', 'М'):
+                                user['name'] += f'{info[0]} '
+                                info.pop(0)
+
+                        gender = info.pop(0)
+                        if gender == 'М':
+                            user['gender'] = 'мужской'
+                        elif gender == 'Ж':
+                            user['gender'] = 'женский'
+                        else:
+                            user['gender'] = 'мужской/женский'
+
+                        user['birth_date'] = info.pop(0)
+
+                        user['patient_district'] = ''
+                        district = info.pop(0)
+                        for q in district:
+                            if q.isdigit():
+                                user['patient_district'] += q
+
+                        user['address'] = 'г. '
+                        for i in info[info.index('Минск'):]:
+                            if i.isdigit():
+                                user['address'] += f'{i} - '
+                            else:
+                                user['address'] += f'{i} '
+                        else:
+                            user['address'] = user['address'][:-2]
+
+                        break
+
+            if not user.get('gender'):
+                user['gender'] = 'мужской/женский'
+            for key, value in user.items():
+                print(key, value)
+
+                if not value:
+                    if key != 'gender':
+                        print(f'1) Exception! decoding_name: \ntext:{text}\n', user.get('amb_cart'),
+                              user.get('district'),
+                              user.get('name'), user.get('birth_date'), user.get('gender'), user.get('address'))
+
+                        raise ValueError
+
+        except (IndexError, ValueError):
+            print(f'2) Exception! decoding_name: \ntext:{text}\n', user.get('amb_cart'), user.get('district'),
+                  user.get('name'), user.get('birth_date'), user.get('gender'), user.get('address'))
+            messagebox.showinfo('Ошибка', 'Ошибка имени! \nВведите шапку полностью!')
+
+        else:
+            return user
+
+    else:
+        search_loop(patient_data)
+
+
+def search_loop(patient_info):
+
+    def search_in_db(patient_data):
+        name = list()
+        for i in patient_data.split():
+            name.append(i.capitalize())
+        sql_str = ''
+        if patient_data.isdigit():
+            sql_str += f"amb_cart LIKE '{patient_data}%'"
+        else:
+            for i in patient_data:
+                if i.isdigit():
+                    sql_str += "Домашний_адрес LIKE '"
+                    for q in name:
+                        sql_str += f"%{q}"
+                    sql_str += "%'"
+                    break
+            else:
+
+                if len(name) == 1:
+                    sql_str += f"Фамилия LIKE '{name[0]}%'"
+                elif len(name) == 2:
+                    sql_str += f"Фамилия LIKE '{name[0]}%' AND Имя LIKE '{name[1]}%'"
+                elif len(name) == 3:
+                    sql_str += f"Фамилия LIKE '{name[0]}%' AND Имя LIKE '{name[1]}%' AND Отчество LIKE '{name[2]}%'"
+
+                elif len(patient_data.split()) > 3:
+                    messagebox.showinfo('Ошибка', 'Неверный формат ввода!\n'
+                                                  'Ожидалось максимум 3 блока данных\n'
+                                                  f'Получено: <b>{len(patient_data.split())}</b> блоков\n'
+                                                  f'Измените запрос')
+
+        if not sql_str:
+            messagebox.showinfo('Ошибка', 'По введенной информации не удалось сформулировать sql запрос')
+
+        else:
+            print("sql_str", sql_str)
+
+            with sq.connect('patient_data_base.db') as conn:
+                cur = conn.cursor()
+                cur.execute(f"SELECT rowid, "
+                            f"district, "
+                            f"amb_cart, "
+                            f"Фамилия, "
+                            f"Имя, "
+                            f"Отчество, "
+                            f"Пол, "
+                            f"Дата_рождения, "
+                            f"Домашний_адрес, "
+                            f"Домашний_телефон "
+                            f"FROM patient_data WHERE {sql_str}")
+                found_data = cur.fetchall()
+
+            if len(found_data) < 1:
+                messagebox.showinfo('Ошибка', 'По введенной информации не удалось сформулировать sql запрос')
+
+                if function == 'certificate':
+                    with state.proxy() as data:
+                        data['certificate']['name'] = ''
+                        for i in name:
+                            if '№' not in i:
+                                data['certificate']['name'] += f'{i.capitalize()} '
+                    inline_kb = InlineKeyboardMarkup(row_width=1)
+                    inline_kb.add(InlineKeyboardButton('Изменить поисковый запрос',
+                                                       callback_data='fast__amb_name__start_search'))
+                    inline_kb.add(InlineKeyboardButton('Сохранить введенный текст как ФИО',
+                                                       callback_data='fast__amb_name__save'))
+                    inline_kb.add(InlineKeyboardButton('Главное меню', callback_data='exit_in_main__fast_certificate'))
+                    await bot.send_message(chat_id=message.chat.id,
+                                           text='Такого пациента в моей базе нет! Что хотите сделать?',
+                                           reply_markup=inline_kb)
+                elif function == 'examination':
+                    inline_kb = InlineKeyboardMarkup(row_width=1)
+                    inline_kb.add(InlineKeyboardButton('Изменить поисковый запрос',
+                                                       callback_data='examination__amb_name__start_search'))
+                    inline_kb.add(InlineKeyboardButton('Сохранить введенный текст как ФИО',
+                                                       callback_data='examination__amb_name__save'))
+                    inline_kb.add(InlineKeyboardButton('Главное меню', callback_data='exit_in_main__examination'))
+                    await bot.send_message(chat_id=message.chat.id,
+                                           text=f"Пациент '{patient_data}' в базе данных не найден!\n"
+                                                f" Что хотите сделать?",
+                                           reply_markup=inline_kb)
+
+                else:
+                    await message.reply(text=f"Ошибка имени!\n"
+                                             f"Пациент '{patient_data}' в базе данных не найден!\n"
+                                             f"Введите данные пациента еще раз!")
+            else:
+
+                try:
+                    await message.delete()
+                except Exception:
+                    pass
+
+                with state.proxy() as data:
+                    data['decoding_name'] = dict()
+                    data['decoding_name']['found_data'] = found_data
+                    data['decoding_name']['function'] = function
+                    message_id = message.message_id
+                    data['decoding_name']['all_message_id'] = list()
+                    for num in range(len(found_data) + 3):
+                        data['decoding_name']['all_message_id'].append(message_id + num)
+
+                if len(found_data) > 5:
+                    inline_kb = InlineKeyboardMarkup(row_width=1)
+                    inline_kb.add(InlineKeyboardButton('Вывести пациентов',
+                                                       callback_data='decoding_name__show_patient'))
+                    inline_kb.add(InlineKeyboardButton('Изменить поисковый запрос',
+                                                       callback_data='decoding_name__start_search_fast'))
+                    inline_kb.add(InlineKeyboardButton('Главное меню', callback_data='exit_in_main__decoding_name'))
+                    await bot.send_message(message.chat.id, text=f'Пациентов найдено: {len(found_data)}',
+                                           reply_markup=inline_kb)
+                else:
+                    await message.answer(text='Найденные пациенты:')
+                    await show_patient(message, state)
+
+    def selected(_):
+        save_doctor(new_doctor_name=combo_doc.get())
+
+    def delete_txt_patient_data():
+        txt_patient_data.delete(0, last='END')
+
+    search_root = Tk()
+    search_root.title('Поиск пациента')
+    search_root.config(bg='white')
+
+    counter_patient = Label(search_root, text='Найдено пациентов:', font=('Comic Sans MS', 16), width=20, height=1)
+    counter_patient.grid()
+
+    btn = Button(search_root, text='Добавить доктора', command=add_new_doctor, font=('Comic Sans MS', 20))
+    btn.grid()
+
+    Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid()
+    txt_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20))
+    txt_patient_data.grid()
+
+    check = (search_root.register(is_valid), "%P")
+
+    errmsg = StringVar()
+
+    phone_entry = ttk.Entry(validate="key", validatecommand=check)
+    phone_entry.pack(padx=5, pady=5, anchor=NW)
+
+    error_label = ttk.Label(foreground="red", textvariable=errmsg, wraplength=250)
+    error_label.pack(padx=5, pady=5, anchor=NW)
+
+    Button(search_root, text='Изменить', command=delete_txt_patient_data, font=('Comic Sans MS', 20)).grid()
+
+    Label(search_root, text='Что хотите сделать?', font=('Comic Sans MS', 20)).grid()
+
+    Button(search_root, text='Справка', command=certificate, font=('Comic Sans MS', 20)).grid()
+    Button(search_root, text='Анализы', command=analyzes, font=('Comic Sans MS', 20)).grid()
+    Button(search_root, text='Вкладыши', command=blanks, font=('Comic Sans MS', 20)).grid()
+
+    search_root.mainloop()
+
+
+def show_patient(message: types.Message, state: FSMContext):
+    with state.proxy() as data:
+        found_data = data.get('decoding_name', dict()).get('found_data', [])
+
+    for info in found_data:
+        rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = info
+
+        text = f"Участок: {district};   " \
+               f"№ амб карты: {amb_cart}\n" \
+               f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
+               f"Пол: {gender};    " \
+               f"Дата рождения: {birth_date}\n" \
+               f"Адрес: {address}\n" \
+               f"Дополнительная информация (телефон): {phone}"
+        inline_kb = InlineKeyboardMarkup(row_width=1)
+        inline_kb.add(InlineKeyboardButton(text='Выбрать пациента',
+                                           callback_data=f'decoding_name__{rowid}__select_patient'))
+        await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=inline_kb)
+    else:
+        inline_kb = InlineKeyboardMarkup(row_width=1)
+        inline_kb.add(
+            InlineKeyboardButton(text='Изменить поисковый запрос',
+                                 callback_data='decoding_name__start_search'))
+        inline_kb.add(InlineKeyboardButton(text='Главное меню', callback_data='exit_in_main__decoding_name'))
+        await bot.send_message(message.chat.id, text=f' _ _ _ _ _ _ Конец выборки _ _ _ _ _ _ ',
+                               reply_markup=inline_kb)
+
+
+
