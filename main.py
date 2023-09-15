@@ -9,7 +9,8 @@ from docx.shared import Cm
 from docx.shared import Pt
 import os
 
-from . import decoding_name
+import pyperclip
+# import decoding_name
 
 
 def data_base():
@@ -29,8 +30,8 @@ def data_base():
         cur.execute(f"SELECT doctor_name, district, ped_div, manager, open_mark FROM врачи")
         flag = False
         doctor_data = cur.fetchall()
-        for doc_name, mark in doctor_data:
-            if mark:
+        for doctor_name, district, ped_div, manager, open_mark in doctor_data:
+            if open_mark:
                 flag = True
         if not flag:
             cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE 'Иванов И.И.'")
@@ -101,7 +102,7 @@ def add_new_doctor():
 def get_doc_names():
     with sq.connect('data_base.db') as conn:
         cur = conn.cursor()
-        cur.execute(f"SELECT doctor_name, mark FROM врачи")
+        cur.execute(f"SELECT doctor_name, open_mark FROM врачи")
         data = cur.fetchall()
         all_doctors = list()
         for doctor_name, mark in data:
@@ -142,14 +143,20 @@ def save_doctor(new_doctor_name):
 
 
 def main_loop():
+    def paste_txt_patient_data():
+        text_patient_data = pyperclip.paste()
+        txt_patient_data.delete(0, last=END)
+        txt_patient_data.insert(index=0,
+                                string=text_patient_data)
     def is_valid(patient_data):
-        patient_data = decoding_name.decoding_name(patient_data)
+        pass
+        # patient_data = decoding_name.decoding_name(patient_data)
 
     def selected(_):
         save_doctor(new_doctor_name=combo_doc.get())
 
     def delete_txt_patient_data():
-        txt_patient_data.delete(0, last='END')
+        txt_patient_data.delete(0, last=END)
 
     data_base()
     root = Tk()
@@ -157,37 +164,38 @@ def main_loop():
     root.config(bg='white')
 
     lbl = Label(root, text='Учетная запись:', font=('Comic Sans MS', 16), width=20, height=1)
-    lbl.grid()
+    lbl.grid(column=0, row=0, columnspan=3)
     combo_doc = Combobox(root, font=('Comic Sans MS', 20), state="readonly")
     combo_doc['values'] = get_doc_names()
     combo_doc.current(0)
-    combo_doc.grid()
+    combo_doc.grid(column=0, row=1, columnspan=2)
     combo_doc.bind("<<ComboboxSelected>>", selected)
 
     btn = Button(root, text='Добавить доктора', command=add_new_doctor, font=('Comic Sans MS', 20))
-    btn.grid()
+    btn.grid(column=2, row=1)
 
-    Label(root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid()
+    Label(root, text='\nОкно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=2, columnspan=3)
     txt_patient_data = Entry(root, width=30, font=('Comic Sans MS', 20))
-    txt_patient_data.grid()
+    txt_patient_data.grid(column=0, row=3, rowspan=2, columnspan=2)
 
     check = (root.register(is_valid), "%P")
 
-    errmsg = StringVar()
+    # errmsg = StringVar()
+    #
+    # phone_entry = ttk.Entry(validate="key", validatecommand=check)
+    # phone_entry.pack(padx=5, pady=5, anchor=NW)
+    #
+    # error_label = ttk.Label(foreground="red", textvariable=errmsg, wraplength=250)
+    # error_label.pack(padx=5, pady=5, anchor=NW)
 
-    phone_entry = ttk.Entry(validate="key", validatecommand=check)
-    phone_entry.pack(padx=5, pady=5, anchor=NW)
+    Button(root, text='Удалить', command=delete_txt_patient_data, font=('Comic Sans MS', 20)).grid(column=2, row=3)
+    Button(root, text='Вставить', command=paste_txt_patient_data, font=('Comic Sans MS', 20)).grid(column=2, row=4)
 
-    error_label = ttk.Label(foreground="red", textvariable=errmsg, wraplength=250)
-    error_label.pack(padx=5, pady=5, anchor=NW)
+    Label(root, text='\nЧто хотите сделать?', font=('Comic Sans MS', 20)).grid(column=0, row=5, columnspan=3)
 
-    Button(root, text='Изменить', command=delete_txt_patient_data, font=('Comic Sans MS', 20)).grid()
-
-    Label(root, text='Что хотите сделать?', font=('Comic Sans MS', 20)).grid()
-
-    Button(root, text='Справка', command=certificate, font=('Comic Sans MS', 20)).grid()
-    Button(root, text='Анализы', command=analyzes, font=('Comic Sans MS', 20)).grid()
-    Button(root, text='Вкладыши', command=blanks, font=('Comic Sans MS', 20)).grid()
+    Button(root, text='Справка', command=certificate, font=('Comic Sans MS', 20)).grid(column=0, row=6)
+    Button(root, text='Анализы', command=analyzes, font=('Comic Sans MS', 20)).grid(column=1, row=6)
+    Button(root, text='Вкладыши', command=blanks, font=('Comic Sans MS', 20)).grid(column=2, row=6)
 
     root.mainloop()
 
