@@ -228,56 +228,17 @@ def search_loop(patient_info):
                 found_data = cur.fetchall()
 
             if len(found_data) < 1:
-                messagebox.showinfo('Ошибка', 'По введенной информации не удалось сформулировать sql запрос')
+                counter_patient_text.set("По введенной информации не удалось найти пациента")
+                # messagebox.showinfo('Ошибка', 'По введенной информации не удалось найти пациента')
 
-                if function == 'certificate':
-                    with state.proxy() as data:
-                        data['certificate']['name'] = ''
-                        for i in name:
-                            if '№' not in i:
-                                data['certificate']['name'] += f'{i.capitalize()} '
-                    inline_kb = InlineKeyboardMarkup(row_width=1)
-                    inline_kb.add(InlineKeyboardButton('Изменить поисковый запрос',
-                                                       callback_data='fast__amb_name__start_search'))
-                    inline_kb.add(InlineKeyboardButton('Сохранить введенный текст как ФИО',
-                                                       callback_data='fast__amb_name__save'))
-                    inline_kb.add(InlineKeyboardButton('Главное меню', callback_data='exit_in_main__fast_certificate'))
-                    await bot.send_message(chat_id=message.chat.id,
-                                           text='Такого пациента в моей базе нет! Что хотите сделать?',
-                                           reply_markup=inline_kb)
-                elif function == 'examination':
-                    inline_kb = InlineKeyboardMarkup(row_width=1)
-                    inline_kb.add(InlineKeyboardButton('Изменить поисковый запрос',
-                                                       callback_data='examination__amb_name__start_search'))
-                    inline_kb.add(InlineKeyboardButton('Сохранить введенный текст как ФИО',
-                                                       callback_data='examination__amb_name__save'))
-                    inline_kb.add(InlineKeyboardButton('Главное меню', callback_data='exit_in_main__examination'))
-                    await bot.send_message(chat_id=message.chat.id,
-                                           text=f"Пациент '{patient_data}' в базе данных не найден!\n"
-                                                f" Что хотите сделать?",
-                                           reply_markup=inline_kb)
-
-                else:
-                    await message.reply(text=f"Ошибка имени!\n"
-                                             f"Пациент '{patient_data}' в базе данных не найден!\n"
-                                             f"Введите данные пациента еще раз!")
             else:
+                counter_patient_text.set(f"{len(found_data)}")
 
-                try:
-                    await message.delete()
-                except Exception:
-                    pass
+                if len(found_data) > 10:
+                    for num in range(10):
+                        lbl = Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20))
+                        
 
-                with state.proxy() as data:
-                    data['decoding_name'] = dict()
-                    data['decoding_name']['found_data'] = found_data
-                    data['decoding_name']['function'] = function
-                    message_id = message.message_id
-                    data['decoding_name']['all_message_id'] = list()
-                    for num in range(len(found_data) + 3):
-                        data['decoding_name']['all_message_id'].append(message_id + num)
-
-                if len(found_data) > 5:
                     inline_kb = InlineKeyboardMarkup(row_width=1)
                     inline_kb.add(InlineKeyboardButton('Вывести пациентов',
                                                        callback_data='decoding_name__show_patient'))
@@ -299,8 +260,8 @@ def search_loop(patient_info):
     search_root = Tk()
     search_root.title('Поиск пациента')
     search_root.config(bg='white')
-
-    counter_patient = Label(search_root, text='Найдено пациентов:', font=('Comic Sans MS', 16), width=20, height=1)
+    counter_patient_text = StringVar()
+    counter_patient = Label(search_root, textvariable=counter_patient_text, font=('Comic Sans MS', 16), width=20, height=1)
     counter_patient.grid()
 
     btn = Button(search_root, text='Добавить доктора', command=add_new_doctor, font=('Comic Sans MS', 20))

@@ -10,7 +10,7 @@ from docx.shared import Pt
 import os
 
 import pyperclip
-# import decoding_name
+import decoding_name
 
 
 def data_base():
@@ -148,9 +148,9 @@ def main_loop():
         txt_patient_data.delete(0, last=END)
         txt_patient_data.insert(index=0,
                                 string=text_patient_data)
+
     def is_valid(patient_data):
-        pass
-        # patient_data = decoding_name.decoding_name(patient_data)
+        patient_data = decoding_name.decoding_name(patient_data)
 
     def selected(_):
         save_doctor(new_doctor_name=combo_doc.get())
@@ -175,14 +175,17 @@ def main_loop():
     btn.grid(column=2, row=1)
 
     Label(root, text='\nОкно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=2, columnspan=3)
-    txt_patient_data = Entry(root, width=30, font=('Comic Sans MS', 20))
-    txt_patient_data.grid(column=0, row=3, rowspan=2, columnspan=2)
 
     check = (root.register(is_valid), "%P")
 
-    # errmsg = StringVar()
+    txt_patient_data = Entry(root, width=30, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
+    txt_patient_data.grid(column=0, row=3, rowspan=2, columnspan=2)
+    txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
+    txt_patient_data.bind('<Control-м>', paste_txt_patient_data)
+
+
     #
-    # phone_entry = ttk.Entry(validate="key", validatecommand=check)
+    # phone_entry = ttk.Entry()
     # phone_entry.pack(padx=5, pady=5, anchor=NW)
     #
     # error_label = ttk.Label(foreground="red", textvariable=errmsg, wraplength=250)
