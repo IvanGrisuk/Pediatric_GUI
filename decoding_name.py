@@ -176,7 +176,6 @@ def decoding_name(patient_data):
 
 
 def search_loop(patient_info):
-
     def search_in_db():
         patient_data = txt_patient_data.get()
         name = list()
@@ -239,19 +238,39 @@ def search_loop(patient_info):
 
                 if len(found_data) > 10:
                     for num in range(10):
-                        lbl = Label(search_root, text=f"{found_data[num][0]}", font=('Comic Sans MS', 20))
+                        rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
+                            found_data[num]
+
+                        text = f"Участок: {district};   " \
+                               f"№ амб карты: {amb_cart}\n" \
+                               f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
+                               f"Пол: {gender};    " \
+                               f"Дата рождения: {birth_date}\n" \
+                               f"Адрес: {address}\n" \
+                               f"Дополнительная информация (телефон): {phone}"
+                        lbl = Label(search_root, text=text, font=('Comic Sans MS', 20))
                         lbl.grid()
 
                 else:
                     for patient in found_data:
-                        lbl = Label(search_root, text=f"{patient[0]}", font=('Comic Sans MS', 20))
+                        rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = patient
+
+                        text = f"Участок: {district};   " \
+                               f"№ амб карты: {amb_cart}\n" \
+                               f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
+                               f"Пол: {gender};    " \
+                               f"Дата рождения: {birth_date}\n" \
+                               f"Адрес: {address}\n" \
+                               f"Дополнительная информация (телефон): {phone}"
+                        lbl = Label(search_root, text=text, font=('Comic Sans MS', 20))
                         lbl.grid()
 
     search_root = Tk()
     search_root.title('Поиск пациента')
     search_root.config(bg='white')
     counter_patient_text = StringVar()
-    counter_patient = Label(search_root, textvariable=counter_patient_text, font=('Comic Sans MS', 16), width=20, height=1)
+    counter_patient = Label(search_root, textvariable=counter_patient_text, font=('Comic Sans MS', 16), width=20,
+                            height=1)
     counter_patient.grid()
 
     Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=0, columnspan=3)
@@ -265,7 +284,6 @@ def search_loop(patient_info):
     Button(search_root, text='Найти', command=search_in_db, font=('Comic Sans MS', 20)).grid(column=2, row=1)
 
     search_root.mainloop()
-
 
 # def show_patient(message: types.Message, state: FSMContext):
 #     with state.proxy() as data:
@@ -293,6 +311,3 @@ def search_loop(patient_info):
 #         inline_kb.add(InlineKeyboardButton(text='Главное меню', callback_data='exit_in_main__decoding_name'))
 #         await bot.send_message(message.chat.id, text=f' _ _ _ _ _ _ Конец выборки _ _ _ _ _ _ ',
 #                                reply_markup=inline_kb)
-
-
-
