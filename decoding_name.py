@@ -252,15 +252,16 @@ def search_loop(patient_info):
     counter_patient = Label(search_root, textvariable=counter_patient_text, font=('Comic Sans MS', 16), width=20, height=1)
     counter_patient.grid()
 
-
-    Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid()
+    Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=0, rowspan=3)
 
     check = (search_root.register(search_in_db), "%P")
     txt_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
-    txt_patient_data.grid()
+
+    txt_patient_data.grid(column=0, row=1, rowspan=2)
     txt_patient_data.insert(0, patient_info)
     txt_patient_data.focus()
 
+    Button(search_root, text='Найти', command=search_in_db, font=('Comic Sans MS', 20)).grid(column=2, row=1)
 
     search_root.mainloop()
 
