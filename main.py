@@ -48,6 +48,9 @@ def data_base():
         if not flag:
             cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE 'Иванов И.И.'")
             cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)", ['Иванов И.И.', 1, 1, 'Петров П.П.', True])
+
+
+def updating_patient_data_base():
     try:
         shutil.copy2(r"\\SRV2\data_base\patient_data_base.db", f"patient_data_base.db")
     except Exception as ex:
@@ -222,8 +225,8 @@ def main_loop():
 
     check = (root.register(is_valid), "%P")
 
-    txt_patient_data = Entry(root, width=30, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
-    txt_patient_data.grid(column=0, row=3, rowspan=2)
+    txt_patient_data = Entry(root, width=15, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
+    txt_patient_data.grid(column=0, row=3)
     txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
 
     patient_info = Label(root, text='', font=('Comic Sans MS', 10))
@@ -238,7 +241,8 @@ def main_loop():
     # error_label = ttk.Label(foreground="red", textvariable=errmsg, wraplength=250)
     # error_label.pack(padx=5, pady=5, anchor=NW)
 
-    Button(root, text='Поиск', command=search_patient, font=('Comic Sans MS', 20)).grid(column=2, row=2)
+    Button(root, text='Поиск', command=search_patient, font=('Comic Sans MS', 20)).grid(column=1, row=3)
+    Button(root, text='Обновить БД', command=updating_patient_data_base, font=('Comic Sans MS', 20)).grid(column=1, row=4)
     Button(root, text='Удалить', command=delete_txt_patient_data, font=('Comic Sans MS', 20)).grid(column=2, row=3)
     Button(root, text='Вставить', command=paste_txt_patient_data, font=('Comic Sans MS', 20)).grid(column=2, row=4)
 
