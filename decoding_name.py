@@ -176,12 +176,15 @@ def decoding_name(patient_data):
 
 
 def search_loop(patient_info):
+    found_data = list()
+    destroy_object = list()
     def select_patient(event):
-        print(type(event))
-        print(event)
-        print(event.time)
-        print(event.x_root)
-        print(event.y_root)
+        print(event.widget)
+        num = ''
+        for i in str(event.widget):
+            if i.isdigit():
+                num += i
+
 
     def search_in_db():
         patient_data = txt_patient_data.get()
@@ -255,6 +258,7 @@ def search_loop(patient_info):
                                f"Адрес: {address}\n"
                         lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
                         lbl.grid()
+                        lbl.bind('<Double-Button-1>', select_patient)
 
                 else:
                     for patient in found_data:
