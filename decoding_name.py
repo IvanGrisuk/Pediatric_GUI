@@ -228,6 +228,7 @@ def search_loop(patient_info):
                             f"Домашний_телефон "
                             f"FROM patient_data WHERE {sql_str}")
                 found_data = cur.fetchall()
+            print(found_data)
 
             if len(found_data) < 1:
                 counter_patient_text.set("По введенной информации не удалось найти пациента")
