@@ -171,9 +171,6 @@ def decoding_name(patient_data):
         else:
             return user
 
-    else:
-        search_loop(patient_data)
-
 
 def search_loop(patient_info):
     patient_found_data = list()
@@ -186,7 +183,8 @@ def search_loop(patient_info):
             if i.isdigit():
                 num += i
         rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
-            patient_found_data[int(num)]
+            patient_found_data[int(num)-1]
+
         return {
             'name': f"{name_1} {name_2} {name_3}",
             'birth_date': birth_date,
@@ -199,6 +197,8 @@ def search_loop(patient_info):
 
 
     def search_in_db():
+        print("patient_found_data", patient_found_data)
+        print("patient_destroy_object", patient_destroy_object)
         patient_data = txt_patient_data.get()
         name = list()
         for i in patient_data.split():
@@ -279,6 +279,7 @@ def search_loop(patient_info):
                     lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
                     lbl.grid()
                     lbl.bind('<Double-Button-1>', select_patient)
+                    patient_destroy_object.append(lbl)
                     patient_found_data.append(found_data[num])
 
     search_root = Tk()

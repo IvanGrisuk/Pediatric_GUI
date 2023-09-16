@@ -169,7 +169,9 @@ def main_loop():
         txt_patient_data.insert(index=0,
                                 string=text_patient_data)
 
-    def is_valid(patient_data):
+    def search_patient(*args, **kwargs):
+        patient_data = txt_patient_data.get()
+
         if ('Фамилия, имя, отчество пациента:' in patient_data or
                 '№ амб. карты' in patient_data or
                 '№ амбулаторной карты' in patient_data):
@@ -184,20 +186,9 @@ def main_loop():
                                    f"Участок: {patient_data.get('patient_district')}"
             print("patient_data", patient_data)
             return True
+        else:
+            decoding_name.search_loop(patient_data)
 
-    def search_patient(*args, **kwargs):
-        patient_data = txt_patient_data.get()
-        patient_data = decoding_name.decoding_name(patient_data)
-        for key in patient:
-            if patient_data.get(key):
-                patient[key] = patient_data.get(key)
-        patient_info['text'] = f"ФИО: {patient_data.get('name')}\t" \
-                               f"Дата рождения: {patient_data.get('birth_date')}\n" \
-                               f"Адрес: {patient_data.get('address')}\n" \
-                               f"№ амб: {patient_data.get('amb_cart')}\t" \
-                               f"Участок: {patient_data.get('patient_district')}"
-        print("patient_data", patient_data)
-        return True
 
     def selected(_):
         save_doctor(new_doctor_name=combo_doc.get())
@@ -223,12 +214,11 @@ def main_loop():
 
     Label(root, text='\nОкно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=2, columnspan=3)
 
-    check = (root.register(is_valid), "%P")
 
-    txt_patient_data = Entry(root, width=15, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
+    txt_patient_data = Entry(root, width=15, font=('Comic Sans MS', 20))
     txt_patient_data.grid(column=0, row=3)
-    txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
-    txt_patient_data.bind('<Enter>', search_patient)
+    # txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
+    # txt_patient_data.bind('<Enter>', search_patient)
 
     patient_info = Label(root, text='', font=('Comic Sans MS', 10))
     patient_info.grid(column=0, row=3, rowspan=2)
