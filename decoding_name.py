@@ -252,11 +252,11 @@ def search_loop(patient_info):
     counter_patient = Label(search_root, textvariable=counter_patient_text, font=('Comic Sans MS', 16), width=20, height=1)
     counter_patient.grid()
 
-    Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=0, rowspan=3)
+    Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=0, columnspan=3)
 
     txt_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20))
 
-    txt_patient_data.grid(column=0, row=1, rowspan=2)
+    txt_patient_data.grid(column=0, row=1, columnspan=2)
     txt_patient_data.insert(0, patient_info)
     txt_patient_data.focus()
 
