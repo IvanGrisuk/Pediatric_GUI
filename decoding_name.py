@@ -254,8 +254,7 @@ def search_loop(patient_info):
 
     Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=0, rowspan=3)
 
-    check = (search_root.register(search_in_db), "%P")
-    txt_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
+    txt_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20))
 
     txt_patient_data.grid(column=0, row=1, rowspan=2)
     txt_patient_data.insert(0, patient_info)
