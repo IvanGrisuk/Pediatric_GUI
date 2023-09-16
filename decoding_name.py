@@ -176,6 +176,13 @@ def decoding_name(patient_data):
 
 
 def search_loop(patient_info):
+    def select_patient(event):
+        print(type(event))
+        print(event)
+        print(event.time)
+        print(event.x_root)
+        print(event.y_root)
+
     def search_in_db():
         patient_data = txt_patient_data.get()
         name = list()
@@ -244,10 +251,8 @@ def search_loop(patient_info):
                         text = f"Участок: {district};   " \
                                f"№ амб карты: {amb_cart}\n" \
                                f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
-                               f"Пол: {gender};    " \
                                f"Дата рождения: {birth_date}\n" \
-                               f"Адрес: {address}\n" \
-                               f"Дополнительная информация (телефон): {phone}"
+                               f"Адрес: {address}\n"
                         lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
                         lbl.grid()
 
@@ -258,13 +263,11 @@ def search_loop(patient_info):
                         text = f"Участок: {district};   " \
                                f"№ амб карты: {amb_cart}\n" \
                                f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
-                               f"Пол: {gender};    " \
                                f"Дата рождения: {birth_date}\n" \
-                               f"Адрес: {address}\n" \
-                               f"Дополнительная информация (телефон): {phone}"
+                               f"Адрес: {address}\n"
                         lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
                         lbl.grid()
-
+                        lbl.bind('<Double-Button-1>', select_patient)
 
     search_root = Tk()
     search_root.title('Поиск пациента')
