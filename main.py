@@ -12,6 +12,15 @@ import os
 import pyperclip
 import decoding_name
 
+patient = {
+    'name': None,
+    'birth_date': None,
+    'gender': None,
+    'amb_cart': None,
+    'patient_district': None,
+    'address': None
+}
+
 
 def data_base():
     with sq.connect('data_base.db') as conn:
@@ -39,7 +48,6 @@ def data_base():
 
 
 def add_new_doctor():
-
     def save():
         doctor_name = txt_doctor_name.get()
         manager = txt_manager.get()
@@ -151,6 +159,14 @@ def main_loop():
 
     def is_valid(patient_data):
         patient_data = decoding_name.decoding_name(patient_data)
+        for key in patient:
+            if patient_data.get(key):
+                patient[key] = patient_data.get(key)
+        patient_info['text'] = f"ФИО: {patient_data.get('name')}\t" \
+                               f"Дата рождения: {patient_data.get('birth_date')}\n" \
+                               f"Адрес: {patient_data.get('address')}\n" \
+                               f"№ амб: {patient_data.get('amb_cart')}\t" \
+                               f"Участок: {patient_data.get('patient_district')}"
         print("patient_data", patient_data)
 
     def selected(_):
@@ -180,10 +196,13 @@ def main_loop():
     check = (root.register(is_valid), "%P")
 
     txt_patient_data = Entry(root, width=30, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
-    txt_patient_data.grid(column=0, row=3, rowspan=2, columnspan=2)
+    txt_patient_data.grid(column=0, row=3, rowspan=2)
     txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
-    # txt_patient_data.bind('<Control-м>', paste_txt_patient_data)
 
+    patient_info = Label(root, text='', font=('Comic Sans MS', 10))
+    patient_info.grid(column=0, row=3, rowspan=2)
+
+    # txt_patient_data.bind('<Control-м>', paste_txt_patient_data)
 
     #
     # phone_entry = ttk.Entry()
