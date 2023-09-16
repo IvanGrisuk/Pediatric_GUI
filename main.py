@@ -158,6 +158,23 @@ def main_loop():
                                 string=text_patient_data)
 
     def is_valid(patient_data):
+        if ('Фамилия, имя, отчество пациента:' in patient_data or
+                '№ амб. карты' in patient_data or
+                '№ амбулаторной карты' in patient_data):
+            patient_data = decoding_name.decoding_name(patient_data)
+            for key in patient:
+                if patient_data.get(key):
+                    patient[key] = patient_data.get(key)
+            patient_info['text'] = f"ФИО: {patient_data.get('name')}\t" \
+                                   f"Дата рождения: {patient_data.get('birth_date')}\n" \
+                                   f"Адрес: {patient_data.get('address')}\n" \
+                                   f"№ амб: {patient_data.get('amb_cart')}\t" \
+                                   f"Участок: {patient_data.get('patient_district')}"
+            print("patient_data", patient_data)
+            return True
+
+    def search_patient():
+        patient_data = txt_patient_data.get()
         patient_data = decoding_name.decoding_name(patient_data)
         for key in patient:
             if patient_data.get(key):
@@ -168,6 +185,7 @@ def main_loop():
                                f"№ амб: {patient_data.get('amb_cart')}\t" \
                                f"Участок: {patient_data.get('patient_district')}"
         print("patient_data", patient_data)
+        return True
 
     def selected(_):
         save_doctor(new_doctor_name=combo_doc.get())
@@ -211,6 +229,7 @@ def main_loop():
     # error_label = ttk.Label(foreground="red", textvariable=errmsg, wraplength=250)
     # error_label.pack(padx=5, pady=5, anchor=NW)
 
+    Button(root, text='Поиск', command=search_patient, font=('Comic Sans MS', 20)).grid(column=2, row=2)
     Button(root, text='Удалить', command=delete_txt_patient_data, font=('Comic Sans MS', 20)).grid(column=2, row=3)
     Button(root, text='Вставить', command=paste_txt_patient_data, font=('Comic Sans MS', 20)).grid(column=2, row=4)
 

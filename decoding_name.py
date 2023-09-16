@@ -177,7 +177,8 @@ def decoding_name(patient_data):
 
 def search_loop(patient_info):
 
-    def search_in_db(patient_data):
+    def search_in_db():
+        patient_data = txt_patient_data.get()
         name = list()
         for i in patient_data.split():
             name.append(i.capitalize())
