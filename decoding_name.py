@@ -176,14 +176,26 @@ def decoding_name(patient_data):
 
 
 def search_loop(patient_info):
-    found_data = list()
-    destroy_object = list()
+    patient_found_data = list()
+    patient_destroy_object = list()
+
     def select_patient(event):
         print(event.widget)
         num = ''
         for i in str(event.widget):
             if i.isdigit():
                 num += i
+        rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
+            patient_found_data[int(num)]
+        return {
+            'name': f"{name_1} {name_2} {name_3}",
+            'birth_date': birth_date,
+            'gender': gender,
+            'amb_cart': amb_cart,
+            'patient_district': district,
+            'address': address
+        }
+
 
 
     def search_in_db():
@@ -247,31 +259,27 @@ def search_loop(patient_info):
                 counter_patient_text.set(f"{len(found_data)}")
 
                 if len(found_data) > 10:
-                    for num in range(10):
-                        rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
-                            found_data[num]
-
-                        text = f"Участок: {district};   " \
-                               f"№ амб карты: {amb_cart}\n" \
-                               f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
-                               f"Дата рождения: {birth_date}\n" \
-                               f"Адрес: {address}\n"
-                        lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
-                        lbl.grid()
-                        lbl.bind('<Double-Button-1>', select_patient)
-
+                    count_patient = 10
                 else:
-                    for patient in found_data:
-                        rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = patient
+                    count_patient = len(found_data)
 
-                        text = f"Участок: {district};   " \
-                               f"№ амб карты: {amb_cart}\n" \
-                               f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
-                               f"Дата рождения: {birth_date}\n" \
-                               f"Адрес: {address}\n"
-                        lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
-                        lbl.grid()
-                        lbl.bind('<Double-Button-1>', select_patient)
+                for lbl in patient_destroy_object:
+                    lbl.destroy()
+                patient_destroy_object.clear()
+                patient_found_data.clear()
+                for num in range(count_patient):
+                    rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
+                        found_data[num]
+
+                    text = f"Участок: {district};   " \
+                           f"№ амб карты: {amb_cart}\n" \
+                           f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
+                           f"Дата рождения: {birth_date}\n" \
+                           f"Адрес: {address}\n"
+                    lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
+                    lbl.grid()
+                    lbl.bind('<Double-Button-1>', select_patient)
+                    patient_found_data.append(found_data[num])
 
     search_root = Tk()
     search_root.title('Поиск пациента')

@@ -228,6 +228,7 @@ def main_loop():
     txt_patient_data = Entry(root, width=15, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
     txt_patient_data.grid(column=0, row=3)
     txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
+    txt_patient_data.bind('<Enter>', search_patient)
 
     patient_info = Label(root, text='', font=('Comic Sans MS', 10))
     patient_info.grid(column=0, row=3, rowspan=2)
