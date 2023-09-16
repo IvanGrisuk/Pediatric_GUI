@@ -3,6 +3,7 @@ from tkinter import ttk
 import sqlite3 as sq
 from tkinter.ttk import Combobox
 from tkinter import scrolledtext, messagebox
+import os
 
 
 def decoding_name(patient_data):
@@ -212,7 +213,7 @@ def search_loop(patient_info):
         else:
             print("sql_str", sql_str)
 
-            with sq.connect('patient_data_base.db') as conn:
+            with sq.connect(r"\\SRV2\data_base\patient_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute(f"SELECT rowid, "
                             f"district, "
@@ -236,26 +237,13 @@ def search_loop(patient_info):
 
                 if len(found_data) > 10:
                     for num in range(10):
-                        lbl = Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20))
-                        
+                        lbl = Label(search_root, text=f"{found_data[num][0]}", font=('Comic Sans MS', 20))
+                        lbl.grid()
 
-                    inline_kb = InlineKeyboardMarkup(row_width=1)
-                    inline_kb.add(InlineKeyboardButton('Вывести пациентов',
-                                                       callback_data='decoding_name__show_patient'))
-                    inline_kb.add(InlineKeyboardButton('Изменить поисковый запрос',
-                                                       callback_data='decoding_name__start_search_fast'))
-                    inline_kb.add(InlineKeyboardButton('Главное меню', callback_data='exit_in_main__decoding_name'))
-                    await bot.send_message(message.chat.id, text=f'Пациентов найдено: {len(found_data)}',
-                                           reply_markup=inline_kb)
                 else:
-                    await message.answer(text='Найденные пациенты:')
-                    await show_patient(message, state)
-
-    def selected(_):
-        save_doctor(new_doctor_name=combo_doc.get())
-
-    def delete_txt_patient_data():
-        txt_patient_data.delete(0, last='END')
+                    for patient in patient_data:
+                        lbl = Label(search_root, text=f"{patient[0]}", font=('Comic Sans MS', 20))
+                        lbl.grid()
 
     search_root = Tk()
     search_root.title('Поиск пациента')
@@ -264,60 +252,45 @@ def search_loop(patient_info):
     counter_patient = Label(search_root, textvariable=counter_patient_text, font=('Comic Sans MS', 16), width=20, height=1)
     counter_patient.grid()
 
-    btn = Button(search_root, text='Добавить доктора', command=add_new_doctor, font=('Comic Sans MS', 20))
-    btn.grid()
 
     Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid()
-    txt_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20))
+
+    check = (search_root.register(search_in_db), "%P")
+    txt_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20), validate="key", validatecommand=check)
     txt_patient_data.grid()
+    txt_patient_data.insert(0, patient_info)
+    txt_patient_data.focus()
 
-    check = (search_root.register(is_valid), "%P")
-
-    errmsg = StringVar()
-
-    phone_entry = ttk.Entry(validate="key", validatecommand=check)
-    phone_entry.pack(padx=5, pady=5, anchor=NW)
-
-    error_label = ttk.Label(foreground="red", textvariable=errmsg, wraplength=250)
-    error_label.pack(padx=5, pady=5, anchor=NW)
-
-    Button(search_root, text='Изменить', command=delete_txt_patient_data, font=('Comic Sans MS', 20)).grid()
-
-    Label(search_root, text='Что хотите сделать?', font=('Comic Sans MS', 20)).grid()
-
-    Button(search_root, text='Справка', command=certificate, font=('Comic Sans MS', 20)).grid()
-    Button(search_root, text='Анализы', command=analyzes, font=('Comic Sans MS', 20)).grid()
-    Button(search_root, text='Вкладыши', command=blanks, font=('Comic Sans MS', 20)).grid()
 
     search_root.mainloop()
 
 
-def show_patient(message: types.Message, state: FSMContext):
-    with state.proxy() as data:
-        found_data = data.get('decoding_name', dict()).get('found_data', [])
-
-    for info in found_data:
-        rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = info
-
-        text = f"Участок: {district};   " \
-               f"№ амб карты: {amb_cart}\n" \
-               f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
-               f"Пол: {gender};    " \
-               f"Дата рождения: {birth_date}\n" \
-               f"Адрес: {address}\n" \
-               f"Дополнительная информация (телефон): {phone}"
-        inline_kb = InlineKeyboardMarkup(row_width=1)
-        inline_kb.add(InlineKeyboardButton(text='Выбрать пациента',
-                                           callback_data=f'decoding_name__{rowid}__select_patient'))
-        await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=inline_kb)
-    else:
-        inline_kb = InlineKeyboardMarkup(row_width=1)
-        inline_kb.add(
-            InlineKeyboardButton(text='Изменить поисковый запрос',
-                                 callback_data='decoding_name__start_search'))
-        inline_kb.add(InlineKeyboardButton(text='Главное меню', callback_data='exit_in_main__decoding_name'))
-        await bot.send_message(message.chat.id, text=f' _ _ _ _ _ _ Конец выборки _ _ _ _ _ _ ',
-                               reply_markup=inline_kb)
+# def show_patient(message: types.Message, state: FSMContext):
+#     with state.proxy() as data:
+#         found_data = data.get('decoding_name', dict()).get('found_data', [])
+#
+#     for info in found_data:
+#         rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = info
+#
+#         text = f"Участок: {district};   " \
+#                f"№ амб карты: {amb_cart}\n" \
+#                f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
+#                f"Пол: {gender};    " \
+#                f"Дата рождения: {birth_date}\n" \
+#                f"Адрес: {address}\n" \
+#                f"Дополнительная информация (телефон): {phone}"
+#         inline_kb = InlineKeyboardMarkup(row_width=1)
+#         inline_kb.add(InlineKeyboardButton(text='Выбрать пациента',
+#                                            callback_data=f'decoding_name__{rowid}__select_patient'))
+#         await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=inline_kb)
+#     else:
+#         inline_kb = InlineKeyboardMarkup(row_width=1)
+#         inline_kb.add(
+#             InlineKeyboardButton(text='Изменить поисковый запрос',
+#                                  callback_data='decoding_name__start_search'))
+#         inline_kb.add(InlineKeyboardButton(text='Главное меню', callback_data='exit_in_main__decoding_name'))
+#         await bot.send_message(message.chat.id, text=f' _ _ _ _ _ _ Конец выборки _ _ _ _ _ _ ',
+#                                reply_markup=inline_kb)
 
 
 
