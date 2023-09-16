@@ -185,7 +185,7 @@ def main_loop():
             print("patient_data", patient_data)
             return True
 
-    def search_patient():
+    def search_patient(*args, **kwargs):
         patient_data = txt_patient_data.get()
         patient_data = decoding_name.decoding_name(patient_data)
         for key in patient:
