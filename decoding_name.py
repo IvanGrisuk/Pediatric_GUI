@@ -248,7 +248,7 @@ def search_loop(patient_info):
                                f"Дата рождения: {birth_date}\n" \
                                f"Адрес: {address}\n" \
                                f"Дополнительная информация (телефон): {phone}"
-                        lbl = Label(search_root, text=text, font=('Comic Sans MS', 20))
+                        lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
                         lbl.grid()
 
                 else:
@@ -262,8 +262,9 @@ def search_loop(patient_info):
                                f"Дата рождения: {birth_date}\n" \
                                f"Адрес: {address}\n" \
                                f"Дополнительная информация (телефон): {phone}"
-                        lbl = Label(search_root, text=text, font=('Comic Sans MS', 20))
+                        lbl = Label(search_root, text=text, font=('Comic Sans MS', 15))
                         lbl.grid()
+
 
     search_root = Tk()
     search_root.title('Поиск пациента')
