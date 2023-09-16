@@ -9,6 +9,9 @@ from docx.shared import Cm
 from docx.shared import Pt
 import os
 
+import shutil
+
+
 import pyperclip
 import decoding_name
 
@@ -45,6 +48,12 @@ def data_base():
         if not flag:
             cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE 'Иванов И.И.'")
             cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)", ['Иванов И.И.', 1, 1, 'Петров П.П.', True])
+    try:
+        shutil.copy2(r"\\SRV2\data_base\patient_data_base.db", f"patient_data_base.db")
+    except Exception as ex:
+        messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}')
+    else:
+        messagebox.showinfo('Успех!', 'База данных обновлена')
 
 
 def add_new_doctor():

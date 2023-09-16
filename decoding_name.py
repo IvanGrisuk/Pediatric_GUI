@@ -214,7 +214,7 @@ def search_loop(patient_info):
         else:
             print("sql_str", sql_str)
 
-            with sq.connect(r"\\SRV2\data_base\patient_data_base.db") as conn:
+            with sq.connect(r"patient_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute(f"SELECT rowid, "
                             f"district, "
@@ -243,7 +243,7 @@ def search_loop(patient_info):
                         lbl.grid()
 
                 else:
-                    for patient in patient_data:
+                    for patient in found_data:
                         lbl = Label(search_root, text=f"{patient[0]}", font=('Comic Sans MS', 20))
                         lbl.grid()
 
