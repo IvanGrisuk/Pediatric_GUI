@@ -164,7 +164,6 @@ def save_doctor(new_doctor_name):
 
 def search_loop():
     patient_found_data = list()
-    patient_destroy_object = list()
 
     def select_patient(event):
         print(event.widget)
@@ -188,10 +187,18 @@ def search_loop():
                                f"Участок: {patient.get('patient_district')}"
         search_root.destroy()
 
+    def button_search_in_db():
+        delete_txt_patient_data()
+        txt_patient_data.insert(index=0,
+                                string=text_patient_data.get())
+        search_root.destroy()
+        search_loop()
 
     def search_in_db():
+        delete_txt_patient_data()
+        txt_patient_data.insert(0, text_patient_data.get())
+
         print("patient_found_data", patient_found_data)
-        print("patient_destroy_object", patient_destroy_object)
         patient_data = text_patient_data.get()
         name = list()
         for i in patient_data.split():
@@ -256,23 +263,19 @@ def search_loop():
                 else:
                     count_patient = len(found_data)
 
-                for lbl_ in patient_destroy_object:
-                    lbl_.destroy()
-                patient_destroy_object.clear()
                 patient_found_data.clear()
                 for num in range(count_patient):
                     rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
                         found_data[num]
 
                     text = f"Участок: {district};   " \
-                           f"№ амб карты: {amb_cart}\n" \
-                           f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
-                           f"Дата рождения: {birth_date}\n" \
+                           f"№ амб: {amb_cart}\n" \
+                           f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\t" \
+                           f"{birth_date}\n" \
                            f"Адрес: {address}\n"
                     lbl_0 = Label(search_root, text=text, font=('Comic Sans MS', 10))
                     lbl_0.grid()
                     lbl_0.bind('<Double-Button-1>', select_patient)
-                    patient_destroy_object.append(lbl_0)
                     patient_found_data.append(found_data[num])
 
     search_root = Tk()
@@ -288,7 +291,7 @@ def search_loop():
     text_patient_data.insert(0, txt_patient_data.get())
     text_patient_data.focus()
 
-    Button(search_root, text='Найти', command=search_in_db, font=('Comic Sans MS', 20)).grid(column=2, row=1)
+    Button(search_root, text='Найти', command=button_search_in_db, font=('Comic Sans MS', 20)).grid(column=2, row=1)
     search_in_db()
     search_root.mainloop()
 
