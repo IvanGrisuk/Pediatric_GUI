@@ -300,7 +300,7 @@ def search_loop():
                                f"Участок: {patient.get('patient_district')}"
         search_root.destroy()
 
-    def button_search_in_db():
+    def button_search_in_db(*args, **kwargs):
         delete_txt_patient_data()
         txt_patient_data.insert(index=0,
                                 string=text_patient_data.get())
@@ -403,6 +403,7 @@ def search_loop():
     text_patient_data.grid(column=0, row=1, columnspan=2)
     text_patient_data.insert(0, txt_patient_data.get())
     text_patient_data.focus()
+    text_patient_data.bind('<Return>', button_search_in_db)
 
     Button(search_root, text='Найти', command=button_search_in_db, font=('Comic Sans MS', 20)).grid(column=2, row=1)
     search_in_db()
@@ -483,8 +484,8 @@ Label(frame, text='Окно данных пациента', font=('Comic Sans MS
 
 txt_patient_data = Entry(frame, width=15, font=('Comic Sans MS', 20))
 txt_patient_data.grid(column=0, row=3)
-# txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
-# txt_patient_data.bind('<Enter>', search_patient)
+txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
+txt_patient_data.bind('<Return>', search_patient)
 
 patient_info = Label(frame, text='', font=('Comic Sans MS', 10))
 patient_info.grid(column=0, row=4)

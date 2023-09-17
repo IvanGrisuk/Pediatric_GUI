@@ -3,6 +3,7 @@ from tkinter import ttk
 import sqlite3 as sq
 from datetime import datetime, timedelta
 from tkinter.ttk import Combobox
+from tkinter.scrolledtext import ScrolledText
 from tkinter import scrolledtext, messagebox
 from docx import Document
 from docx.shared import Cm
@@ -43,19 +44,17 @@ all_data = {
         "vision": ("<< Зрение >>", "Указать", "1.0/1.0", "предметное", "_______")
 
     },
-    "diagnosis": {'healthy': ("Соматически здоров", "Соматически здорова"),
-                  'cor': ("<< КАРДИОЛОГИЯ >>", "САС:", "ООО", "ДХЛЖ", "НК0", "НБПНПГ", "ФСШ", "ВПС:", "ДМЖП", "ДМПП"),
-                  'oculus': ("<< ОФТАЛЬМОЛОГИЯ >>", "Спазм аккомодации", "Миопия", "Гиперметропия",
+    "diagnosis": (("<< КАРДИОЛОГИЯ >>", "САС:", "ООО", "ДХЛЖ", "НК0", "НБПНПГ", "ФСШ", "ВПС:", "ДМЖП", "ДМПП"),
+                  ("<< ОФТАЛЬМОЛОГИЯ >>", "Спазм аккомодации", "Миопия", "Гиперметропия",
                              "слабой степени", "средней степени", "тяжелой степени", "OD", "OS", "OU", "с ast"),
-                  'ortho': ("<< ОРТОПЕДИЯ >>", "Нарушение осанки", "Сколиотическая осанка", "Плоскостопие", "ПВУС",
+                  ("<< ОРТОПЕДИЯ >>", "Нарушение осанки", "Сколиотическая осанка", "Плоскостопие", "ПВУС",
                             "ИС:", "левосторонняя", "правосторонняя", "кифотическая", "грудная", "поясничная",
                             "грудо-поясничная", "деформация позвоночника", "ГПС", "1 ст.", "2 ст.", "3 ст."),
-                  'logo': ("<< ЛОГОПЕДИЯ >>", "ОНР", "ФНР", "ФФНР", "ЗРР", "стертая дизартрия",
+                  ("<< ЛОГОПЕДИЯ >>", "ОНР", "ФНР", "ФФНР", "ЗРР", "стертая дизартрия",
                            "ур.р.р.", "1", "2", "3"),
-                  'lor': ("<< ЛОР >>", "ГА", "ГНМ", "хр. тонзиллит", "1ст", "2ст", "3ст"),
-                  'ped': ("<< ПРОЧЕЕ >>", "рецидивирующие заболевания ВДП", "Атопический дерматит", "Кариес",
-                          "угроза", "БРА", "хр. гастрит", "СДН", "ВСД"),
-                  'addkey': ("ДОПИСАТЬ", "ВСЕ ДИАГНОЗЫ УКАЗАНЫ")},
+                  ("<< ЛОР >>", "ГА", "ГНМ", "хр. тонзиллит", "1ст", "2ст", "3ст"),
+                  ("<< ПРОЧЕЕ >>", "рецидивирующие заболевания ВДП", "Атопический дерматит", "Кариес",
+                          "угроза", "БРА", "хр. гастрит", "СДН", "ВСД")),
 
     'place': ('Средняя школа (гимназия)',
               'Детское Дошкольное Учреждение',
@@ -282,7 +281,7 @@ def editing_certificate():
                                f"ФИО: {certificate['patient'].get('name')};    "
                                f"{certificate['patient'].get('birth_date')};    "
                                f"пол: {certificate['patient'].get('gender')};\n"
-                               f"Адрес: {certificate['patient'].get('address')};",
+                               f"Адрес: {certificate['patient'].get('address')};\n",
           font=('Comic Sans MS', 20), bg='white').grid()
 
     # name_label = ttk.Label(frame, text="Введите имя")
@@ -329,7 +328,8 @@ def editing_certificate():
             certificate['certificate']['chickenpox'] = selected_chickenpox.get()
 
         for mark in chickenpox:
-            btn = Radiobutton(frame, text=mark, value=mark, variable=selected_chickenpox, command=select_chickenpox)
+            btn = Radiobutton(frame, text=mark, font=('Comic Sans MS', 20),
+                              value=mark, variable=selected_chickenpox, command=select_chickenpox)
             btn.grid(row=0, column=(chickenpox.index(mark) + 1))
 
         Label(frame, text="Аллергия:", font=('Comic Sans MS', 20), bg='white').grid(row=1, column=0)
@@ -340,20 +340,102 @@ def editing_certificate():
             certificate['certificate']['allergy'] = selected_allergy.get()
 
         for mark in allergy:
-            btn = Radiobutton(frame, text=mark, value=mark, variable=selected_allergy, command=select_allergy)
+            btn = Radiobutton(frame, text=mark, font=('Comic Sans MS', 20),
+                              value=mark, variable=selected_allergy, command=select_allergy)
             btn.grid(column=(allergy.index(mark) + 1), row=1)
 
+        Label(frame, text="Аллергия на:", font=('Comic Sans MS', 20), bg='white').grid(row=2, column=0)
+        allergy_txt = Entry(frame, width=60, font=('Comic Sans MS', 20))
+        allergy_txt.grid(column=1, row=2, columnspan=3)
+
+        frame.grid(padx=5, pady=5, sticky='w')
+
+    if type_certificate in ('Годовой медосмотр',
+                            'Оформление в ДДУ / СШ / ВУЗ',
+                            'В детский лагерь',
+                            'Об усыновлении (удочерении)'):
+        frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+        Label(frame, text="Рост:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
+        height = Entry(frame, width=15, font=('Comic Sans MS', 20))
+        height.grid(column=1, row=0)
+
+        Label(frame, text="    Вес:", font=('Comic Sans MS', 20), bg='white').grid(column=2, row=0)
+        weight = Entry(frame, width=15, font=('Comic Sans MS', 20))
+        weight.grid(column=3, row=0)
+
+        Label(frame, text="    Зрение:", font=('Comic Sans MS', 20), bg='white').grid(column=4, row=0)
+        vision = Entry(frame, width=15, font=('Comic Sans MS', 20))
+        vision.grid(column=5, row=0)
+
+        Label(frame, text="Диагноз:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=2)
+        diagnosis = ScrolledText(frame, width=50, height=4, font=('Comic Sans MS', 20), wrap="word")
+        diagnosis.grid(column=0, row=3, rowspan=4, columnspan=4)
+
+        def diagnosis_healthy():
+            if certificate['patient'].get('gender', '') == 'женский':
+                diagnosis.insert(INSERT, 'Соматически здорова. ')
+            else:
+                diagnosis.insert(INSERT, 'Соматически здоров. ')
+        Button(frame, text='Здоров', command=diagnosis_healthy, font=('Comic Sans MS', 20)).grid(column=4, row=3)
+
+        def diagnosis_kb():
+            def close_diagnosis_kb():
+                diagnosis_root.destroy()
+
+            def select_diagnosis(event):
+                print(event.widget)
+                num = ''
+                for i in str(event.widget):
+                    if i.isdigit():
+                        num += i
+                print(num)
+                # certificate['certificate']['type_certificate'] = all_data.get('type')[int(num) - 2]
+                # type_cert_root.destroy()
+                # editing_certificate()
+
+            diagnosis_root = Tk()
+            diagnosis_root.title('Клавиатура диагнозов')
+            diagnosis_root.config(bg='white')
+
+            frame_diagnosis = Frame(diagnosis_root, borderwidth=1, relief="solid", padx=4, pady=4)
+            Label(frame_diagnosis, text="Диагноз:", font=('Comic Sans MS', 20), bg='white').grid()
+            diagnosis_text = ScrolledText(frame_diagnosis, width=50, height=4, font=('Comic Sans MS', 20), wrap="word")
+            diagnosis_text.insert(INSERT, diagnosis.get(index1=1.0, index2='end'))
+            diagnosis_text.focus()
+            diagnosis_text.grid(column=0, row=1, rowspan=4)
+            Button(frame_diagnosis, text='Закрыть\nклавиатуру',
+                   command=close_diagnosis_kb, font=('Comic Sans MS', 20)).grid(column=1, row=3)
+            frame_diagnosis.grid(padx=5, pady=5, column=0, row=0)
+
+            tuple_diagnosis_row = 1
+            for tuple_diagnosis in all_data.get('diagnosis'):
+                frame_diagnosis = Frame(diagnosis_root, borderwidth=1, relief="solid", padx=4, pady=4)
+                Label(frame_diagnosis, text=f"{tuple_diagnosis[0]}",
+                      font=('Comic Sans MS', 20), bg='white').grid(columnspan=5)
+                row, column = 1, 0
+                for lbl in tuple_diagnosis[1:]:
+                    print(lbl, row, column)
+                    if column == 10:
+                        row += 1
+                        column = 0
+                    lbl_0 = Label(frame_diagnosis, text=lbl, font=('Comic Sans MS', 20), border=1, compound='left',
+                                  bg='#f0fffe', relief='ridge')
+                    lbl_0.grid(ipadx=2, ipady=2, padx=2, pady=2, column=column, row=row)
+                    lbl_0.bind('<Button-1>', select_diagnosis)
+                    column += 1
+                frame_diagnosis.grid(padx=1, pady=1, row=tuple_diagnosis_row)
+                tuple_diagnosis_row += 1
+
+
+        Button(frame, text='Клавиатура', command=diagnosis_kb, font=('Comic Sans MS', 20)).grid(column=4, row=4)
+
         frame.grid(padx=5, pady=5)
+
 
     edit_cert_root.mainloop()
 
 
-# async def check_all_step(message: types.Message, state: FSMContext):
-#     async with state.proxy() as data:
-#
-#         data = data
-#     if not data['certificate'].get('name'):
-#         await ask_name(message, state)
 #
 #     elif (data.get('certificate').get('doctor_flag')
 #           and data['certificate'].get('type_certificate') in ('Годовой медосмотр',
