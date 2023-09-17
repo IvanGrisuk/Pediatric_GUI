@@ -173,7 +173,7 @@ def search_loop():
             if i.isdigit():
                 num += i
         rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
-            patient_found_data[int(num)-2]
+            patient_found_data[int(num)-3]
         patient['name'] = f"{name_1} {name_2} {name_3}"
         patient['birth_date'] = birth_date
         patient['gender'] = gender
@@ -192,7 +192,7 @@ def search_loop():
     def search_in_db():
         print("patient_found_data", patient_found_data)
         print("patient_destroy_object", patient_destroy_object)
-        patient_data = txt_patient_data.get()
+        patient_data = text_patient_data.get()
         name = list()
         for i in patient_data.split():
             name.append(i.capitalize())
@@ -245,11 +245,11 @@ def search_loop():
             print(found_data)
 
             if len(found_data) < 1:
-                counter_patient_text.set("По введенной информации не удалось найти пациента")
+                counter_patient['text'] = "По введенной информации не удалось найти пациента"
                 # messagebox.showinfo('Ошибка', 'По введенной информации не удалось найти пациента')
 
             else:
-                counter_patient_text.set(f"{len(found_data)}")
+                counter_patient['text'] = f"Найдено пациентов: {len(found_data)}"
 
                 if len(found_data) > 10:
                     count_patient = 10
@@ -269,7 +269,7 @@ def search_loop():
                            f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
                            f"Дата рождения: {birth_date}\n" \
                            f"Адрес: {address}\n"
-                    lbl_0 = Label(search_root, text=text, font=('Comic Sans MS', 15))
+                    lbl_0 = Label(search_root, text=text, font=('Comic Sans MS', 10))
                     lbl_0.grid()
                     lbl_0.bind('<Double-Button-1>', select_patient)
                     patient_destroy_object.append(lbl_0)
@@ -278,10 +278,9 @@ def search_loop():
     search_root = Tk()
     search_root.title('Поиск пациента')
     search_root.config(bg='white')
-    counter_patient_text = StringVar()
-    counter_patient = Label(search_root, textvariable=counter_patient_text, font=('Comic Sans MS', 16), width=20,
+    counter_patient = Label(search_root, text='', font=('Comic Sans MS', 16), width=20,
                             height=1)
-    counter_patient.grid()
+    counter_patient.grid(column=0, row=2, columnspan=3)
 
     Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=0, columnspan=3)
     text_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20))
@@ -290,7 +289,7 @@ def search_loop():
     text_patient_data.focus()
 
     Button(search_root, text='Найти', command=search_in_db, font=('Comic Sans MS', 20)).grid(column=2, row=1)
-
+    search_in_db()
     search_root.mainloop()
 
 
