@@ -72,7 +72,7 @@ def add_new_doctor():
         elif not district or not district.isdigit():
             messagebox.showinfo('Ошибка', 'Ошибка участка!\nУкажите участок числом')
         elif not ped_div or not ped_div.isdigit():
-            messagebox.showinfo('Ошибка', 'Ошибка ПО!\nУкажите номер ПО числом')
+            messagebox.showinfo('Ошибка', 'Ошибка ПО\nУкажите номер ПО числом')
         else:
             new_doctor = [doctor_name, district, ped_div, manager, True]
 
@@ -92,6 +92,9 @@ def add_new_doctor():
                 messagebox.showinfo('Ошибка', f'Ошибка записи в базу данных:\n{ex}')
             else:
                 messagebox.showinfo('Успешно', 'Данные успешно сохранены!')
+                combo_doc['values'] = get_doc_names()
+                combo_doc.current(0)
+
                 new_root.destroy()
 
     new_root = Tk()
@@ -124,13 +127,14 @@ def get_doc_names():
         cur = conn.cursor()
         cur.execute(f"SELECT doctor_name, open_mark FROM врачи")
         data = cur.fetchall()
-        all_doctors = list()
-        for doctor_name, mark in data:
-            if mark:
-                all_doctors.insert(0, doctor_name)
-            else:
-                all_doctors.append(doctor_name)
-        return all_doctors
+    all_doctors = list()
+    for doctor_name, mark in data:
+        if mark == '1':
+            all_doctors.insert(0, doctor_name)
+        else:
+            all_doctors.append(doctor_name)
+
+    return all_doctors
 
 
 def certificate():
@@ -357,7 +361,7 @@ txt_patient_data.grid(column=0, row=3)
 # txt_patient_data.bind('<Enter>', search_patient)
 
 patient_info = Label(root, text='', font=('Comic Sans MS', 10))
-patient_info.grid(column=0, row=3, rowspan=2)
+patient_info.grid(column=0, row=4)
 
 # txt_patient_data.bind('<Control-м>', paste_txt_patient_data)
 
