@@ -9,6 +9,7 @@ from docx import Document
 from docx.shared import Cm
 from docx.shared import Pt
 import os
+import re
 
 certificate = {
     "patient": {
@@ -45,16 +46,17 @@ all_data = {
 
     },
     "diagnosis": (("<< КАРДИОЛОГИЯ >>", "САС:", "ООО", "ДХЛЖ", "НК0", "НБПНПГ", "ФСШ", "ВПС:", "ДМЖП", "ДМПП"),
-                  ("<< ОФТАЛЬМОЛОГИЯ >>", "Спазм аккомодации", "Миопия", "Гиперметропия",
-                             "слабой степени", "средней степени", "тяжелой степени", "OD", "OS", "OU", "с ast"),
-                  ("<< ОРТОПЕДИЯ >>", "Нарушение осанки", "Сколиотическая осанка", "Плоскостопие", "ПВУС",
-                            "ИС:", "левосторонняя", "правосторонняя", "кифотическая", "грудная", "поясничная",
-                            "грудо-поясничная", "деформация позвоночника", "ГПС", "1 ст.", "2 ст.", "3 ст."),
                   ("<< ЛОГОПЕДИЯ >>", "ОНР", "ФНР", "ФФНР", "ЗРР", "стертая дизартрия",
-                           "ур.р.р.", "1", "2", "3"),
+                   "ур.р.р.", "1", "2", "3"),
+
+                  ("<< ОФТАЛЬМОЛОГИЯ >>", "Спазм аккомодации", "Миопия", "Гиперметропия",
+                   "слабой степени", "средней степени", "тяжелой степени", "OD", "OS", "OU", "с ast"),
+                  ("<< ОРТОПЕДИЯ >>", "Нарушение осанки", "Сколиотическая осанка", "Плоскостопие", "ПВУС",
+                   "ИС:", "левосторонняя", "правосторонняя", "кифотическая", "грудная", "поясничная",
+                   "грудо-поясничная", "деформация позвоночника", "ГПС", "1 ст.", "2 ст.", "3 ст."),
                   ("<< ЛОР >>", "ГА", "ГНМ", "хр. тонзиллит", "1ст", "2ст", "3ст"),
                   ("<< ПРОЧЕЕ >>", "рецидивирующие заболевания ВДП", "Атопический дерматит", "Кариес",
-                          "угроза", "БРА", "хр. гастрит", "СДН", "ВСД")),
+                   "угроза", "БРА", "хр. гастрит", "СДН", "ВСД")),
 
     'place': ('Средняя школа (гимназия)',
               'Детское Дошкольное Учреждение',
@@ -243,14 +245,13 @@ def append_info(info):
 
 
 def ask_type_certificate():
-
     def select_type_certificate(event):
         print(event.widget)
         num = ''
         for i in str(event.widget):
             if i.isdigit():
                 num += i
-        certificate['certificate']['type_certificate'] = all_data.get('type')[int(num)-2]
+        certificate['certificate']['type_certificate'] = all_data.get('type')[int(num) - 2]
         type_cert_root.destroy()
         editing_certificate()
 
@@ -263,13 +264,12 @@ def ask_type_certificate():
         lbl_0 = Label(type_cert_root, text=text, font=('Comic Sans MS', 20), border=1, compound='left',
                       bg='#f0fffe', relief='ridge')
         lbl_0.grid(ipadx=6, ipady=6, padx=4, pady=4)
-        lbl_0.bind('<Double-Button-1>', select_type_certificate)
+        lbl_0.bind('<Button-1>', select_type_certificate)
 
     type_cert_root.mainloop()
 
 
 def editing_certificate():
-
     edit_cert_root = Tk()
     edit_cert_root.title(f'Редактирование справки')
     edit_cert_root.config(bg='white')
@@ -368,6 +368,9 @@ def editing_certificate():
         vision = Entry(frame, width=15, font=('Comic Sans MS', 20))
         vision.grid(column=5, row=0)
 
+        diagnosis_local_data = {'open_buttons': 'None',
+                                'diagnosis': ''}
+
         Label(frame, text="Диагноз:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=2)
         diagnosis = ScrolledText(frame, width=50, height=4, font=('Comic Sans MS', 20), wrap="word")
         diagnosis.grid(column=0, row=3, rowspan=4, columnspan=4)
@@ -377,64 +380,83 @@ def editing_certificate():
                 diagnosis.insert(INSERT, 'Соматически здорова. ')
             else:
                 diagnosis.insert(INSERT, 'Соматически здоров. ')
+            diagnosis_local_data['diagnosis'] = diagnosis.get(index1=1.0, index2='end')
+
         Button(frame, text='Здоров', command=diagnosis_healthy, font=('Comic Sans MS', 20)).grid(column=4, row=3)
 
         def diagnosis_kb():
-            def close_diagnosis_kb():
-                diagnosis_root.destroy()
+            if diagnosis_local_data.get('diagnosis') == ' \n' or diagnosis_local_data.get('diagnosis') == '\n':
+                diagnosis_local_data[diagnosis] = ''
+            if len(diagnosis_local_data.get('diagnosis')) > 1 and diagnosis_local_data.get('diagnosis')[-1] == '\n':
+                print('if diagnosis_local_data.g')
+                if diagnosis_local_data.get('diagnosis')[-2] == '\n':
+                    diagnosis_local_data['diagnosis'] = diagnosis_local_data.get('diagnosis')[:-1]
 
             def select_diagnosis(event):
                 print(event.widget)
-                num = ''
-                for i in str(event.widget):
-                    if i.isdigit():
-                        num += i
-                print(num)
-                # certificate['certificate']['type_certificate'] = all_data.get('type')[int(num) - 2]
-                # type_cert_root.destroy()
-                # editing_certificate()
+                frame_, label_ = str(event.widget).replace('.!frame', '').replace('.!label', '/').split('/')
+                selected_diagnosis = all_data.get('diagnosis')[int(frame_) - 2][int(label_)-1]
+                diagnosis_text.insert(INSERT, f" {selected_diagnosis}")
+
+            def select_category_diagnosis(event):
+                print(event.widget)
+                widget = str(event.widget).replace('.!frame', '').replace('.!label', '/').split('/')[0]
+                diagnosis_local_data['open_buttons'] = all_data.get('diagnosis')[int(widget) - 2][0]
+                diagnosis_local_data['diagnosis'] = f"{diagnosis_text.get(index1=1.0, index2='end')}"
+
+                diagnosis_root.destroy()
+                diagnosis_kb()
+
+            def close_diagnosis_kb():
+                diagnosis.delete(1.0, 'end')
+                diagnosis.insert(INSERT, diagnosis_local_data.get('diagnosis')[:-1])
+                diagnosis.focus()
+                diagnosis_root.destroy()
 
             diagnosis_root = Tk()
             diagnosis_root.title('Клавиатура диагнозов')
             diagnosis_root.config(bg='white')
 
-            frame_diagnosis = Frame(diagnosis_root, borderwidth=1, relief="solid", padx=4, pady=4)
-            Label(frame_diagnosis, text="Диагноз:", font=('Comic Sans MS', 20), bg='white').grid()
-            diagnosis_text = ScrolledText(frame_diagnosis, width=50, height=4, font=('Comic Sans MS', 20), wrap="word")
-            diagnosis_text.insert(INSERT, diagnosis.get(index1=1.0, index2='end'))
+            frame_diagnosis = Frame(diagnosis_root, borderwidth=1, relief="solid", padx=2, pady=2)
+            Label(frame_diagnosis, text="Диагноз:", font=('Comic Sans MS', 15), bg='white').grid()
+            diagnosis_text = ScrolledText(frame_diagnosis, width=70, height=10, font=('Comic Sans MS', 15),
+                                          wrap="word")
+            print(f"diagnosis_local_data: ({diagnosis_local_data.get('diagnosis')})",
+                  len(diagnosis_local_data.get('diagnosis')))
+            diagnosis_text.insert(INSERT, diagnosis_local_data.get('diagnosis'))
             diagnosis_text.focus()
-            diagnosis_text.grid(column=0, row=1, rowspan=4)
+            diagnosis_text.grid(column=0, row=1, rowspan=6)
             Button(frame_diagnosis, text='Закрыть\nклавиатуру',
                    command=close_diagnosis_kb, font=('Comic Sans MS', 20)).grid(column=1, row=3)
-            frame_diagnosis.grid(padx=5, pady=5, column=0, row=0)
+            frame_diagnosis.grid(padx=2, pady=2, column=0, row=0)
 
             tuple_diagnosis_row = 1
             for tuple_diagnosis in all_data.get('diagnosis'):
                 frame_diagnosis = Frame(diagnosis_root, borderwidth=1, relief="solid", padx=4, pady=4)
-                Label(frame_diagnosis, text=f"{tuple_diagnosis[0]}",
-                      font=('Comic Sans MS', 20), bg='white').grid(columnspan=5)
-                row, column = 1, 0
-                for lbl in tuple_diagnosis[1:]:
-                    print(lbl, row, column)
-                    if column == 10:
-                        row += 1
-                        column = 0
-                    lbl_0 = Label(frame_diagnosis, text=lbl, font=('Comic Sans MS', 20), border=1, compound='left',
-                                  bg='#f0fffe', relief='ridge')
-                    lbl_0.grid(ipadx=2, ipady=2, padx=2, pady=2, column=column, row=row)
-                    lbl_0.bind('<Button-1>', select_diagnosis)
-                    column += 1
+                lbl = Label(frame_diagnosis, text=f"{tuple_diagnosis[0]}",
+                            font=('Comic Sans MS', 20), bg='white')
+                lbl.grid(columnspan=5)
+                lbl.bind('<Button-1>', select_category_diagnosis)
+                if tuple_diagnosis[0] == diagnosis_local_data.get('open_buttons', ''):
+                    row, column = 1, 0
+                    for lbl in tuple_diagnosis[1:]:
+                        if column == 5:
+                            row += 1
+                            column = 0
+                        lbl_0 = Label(frame_diagnosis, text=lbl, font=('Comic Sans MS', 20), border=1,
+                                      compound='left',
+                                      bg='#f0fffe', relief='ridge')
+                        lbl_0.grid(ipadx=2, ipady=2, padx=2, pady=2, column=column, row=row)
+                        lbl_0.bind('<Button-1>', select_diagnosis)
+                        column += 1
                 frame_diagnosis.grid(padx=1, pady=1, row=tuple_diagnosis_row)
                 tuple_diagnosis_row += 1
-
 
         Button(frame, text='Клавиатура', command=diagnosis_kb, font=('Comic Sans MS', 20)).grid(column=4, row=4)
 
         frame.grid(padx=5, pady=5)
 
-
     edit_cert_root.mainloop()
-
 
 #
 #     elif (data.get('certificate').get('doctor_flag')
