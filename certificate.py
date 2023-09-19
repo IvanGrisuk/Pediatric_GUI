@@ -1,4 +1,5 @@
 from tkinter import *
+import tkinter as tk
 from tkinter import ttk
 import sqlite3 as sq
 from datetime import datetime, timedelta
@@ -26,7 +27,7 @@ certificate = {
         'doctor_district': ''},
 
     'certificate': {
-        'type_certificate': ''
+        'type_certificate': '',
     }
 
 }
@@ -37,13 +38,11 @@ all_data = {
                       'теннисом', 'тхэквондо', 'фигурным катанием', 'фигурным катанием', 'футболом', 'хоккеем',
                       'шахматами', 'шашками'),
     "health": {
-        "group": ("<< Группы здоровья >>", "1", "2", "3", "4"),
-        "physical": ("<< Группы по физкультуре >>", "Основная", "Подготовительная", "СМГ", "ЛФК"),
-        "regime": ("<< Режимы >>", "общий", "ортопедический", "зрительный", "щадящий", "охранительный"),
-        "diet": ("<< Диетические столы >>", "А", "Б", "Д", "М", 'П', 'ПП', 'Ц'),
-        "desk": ("<< Парта >>", "по росту", "1", "2", "3", "средний ряд"),
-        "vision": ("<< Зрение >>", "Указать", "1.0/1.0", "предметное", "_______")
-
+        "group": ("1", "2", "3", "4"),
+        "physical": ("Основная", "Подготовительная", "СМГ", "ЛФК"),
+        "regime": ("общий", "ортопедический", "зрительный", "щадящий", "охранительный"),
+        "diet": ("А", "Б", "Д", "М", 'П', 'ПП', 'Ц'),
+        "desk": ("по росту", "1", "2", "3", "средний ряд")
     },
     "diagnosis": (("<< КАРДИОЛОГИЯ >>", "САС:", "ООО", "ДХЛЖ", "НК0", "НБПНПГ", "ФСШ", "ВПС:", "ДМЖП", "ДМПП"),
                   ("<< ЛОГОПЕДИЯ >>", "ОНР", "ФНР", "ФФНР", "ЗРР", "стертая дизартрия",
@@ -248,14 +247,15 @@ def ask_type_certificate():
     def select_type_certificate(event):
         print(event.widget)
         num = ''
-        for i in str(event.widget):
+        for i in str(event.widget).split('.!')[-1]:
             if i.isdigit():
                 num += i
         certificate['certificate']['type_certificate'] = all_data.get('type')[int(num) - 2]
         type_cert_root.destroy()
+        type_cert_root.quit()
         editing_certificate()
 
-    type_cert_root = Tk()
+    type_cert_root = Toplevel()
     type_cert_root.title('Выбор справки')
     type_cert_root.config(bg='white')
 
@@ -269,8 +269,12 @@ def ask_type_certificate():
     type_cert_root.mainloop()
 
 
+
 def editing_certificate():
-    edit_cert_root = Tk()
+
+    edit_cert_root = Toplevel()
+    certificate['certificate']['regime'] = [IntVar(), IntVar(), IntVar(), IntVar(), IntVar()]
+
     edit_cert_root.title(f'Редактирование справки')
     edit_cert_root.config(bg='white')
 
@@ -283,12 +287,6 @@ def editing_certificate():
                                f"пол: {certificate['patient'].get('gender')};\n"
                                f"Адрес: {certificate['patient'].get('address')};\n",
           font=('Comic Sans MS', 20), bg='white').grid()
-
-    # name_label = ttk.Label(frame, text="Введите имя")
-    # name_label.pack(anchor=NW)
-    #
-    # name_entry = ttk.Entry(frame)
-    # name_entry.pack(anchor=NW)
 
     if type_certificate == 'По выздоровлении':
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
@@ -317,15 +315,15 @@ def editing_certificate():
                             'Об отсутствии контактов',
                             'Бесплатное питание',
                             'О нуждаемости в сан-кур лечении'):
+
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-
         Label(frame, text="Ветрянка:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
-
         chickenpox = ["+", "-", "привит"]
-        selected_chickenpox = StringVar(value=chickenpox[0])
+        selected_chickenpox = StringVar()
 
         def select_chickenpox():
             certificate['certificate']['chickenpox'] = selected_chickenpox.get()
+            print(certificate['certificate'].get('chickenpox'))
 
         for mark in chickenpox:
             btn = Radiobutton(frame, text=mark, font=('Comic Sans MS', 20),
@@ -348,12 +346,13 @@ def editing_certificate():
         allergy_txt = Entry(frame, width=60, font=('Comic Sans MS', 20))
         allergy_txt.grid(column=1, row=2, columnspan=3)
 
-        frame.grid(padx=5, pady=5, sticky='w')
+        frame.grid(padx=5, pady=5, sticky='ew')
 
     if type_certificate in ('Годовой медосмотр',
                             'Оформление в ДДУ / СШ / ВУЗ',
                             'В детский лагерь',
                             'Об усыновлении (удочерении)'):
+
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Рост:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
@@ -367,11 +366,13 @@ def editing_certificate():
         Label(frame, text="    Зрение:", font=('Comic Sans MS', 20), bg='white').grid(column=4, row=0)
         vision = Entry(frame, width=15, font=('Comic Sans MS', 20))
         vision.grid(column=5, row=0)
+        frame.grid(padx=5, pady=5, sticky='ew')
 
         diagnosis_local_data = {'open_buttons': 'None',
                                 'diagnosis': ''}
+        frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
-        Label(frame, text="Диагноз:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=2)
+        Label(frame, text="Диагноз:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
         diagnosis = ScrolledText(frame, width=50, height=4, font=('Comic Sans MS', 20), wrap="word")
         diagnosis.grid(column=0, row=3, rowspan=4, columnspan=4)
 
@@ -382,11 +383,11 @@ def editing_certificate():
                 diagnosis.insert(INSERT, 'Соматически здоров. ')
             diagnosis_local_data['diagnosis'] = diagnosis.get(index1=1.0, index2='end')
 
-        Button(frame, text='Здоров', command=diagnosis_healthy, font=('Comic Sans MS', 20)).grid(column=4, row=3)
+        Button(frame, text='Здоров', command=diagnosis_healthy, font=('Comic Sans MS', 20)).grid(column=1, row=0)
 
         def diagnosis_kb():
             if diagnosis_local_data.get('diagnosis') == ' \n' or diagnosis_local_data.get('diagnosis') == '\n':
-                diagnosis_local_data[diagnosis] = ''
+                diagnosis_local_data['diagnosis'] = ''
             if len(diagnosis_local_data.get('diagnosis')) > 1 and diagnosis_local_data.get('diagnosis')[-1] == '\n':
                 print('if diagnosis_local_data.g')
                 if diagnosis_local_data.get('diagnosis')[-2] == '\n':
@@ -413,7 +414,7 @@ def editing_certificate():
                 diagnosis.focus()
                 diagnosis_root.destroy()
 
-            diagnosis_root = Tk()
+            diagnosis_root = Toplevel()
             diagnosis_root.title('Клавиатура диагнозов')
             diagnosis_root.config(bg='white')
 
@@ -452,9 +453,94 @@ def editing_certificate():
                 frame_diagnosis.grid(padx=1, pady=1, row=tuple_diagnosis_row)
                 tuple_diagnosis_row += 1
 
-        Button(frame, text='Клавиатура', command=diagnosis_kb, font=('Comic Sans MS', 20)).grid(column=4, row=4)
+        Button(frame, text='Клавиатура диагнозов', command=diagnosis_kb, font=('Comic Sans MS', 20)).grid(column=2,
+                                                                                                          row=0)
+        frame.grid(padx=5, pady=5, sticky='ew')
 
-        frame.grid(padx=5, pady=5)
+        frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+        Label(frame, text="Группа здоровья:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
+
+        selected_health_group = StringVar()
+
+        def select_health_group():
+            certificate['certificate']['health_group'] = selected_health_group.get()
+        for mark in all_data.get('health').get('group'):
+            btn = Radiobutton(frame, text=mark, font=('Comic Sans MS', 20),
+                              value=mark, variable=selected_health_group, command=select_health_group)
+            btn.grid(row=0, column=(all_data.get('health').get('group').index(mark) + 1))
+
+        frame.grid(padx=5, pady=5, sticky='ew')
+
+        frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+        Label(frame, text="Группа по физ-ре:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
+
+        selected_fiz_group = StringVar()
+
+        def select_fiz_group():
+            certificate['certificate']['physical'] = selected_health_group.get()
+
+        for mark in all_data.get('health').get('physical'):
+            btn = Radiobutton(frame, text=mark, font=('Comic Sans MS', 20),
+                              value=mark, variable=selected_fiz_group, command=select_fiz_group)
+            btn.grid(row=0, column=(all_data.get('health').get('physical').index(mark) + 1))
+        frame.grid(padx=5, pady=5, sticky='ew')
+
+        frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+        Label(frame, text="Режим:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
+
+        def select_regime():
+            result = list()
+            for regime in all_data.get('health').get('regime'):
+                if regime_vars.get(regime).get() == 1:
+                    result.append(regime)
+            certificate['certificate']['regime'] = result
+            print(result)
+
+        regime_vars = dict()
+        for mark in all_data.get('health').get('regime'):
+            regime_vars[mark] = IntVar()
+
+        for mark in all_data.get('health').get('regime'):
+            btn = Checkbutton(frame, text=mark, font=('Comic Sans MS', 20),
+                              variable=regime_vars.get(mark), command=select_regime,
+                              onvalue=1, offvalue=0)
+            btn.grid(row=0, column=(all_data.get('health').get('regime').index(mark) + 1))
+        frame.grid(padx=5, pady=5, sticky='ew')
+
+        frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+        Label(frame, text="Стол:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
+
+        selected_diet = StringVar()
+
+        def select_diet():
+            certificate['certificate']['diet'] = selected_health_group.get()
+
+        for mark in all_data.get('health').get('diet'):
+            btn = Radiobutton(frame, text=mark, font=('Comic Sans MS', 20),
+                              value=mark, variable=selected_diet, command=select_diet)
+            btn.grid(row=0, column=(all_data.get('health').get('diet').index(mark) + 1))
+        frame.grid(padx=5, pady=5, sticky='ew')
+
+        frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+        Label(frame, text="Парта:", font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0)
+
+        selected_desk = StringVar()
+
+        def select_desk():
+            certificate['certificate']['desk'] = selected_health_group.get()
+
+        for mark in all_data.get('health').get('desk'):
+            btn = Radiobutton(frame, text=mark, font=('Comic Sans MS', 20),
+                              value=mark, variable=selected_desk, command=select_desk)
+            btn.grid(row=0, column=(all_data.get('health').get('desk').index(mark) + 1))
+
+        frame.grid(padx=5, pady=5, sticky='ew')
+
 
     edit_cert_root.mainloop()
 
