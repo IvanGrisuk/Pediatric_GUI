@@ -12,6 +12,8 @@ from docx.shared import Pt
 import os
 import re
 import random
+from docx.enum.section import WD_SECTION, WD_ORIENT
+
 
 from docxtpl import DocxTemplate
 from docxcompose.composer import Composer
