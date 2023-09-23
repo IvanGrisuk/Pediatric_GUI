@@ -1577,7 +1577,7 @@ def create_doc():
                         )
                 # save_certificate_ped_div(data=info, type_table='certificate_camp')
                 render_data['number_cert'] = f"№ {data['certificate'].get('doctor_district')} / {number}"
-            doc_name = f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} " \
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
                        f"справка {data['certificate'].get('type_certificate')}.docx"
 
             master = Document(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
