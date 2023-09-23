@@ -25,20 +25,25 @@ patient = {
     'address': ''
 }
 
+user = {
+    'text_size': 0
+}
+
 
 def data_base():
     with sq.connect('data_base.db') as conn:
         cur = conn.cursor()
 
         cur.execute("CREATE TABLE IF NOT EXISTS врачи "
-                    "(doctor_name text, district text, ped_div text, manager text, open_mark text)")
+                    "(doctor_name text, district text, ped_div text, "
+                    "manager text, open_mark text, text_size text)")
         cur.execute(f"SELECT doctor_name FROM врачи")
         doctor_data = list()
         for i in cur.fetchall():
             doctor_data.append(i[0])
         print('doctor_data:', doctor_data)
         if not doctor_data:
-            cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)", ['Иванов И.И.', 1, 1, 'Петров П.П.', True])
+            cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)", ['Иванов И.И.', 1, 1, 'Петров П.П.', True, 20])
 
         cur.execute(f"SELECT doctor_name, district, ped_div, manager, open_mark FROM врачи")
         flag = False
@@ -48,7 +53,7 @@ def data_base():
                 flag = True
         if not flag:
             cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE 'Иванов И.И.'")
-            cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)", ['Иванов И.И.', 1, 1, 'Петров П.П.', True])
+            cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)", ['Иванов И.И.', 1, 1, 'Петров П.П.', True, 20])
 
 
 def updating_patient_data_base():
@@ -64,18 +69,27 @@ def get_doctor_data():
     with sq.connect('data_base.db') as conn:
         cur = conn.cursor()
 
-        cur.execute(f"SELECT doctor_name, district, ped_div, manager FROM врачи "
+        cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи "
                     f"WHERE open_mark LIKE '1'")
     return cur.fetchone()
 
 
 def redact_doctor():
-    def save():
+    change_doctor(command='redact')
 
+
+def add_new_doctor():
+    change_doctor(command='new')
+
+
+def change_doctor(command):
+    def save():
         doctor_name = txt_doctor_name.get()
         manager = txt_manager.get()
         district = txt_district.get()
         ped_div = txt_ped_div.get()
+        text_size = txt_text_size.get()
+
         if not doctor_name:
             messagebox.showinfo('Ошибка', 'Ошибка имени доктора!')
         elif not manager:
@@ -84,22 +98,26 @@ def redact_doctor():
             messagebox.showinfo('Ошибка', 'Ошибка участка!\nУкажите участок числом')
         elif not ped_div or not ped_div.isdigit():
             messagebox.showinfo('Ошибка', 'Ошибка ПО\nУкажите номер ПО числом')
+        elif not text_size or not text_size.isdigit() or 4 > int(text_size) > 30:
+            messagebox.showinfo('Ошибка', 'Ошибка размера текста\n'
+                                          'Укажите размер текста числом от 5 до 30')
+
         else:
-            new_doctor = [doctor_name, district, ped_div, manager, True]
+            new_doctor = [doctor_name, district, ped_div, manager, True, text_size]
 
             try:
                 with sq.connect('data_base.db') as conn:
                     cur = conn.cursor()
                     cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{doctor_name}'")
 
-                    cur.execute(f"SELECT doctor_name, district, ped_div, manager FROM врачи")
+                    cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи")
                     data = cur.fetchall()
-                    for doctor_name, district, ped_div, manager in data:
+                    for doctor_name, district, ped_div, manager, text_size in data:
                         cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{doctor_name}'")
-                        cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)",
-                                    [doctor_name, district, ped_div, manager, False])
+                        cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
+                                    [doctor_name, district, ped_div, manager, False, text_size])
 
-                    cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)", new_doctor)
+                    cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)", new_doctor)
             except Exception as ex:
                 messagebox.showinfo('Ошибка', f'Ошибка записи в базу данных:\n{ex}')
             else:
@@ -107,100 +125,44 @@ def redact_doctor():
                 combo_doc['values'] = get_doc_names()
                 combo_doc.current(0)
 
-                new_root.destroy()
-                write_lbl_doc()
-
-    old_doctor_name, old_district, old_ped_div, old_manager = get_doctor_data()
-
-    new_root = Tk()
-    new_root.title('Изменение данных')
-
-    Label(new_root, text='ФИО доктора: ', font=('Comic Sans MS', 20)).grid(column=0, row=0)
-    Label(new_root, text='ФИО заведующего: ', font=('Comic Sans MS', 20)).grid(column=0, row=1)
-    Label(new_root, text='Номер участка: ', font=('Comic Sans MS', 20)).grid(column=0, row=2)
-    Label(new_root, text='Номер ПО: ', font=('Comic Sans MS', 20)).grid(column=0, row=3)
-
-    txt_doctor_name = Entry(new_root, width=30, font=('Comic Sans MS', 20))
-    txt_doctor_name.insert(0, old_doctor_name)
-    txt_doctor_name.grid(column=1, row=0)
-
-    txt_manager = Entry(new_root, width=30, font=('Comic Sans MS', 20))
-    txt_manager.insert(0, old_manager)
-    txt_manager.grid(column=1, row=1)
-
-    txt_district = Entry(new_root, width=5, font=('Comic Sans MS', 20))
-    txt_district.insert(0, old_district)
-    txt_district.grid(column=1, row=2)
-
-    txt_ped_div = Entry(new_root, width=5, font=('Comic Sans MS', 20))
-    txt_ped_div.insert(0, old_ped_div)
-    txt_ped_div.grid(column=1, row=3)
-
-    Button(new_root, text='Сохранить', command=save, font=('Comic Sans MS', 20)).grid()
-
-    new_root.mainloop()
-
-
-def add_new_doctor():
-    def save():
-        doctor_name = txt_doctor_name.get()
-        manager = txt_manager.get()
-        district = txt_district.get()
-        ped_div = txt_ped_div.get()
-        if not doctor_name:
-            messagebox.showinfo('Ошибка', 'Ошибка имени доктора!')
-        elif not manager:
-            messagebox.showinfo('Ошибка', 'Ошибка имени заведующего!')
-        elif not district or not district.isdigit():
-            messagebox.showinfo('Ошибка', 'Ошибка участка!\nУкажите участок числом')
-        elif not ped_div or not ped_div.isdigit():
-            messagebox.showinfo('Ошибка', 'Ошибка ПО\nУкажите номер ПО числом')
-        else:
-            new_doctor = [doctor_name, district, ped_div, manager, True]
-
-            try:
-                with sq.connect('data_base.db') as conn:
-                    cur = conn.cursor()
-
-                    cur.execute(f"SELECT doctor_name, district, ped_div, manager FROM врачи")
-                    data = cur.fetchall()
-                    for doctor_name, district, ped_div, manager in data:
-                        cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{doctor_name}'")
-                        cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)",
-                                    [doctor_name, district, ped_div, manager, False])
-
-                    cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)", new_doctor)
-            except Exception as ex:
-                messagebox.showinfo('Ошибка', f'Ошибка записи в базу данных:\n{ex}')
-            else:
-                messagebox.showinfo('Успешно', 'Данные успешно сохранены!')
-                combo_doc['values'] = get_doc_names()
-                combo_doc.current(0)
+                user['text_size'] = int(txt_text_size.get())
 
                 new_root.destroy()
+                root.update()
                 write_lbl_doc()
 
-    new_root = Tk()
+    new_root = Toplevel()
     new_root.title('Новая учетная запись')
 
-    Label(new_root, text='ФИО доктора: ', font=('Comic Sans MS', 20)).grid(column=0, row=0)
-    Label(new_root, text='ФИО заведующего: ', font=('Comic Sans MS', 20)).grid(column=0, row=1)
-    Label(new_root, text='Номер участка: ', font=('Comic Sans MS', 20)).grid(column=0, row=2)
-    Label(new_root, text='Номер ПО: ', font=('Comic Sans MS', 20)).grid(column=0, row=3)
+    Label(new_root, text='ФИО доктора: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=0)
+    Label(new_root, text='ФИО заведующего: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=1)
+    Label(new_root, text='Номер участка: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=2)
+    Label(new_root, text='Номер ПО: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=3)
+    Label(new_root, text='Размер текста: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=4)
 
-    txt_doctor_name = Entry(new_root, width=30, font=('Comic Sans MS', 20))
+    txt_doctor_name = Entry(new_root, width=30, font=('Comic Sans MS', user.get('text_size')))
     txt_doctor_name.grid(column=1, row=0)
 
-    txt_manager = Entry(new_root, width=30, font=('Comic Sans MS', 20))
+    txt_manager = Entry(new_root, width=30, font=('Comic Sans MS', user.get('text_size')))
     txt_manager.grid(column=1, row=1)
 
-    txt_district = Entry(new_root, width=5, font=('Comic Sans MS', 20))
+    txt_district = Entry(new_root, width=5, font=('Comic Sans MS', user.get('text_size')))
     txt_district.grid(column=1, row=2)
 
-    txt_ped_div = Entry(new_root, width=5, font=('Comic Sans MS', 20))
+    txt_ped_div = Entry(new_root, width=5, font=('Comic Sans MS', user.get('text_size')))
     txt_ped_div.grid(column=1, row=3)
 
-    Button(new_root, text='Сохранить', command=save, font=('Comic Sans MS', 20)).grid()
+    txt_text_size = Entry(new_root, width=5, font=('Comic Sans MS', user.get('text_size')))
+    txt_text_size.grid(column=1, row=4)
+
+    Button(new_root, text='Сохранить', command=save, font=('Comic Sans MS', user.get('text_size'))).grid()
+    if command == 'redact':
+        old_doctor_name, old_district, old_ped_div, old_manager, old_text_size = get_doctor_data()
+        txt_doctor_name.insert(0, old_doctor_name)
+        txt_manager.insert(0, old_manager)
+        txt_district.insert(0, old_district)
+        txt_ped_div.insert(0, old_ped_div)
+        txt_text_size.insert(0, old_text_size)
 
     new_root.mainloop()
 
@@ -221,32 +183,34 @@ def get_doc_names():
 
 
 def certificate():
-    with sq.connect('data_base.db') as conn:
-        cur = conn.cursor()
+    if patient.get('name'):
+        with sq.connect('data_base.db') as conn:
+            cur = conn.cursor()
 
-        cur.execute(f"SELECT doctor_name, district, ped_div, manager FROM врачи "
-                    f"WHERE doctor_name LIKE '{combo_doc.get()}'")
-        data = cur.fetchone()
-        print('data', data)
-        doctor_name, district, ped_div, manager = data
+            cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи "
+                        f"WHERE doctor_name LIKE '{combo_doc.get()}'")
+            data = cur.fetchone()
+            print('data', data)
+            doctor_name, district, ped_div, manager, text_size = data
 
-    data = {
-        "patient": {
-            'name': patient.get('name'),
-            'birth_date': patient.get('birth_date'),
-            'gender': patient.get('gender'),
-            'amb_cart': patient.get('amb_cart'),
-            'patient_district': patient.get('patient_district'),
-            'address': patient.get('address')},
-        "doctor": {
-            'doctor_name': doctor_name,
-            'manager': manager,
-            'ped_div': ped_div,
-            'doctor_district': district}
-    }
-    cert.append_info(data)
-
-    pass
+        data = {
+            'text_size': text_size,
+            "patient": {
+                'name': patient.get('name'),
+                'birth_date': patient.get('birth_date'),
+                'gender': patient.get('gender'),
+                'amb_cart': patient.get('amb_cart'),
+                'patient_district': patient.get('patient_district'),
+                'address': patient.get('address')},
+            "doctor": {
+                'doctor_name': doctor_name,
+                'manager': manager,
+                'ped_div': ped_div,
+                'doctor_district': district}
+        }
+        cert.append_info(data)
+    else:
+        messagebox.showinfo('Ошибка', "Не выбран пациент!")
 
 
 def analyzes():
@@ -261,17 +225,17 @@ def save_doctor(new_doctor_name):
     with sq.connect('data_base.db') as conn:
         cur = conn.cursor()
 
-        cur.execute(f"SELECT doctor_name, district, ped_div, manager FROM врачи")
+        cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи")
         data = cur.fetchall()
 
-        for doctor_name, district, ped_div, manager in data:
+        for doctor_name, district, ped_div, manager, text_size in data:
             cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{doctor_name}'")
             if doctor_name == new_doctor_name:
-                cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)",
-                            [doctor_name, district, ped_div, manager, True])
+                cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
+                            [doctor_name, district, ped_div, manager, True, text_size])
             else:
-                cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?)",
-                            [doctor_name, district, ped_div, manager, False])
+                cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
+                            [doctor_name, district, ped_div, manager, False, text_size])
     write_lbl_doc()
 
 
@@ -281,9 +245,11 @@ def search_loop():
     def select_patient(event):
         print(event.widget)
         num = ''
-        for i in str(event.widget):
+        for i in str(event.widget).split('.!')[-1]:
             if i.isdigit():
                 num += i
+        if not num:
+            num = 0
         rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
             patient_found_data[int(num) - 3]
         patient['name'] = f"{name_1} {name_2} {name_3}"
@@ -391,21 +357,22 @@ def search_loop():
                     lbl_0.bind('<Double-Button-1>', select_patient)
                     patient_found_data.append(found_data[num])
 
-    search_root = Tk()
+    search_root = Toplevel()
     search_root.title('Поиск пациента')
     search_root.config(bg='white')
     counter_patient = Label(search_root, text='', font=('Comic Sans MS', 16), bg='white')
     counter_patient.grid(column=0, row=2, columnspan=3)
 
-    Label(search_root, text='Окно данных пациента', font=('Comic Sans MS', 20), bg='white').grid(column=0, row=0,
-                                                                                                 columnspan=3)
-    text_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', 20))
+    Label(search_root, text='Окно данных пациента',
+          font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, columnspan=3)
+    text_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', user.get('text_size')))
     text_patient_data.grid(column=0, row=1, columnspan=2)
     text_patient_data.insert(0, txt_patient_data.get())
     text_patient_data.focus()
     text_patient_data.bind('<Return>', button_search_in_db)
 
-    Button(search_root, text='Найти', command=button_search_in_db, font=('Comic Sans MS', 20)).grid(column=2, row=1)
+    Button(search_root, text='Найти', command=button_search_in_db,
+           font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1)
     search_in_db()
     search_root.mainloop()
 
@@ -440,11 +407,14 @@ def search_patient(*args, **kwargs):
 
 def write_lbl_doc():
     info_doc = get_doctor_data()
+    user['text_size'] = int(info_doc[4])
     lbl_doc['text'] = f'Учетная запись:\n' \
                       f'Доктор: {info_doc[0]}\n' \
                       f'Зав: {info_doc[3]};    ' \
                       f'Участок: {info_doc[1]};    ' \
                       f'ПО: {info_doc[2]}'
+    root.update()
+    frame.update()
 
 
 def selected(_):
@@ -460,53 +430,83 @@ root = Tk()
 root.title('Временная замена БОТа')
 root.config(bg='white')
 
+
 frame = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
 
-lbl_doc = Label(frame, text=f'', font=('Comic Sans MS', 16))
+lbl_doc = Label(frame, text=f'', font=('Comic Sans MS', user.get('text_size')))
 write_lbl_doc()
 lbl_doc.grid(column=0, row=0, columnspan=3)
 
-combo_doc = Combobox(frame, font=('Comic Sans MS', 20), state="readonly")
+combo_doc = Combobox(frame, font=('Comic Sans MS', user.get('text_size')), state="readonly")
 combo_doc['values'] = get_doc_names()
 combo_doc.current(0)
 combo_doc.grid(column=0, row=1, columnspan=3)
 combo_doc.bind("<<ComboboxSelected>>", selected)
 
-Button(frame, text='Добавить доктора', command=add_new_doctor, font=('Comic Sans MS', 20)).grid(column=0, row=2)
-Button(frame, text='Редактировать', command=redact_doctor, font=('Comic Sans MS', 20)).grid(column=2, row=2)
+Button(frame, text='Добавить доктора', command=add_new_doctor,
 
-frame.grid(padx=5, pady=5)
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=2)
+Button(frame, text='Редактировать', command=redact_doctor,
+
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=2)
+
+frame.columnconfigure(index='all', minsize=40, weight=1)
+frame.rowconfigure(index='all', minsize=20)
+frame.pack(fill='both', expand=True, padx=2, pady=2)
+# frame.grid(padx=5, pady=5, sticky='ew')
 
 
 frame = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
 
-Label(frame, text='Окно данных пациента', font=('Comic Sans MS', 20)).grid(column=0, row=2, columnspan=3)
+Label(frame, text='Окно данных пациента',
 
-txt_patient_data = Entry(frame, width=15, font=('Comic Sans MS', 20))
+      font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=2, columnspan=3)
+
+txt_patient_data = Entry(frame, width=15, font=('Comic Sans MS', user.get('text_size')))
 txt_patient_data.grid(column=0, row=3)
 txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
 txt_patient_data.bind('<Return>', search_patient)
 
-patient_info = Label(frame, text='', font=('Comic Sans MS', 10))
+patient_info = Label(frame, text='', font=('Comic Sans MS', user.get('text_size')))
 patient_info.grid(column=0, row=4)
 
-Button(frame, text='Поиск', command=search_patient, font=('Comic Sans MS', 20)).grid(column=1, row=3)
-Button(frame, text='Обновить БД', command=updating_patient_data_base, font=('Comic Sans MS', 20)).grid(column=1, row=4)
-Button(frame, text='Удалить', command=delete_txt_patient_data, font=('Comic Sans MS', 20)).grid(column=2, row=3)
-Button(frame, text='Вставить', command=paste_txt_patient_data, font=('Comic Sans MS', 20)).grid(column=2, row=4)
+Button(frame, text='Поиск', command=search_patient, font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=3)
+Button(frame, text='Обновить БД', command=updating_patient_data_base,
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=4)
+Button(frame, text='Удалить', command=delete_txt_patient_data,
 
-frame.grid(padx=5, pady=5)
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=3)
+Button(frame, text='Вставить', command=paste_txt_patient_data,
+
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=4)
+
+frame.columnconfigure(index='all', minsize=40, weight=1)
+frame.rowconfigure(index='all', minsize=20)
+frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+# frame.grid(padx=5, pady=5, sticky='ew')
 
 frame = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
 
-Label(frame, text='Что хотите сделать?', font=('Comic Sans MS', 20), anchor='center').grid(column=0, row=0,
-                                                                                           columnspan=3, sticky='ew')
+Label(frame, text='Что хотите сделать?', font=('Comic Sans MS', user.get('text_size')),
+      anchor='center').grid(column=0, row=0, columnspan=3, sticky='ew')
 
-Button(frame, text='Справка', command=certificate, font=('Comic Sans MS', 20)).grid(column=0, row=1)
-Button(frame, text='Анализы', command=analyzes, font=('Comic Sans MS', 20)).grid(column=1, row=1)
-Button(frame, text='Вкладыши', command=blanks, font=('Comic Sans MS', 20)).grid(column=2, row=1)
+Button(frame, text='Справка', command=certificate, font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=1)
+Button(frame, text='Анализы', command=analyzes, font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=1)
+Button(frame, text='Вкладыши', command=blanks, font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1)
 
-frame.grid(padx=5, pady=5)
+frame.columnconfigure(index='all', minsize=40, weight=1)
+frame.rowconfigure(index='all', minsize=20)
+frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+# root.update_idletasks()
+# s = root.geometry()
+# s = s.split('+')
+# s = s[0].split('x')
+# width_root = int(s[0])
+# height_root = int(s[1])
+# print(width_root)
+# root.geometry(f"{width_root}x{height_root}+200+200")
 
 root.mainloop()
 
