@@ -1497,13 +1497,11 @@ def create_doc():
             not in render_data.get('place_of_requirement')) or type_certificate == 'Об усыновлении (удочерении)':
         doc_name = ""
         if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
-            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
-                       f"справка Оформление.docx"
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_справка_Оформление.docx"
             if not render_data.get('number_cert'):
                 render_data['number_cert'] = '№ ______'
         elif data['certificate'].get('type_certificate') == 'Об усыновлении (удочерении)':
-            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
-                       f"справка Об усыновлении.docx"
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_справка_Об_усыновлении.docx"
 
         if 'Для поступления в учреждения высшего' in render_data.get('place_of_requirement'):
             render_data['name'] += f'\nИдентификационный № _______________________________'
@@ -1550,13 +1548,14 @@ def create_doc():
         if type_certificate.startswith('ЦКРОиР'):
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}выписка ЦКРОиР.docx")
             doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} выписка ЦКРОиР.docx"
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_ЦКРОиР.docx"
             doc.save(doc_name)
 
         elif type_certificate.startswith('Бесплатное питание'):
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}Выписка.docx")
             doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} Выписка.docx"
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_" \
+                       f"Выписка_Бесплатное_питание.docx"
             doc.save(doc_name)
 
         elif data['certificate'].get('type_certificate') in ('Годовой медосмотр', 'В детский лагерь'):
@@ -1576,8 +1575,8 @@ def create_doc():
 
                 # save_certificate_ped_div(data=info, type_table='certificate_camp')
                 render_data['number_cert'] = f"№ {data['certificate'].get('doctor_district')} / {number}"
-            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
-                       f"справка {type_certificate}.docx"
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_" \
+                       f"справка_{type_certificate}.docx".replace(' ', '_')
 
             master = Document(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             master.add_page_break()
@@ -1608,7 +1607,7 @@ def create_doc():
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             doc.render(render_data)
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
-                       f"справка {type_certificate}.docx"
+                       f"справка {type_certificate}.docx".replace(' ', '_')
             doc.save(doc_name)
 
             if (data['certificate'].get('type_certificate') in ('В детский лагерь',
