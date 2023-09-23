@@ -430,7 +430,7 @@ def editing_certificate():
             selected_fiz_group = StringVar()
 
             def select_fiz_group():
-                data['certificate']['physical'] = selected_health_group.get()
+                data['certificate']['physical'] = selected_fiz_group.get()
 
             for mark in all_data.get('health').get('physical'):
                 btn = Radiobutton(frame, text=mark,
@@ -945,6 +945,10 @@ def editing_certificate():
             render_data['amb_cart'] = data['patient'].get('amb_cart')
 
             if not render_data.get('place_of_requirement'):
+                if not data['certificate'].get('place_of_requirement'):
+                    messagebox.showinfo('Ошибка!', 'Не выбрано место требования справки!')
+                    raise ValueError
+
                 render_data['place_of_requirement'] = data['certificate'].get('place_of_requirement')
 
             render_data['type'] = type_certificate
@@ -1217,7 +1221,7 @@ def editing_certificate():
             for key, value in render_data.items():
                 print(key, value)
         except ValueError:
-            edit_cert_root.focus_get()
+            edit_cert_root.focus_force()
         else:
             create_doc()
 
@@ -1537,7 +1541,7 @@ def create_doc():
 
         doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
         doc.render(render_data)
-        doc.save(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx")
+        doc.save(f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
         # file = open(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx", 'rb')
         os.system(f"start .{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
 
