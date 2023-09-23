@@ -499,15 +499,6 @@ frame.columnconfigure(index='all', minsize=40, weight=1)
 frame.rowconfigure(index='all', minsize=20)
 frame.pack(fill='both', expand=True, padx=2, pady=2)
 
-# root.update_idletasks()
-# s = root.geometry()
-# s = s.split('+')
-# s = s[0].split('x')
-# width_root = int(s[0])
-# height_root = int(s[1])
-# print(width_root)
-# root.geometry(f"{width_root}x{height_root}+200+200")
-
 root.mainloop()
 
 # >>> import subprocess

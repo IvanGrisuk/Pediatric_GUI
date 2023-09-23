@@ -484,7 +484,6 @@ def editing_certificate():
 
         def select_chickenpox():
             data['certificate']['chickenpox'] = selected_chickenpox.get()
-            print(data['certificate'].get('chickenpox'))
 
         for mark in chickenpox:
             btn = Radiobutton(frame_chickenpox, text=mark,
@@ -711,6 +710,11 @@ def editing_certificate():
             Label(frame, text="    Зрение:",
                   font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=4, row=0)
             vision.grid(column=5, row=0)
+            age = get_age(data['patient'].get('birth_date'))
+            if age >= 5:
+                vision.insert(0, '1.0/1.0')
+            else:
+                vision.insert(0, 'предметное')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
         frame.rowconfigure(index='all', minsize=20)
@@ -724,12 +728,32 @@ def editing_certificate():
                                  font=('Comic Sans MS', data.get('text_size')), wrap="word")
         diagnosis.grid(column=0, row=1, rowspan=4, columnspan=4)
 
+        selected_health_group = StringVar()
+        selected_fiz_group = StringVar()
+        regime_vars = dict()
+        for mark in all_data.get('health').get('regime'):
+            regime_vars[mark] = IntVar()
+        selected_diet = StringVar()
+        desk_vars = dict()
+        for mark in all_data.get('health').get('desk'):
+            desk_vars[mark] = IntVar()
+
         def diagnosis_healthy():
             diagnosis.delete(1.0, 'end')
             if data['patient'].get('gender', '') == 'женский':
                 diagnosis.insert(INSERT, 'Соматически здорова. ')
             else:
                 diagnosis.insert(INSERT, 'Соматически здоров. ')
+            selected_health_group.set('1')
+            data['certificate']['health_group'] = selected_health_group.get()
+            selected_fiz_group.set('Основная')
+            data['certificate']['physical'] = selected_health_group.get()
+            regime_vars['общий'].set(1)
+            data['certificate']['regime'] = "общий"
+            selected_diet.set('Б')
+            data['certificate']['diet'] = selected_health_group.get()
+            desk_vars['по росту'].set(1)
+            data['certificate']['desk'] = "по росту"
 
         Button(frame, text='Здоров', command=diagnosis_healthy,
                font=('Comic Sans MS', data.get('text_size'))).grid(column=1, row=0)
@@ -745,8 +769,6 @@ def editing_certificate():
 
         Label(frame, text="Группа здоровья:",
               font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
-
-        selected_health_group = StringVar()
 
         def select_health_group():
             data['certificate']['health_group'] = selected_health_group.get()
@@ -765,8 +787,6 @@ def editing_certificate():
 
         Label(frame, text="Группа по физ-ре:",
               font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
-
-        selected_fiz_group = StringVar()
 
         def select_fiz_group():
             data['certificate']['physical'] = selected_health_group.get()
@@ -794,9 +814,6 @@ def editing_certificate():
             data['certificate']['regime'] = result
             print(result)
 
-        regime_vars = dict()
-        for mark in all_data.get('health').get('regime'):
-            regime_vars[mark] = IntVar()
 
         for mark in all_data.get('health').get('regime'):
             btn = Checkbutton(frame, text=mark,
@@ -813,8 +830,6 @@ def editing_certificate():
 
         Label(frame, text="Стол:",
               font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
-
-        selected_diet = StringVar()
 
         def select_diet():
             data['certificate']['diet'] = selected_health_group.get()
@@ -841,10 +856,6 @@ def editing_certificate():
                     result.append(desk)
             data['certificate']['desk'] = result
             print(result)
-
-        desk_vars = dict()
-        for mark in all_data.get('health').get('desk'):
-            desk_vars[mark] = IntVar()
 
         for mark in all_data.get('health').get('desk'):
             btn = Checkbutton(frame, text=mark,
@@ -919,249 +930,294 @@ def editing_certificate():
         frame.pack(fill='both', expand=True, padx=2, pady=2)
 
     def create_certificate():
-        for marker in all_data['all_info'].get(type_certificate):
-            render_data[marker] = all_data['all_info'][type_certificate].get(marker)
+        try:
+            for marker in all_data['all_info'].get(type_certificate):
+                render_data[marker] = all_data['all_info'][type_certificate].get(marker)
 
-        render_data['time'] = datetime.now().strftime("%H:%M")
-        render_data['number_cert'] = ''
-        render_data['name'] = data['patient'].get('name')
-        render_data['birth_date'] = data['patient'].get('birth_date')
-        render_data['gender'] = data['patient'].get('gender')
-        render_data['address'] = data['patient'].get('address')
-        render_data['amb_cart'] = data['patient'].get('amb_cart')
+            render_data['time'] = datetime.now().strftime("%H:%M")
+            render_data['number_cert'] = ''
+            render_data['name'] = data['patient'].get('name')
+            render_data['birth_date'] = data['patient'].get('birth_date')
+            render_data['gender'] = data['patient'].get('gender')
+            render_data['address'] = data['patient'].get('address')
+            render_data['amb_cart'] = data['patient'].get('amb_cart')
 
-        if not render_data.get('place_of_requirement'):
-            render_data['place_of_requirement'] = data['certificate'].get('place_of_requirement')
+            if not render_data.get('place_of_requirement'):
+                render_data['place_of_requirement'] = data['certificate'].get('place_of_requirement')
 
-        render_data['type'] = type_certificate
-        if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
-            place_of_req = render_data.get('place_of_requirement')
-            if place_of_req == 'Детское Дошкольное Учреждение':
-                render_data['type'] = 'Оформление в Детское Дошкольное Учреждение'
-                render_data['recommendation'] = \
-                    render_data.get('recommendation').replace('Режим _',
-                                                              'Режим щадящий 1 мес, затем Режим _') \
-                    + "\nМебель по росту"
-            if place_of_req == 'Средняя школа (гимназия)':
-                render_data['place_of_requirement'] = 'Средняя школа (гимназия)'
-                render_data['type'] = 'Оформление в Среднюю школу (гимназию)'
-                if data['patient'].get('gender', '') == 'женский':
-                    render_data['diagnosis'] += '\nГотова к обучению в ' \
-                                                'общеобразовательной школе с _______ лет'
-                else:
-                    render_data['diagnosis'] += '\nГотов к обучению в ' \
-                                                'общеобразовательной школе с _______ лет'
-                data['certificate']['recommendation'] += " Парта _"
-
-            if place_of_req == 'ВУЗ (колледж)':
-                render_data['type'] = 'Оформление в ВУЗ'
-                render_data['additional_medical_information'] = \
-                    render_data.get('additional_medical_information').replace(' Vis OD/OS = __________ ;', '')
-                render_data['recommendation'] = "_____________________________________________"
-                render_data['place_of_requirement'] = 'Для поступления в учреждения высшего, ' \
-                                                      'среднего специального и ' \
-                                                      'профессионально-технического образования '
-                render_data['diagnosis'] += "\nОтсутствуют медицинские противопоказания " \
-                                            f"к обучению по специальности: \n" \
-                                            f"{specialties_txt.get(1.0, 'end')}" \
-                                            "(пункт 2 приложения к постановлению " \
-                                            "МЗ РБ от 25.07.2022г. №71)"
-
-            if place_of_req == 'Кадетское училище':
-                render_data['type'] = 'Оформление в Кадетское училище'
-                render_data['place_of_requirement'] = 'Для обучения в кадетском училище '
-
-                render_data['additional_medical_information'] = render_data.get('additional_medical_information')\
-                    + '\nОфтальмолог: ________________________________________________________' \
-                      '\nНевролог: ___________________________________________________________' \
-                      '\nОториноларинголог : _________________________________________________' \
-                      '\nСтоматолог: _________________________________________________________' \
-                      '\nХирург: _____________________________________________________________' \
-                      '\nПедиатр: ____________________________________________________________' \
-                      '\nОАК: ________________________________________________________________' \
-                      '\nОАМ: ________________________________________________________________' \
-                      '\nУЗИ сердца: _________________________________________________________' \
-                      '\nУЗИ щитовидной  железы : ____________________________________________'
-
-                render_data['diagnosis'] += '\nФизическое развитие (выше- ниже-) среднее, (дис-) гармоничное\n' \
-                                            'Врачебное профессионально-консультативное заключение: ' \
-                                            'отсутствуют медицинские противопоказания к обучению  в ГУО ' \
-                                            '«Минском городском  кадетском училище».'
-                render_data['recommendation'] = f"{render_data.get('recommendation')} Парта _"
-
-        if render_data.get('date_of_issue') == 'now':
-            render_data['date_of_issue'] = datetime.now().strftime("%d.%m.%Y")
-
-        if type_certificate == 'По выздоровлении':
-            render_data['diagnosis'] = f"{combo_diagnosis.get()} c {ori_from.get()} по {ori_until.get()}"
-            data['certificate']['date_of_issue'] = ori_until.get()
-
-        if type_certificate == 'Годовой медосмотр':
-            date = data['patient'].get('birth_date')
-            while datetime.now() > datetime.strptime(date, "%d.%m.%Y"):
-                day, month, year = date.split('.')
-                year = str(int(year) + 1)
-                date = '.'.join([day, month, year])
-            if (datetime.now().month == datetime.strptime(date, '%d.%m.%Y').month or
-                (datetime.now() + timedelta(30)).month == datetime.strptime(date, "%d.%m.%Y").month) and \
-                    datetime.now().year >= datetime.strptime(date, '%d.%m.%Y').year:
-                day, month, year = date.split('.')
-                year = str(int(year) + 1)
-                date = '.'.join([day, month, year])
-
-            render_data['validity_period'] = (datetime.strptime(date, '%d.%m.%Y') -
-                                              timedelta(1)).strftime('%d.%m.%Y')
-
-        if type_certificate == 'На кружки и секции':
-            render_data['place_of_requirement'] = \
-                f"{render_data.get('place_of_requirement')}{hobby_txt.get()}" \
-                f"".replace('участия в соревнованиях по ', '').replace(' и участия в соревнованиях', '')
-
-            render_data['diagnosis'] = \
-                f"{render_data.get('diagnosis')}{hobby_txt.get()}"
-
-            if data['certificate'].get('health_group'):
-                render_data['diagnosis'] = \
-                    f"{render_data.get('diagnosis')}\n " \
-                    f"Группа здоровья: {data['certificate'].get('health_group')};"
-
-            if data['certificate'].get('physical'):
-                render_data['diagnosis'] = \
-                    f"{render_data.get('diagnosis')}" \
-                    f"Группа по физкультуре: {data['certificate'].get('physical')};"
-
-        if type_certificate in ('Годовой медосмотр',
-                                'Оформление в ДДУ / СШ / ВУЗ',
-                                'В детский лагерь',
-                                'Об усыновлении (удочерении)',
-                                'Об отсутствии контактов',
-                                'Бесплатное питание',
-                                'О нуждаемости в сан-кур лечении'):
-            text_past_illnesses = ''
-            render_data['chickenpox'] = data['certificate'].get('chickenpox')
-            if data['certificate'].get('chickenpox', '') == '+':
-                text_past_illnesses += 'ОРИ, Ветряная оспа; '
-            if data['certificate'].get('chickenpox', '') == '-':
-                text_past_illnesses += 'ОРИ; Ветряной оспой не болел; '
-            if data['certificate'].get('chickenpox', '') == 'привит':
-                text_past_illnesses += 'ОРИ; от ветряной оспы привит; '
-
-            render_data['allergy'] = data['certificate'].get('allergy', '')
-            if data['certificate'].get('allergy', '') == '-':
-                text_past_illnesses += 'Аллергоанамнез: не отягощен; '
-            if data['certificate'].get('allergy', '') == '+':
-                text_past_illnesses += 'Аллергоанамнез отягощен: '
-
-                if len(allergy_txt.get()) > 1:
-                    text_past_illnesses += f'\nАллергия на: {allergy_txt.get()}'
-                    data['certificate']['allergy'] = f"+\n{allergy_txt.get()}"
-                    render_data['allergy'] = f"{render_data.get('allergy')}\n{allergy_txt.get()}"
-            "injury_operation"
+            render_data['type'] = type_certificate
             if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
+                place_of_req = render_data.get('place_of_requirement')
+                if place_of_req == 'Детское Дошкольное Учреждение':
+                    render_data['type'] = 'Оформление в Детское Дошкольное Учреждение'
+                    render_data['recommendation'] = \
+                        render_data.get('recommendation').replace('Режим _',
+                                                                  'Режим щадящий 1 мес, затем Режим _') \
+                        + "\nМебель по росту"
+                if place_of_req == 'Средняя школа (гимназия)':
+                    render_data['place_of_requirement'] = 'Средняя школа (гимназия)'
+                    render_data['type'] = 'Оформление в Среднюю школу (гимназию)'
+                    if data['patient'].get('gender', '') == 'женский':
+                        render_data['diagnosis'] += '\nГотова к обучению в ' \
+                                                    'общеобразовательной школе с _______ лет'
+                    else:
+                        render_data['diagnosis'] += '\nГотов к обучению в ' \
+                                                    'общеобразовательной школе с _______ лет'
+                    data['certificate']['recommendation'] += " Парта _"
 
-                render_data['injury'] = data['certificate'].get('injury_operation', '')
-                if data['certificate'].get('injury_operation', '') == '-':
-                    text_past_illnesses += 'Травм и операций не было; '
-                if data['certificate'].get('allergy', '') == '+':
-                    text_past_illnesses += 'Травмы и операции: '
-                    if len(injury_operation_txt.get()) > 1:
-                        text_past_illnesses += f'\n{injury_operation_txt.get()}'
-                        data['certificate']['injury'] = f"+\n{injury_operation_txt.get()}"
-                        render_data['injury'] = f"{render_data.get('allergy')}\n{allergy_txt.get()}"
+                if place_of_req == 'ВУЗ (колледж)':
+                    render_data['type'] = 'Оформление в ВУЗ'
+                    render_data['additional_medical_information'] = \
+                        render_data.get('additional_medical_information').replace(' Vis OD/OS = __________ ;', '')
+                    render_data['recommendation'] = "_____________________________________________"
+                    render_data['place_of_requirement'] = 'Для поступления в учреждения высшего, ' \
+                                                          'среднего специального и ' \
+                                                          'профессионально-технического образования '
+                    render_data['diagnosis'] += "\nОтсутствуют медицинские противопоказания " \
+                                                f"к обучению по специальности: \n" \
+                                                f"{specialties_txt.get(1.0, 'end')}" \
+                                                "(пункт 2 приложения к постановлению " \
+                                                "МЗ РБ от 25.07.2022г. №71)"
 
-            if render_data.get('past_illnesses'):
-                render_data['past_illnesses'] = f"{text_past_illnesses}\n{render_data.get('past_illnesses')}"
-            else:
-                render_data['past_illnesses'] = text_past_illnesses
+                if place_of_req == 'Кадетское училище':
+                    render_data['type'] = 'Оформление в Кадетское училище'
+                    render_data['place_of_requirement'] = 'Для обучения в кадетском училище '
 
-        if type_certificate in ('Годовой медосмотр',
-                                'Оформление в ДДУ / СШ / ВУЗ',
-                                'В детский лагерь',
-                                'Об усыновлении (удочерении)'):
+                    render_data['additional_medical_information'] = render_data.get('additional_medical_information')\
+                        + '\nОфтальмолог: ________________________________________________________' \
+                          '\nНевролог: ___________________________________________________________' \
+                          '\nОториноларинголог : _________________________________________________' \
+                          '\nСтоматолог: _________________________________________________________' \
+                          '\nХирург: _____________________________________________________________' \
+                          '\nПедиатр: ____________________________________________________________' \
+                          '\nОАК: ________________________________________________________________' \
+                          '\nОАМ: ________________________________________________________________' \
+                          '\nУЗИ сердца: _________________________________________________________' \
+                          '\nУЗИ щитовидной  железы : ____________________________________________'
 
-            if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ'):
-                render_data['visus'] = f"VIS OD/OS\n= {vision.get()}\n"
-                render_data['additional_medical_information'] = \
-                    render_data.get('additional_medical_information',
-                                    '').replace('Vis OD/OS = __________', f"Vis OD/OS = {render_data.get('visus')}")
-            else:
-                render_data['visus'] = ''
+                    render_data['diagnosis'] += '\nФизическое развитие (выше- ниже-) среднее, (дис-) гармоничное\n' \
+                                                'Врачебное профессионально-консультативное заключение: ' \
+                                                'отсутствуют медицинские противопоказания к обучению  в ГУО ' \
+                                                '«Минском городском  кадетском училище».'
+                    render_data['recommendation'] = f"{render_data.get('recommendation')} Парта _"
 
-            render_data['height'] = height.get()
-            render_data['weight'] = weight.get()
-            render_data['group'] = selected_health_group.get()
-            render_data['physical'] = selected_fiz_group.get()
+            if render_data.get('date_of_issue') == 'now':
+                render_data['date_of_issue'] = datetime.now().strftime("%d.%m.%Y")
 
-            add_med_info = render_data.get('additional_medical_information', '')
-            add_med_info = add_med_info.replace('Рост _____ см', f'Рост {height.get()} см')
-            add_med_info = add_med_info.replace('Вес _____ кг', f'Вес {weight.get()} кг')
-            render_data['additional_medical_information'] = add_med_info
+            if type_certificate == 'По выздоровлении':
+                render_data['diagnosis'] = f"{combo_diagnosis.get()} c {ori_from.get()} по {ori_until.get()}"
+                data['certificate']['date_of_issue'] = ori_until.get()
 
-            diagnosis_certificate = render_data.get('diagnosis', '')
-            if len(diagnosis.get(1.0, 'end')) > 2:
-                if diagnosis.get(1.0, 'end').endswith('\n'):
-                    diagnosis_certificate = f"{diagnosis.get(1.0, 'end')[:-2]}\n{diagnosis_certificate}"
-                else:
-                    diagnosis_certificate = f"{diagnosis.get(1.0, 'end')}\n{diagnosis_certificate}"
+            if type_certificate == 'Годовой медосмотр':
+                date = data['patient'].get('birth_date')
+                while datetime.now() > datetime.strptime(date, "%d.%m.%Y"):
+                    day, month, year = date.split('.')
+                    year = str(int(year) + 1)
+                    date = '.'.join([day, month, year])
+                if (datetime.now().month == datetime.strptime(date, '%d.%m.%Y').month or
+                    (datetime.now() + timedelta(30)).month == datetime.strptime(date, "%d.%m.%Y").month) and \
+                        datetime.now().year >= datetime.strptime(date, '%d.%m.%Y').year:
+                    day, month, year = date.split('.')
+                    year = str(int(year) + 1)
+                    date = '.'.join([day, month, year])
 
-            diagnosis_certificate = diagnosis_certificate.replace('Группа здоровья: _',
-                                                                  f'Группа здоровья: {selected_health_group.get()}')
-            diagnosis_certificate = diagnosis_certificate.replace('Группа по физкультуре: _',
-                                                                  f'Группа по физкультуре: {selected_fiz_group.get()}')
-            render_data['diagnosis'] = diagnosis_certificate
+                render_data['validity_period'] = (datetime.strptime(date, '%d.%m.%Y') -
+                                                  timedelta(1)).strftime('%d.%m.%Y')
 
-            recommendation = render_data.get('recommendation', '')
-            result = ''
-            for regime in data['certificate'].get('regime'):
-                result += f"{regime}, "
-            result = result[:-2]
-            recommendation = recommendation.replace('Режим _', f'Режим {result}')
-            render_data['regime'] = result
+            if type_certificate == 'На кружки и секции':
+                render_data['place_of_requirement'] = \
+                    f"{render_data.get('place_of_requirement')}{hobby_txt.get()}" \
+                    f"".replace('участия в соревнованиях по ', '').replace(' и участия в соревнованиях', '')
 
-            recommendation = recommendation.replace('Стол _', f'Стол {selected_diet.get()}')
-            render_data['diet'] = selected_diet.get()
+                render_data['diagnosis'] = \
+                    f"{render_data.get('diagnosis')}{hobby_txt.get()}"
+
+                if data['certificate'].get('health_group'):
+                    render_data['diagnosis'] = \
+                        f"{render_data.get('diagnosis')}\n " \
+                        f"Группа здоровья: {data['certificate'].get('health_group')};"
+
+                if data['certificate'].get('physical'):
+                    render_data['diagnosis'] = \
+                        f"{render_data.get('diagnosis')}" \
+                        f"Группа по физкультуре: {data['certificate'].get('physical')};"
 
             if type_certificate in ('Годовой медосмотр',
-                                    'Оформление в ДДУ / СШ / ВУЗ'):
-                result = ''
-                desk_num = list()
-                for desk in data['certificate'].get('desk'):
-                    if desk.isdigit():
-                        desk_num.append(int(desk))
-                for desk in sorted(desk_num):
-                    result += f'{desk} - '
-                if result:
-                    result = result[:-2]
-                if 'средний ряд' in data['certificate'].get('desk'):
-                    result += 'средний ряд '
-                if 'по росту' in data['certificate'].get('desk'):
-                    result += 'по росту'
-                if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ'):
-                    if 'Детское Дошкольное Учреждение' in data['certificate'].get('place_of_requirement'):
-                        recommendation = recommendation.replace('Парта _', f" Мебель {result}")
-                        render_data['desk'] = f"Мебель {result}"
-                    else:
-                        recommendation = recommendation.replace('Парта _', f" Парта {result}")
-                        render_data['desk'] = f"Парта {result}"
+                                    'Оформление в ДДУ / СШ / ВУЗ',
+                                    'В детский лагерь',
+                                    'Об усыновлении (удочерении)',
+                                    'Об отсутствии контактов',
+                                    'Бесплатное питание',
+                                    'О нуждаемости в сан-кур лечении'):
+                for ex_marker in ('chickenpox', 'allergy'):
+                    if not data['certificate'].get(ex_marker):
+                        if ex_marker == 'chickenpox':
+                            messagebox.showinfo('Ошибка!', 'Не указана ветрянка!')
+                        if ex_marker == 'allergy':
+                            messagebox.showinfo('Ошибка!', 'Не указана аллергия!')
+                        raise ValueError
+                text_past_illnesses = ''
+                render_data['chickenpox'] = data['certificate'].get('chickenpox')
+                if data['certificate'].get('chickenpox', '') == '+':
+                    text_past_illnesses += 'ОРИ, Ветряная оспа; '
+                if data['certificate'].get('chickenpox', '') == '-':
+                    text_past_illnesses += 'ОРИ; Ветряной оспой не болел; '
+                if data['certificate'].get('chickenpox', '') == 'привит':
+                    text_past_illnesses += 'ОРИ; от ветряной оспы привит; '
 
-            render_data['recommendation'] = recommendation
+                render_data['allergy'] = data['certificate'].get('allergy', '')
+                if data['certificate'].get('allergy', '') == '-':
+                    text_past_illnesses += 'Аллергоанамнез: не отягощен; '
+                if data['certificate'].get('allergy', '') == '+':
+                    text_past_illnesses += 'Аллергоанамнез отягощен: '
 
-        if type_certificate == 'О нуждаемости в сан-кур лечении':
-            diagnosis_certificate = render_data.get('diagnosis', '')
-            if len(diagnosis.get(1.0, 'end')) > 2:
-                if diagnosis.get(1.0, 'end').endswith('\n'):
-                    diagnosis_certificate = f"{diagnosis.get(1.0, 'end')[:-2]}\n{diagnosis_certificate}"
+                    if len(allergy_txt.get()) > 1:
+                        text_past_illnesses += f'\nАллергия на: {allergy_txt.get()}'
+                        data['certificate']['allergy'] = f"+\n{allergy_txt.get()}"
+                        render_data['allergy'] = f"{render_data.get('allergy')}\n{allergy_txt.get()}"
+                "injury_operation"
+                if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
+
+                    render_data['injury'] = data['certificate'].get('injury_operation', '')
+                    if data['certificate'].get('injury_operation', '') == '-':
+                        text_past_illnesses += 'Травм и операций не было; '
+                    if data['certificate'].get('allergy', '') == '+':
+                        text_past_illnesses += 'Травмы и операции: '
+                        if len(injury_operation_txt.get()) > 1:
+                            text_past_illnesses += f'\n{injury_operation_txt.get()}'
+                            data['certificate']['injury'] = f"+\n{injury_operation_txt.get()}"
+                            render_data['injury'] = f"{render_data.get('allergy')}\n{allergy_txt.get()}"
+
+                if render_data.get('past_illnesses'):
+                    render_data['past_illnesses'] = f"{text_past_illnesses}\n{render_data.get('past_illnesses')}"
                 else:
-                    diagnosis_certificate = f"{diagnosis.get(1.0, 'end')}\n{diagnosis_certificate}"
-            render_data['diagnosis'] = diagnosis_certificate
+                    render_data['past_illnesses'] = text_past_illnesses
 
-            profile_rec = 'Ребенок нуждается в санаторно-курортном лечении: \n'
-            for i in data['certificate'].get('sanatorium_profile'):
-                profile_rec += f"{i} профиля \n"
-            render_data['recommendation'] = profile_rec[:-2]
+            if type_certificate in ('Годовой медосмотр',
+                                    'Оформление в ДДУ / СШ / ВУЗ',
+                                    'В детский лагерь',
+                                    'Об усыновлении (удочерении)'):
 
-        for key, value in render_data.items():
-            print(key, value)
+                for ex_marker in ('health_group', 'physical', 'regime', 'diet', 'desk'):
+                    if not data['certificate'].get(ex_marker):
+                        if ex_marker == 'health_group':
+                            messagebox.showinfo('Ошибка!', 'Не указана группа здоровья!')
+                        if ex_marker == 'physical':
+                            messagebox.showinfo('Ошибка!', 'Не указана группа по физкультуре!')
+                        if ex_marker == 'regime':
+                            messagebox.showinfo('Ошибка!', 'Не указан режим!')
+                        if ex_marker == 'diet':
+                            messagebox.showinfo('Ошибка!', 'Не указана диета!')
+                        if ex_marker == 'desk':
+                            messagebox.showinfo('Ошибка!', 'Не указана рассадка!')
+                        raise ValueError
+
+                if not weight.get():
+                    messagebox.showinfo('Ошибка!', 'Не указан вес!')
+                    raise ValueError
+
+                if not weight.get().isdigit():
+                    messagebox.showinfo('Ошибка!', 'Укажите вес цифрами!')
+                    raise ValueError
+
+                if not height.get():
+                    messagebox.showinfo('Ошибка!', 'Не указан рост!')
+                    raise ValueError
+
+                if not height.get().isdigit():
+                    messagebox.showinfo('Ошибка!', 'Укажите рост цифрами!')
+                    raise ValueError
+
+                if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ'):
+                    render_data['visus'] = f"VIS OD/OS\n= {vision.get()}\n"
+                    render_data['additional_medical_information'] = \
+                        render_data.get('additional_medical_information',
+                                        '').replace('Vis OD/OS = __________', f"Vis OD/OS = {vision.get()}")
+                else:
+                    render_data['visus'] = ''
+
+                render_data['height'] = height.get()
+                render_data['weight'] = weight.get()
+                render_data['group'] = selected_health_group.get()
+                render_data['physical'] = selected_fiz_group.get()
+
+                print('height', f"'{height.get()}'")
+                print('weight', f"'{weight.get()}'")
+
+                add_med_info = render_data.get('additional_medical_information', '')
+                add_med_info = add_med_info.replace('Рост _____ см', f'Рост {height.get()} см')
+                add_med_info = add_med_info.replace('Вес _____ кг', f'Вес {weight.get()} кг')
+                render_data['additional_medical_information'] = add_med_info
+
+                diagnosis_certificate = render_data.get('diagnosis', '')
+                if len(diagnosis.get(1.0, 'end')) > 2:
+                    if diagnosis.get(1.0, 'end').endswith('\n'):
+                        diagnosis_certificate = f"{diagnosis.get(1.0, 'end')[:-2]}\n{diagnosis_certificate}"
+                    else:
+                        diagnosis_certificate = f"{diagnosis.get(1.0, 'end')}\n{diagnosis_certificate}"
+
+                diagnosis_certificate = diagnosis_certificate.replace('Группа здоровья: _',
+                                                                      f'Группа здоровья: {selected_health_group.get()}')
+                diagnosis_certificate = diagnosis_certificate.replace('Группа по физкультуре: _',
+                                                                      f'Группа по физкультуре: {selected_fiz_group.get()}')
+                render_data['diagnosis'] = diagnosis_certificate
+
+                recommendation = render_data.get('recommendation', '')
+                result = ''
+                for regime in data['certificate'].get('regime'):
+                    result += f"{regime}, "
+                result = result[:-2]
+                recommendation = recommendation.replace('Режим _', f'Режим {result}')
+                render_data['regime'] = result
+
+                recommendation = recommendation.replace('Стол _', f'Стол {selected_diet.get()}')
+                render_data['diet'] = selected_diet.get()
+
+                if type_certificate in ('Годовой медосмотр',
+                                        'Оформление в ДДУ / СШ / ВУЗ'):
+                    result = ''
+                    desk_num = list()
+                    for desk in data['certificate'].get('desk'):
+                        if desk.isdigit():
+                            desk_num.append(int(desk))
+                    for desk in sorted(desk_num):
+                        result += f'{desk} - '
+                    if result:
+                        result = result[:-2]
+                    if 'средний ряд' in data['certificate'].get('desk'):
+                        result += 'средний ряд '
+                    if 'по росту' in data['certificate'].get('desk'):
+                        result += 'по росту'
+                    if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ'):
+                        if 'Детское Дошкольное Учреждение' in data['certificate'].get('place_of_requirement'):
+                            recommendation = recommendation.replace('Парта _', f" Мебель {result}")
+                            render_data['desk'] = f"Мебель {result}"
+                        else:
+                            recommendation = recommendation.replace('Парта _', f" Парта {result}")
+                            render_data['desk'] = f"Парта {result}"
+
+                render_data['recommendation'] = recommendation
+
+            if type_certificate == 'О нуждаемости в сан-кур лечении':
+                diagnosis_certificate = render_data.get('diagnosis', '')
+                if len(diagnosis.get(1.0, 'end')) > 2:
+                    if diagnosis.get(1.0, 'end').endswith('\n'):
+                        diagnosis_certificate = f"{diagnosis.get(1.0, 'end')[:-2]}\n{diagnosis_certificate}"
+                    else:
+                        diagnosis_certificate = f"{diagnosis.get(1.0, 'end')}\n{diagnosis_certificate}"
+                render_data['diagnosis'] = diagnosis_certificate
+
+                profile_rec = 'Ребенок нуждается в санаторно-курортном лечении: \n'
+                for i in data['certificate'].get('sanatorium_profile'):
+                    profile_rec += f"{i} профиля \n"
+                render_data['recommendation'] = profile_rec[:-2]
+
+            for key, value in render_data.items():
+                print(key, value)
+        except ValueError:
+            pass
+        else:
+            create_doc()
 
     Button(edit_cert_root, text='Создать справку', command=create_certificate,
            font=('Comic Sans MS', data.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
