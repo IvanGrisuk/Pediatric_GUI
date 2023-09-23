@@ -713,7 +713,7 @@ def editing_certificate():
                   font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=4, row=0)
             vision.grid(column=5, row=0)
             age = get_age(data['patient'].get('birth_date'))
-            if age >= 5:
+            if age >= 4:
                 vision.insert(0, '1.0/1.0')
             else:
                 vision.insert(0, 'предметное')
@@ -1054,9 +1054,9 @@ def editing_certificate():
                 for ex_marker in ('chickenpox', 'allergy'):
                     if not data['certificate'].get(ex_marker):
                         if ex_marker == 'chickenpox':
-                            messagebox.showinfo('Ошибка!', 'Не указана ветрянка!')
+                            messagebox.showerror('Ошибка!', 'Не указана ветрянка!')
                         if ex_marker == 'allergy':
-                            messagebox.showinfo('Ошибка!', 'Не указана аллергия!')
+                            messagebox.showerror('Ошибка!', 'Не указана аллергия!')
                         raise ValueError
                 text_past_illnesses = ''
                 render_data['chickenpox'] = data['certificate'].get('chickenpox')
@@ -1103,31 +1103,31 @@ def editing_certificate():
                 for ex_marker in ('health_group', 'physical', 'regime', 'diet', 'desk'):
                     if not data['certificate'].get(ex_marker):
                         if ex_marker == 'health_group':
-                            messagebox.showinfo('Ошибка!', 'Не указана группа здоровья!')
+                            messagebox.showerror('Ошибка!', 'Не указана группа здоровья!')
                         if ex_marker == 'physical':
-                            messagebox.showinfo('Ошибка!', 'Не указана группа по физкультуре!')
+                            messagebox.showerror('Ошибка!', 'Не указана группа по физкультуре!')
                         if ex_marker == 'regime':
-                            messagebox.showinfo('Ошибка!', 'Не указан режим!')
+                            messagebox.showerror('Ошибка!', 'Не указан режим!')
                         if ex_marker == 'diet':
-                            messagebox.showinfo('Ошибка!', 'Не указана диета!')
+                            messagebox.showerror('Ошибка!', 'Не указана диета!')
                         if ex_marker == 'desk':
-                            messagebox.showinfo('Ошибка!', 'Не указана рассадка!')
+                            messagebox.showerror('Ошибка!', 'Не указана рассадка!')
                         raise ValueError
 
                 if not weight.get():
-                    messagebox.showinfo('Ошибка!', 'Не указан вес!')
+                    messagebox.showerror('Ошибка!', 'Не указан вес!')
                     raise ValueError
 
                 if not weight.get().replace('.', '').replace(',', '').isdigit():
-                    messagebox.showinfo('Ошибка!', 'Укажите вес цифрами!')
+                    messagebox.showerror('Ошибка!', 'Укажите вес цифрами!')
                     raise ValueError
 
                 if not height.get():
-                    messagebox.showinfo('Ошибка!', 'Не указан рост!')
+                    messagebox.showerror('Ошибка!', 'Не указан рост!')
                     raise ValueError
 
                 if not height.get().replace('.', '').replace(',', '').isdigit():
-                    messagebox.showinfo('Ошибка!', 'Укажите рост цифрами!')
+                    messagebox.showerror('Ошибка!', 'Укажите рост цифрами!')
                     raise ValueError
 
                 if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ'):
@@ -1217,7 +1217,7 @@ def editing_certificate():
             for key, value in render_data.items():
                 print(key, value)
         except ValueError:
-            pass
+            edit_cert_root.focus_get()
         else:
             create_doc()
 
