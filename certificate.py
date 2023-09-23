@@ -1533,12 +1533,16 @@ def create_doc():
             composer.save(doc_name)
 
         # file = open(doc_name, 'rb')
-        subprocess.Popen(doc_name)
+        # subprocess.Popen(doc_name)
+        os.system(f"start {doc_name}")
+
 
         doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
         doc.render(render_data)
         doc.save(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx")
         # file = open(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx", 'rb')
+        os.system(f"start .{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
+
         subprocess.Popen(f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
 
     else:
@@ -1620,5 +1624,6 @@ def create_doc():
                     composer.append(doc_temp)
                     composer.save(doc_name)
 
-        subprocess.Popen(doc_name)
+        os.system(f"start {doc_name}")
+        # subprocess.Popen(doc_name)
 
