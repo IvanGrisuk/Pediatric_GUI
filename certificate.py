@@ -751,11 +751,11 @@ def editing_certificate():
             selected_fiz_group.set('Основная')
             data['certificate']['physical'] = selected_health_group.get()
             regime_vars['общий'].set(1)
-            data['certificate']['regime'] = "общий"
+            data['certificate']['regime'] = ["общий"]
             selected_diet.set('Б')
             data['certificate']['diet'] = selected_health_group.get()
             desk_vars['по росту'].set(1)
-            data['certificate']['desk'] = "по росту"
+            data['certificate']['desk'] = ["по росту"]
 
         Button(frame, text='Здоров', command=diagnosis_healthy,
                font=('Comic Sans MS', data.get('text_size'))).grid(column=1, row=0)
@@ -1118,7 +1118,7 @@ def editing_certificate():
                     messagebox.showinfo('Ошибка!', 'Не указан вес!')
                     raise ValueError
 
-                if not weight.get().isdigit():
+                if not weight.get().replace('.', '').replace(',', '').isdigit():
                     messagebox.showinfo('Ошибка!', 'Укажите вес цифрами!')
                     raise ValueError
 
@@ -1126,7 +1126,7 @@ def editing_certificate():
                     messagebox.showinfo('Ошибка!', 'Не указан рост!')
                     raise ValueError
 
-                if not height.get().isdigit():
+                if not height.get().replace('.', '').replace(',', '').isdigit():
                     messagebox.showinfo('Ошибка!', 'Укажите рост цифрами!')
                     raise ValueError
 
@@ -1138,8 +1138,8 @@ def editing_certificate():
                 else:
                     render_data['visus'] = ''
 
-                render_data['height'] = height.get()
-                render_data['weight'] = weight.get()
+                render_data['height'] = height.get().replace(',', '.')
+                render_data['weight'] = weight.get().replace(',', '.')
                 render_data['group'] = selected_health_group.get()
                 render_data['physical'] = selected_fiz_group.get()
 
@@ -1260,29 +1260,26 @@ def create_doc():
     if not render_data.get('recommendation'):
         render_data['recommendation'] = '_' * 50
 
-    render_data['date_of_issue'] = data['certificate'].get('date_of_issue')
-    render_data['validity_period'] = data['certificate'].get('validity_period')
-    render_data['doctor_name'] = data['certificate'].get('doctor_name')
+    render_data['doctor_name'] = data['doctor'].get('doctor_name')
 
     if (type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ')
             and render_data.get('place_of_requirement') in ('Средняя школа (гимназия)',
                                                             'Детское Дошкольное Учреждение')):
         render_data['recommendation'] = f"{render_data.get('recommendation', '')} \nРазрешены занятия в бассейне"
-        if (data['certificate'].get('doctor_district') == '19'
-                and data['certificate'].get('place_of_requirement') != 'Средняя школа (гимназия)'):
+        if (data['doctor'].get('doctor_district') == '19'
+                and render_data.get('place_of_requirement') != 'Средняя школа (гимназия)'):
             render_data['recommendation'] = \
                 render_data.get('recommendation', '').replace('\nРазрешены занятия в бассейне', '')
 
-    if data['certificate'].get('type_certificate') in ('ЦКРОиР', 'О нуждаемости в сан-кур лечении',
-                                                       'Об усыновлении (удочерении)', 'Бесплатное питание') \
+    if type_certificate in ('ЦКРОиР', 'О нуждаемости в сан-кур лечении',
+                            'Об усыновлении (удочерении)', 'Бесплатное питание') \
             or (data['certificate'].get('type_certificate') == 'Оформление в ДДУ / СШ / ВУЗ' and not
-    ('Для поступления в учреждения высшего' in data['certificate'].get('place_of_requirement') or
-     ('Для обучения в кадетском училище' in data['certificate'].get('place_of_requirement')))):
+    ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
+     ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
         doctor_name, district, pediatric_division = (data['doctor'].get('doctor_name'),
                                                      data['doctor'].get('doctor_district'),
                                                      data['doctor'].get('ped_div'))
         if pediatric_division in ('1', '2'):
-            # number = data_base.get_max_number(pediatric_division, 'certificate_ped_div')
             if data['certificate'].get('type_certificate') in ('ЦКРОиР', 'Бесплатное питание'):
                 type_cert = '7.9'
             else:
@@ -1291,9 +1288,9 @@ def create_doc():
                     district,
                     None,
                     datetime.now().strftime("%d.%m.%Y"),
-                    data['certificate'].get('name'),
-                    data['certificate'].get('birth_date'),
-                    data['certificate'].get('address'),
+                    render_data.get('name'),
+                    render_data.get('birth_date'),
+                    render_data.get('address'),
                     type_cert,
                     doctor_name]
             number = data_base.save_certificate_ped_div(data=info,
@@ -1438,8 +1435,7 @@ def create_doc():
                             f"{random.randrange(start=indicator['bp'][2], stop=indicator['bp'][3], step=1)}"
 
         anthro = ' (выше- ниже-) среднее, (дис-) гармоничное'
-
-        if render_data.get('height')[0].isdigit():
+        try:
             height = float(render_data.get('height'))
             weight = float(render_data.get('weight'))
             if render_data.get('gender').lower().startswith('м'):
@@ -1448,52 +1444,48 @@ def create_doc():
             else:
                 anthro_height = anthropometry['женский']['height'].get(age, [])
                 anthro_weight = anthropometry['женский']['weight'].get(age, [])
-            if anthro_height:
-                for a_height in anthro_height:
-                    if height < a_height:
-                        index_height = anthro_height.index(a_height)
-                        break
-                else:
-                    index_height = 7
+            for a_height in anthro_height:
+                if height < a_height:
+                    index_height = anthro_height.index(a_height)
+                    break
+            else:
+                index_height = 7
 
-            if anthro_weight:
-                for a_weight in anthro_weight:
-                    if weight <= a_weight:
-                        index_weight = anthro_weight.index(a_weight)
-                        break
-                else:
-                    index_weight = 7
-                if index_height == 0:
-                    anthro = 'Низкое '
-                elif index_height <= 2:
-                    anthro = 'Ниже среднего '
-                elif index_height <= 4:
-                    anthro = 'Среднее '
-                elif index_height <= 6:
-                    anthro = 'Выше среднего '
-                elif index_height == 7:
-                    anthro = 'Высокое '
+            for a_weight in anthro_weight:
+                if weight <= a_weight:
+                    index_weight = anthro_weight.index(a_weight)
+                    break
+            else:
+                index_weight = 7
+            if index_height == 0:
+                anthro = 'Низкое '
+            elif index_height <= 2:
+                anthro = 'Ниже среднего '
+            elif index_height <= 4:
+                anthro = 'Среднее '
+            elif index_height <= 6:
+                anthro = 'Выше среднего '
+            elif index_height == 7:
+                anthro = 'Высокое '
 
-                if abs(index_weight - index_height) <= 1:
-                    anthro += 'гармоничное'
-                elif abs(index_weight - index_height) < 3:
-                    anthro += 'дисгармоничное'
-                else:
-                    anthro += 'резко дисгармоничное'
+            if abs(index_weight - index_height) <= 1:
+                anthro += 'гармоничное'
+            elif abs(index_weight - index_height) < 3:
+                anthro += 'дисгармоничное'
+            else:
+                anthro += 'резко дисгармоничное'
 
-                if 'Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное' in render_data.get('diagnosis'):
-                    render_data['diagnosis'] = \
-                        render_data.get('diagnosis').replace('Физическое развитие (выше- ниже-) '
-                                                             'среднее, (дис-) гармоничное',
-                                                             f"Физическое развитие: {anthro}")
-
+            if 'Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное' in render_data.get('diagnosis'):
+                render_data['diagnosis'] = \
+                    render_data.get('diagnosis').replace('Физическое развитие (выше- ниже-) '
+                                                         'среднее, (дис-) гармоничное',
+                                                         f"Физическое развитие: {anthro}")
+        except Exception:
+            pass
         render_data['anthro'] = anthro
 
-        if render_data.get('height')[0].isdigit():
-            render_data['imt'] = round(float(render_data.get('weight')) /
-                                       (float(render_data.get('height')) / 100) ** 2, 1)
-        else:
-            render_data['imt'] = '______'
+        render_data['imt'] = round(float(render_data.get('weight')) /
+                                   (float(render_data.get('height')) / 100) ** 2, 1)
 
         render_data['additional_medical_information'] = render_data.get('additional_medical_information',
                                                                         '').replace(
@@ -1502,20 +1494,20 @@ def create_doc():
             'школе с _______ лет', f"школе с {age} лет")
 
     if (type_certificate == "Оформление в ДДУ / СШ / ВУЗ" and "Детское Дошкольное Учреждение"
-        not in render_data.get('place_of_requirement')) or type_certificate == 'Об усыновлении (удочерении)':
+            not in render_data.get('place_of_requirement')) or type_certificate == 'Об усыновлении (удочерении)':
         doc_name = ""
         if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
-            doc_name = f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} " \
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
                        f"справка Оформление.docx"
             if not render_data.get('number_cert'):
                 render_data['number_cert'] = '№ ______'
         elif data['certificate'].get('type_certificate') == 'Об усыновлении (удочерении)':
-            doc_name = f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} " \
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
                        f"справка Об усыновлении.docx"
 
-        if 'Для поступления в учреждения высшего' in data['certificate'].get('place_of_requirement'):
+        if 'Для поступления в учреждения высшего' in render_data.get('place_of_requirement'):
             render_data['name'] += f'\nИдентификационный № _______________________________'
-            age = get_age(data['certificate'].get('birth_date'))
+            age = get_age(data['patient'].get('birth_date'))
             if age >= 17:
                 render_data['additional_medical_information'] += '\nФлюорография: № _________ от __ . __ . ____ ' \
                                                                  'Заключение: ОГК без патологии'
@@ -1532,7 +1524,7 @@ def create_doc():
         doc.render(render_data)
         doc.save(doc_name)
 
-        if vaccinations.create_vaccination(user_id=data['certificate'].get('amb_cart'), size=4):
+        if vaccinations.create_vaccination(user_id=data['patient'].get('amb_cart'), size=4):
             master = Document(doc_name)
             master.add_page_break()
             composer = Composer(master)
@@ -1546,46 +1538,49 @@ def create_doc():
         doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
         doc.render(render_data)
         doc.save(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx")
-        file = open(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx", 'rb')
-        # subprocess.Popen(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx")
-
+        # file = open(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx", 'rb')
+        subprocess.Popen(f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
 
     else:
 
-        if data['certificate'].get('type_certificate').startswith('ЦКРОиР'):
+        if type_certificate.startswith('ЦКРОиР'):
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}выписка ЦКРОиР.docx")
             doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} выписка ЦКРОиР.docx"
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} выписка ЦКРОиР.docx"
             doc.save(doc_name)
 
-        elif data['certificate'].get('type_certificate').startswith('Бесплатное питание'):
+        elif type_certificate.startswith('Бесплатное питание'):
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}Выписка.docx")
             doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} Выписка.docx"
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} Выписка.docx"
             doc.save(doc_name)
 
         elif data['certificate'].get('type_certificate') in ('Годовой медосмотр', 'В детский лагерь'):
             if data['certificate'].get('type_certificate').startswith('В детский лагерь'):
-                # number = get_max_number(data['certificate'].get('doctor_district'), 'certificate_camp')
-                info = (data['certificate'].get('doctor_district'),
+
+                info = (data['doctor'].get('doctor_district'),
                         None,
                         datetime.now().strftime("%d.%m.%Y"),
-                        data['certificate'].get('name'),
-                        data['certificate'].get('birth_date'),
-                        data['certificate'].get('gender'),
-                        data['certificate'].get('address')
+                        render_data.get('name'),
+                        render_data.get('birth_date'),
+                        render_data.get('gender'),
+                        render_data.get('address')
                         )
+                number = data_base.save_certificate_ped_div(data=info,
+                                                            type_table='certificate_ped_div',
+                                                            district_pd=data['doctor'].get('ped_div'))
+
                 # save_certificate_ped_div(data=info, type_table='certificate_camp')
                 render_data['number_cert'] = f"№ {data['certificate'].get('doctor_district')} / {number}"
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
-                       f"справка {data['certificate'].get('type_certificate')}.docx"
+                       f"справка {type_certificate}.docx"
 
             master = Document(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             master.add_page_break()
             composer = Composer(master)
 
-            if data['certificate'].get('type_certificate').startswith('В детский лагерь'):
-                if vaccinations.create_vaccination(user_id=data['certificate'].get('amb_cart'),
+            if type_certificate.startswith('В детский лагерь'):
+                if vaccinations.create_vaccination(user_id=data['patient'].get('amb_cart'),
                                                    size=5):
                     doc_temp = Document(f'.{os.sep}generated{os.sep}прививки.docx')
                     composer.append(doc_temp)
@@ -1608,17 +1603,16 @@ def create_doc():
         else:
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} " \
-                       f"справка {data['certificate'].get('type_certificate')}.docx"
+            doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
+                       f"справка {type_certificate}.docx"
             doc.save(doc_name)
 
             if (data['certificate'].get('type_certificate') in ('В детский лагерь',
                                                                 'Может работать по специальности...') or
                     (data['certificate'].get('type_certificate') == 'Об отсутствии контактов' and
                      data['certificate'].get('place_of_requirement') == 'В стационар')):
-                print("data['certificate'].get('amb_cart') _________: ", data['certificate'].get('amb_cart'))
 
-                if vaccinations.create_vaccination(user_id=data['certificate'].get('amb_cart'), size=5):
+                if vaccinations.create_vaccination(user_id=data['patient'].get('amb_cart'), size=5):
                     master = Document(doc_name)
                     master.add_page_break()
                     composer = Composer(master)
@@ -1626,13 +1620,5 @@ def create_doc():
                     composer.append(doc_temp)
                     composer.save(doc_name)
 
-        text = f"ФИО: {data['certificate'].get('name')}; {data['certificate'].get('birth_date')} ; " \
-               f"Тип справки: {data['certificate'].get('type_certificate')}\n" \
-               f"Адрес: {data['certificate'].get('address')}\n" \
-               f"Порядковый номер справки: {render_data.get('number_cert')}\n" \
-               f"Дата оформления: {data['certificate'].get('date_of_issue')}\n" \
-               f"Количество справок: {data['certificate'].get('count_of_certificates')}"
+        subprocess.Popen(doc_name)
 
-        if data.get('create_doc'):
-            text += f"\npatient_id: {data['certificate'].get('patient_id')}"
-        # file = open(doc_name, 'rb')

@@ -40,7 +40,7 @@ def save_certificate_ped_div(district_pd, data, type_table):
                 cur.execute(f"INSERT INTO certificate_ped_div VALUES({'?, ' * 8}?)", data)
 
             elif type_table == 'certificate_camp':
-                data[2] = number
+                data[1] = number
                 cur.execute(f"INSERT INTO certificate_camp VALUES({'?, ' * 6}?)", data)
     except Exception:
         return '__________'
