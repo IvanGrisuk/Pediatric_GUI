@@ -1511,7 +1511,7 @@ def certificate__editing_certificate():
                                         '').replace('Vis OD/OS = __________', f"Vis OD/OS = {vision.get()}")
                 else:
                     render_data['visus'] = ''
-                render_data["add_diagnosis"] = diagnosis.get(1.0, 'end')
+                render_data["add_diagnosis"] = diagnosis.get(1.0, 'end')[:-1]
                 render_data['height'] = height.get().replace(',', '.')
                 render_data['weight'] = weight.get().replace(',', '.')
                 render_data['group'] = selected_health_group.get()
