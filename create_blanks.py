@@ -1,5 +1,5 @@
 from tkinter import *
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 
 from docxtpl import DocxTemplate

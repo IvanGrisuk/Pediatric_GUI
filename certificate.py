@@ -1,12 +1,9 @@
 from tkinter import *
-from tkinter import ttk
 from datetime import datetime, timedelta
 from tkinter.ttk import Combobox
 from tkinter.scrolledtext import ScrolledText
 from tkinter import messagebox
 from docx import Document
-from docx.shared import Cm
-from docx.shared import Pt
 import os
 import random
 from docx.enum.section import WD_SECTION, WD_ORIENT
@@ -325,7 +322,8 @@ def editing_certificate():
         for mark in place:
             btn = Radiobutton(frame_place_1, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
-                              value=mark, variable=selected_place, command=select_place, indicatoron=False, selectcolor='blue')
+                              value=mark, variable=selected_place, command=select_place,
+                              indicatoron=False, selectcolor='blue')
             btn.grid(row=row, column=col, sticky='ew')
             col += 1
             if col == 3:
@@ -434,7 +432,8 @@ def editing_certificate():
             for mark in all_data.get('health').get('physical'):
                 btn = Radiobutton(frame, text=mark,
                                   font=('Comic Sans MS', data.get('text_size')),
-                                  value=mark, variable=selected_fiz_group, command=select_fiz_group, indicatoron=False, selectcolor='blue')
+                                  value=mark, variable=selected_fiz_group, command=select_fiz_group,
+                                  indicatoron=False, selectcolor='blue')
                 btn.grid(row=0, column=(all_data.get('health').get('physical').index(mark) + 1), sticky='ew')
 
             frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -489,7 +488,8 @@ def editing_certificate():
         for mark in chickenpox:
             btn = Radiobutton(frame_chickenpox, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
-                              value=mark, variable=selected_chickenpox, command=select_chickenpox, indicatoron=False, selectcolor='blue')
+                              value=mark, variable=selected_chickenpox, command=select_chickenpox,
+                              indicatoron=False, selectcolor='blue')
             btn.grid(row=0, column=(chickenpox.index(mark) + 1), sticky='ew')
 
         Label(frame_chickenpox, text="Аллергия:", font=('Comic Sans MS', data.get('text_size')),
@@ -519,7 +519,8 @@ def editing_certificate():
         for mark in allergy:
             btn = Radiobutton(frame_chickenpox, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
-                              value=mark, variable=selected_allergy, command=select_allergy, indicatoron=False, selectcolor='blue')
+                              value=mark, variable=selected_allergy, command=select_allergy,
+                              indicatoron=False, selectcolor='blue')
             btn.grid(column=(allergy.index(mark) + 1), row=1, sticky='ew')
             destroy_elements['allergy'].append(btn)
 
@@ -538,12 +539,6 @@ def editing_certificate():
             label_ = str(event.widget).split('.!')[4].replace('label', '')
             print('select_diagnosis frame_, label_', frame_, label_)
 
-            # for w in str(event.widget).split('.!'):
-            #     if 'frame' in w:
-            #         frame_ = w.replace('frame', '')
-            #     if 'label' in w:
-            #         label_ = w.replace('label', '')
-            # print(frame_, label_)
             selected_diagnosis = all_data.get('diagnosis')[int(frame_) - 2][int(label_) - 1]
             diagnosis_text.insert(INSERT, f" {selected_diagnosis}")
 
@@ -818,7 +813,6 @@ def editing_certificate():
             data['certificate']['regime'] = result
             print(result)
 
-
         for mark in all_data.get('health').get('regime'):
             btn = Checkbutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
@@ -841,7 +835,8 @@ def editing_certificate():
         for mark in all_data.get('health').get('diet'):
             btn = Radiobutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
-                              value=mark, variable=selected_diet, command=select_diet, indicatoron=False, selectcolor='blue')
+                              value=mark, variable=selected_diet, command=select_diet,
+                              indicatoron=False, selectcolor='blue')
             btn.grid(row=0, column=(all_data.get('health').get('diet').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -1165,9 +1160,11 @@ def editing_certificate():
                         diagnosis_certificate = f"{diagnosis.get(1.0, 'end')}\n{diagnosis_certificate}"
 
                 diagnosis_certificate = diagnosis_certificate.replace('Группа здоровья: _',
-                                                                      f'Группа здоровья: {selected_health_group.get()}')
+                                                                      f'Группа здоровья: '
+                                                                      f'{selected_health_group.get()}')
                 diagnosis_certificate = diagnosis_certificate.replace('Группа по физкультуре: _',
-                                                                      f'Группа по физкультуре: {selected_fiz_group.get()}')
+                                                                      f'Группа по физкультуре: '
+                                                                      f'{selected_fiz_group.get()}')
                 render_data['diagnosis'] = diagnosis_certificate
 
                 recommendation = render_data.get('recommendation', '')
@@ -1281,8 +1278,8 @@ def create_doc():
     if type_certificate in ('ЦКРОиР', 'О нуждаемости в сан-кур лечении',
                             'Об усыновлении (удочерении)', 'Бесплатное питание') \
             or (data['certificate'].get('type_certificate') == 'Оформление в ДДУ / СШ / ВУЗ' and not
-    ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
-     ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
+                ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
+                 ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
         doctor_name, district, pediatric_division = (data['doctor'].get('doctor_name'),
                                                      data['doctor'].get('doctor_district'),
                                                      data['doctor'].get('ped_div'))
@@ -1537,15 +1534,11 @@ def create_doc():
             composer.append(doc_temp)
             composer.save(doc_name)
 
-        # file = open(doc_name, 'rb')
-        # subprocess.Popen(doc_name)
         os.system(f"start {doc_name}")
-
 
         doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
         doc.render(render_data)
         doc.save(f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
-        # file = open(f".{os.sep}generated{os.sep}{data['certificate'].get('name').split()[0]} осмотр.docx", 'rb')
         os.system(f"start .{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
 
         subprocess.Popen(f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
@@ -1631,9 +1624,7 @@ def create_doc():
                     composer.save(doc_name)
 
         os.system(f"start {doc_name}")
-        # subprocess.Popen(doc_name)
 
     data_base.statistic_write('приложение', f"Справка_DOC_{data['doctor'].get('doctor_name')}")
     data.clear()
     render_data.clear()
-

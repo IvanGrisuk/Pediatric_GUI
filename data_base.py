@@ -1,5 +1,4 @@
 import sqlite3 as sq
-import os
 from datetime import datetime
 
 
@@ -97,6 +96,7 @@ def statistic_write(user_id, info):
         with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
             cur = conn.cursor()
             type_info, _, district = info.split('_')
-            cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', '{user_id}', '{type_info}', '{district}')")
+            cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', '{user_id}', "
+                        f"'{type_info}', '{district}')")
     except Exception:
         pass

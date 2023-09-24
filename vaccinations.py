@@ -7,8 +7,6 @@ from tkinter import messagebox
 
 import sqlite3 as sq
 
-import data_base
-
 
 def create_doc(amb_cart):
     if create_vaccination(amb_cart, 5):

@@ -1,5 +1,5 @@
 from tkinter import *
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 
 from docx import Document
@@ -258,5 +258,3 @@ async def create_direction():
 
     os.system(f"start .{os.sep}generated{os.sep}Направление.docx")
     data_base.statistic_write('приложение', f"Направления_DOC_{data.get('doctor_name')}")
-
-

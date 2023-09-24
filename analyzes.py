@@ -85,7 +85,6 @@ def ask_analyzes():
         create_doc(user_analyzes)
         analyzes_root.quit()
 
-
     def select_analyzes():
         for category_b in all_blanks:
             for analyzes_lbl in analyzes_vars.get(category_b):
@@ -250,4 +249,3 @@ def create_doc(analyzes):
     data_base.statistic_write('приложение', f"Анализы_DOC_{data.get('doctor_name')}")
     render_data.clear()
     data.clear()
-

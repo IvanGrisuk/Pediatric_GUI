@@ -1,9 +1,4 @@
-from tkinter import *
-from tkinter import ttk
-import sqlite3 as sq
-from tkinter.ttk import Combobox
-from tkinter import scrolledtext, messagebox
-import os
+from tkinter import messagebox
 
 
 def decoding_name(patient_data):
@@ -82,7 +77,7 @@ def decoding_name(patient_data):
                             info = i.split()
                             user['amb_cart'] = info.pop(0)
                             user['name'] = ''
-                            for i in range(3):
+                            for _ in range(3):
                                 if info[0].isalpha():
                                     user['name'] += f'{info[0]} '
                                     info.pop(0)
@@ -93,11 +88,11 @@ def decoding_name(patient_data):
                                 if q.isdigit():
                                     user['patient_district'] += q
                             user['address'] = ''
-                            for i in info[info.index('г'):]:
-                                if len(i) == 10 and '.' in i:
+                            for i_ in info[info.index('г'):]:
+                                if len(i_) == 10 and '.' in i_:
                                     break
                                 else:
-                                    user['address'] += f'{i} '
+                                    user['address'] += f'{i_} '
                             if len(user.get('name').split()) == 3:
                                 if user.get('name').split()[2][-1] == 'ч':
                                     user['gender'] = 'мужской'
@@ -140,11 +135,11 @@ def decoding_name(patient_data):
                                 user['patient_district'] += q
 
                         user['address'] = 'г. '
-                        for i in info[info.index('Минск'):]:
-                            if i.isdigit():
-                                user['address'] += f'{i} - '
+                        for i_ in info[info.index('Минск'):]:
+                            if i_.isdigit():
+                                user['address'] += f'{i_} - '
                             else:
-                                user['address'] += f'{i} '
+                                user['address'] += f'{i_} '
                         else:
                             user['address'] = user['address'][:-2]
 
@@ -170,32 +165,3 @@ def decoding_name(patient_data):
 
         else:
             return user
-
-
-
-# def show_patient(message: types.Message, state: FSMContext):
-#     with state.proxy() as data:
-#         found_data = data.get('decoding_name', dict()).get('found_data', [])
-#
-#     for info in found_data:
-#         rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = info
-#
-#         text = f"Участок: {district};   " \
-#                f"№ амб карты: {amb_cart}\n" \
-#                f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\n" \
-#                f"Пол: {gender};    " \
-#                f"Дата рождения: {birth_date}\n" \
-#                f"Адрес: {address}\n" \
-#                f"Дополнительная информация (телефон): {phone}"
-#         inline_kb = InlineKeyboardMarkup(row_width=1)
-#         inline_kb.add(InlineKeyboardButton(text='Выбрать пациента',
-#                                            callback_data=f'decoding_name__{rowid}__select_patient'))
-#         await bot.send_message(chat_id=message.chat.id, text=text, reply_markup=inline_kb)
-#     else:
-#         inline_kb = InlineKeyboardMarkup(row_width=1)
-#         inline_kb.add(
-#             InlineKeyboardButton(text='Изменить поисковый запрос',
-#                                  callback_data='decoding_name__start_search'))
-#         inline_kb.add(InlineKeyboardButton(text='Главное меню', callback_data='exit_in_main__decoding_name'))
-#         await bot.send_message(message.chat.id, text=f' _ _ _ _ _ _ Конец выборки _ _ _ _ _ _ ',
-#                                reply_markup=inline_kb)

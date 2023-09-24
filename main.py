@@ -1,13 +1,7 @@
 from tkinter import *
-from tkinter import ttk
 import sqlite3 as sq
-from datetime import datetime, timedelta
 from tkinter.ttk import Combobox
-from tkinter import scrolledtext, messagebox
-from docx import Document
-from docx.shared import Cm
-from docx.shared import Pt
-import os
+from tkinter import messagebox
 
 import shutil
 
@@ -507,7 +501,6 @@ Button(frame, text='Редактировать', command=redact_doctor,
 frame.columnconfigure(index='all', minsize=40, weight=1)
 frame.rowconfigure(index='all', minsize=20)
 frame.pack(fill='both', expand=True, padx=2, pady=2)
-# frame.grid(padx=5, pady=5, sticky='ew')
 
 
 frame = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
@@ -538,7 +531,6 @@ frame.columnconfigure(index='all', minsize=40, weight=1)
 frame.rowconfigure(index='all', minsize=20)
 frame.pack(fill='both', expand=True, padx=2, pady=2)
 
-# frame.grid(padx=5, pady=5, sticky='ew')
 
 frame = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
 
@@ -555,6 +547,3 @@ frame.rowconfigure(index='all', minsize=20)
 frame.pack(fill='both', expand=True, padx=2, pady=2)
 
 root.mainloop()
-
-# >>> import subprocess
-# >>> subprocess.Popen('C:\\Windows\\System32\\calc.exe')
