@@ -4,9 +4,7 @@ from tkinter.ttk import Combobox
 from tkinter import messagebox
 
 import shutil
-
 import pyperclip
-
 import decoding_name
 import certificate as cert
 import analyzes as anal
@@ -180,7 +178,9 @@ def get_doc_names():
 
 
 def certificate():
-    if patient.get('name'):
+    if not patient.get('name'):
+        messagebox.showinfo('Ошибка', "Не выбран пациент!")
+    else:
         with sq.connect('data_base.db') as conn:
             cur = conn.cursor()
 
@@ -206,43 +206,35 @@ def certificate():
                 'doctor_district': district}
         }
         cert.append_info(data)
+
+
+def analyzes():
+
+    if patient.get('name'):
+
+        with sq.connect('data_base.db') as conn:
+            cur = conn.cursor()
+            cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи "
+                        f"WHERE doctor_name LIKE '{combo_doc.get()}'")
+            data = cur.fetchone()
+            print('data', data)
+            doctor_name, district, ped_div, manager, text_size = data
+
+        data = {'text_size': user.get('text_size'),
+                'patient_name': patient.get('name'),
+                'birth_date': patient.get('birth_date'),
+                'gender': patient.get('gender'),
+                'amb_cart': patient.get('amb_cart'),
+                'patient_district': patient.get('patient_district'),
+                'ped_div': ped_div,
+                'address': patient.get('address'),
+                'doctor_name': doctor_name}
+        anal.append_info(data)
     else:
         messagebox.showinfo('Ошибка', "Не выбран пациент!")
 
 
-def analyzes():
-    with sq.connect('data_base.db') as conn:
-        cur = conn.cursor()
-        cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи "
-                    f"WHERE doctor_name LIKE '{combo_doc.get()}'")
-        data = cur.fetchone()
-        print('data', data)
-        doctor_name, district, ped_div, manager, text_size = data
-
-    data = {'text_size': user.get('text_size'),
-            'patient_name': patient.get('name'),
-            'birth_date': patient.get('birth_date'),
-            'gender': patient.get('gender'),
-            'amb_cart': patient.get('amb_cart'),
-            'patient_district': patient.get('patient_district'),
-            'ped_div': ped_div,
-            'address': patient.get('address'),
-            'doctor_name': doctor_name}
-    anal.append_info(data)
-
-    # if patient.get('name'):
-    #
-    #     data = {'text_size': user.get('text_size'),
-    #             'patient_name': patient.get('name'),
-    #             'birth_date': patient.get('birth_date'),
-    #             'gender': patient.get('gender'),
-    #             'amb_cart': patient.get('amb_cart'),
-    #             'patient_district': patient.get('patient_district'),
-    #             'address': patient.get('address'),
-    #             'doctor_name': combo_doc.get()},
-    #     anal.append_info(data)
-    # else:
-    #     messagebox.showinfo('Ошибка', "Не выбран пациент!")
+def direction_cmd():
 
 
 def vaccination():
@@ -535,12 +527,14 @@ frame.pack(fill='both', expand=True, padx=2, pady=2)
 frame = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
 
 Label(frame, text='Что хотите сделать?', font=('Comic Sans MS', user.get('text_size')),
-      anchor='center').grid(column=0, row=0, columnspan=3, sticky='ew')
+      anchor='center').grid(column=0, row=0, columnspan=2, sticky='ew')
 
 Button(frame, text='Справка', command=certificate, font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=1)
 Button(frame, text='Анализы', command=analyzes, font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=1)
 Button(frame, text='Вкладыши', command=blanks, font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=2)
 Button(frame, text='Прививки', command=vaccination, font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=2)
+Button(frame, text='Направления', command=direction_cmd,
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=3, columnspan=2)
 
 frame.columnconfigure(index='all', minsize=40, weight=1)
 frame.rowconfigure(index='all', minsize=20)

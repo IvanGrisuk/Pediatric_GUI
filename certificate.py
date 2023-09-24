@@ -8,7 +8,6 @@ import os
 import random
 from docx.enum.section import WD_SECTION, WD_ORIENT
 
-
 from docxtpl import DocxTemplate
 from docxcompose.composer import Composer
 import subprocess
@@ -213,6 +212,8 @@ def append_info(info):
             data[key_0] = info.get(key_0)
         else:
             for key_1 in info.get(key_0):
+                if not data.get(key_0, []):
+                    data[key_0] = dict()
                 data[key_0][key_1] = info[key_0].get(key_1)
     ask_type_certificate()
 
@@ -1009,7 +1010,7 @@ def editing_certificate():
 
             if type_certificate == 'По выздоровлении':
                 render_data['diagnosis'] = f"{combo_diagnosis.get()} c {ori_from.get()} по {ori_until.get()}"
-                data['certificate']['date_of_issue'] = ori_until.get()
+                render_data['date_of_issue'] = ori_until.get()
 
             if type_certificate == 'Годовой медосмотр':
                 date = data['patient'].get('birth_date')
