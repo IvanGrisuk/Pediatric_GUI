@@ -1596,6 +1596,7 @@ def certificate__editing_certificate():
             edit_cert_root.focus_force()
         else:
             edit_cert_root.quit()
+            edit_cert_root.destroy()
             certificate__create_doc()
 
     Button(edit_cert_root, text='Создать справку', command=create_certificate,
