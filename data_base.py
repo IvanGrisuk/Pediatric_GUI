@@ -1,5 +1,6 @@
 import sqlite3 as sq
 import os
+from datetime import datetime
 
 
 def create_data_base():
@@ -88,3 +89,14 @@ def get_max_number_and_write(district_pd, type_table):
             numbers.append(0)
 
         return max(numbers) + 1
+
+
+def statistic_write(user_id, info):
+    date_now, time_now = datetime.now().strftime("%d.%m.%Y %H:%M:%S").split()
+    try:
+        with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
+            cur = conn.cursor()
+            type_info, _, district = info.split('_')
+            cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', '{user_id}', '{type_info}', '{district}')")
+    except Exception:
+        pass

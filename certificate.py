@@ -1,16 +1,13 @@
 from tkinter import *
-import tkinter as tk
 from tkinter import ttk
-import sqlite3 as sq
 from datetime import datetime, timedelta
 from tkinter.ttk import Combobox
 from tkinter.scrolledtext import ScrolledText
-from tkinter import scrolledtext, messagebox
+from tkinter import messagebox
 from docx import Document
 from docx.shared import Cm
 from docx.shared import Pt
 import os
-import re
 import random
 from docx.enum.section import WD_SECTION, WD_ORIENT
 
@@ -327,7 +324,7 @@ def editing_certificate():
         for mark in place:
             btn = Radiobutton(frame_place_1, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
-                              value=mark, variable=selected_place, command=select_place, indicatoron=False)
+                              value=mark, variable=selected_place, command=select_place, indicatoron=False, selectcolor='blue')
             btn.grid(row=row, column=col, sticky='ew')
             col += 1
             if col == 3:
@@ -416,7 +413,7 @@ def editing_certificate():
                 btn = Radiobutton(frame, text=mark,
                                   font=('Comic Sans MS', data.get('text_size')),
                                   value=mark, variable=selected_health_group,
-                                  command=select_health_group, indicatoron=False)
+                                  command=select_health_group, indicatoron=False, selectcolor='blue')
                 btn.grid(row=0, column=(all_data.get('health').get('group').index(mark) + 1), sticky='ew')
 
             frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -436,7 +433,7 @@ def editing_certificate():
             for mark in all_data.get('health').get('physical'):
                 btn = Radiobutton(frame, text=mark,
                                   font=('Comic Sans MS', data.get('text_size')),
-                                  value=mark, variable=selected_fiz_group, command=select_fiz_group, indicatoron=False)
+                                  value=mark, variable=selected_fiz_group, command=select_fiz_group, indicatoron=False, selectcolor='blue')
                 btn.grid(row=0, column=(all_data.get('health').get('physical').index(mark) + 1), sticky='ew')
 
             frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -491,7 +488,7 @@ def editing_certificate():
         for mark in chickenpox:
             btn = Radiobutton(frame_chickenpox, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
-                              value=mark, variable=selected_chickenpox, command=select_chickenpox, indicatoron=False)
+                              value=mark, variable=selected_chickenpox, command=select_chickenpox, indicatoron=False, selectcolor='blue')
             btn.grid(row=0, column=(chickenpox.index(mark) + 1), sticky='ew')
 
         Label(frame_chickenpox, text="Аллергия:", font=('Comic Sans MS', data.get('text_size')),
@@ -521,7 +518,7 @@ def editing_certificate():
         for mark in allergy:
             btn = Radiobutton(frame_chickenpox, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
-                              value=mark, variable=selected_allergy, command=select_allergy, indicatoron=False)
+                              value=mark, variable=selected_allergy, command=select_allergy, indicatoron=False, selectcolor='blue')
             btn.grid(column=(allergy.index(mark) + 1), row=1, sticky='ew')
             destroy_elements['allergy'].append(btn)
 
@@ -681,7 +678,7 @@ def editing_certificate():
             btn = Radiobutton(frame_injury_operation, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_injury_operation,
-                              command=select_injury_operation, indicatoron=False)
+                              command=select_injury_operation, indicatoron=False, selectcolor='blue')
             btn.grid(column=(injury_operation.index(mark) + 1), row=0, sticky='ew')
             destroy_elements['injury_operation'].append(btn)
 
@@ -781,7 +778,7 @@ def editing_certificate():
             btn = Radiobutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_health_group,
-                              command=select_health_group, indicatoron=False)
+                              command=select_health_group, indicatoron=False, selectcolor='blue')
             btn.grid(row=0, column=(all_data.get('health').get('group').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -800,7 +797,7 @@ def editing_certificate():
             btn = Radiobutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_fiz_group,
-                              command=select_fiz_group, indicatoron=False)
+                              command=select_fiz_group, indicatoron=False, selectcolor='blue')
             btn.grid(row=0, column=(all_data.get('health').get('physical').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -825,7 +822,7 @@ def editing_certificate():
             btn = Checkbutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               variable=regime_vars.get(mark), command=select_regime,
-                              onvalue=1, offvalue=0, indicatoron=False)
+                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='blue')
             btn.grid(row=0, column=(all_data.get('health').get('regime').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -843,7 +840,7 @@ def editing_certificate():
         for mark in all_data.get('health').get('diet'):
             btn = Radiobutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
-                              value=mark, variable=selected_diet, command=select_diet, indicatoron=False)
+                              value=mark, variable=selected_diet, command=select_diet, indicatoron=False, selectcolor='blue')
             btn.grid(row=0, column=(all_data.get('health').get('diet').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -867,7 +864,7 @@ def editing_certificate():
             btn = Checkbutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               variable=desk_vars.get(mark), command=select_desk,
-                              onvalue=1, offvalue=0, indicatoron=False)
+                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='blue')
             btn.grid(row=0, column=(all_data.get('health').get('desk').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -924,7 +921,7 @@ def editing_certificate():
             btn = Checkbutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               variable=sanatorium_profile.get(mark), command=select_profile,
-                              onvalue=1, offvalue=0, indicatoron=False)
+                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='blue')
             btn.grid(row=row, column=col, sticky='ew')
             col += 1
             if col == 3:
@@ -1635,6 +1632,7 @@ def create_doc():
         os.system(f"start {doc_name}")
         # subprocess.Popen(doc_name)
 
+    data_base.statistic_write('приложение', f"Справка_DOC_{data['doctor'].get('doctor_name')}")
     data.clear()
     render_data.clear()
 
