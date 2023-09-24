@@ -2,8 +2,20 @@ from docx import Document
 from docx.shared import Cm
 from docx.shared import Pt
 import os
+from tkinter import messagebox
+
 
 import sqlite3 as sq
+
+import data_base
+
+
+def create_doc(amb_cart):
+    if create_vaccination(amb_cart, 5):
+        os.system(f"start .{os.sep}generated{os.sep}прививки.docx")
+
+    else:
+        messagebox.showinfo('Ошибка!', 'Не удалось создать прививки!')
 
 
 def create_vaccination(user_id, size):
@@ -118,6 +130,7 @@ def create_vaccination(user_id, size):
 
         if info:
             return True
+
         else:
             return False
 

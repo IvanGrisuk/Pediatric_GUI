@@ -252,9 +252,10 @@ def editing_certificate():
     destroy_elements = dict()
     edit_cert_root = Toplevel()
 
-    edit_cert_root.title(f'Редактирование справки')
-    edit_cert_root.config(bg='white')
     type_certificate = data['certificate'].get('type_certificate')
+
+    edit_cert_root.title(f'Редактирование справки {type_certificate}')
+    edit_cert_root.config(bg='white')
 
     Label(edit_cert_root, text=f"Данные пациента:\n"
                                f"Участок: {data['patient'].get('patient_district')};    "

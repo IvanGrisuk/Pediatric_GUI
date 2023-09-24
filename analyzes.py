@@ -1,25 +1,14 @@
 from tkinter import *
-from tkinter import ttk
-from datetime import datetime, timedelta
-from tkinter.ttk import Combobox
-from tkinter.scrolledtext import ScrolledText
-from tkinter import messagebox
-from docx import Document
-from docx.shared import Cm
-from docx.shared import Pt
+from datetime import datetime
 import os
-import random
-from docx.enum.section import WD_SECTION, WD_ORIENT
 
 from docxtpl import DocxTemplate
 from docxcompose.composer import Composer
 from docx import Document as Document_compose
-import subprocess
 import sqlite3 as sq
 
 
 import data_base
-import vaccinations
 
 data = dict()
 all_blanks = {

@@ -16,6 +16,8 @@ import pyperclip
 import decoding_name
 import certificate as cert
 import analyzes as anal
+import vaccinations as vac
+import create_blanks
 
 patient = {
     'name': '',
@@ -249,8 +251,29 @@ def analyzes():
     #     messagebox.showinfo('Ошибка', "Не выбран пациент!")
 
 
+def vaccination():
+    vac.create_doc(patient.get('amb_cart'))
+
+
 def blanks():
-    pass
+    with sq.connect('data_base.db') as conn:
+        cur = conn.cursor()
+        cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи "
+                    f"WHERE doctor_name LIKE '{combo_doc.get()}'")
+        data = cur.fetchone()
+        print('data', data)
+        doctor_name, district, ped_div, manager, text_size = data
+
+    data = {'text_size': user.get('text_size'),
+            'patient_name': patient.get('name'),
+            'birth_date': patient.get('birth_date'),
+            'gender': patient.get('gender'),
+            'amb_cart': patient.get('amb_cart'),
+            'patient_district': patient.get('patient_district'),
+            'ped_div': ped_div,
+            'address': patient.get('address'),
+            'doctor_name': doctor_name}
+    create_blanks.append_info(data)
 
 
 def save_doctor(new_doctor_name):
@@ -524,7 +547,8 @@ Label(frame, text='Что хотите сделать?', font=('Comic Sans MS', 
 
 Button(frame, text='Справка', command=certificate, font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=1)
 Button(frame, text='Анализы', command=analyzes, font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=1)
-Button(frame, text='Вкладыши', command=blanks, font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1)
+Button(frame, text='Вкладыши', command=blanks, font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=2)
+Button(frame, text='Прививки', command=vaccination, font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=2)
 
 frame.columnconfigure(index='all', minsize=40, weight=1)
 frame.rowconfigure(index='all', minsize=20)
