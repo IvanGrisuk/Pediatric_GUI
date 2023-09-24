@@ -365,7 +365,8 @@ def save_certificate_ped_div(district_pd, data_cert, type_table):
             elif type_table == 'certificate_camp':
                 data_cert[1] = number
                 cur.execute(f"INSERT INTO certificate_camp VALUES({'?, ' * 6}?)", data_cert)
-    except Exception:
+    except Exception as ex:
+        print(ex)
         return '__________'
     return number
 
@@ -1926,7 +1927,7 @@ def certificate__create_doc():
                                                   district_pd=data['doctor'].get('doctor_district'))
 
                 # save_certificate_ped_div(data=info, type_table='certificate_camp')
-                render_data['number_cert'] = f"№ {data['certificate'].get('doctor_district')} / {number}"
+                render_data['number_cert'] = f"№ {data['doctor'].get('doctor_district')} / {number}"
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_" \
                        f"справка_{type_certificate}.docx".replace(' в ДДУ / СШ / ВУЗ', '').replace(' ', '_')
             print("doc_name", doc_name)
