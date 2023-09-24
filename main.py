@@ -1909,7 +1909,7 @@ def certificate__create_doc():
                        f"Выписка_Бесплатное_питание.docx"
             doc.save(doc_name)
 
-        elif type_certificate in ('Годовой медосмотр', 'В детский лагерь'):
+        elif type_certificate in ('Годовой медосмотр', 'В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
             if data['certificate'].get('type_certificate').startswith('В детский лагерь'):
                 info = (data['doctor'].get('doctor_district'),
                         None,
@@ -1920,13 +1920,13 @@ def certificate__create_doc():
                         render_data.get('address')
                         )
                 number = save_certificate_ped_div(data_cert=info,
-                                                  type_table='certificate_ped_div',
-                                                  district_pd=data['doctor'].get('ped_div'))
+                                                  type_table='certificate_camp',
+                                                  district_pd=data['doctor'].get('doctor_district'))
 
                 # save_certificate_ped_div(data=info, type_table='certificate_camp')
                 render_data['number_cert'] = f"№ {data['certificate'].get('doctor_district')} / {number}"
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_" \
-                       f"справка_{type_certificate}.docx".replace(' ', '_')
+                       f"справка_{type_certificate}.docx".replace(' в ДДУ / СШ / ВУЗ', '').replace(' ', '_')
 
             master = Document(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             master.add_page_break()
@@ -1956,7 +1956,7 @@ def certificate__create_doc():
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             doc.render(render_data)
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
-                       f"справка {type_certificate}.docx".replace(' в ДДУ / СШ / ВУЗ', '').replace(' ', '_')
+                       f"справка {type_certificate}.docx".replace(' ', '_')
             doc.save(doc_name)
 
             if (data['certificate'].get('type_certificate') in ('В детский лагерь',
