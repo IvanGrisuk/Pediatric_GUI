@@ -1416,7 +1416,7 @@ def certificate__editing_certificate():
                 if data['certificate'].get('physical'):
                     render_data['diagnosis'] = \
                         f"{render_data.get('diagnosis')}" \
-                        f"Группа по физкультуре: {data['certificate'].get('physical')};"
+                        f"  Группа по физкультуре: {data['certificate'].get('physical')};"
 
             if type_certificate in ('Годовой медосмотр',
                                     'Оформление в ДДУ / СШ / ВУЗ',
@@ -1956,7 +1956,7 @@ def certificate__create_doc():
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             doc.render(render_data)
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
-                       f"справка {type_certificate}.docx".replace(' ', '_')
+                       f"справка {type_certificate}.docx".replace(' ', '_').replace(' в ДДУ / СШ / ВУЗ', '')
             doc.save(doc_name)
 
             if (data['certificate'].get('type_certificate') in ('В детский лагерь',
