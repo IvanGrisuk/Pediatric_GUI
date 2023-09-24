@@ -1909,7 +1909,7 @@ def certificate__create_doc():
                        f"Выписка_Бесплатное_питание.docx"
             doc.save(doc_name)
 
-        elif data['certificate'].get('type_certificate') in ('Годовой медосмотр', 'В детский лагерь'):
+        elif type_certificate in ('Годовой медосмотр', 'В детский лагерь'):
             if data['certificate'].get('type_certificate').startswith('В детский лагерь'):
                 info = (data['doctor'].get('doctor_district'),
                         None,
@@ -1956,7 +1956,7 @@ def certificate__create_doc():
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             doc.render(render_data)
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
-                       f"справка {type_certificate}.docx".replace(' ', '_').replace(' в ДДУ / СШ / ВУЗ', '')
+                       f"справка {type_certificate}.docx".replace(' в ДДУ / СШ / ВУЗ', '').replace(' ', '_')
             doc.save(doc_name)
 
             if (data['certificate'].get('type_certificate') in ('В детский лагерь',
