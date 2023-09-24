@@ -1935,7 +1935,7 @@ def certificate__create_doc():
             master.add_page_break()
             composer = Composer(master)
 
-            if type_certificate.startswith('В детский лагерь'):
+            if type_certificate in ('В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
                 if create_vaccination(user_id=data['patient'].get('amb_cart'), size=5):
                     doc_temp = Document(f'.{os.sep}generated{os.sep}прививки.docx')
                     composer.append(doc_temp)
