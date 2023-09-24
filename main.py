@@ -1892,10 +1892,9 @@ def certificate__create_doc():
 
         doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
         doc.render(render_data)
-        doc.save(f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
-        os.system(f"start .{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
+        doc.save(f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_осмотр.docx")
+        os.system(f"start .{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_осмотр.docx")
 
-        os.system(f"start .{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} осмотр.docx")
 
     else:
 
