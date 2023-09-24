@@ -1526,11 +1526,14 @@ def certificate__editing_certificate():
                 render_data['additional_medical_information'] = add_med_info
 
                 diagnosis_certificate = render_data.get('diagnosis', '')
-                if len(diagnosis.get(1.0, 'end')) > 2:
-                    if diagnosis.get(1.0, 'end').endswith('\n'):
-                        diagnosis_certificate = f"{diagnosis.get(1.0, 'end')[:-2]}\n{diagnosis_certificate}"
-                    else:
-                        diagnosis_certificate = f"{diagnosis.get(1.0, 'end')}\n{diagnosis_certificate}"
+                if type_certificate in ('В детский лагерь',
+                                        'Об усыновлении (удочерении)'):
+
+                    if len(diagnosis.get(1.0, 'end')) > 2:
+                        if diagnosis.get(1.0, 'end').endswith('\n'):
+                            diagnosis_certificate = f"{diagnosis.get(1.0, 'end')[:-2]}\n{diagnosis_certificate}"
+                        else:
+                            diagnosis_certificate = f"{diagnosis.get(1.0, 'end')}\n{diagnosis_certificate}"
 
                 diagnosis_certificate = diagnosis_certificate.replace('Группа здоровья: _',
                                                                       f'Группа здоровья: '
@@ -1927,6 +1930,7 @@ def certificate__create_doc():
                 render_data['number_cert'] = f"№ {data['certificate'].get('doctor_district')} / {number}"
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_" \
                        f"справка_{type_certificate}.docx".replace(' в ДДУ / СШ / ВУЗ', '').replace(' ', '_')
+            print("doc_name", doc_name)
 
             master = Document(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             master.add_page_break()
