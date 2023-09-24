@@ -338,6 +338,7 @@ def statistic_write(user_id, info):
 
 
 def save_certificate_ped_div(district_pd, data_cert, type_table):
+    print(district_pd, data_cert, type_table)
     try:
 
         with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
