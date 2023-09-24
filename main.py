@@ -1914,14 +1914,13 @@ def certificate__create_doc():
 
         elif type_certificate in ('Годовой медосмотр', 'В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
             if data['certificate'].get('type_certificate').startswith('В детский лагерь'):
-                info = (data['doctor'].get('doctor_district'),
+                info = [data['doctor'].get('doctor_district'),
                         None,
                         datetime.now().strftime("%d.%m.%Y"),
                         render_data.get('name'),
                         render_data.get('birth_date'),
                         render_data.get('gender'),
-                        render_data.get('address')
-                        )
+                        render_data.get('address')]
                 number = save_certificate_ped_div(data_cert=info,
                                                   type_table='certificate_camp',
                                                   district_pd=data['doctor'].get('doctor_district'))
