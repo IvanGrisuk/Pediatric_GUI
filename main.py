@@ -603,10 +603,7 @@ def certificate__ask_type_certificate():
         data['certificate']['type_certificate'] = all_data_certificate.get('type')[int(num) - 2]
         type_cert_root.destroy()
         type_cert_root.quit()
-        if data['certificate'].get('type_certificate') in ('Об обслуживании в поликлинике', 'ЦКРОиР'):
-            certificate__create_doc()
-        else:
-            certificate__editing_certificate()
+        certificate__editing_certificate()
 
     type_cert_root = Toplevel()
     type_cert_root.title('Выбор справки')
@@ -702,7 +699,7 @@ def certificate__editing_certificate():
             btn = Radiobutton(frame_place_1, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_place, command=select_place,
-                              indicatoron=False, selectcolor='blue')
+                              indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=row, column=col, sticky='ew')
             col += 1
             if col == 3:
@@ -791,7 +788,7 @@ def certificate__editing_certificate():
                 btn = Radiobutton(frame, text=mark,
                                   font=('Comic Sans MS', data.get('text_size')),
                                   value=mark, variable=selected_health_group,
-                                  command=select_health_group, indicatoron=False, selectcolor='blue')
+                                  command=select_health_group, indicatoron=False, selectcolor='#77f1ff')
                 btn.grid(row=0, column=(all_data_certificate.get('health').get('group').index(mark) + 1), sticky='ew')
 
             frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -812,7 +809,7 @@ def certificate__editing_certificate():
                 btn = Radiobutton(frame, text=mark,
                                   font=('Comic Sans MS', data.get('text_size')),
                                   value=mark, variable=selected_fiz_group, command=select_fiz_group,
-                                  indicatoron=False, selectcolor='blue')
+                                  indicatoron=False, selectcolor='#77f1ff')
                 btn.grid(row=0, column=(all_data_certificate.get('health').get('physical').index(mark) + 1),
                          sticky='ew')
 
@@ -869,7 +866,7 @@ def certificate__editing_certificate():
             btn = Radiobutton(frame_chickenpox, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_chickenpox, command=select_chickenpox,
-                              indicatoron=False, selectcolor='blue')
+                              indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(chickenpox.index(mark) + 1), sticky='ew')
 
         Label(frame_chickenpox, text="Аллергия:", font=('Comic Sans MS', data.get('text_size')),
@@ -900,7 +897,7 @@ def certificate__editing_certificate():
             btn = Radiobutton(frame_chickenpox, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_allergy, command=select_allergy,
-                              indicatoron=False, selectcolor='blue')
+                              indicatoron=False, selectcolor='#77f1ff')
             btn.grid(column=(allergy.index(mark) + 1), row=1, sticky='ew')
             destroy_elements['allergy'].append(btn)
 
@@ -1054,7 +1051,7 @@ def certificate__editing_certificate():
             btn = Radiobutton(frame_injury_operation, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_injury_operation,
-                              command=select_injury_operation, indicatoron=False, selectcolor='blue')
+                              command=select_injury_operation, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(column=(injury_operation.index(mark) + 1), row=0, sticky='ew')
             destroy_elements['injury_operation'].append(btn)
 
@@ -1154,7 +1151,7 @@ def certificate__editing_certificate():
             btn = Radiobutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_health_group,
-                              command=select_health_group, indicatoron=False, selectcolor='blue')
+                              command=select_health_group, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('group').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -1173,7 +1170,7 @@ def certificate__editing_certificate():
             btn = Radiobutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_fiz_group,
-                              command=select_fiz_group, indicatoron=False, selectcolor='blue')
+                              command=select_fiz_group, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('physical').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -1197,7 +1194,7 @@ def certificate__editing_certificate():
             btn = Checkbutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               variable=regime_vars.get(mark), command=select_regime,
-                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='blue')
+                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('regime').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -1216,7 +1213,7 @@ def certificate__editing_certificate():
             btn = Radiobutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_diet, command=select_diet,
-                              indicatoron=False, selectcolor='blue')
+                              indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('diet').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -1240,7 +1237,7 @@ def certificate__editing_certificate():
             btn = Checkbutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               variable=desk_vars.get(mark), command=select_desk,
-                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='blue')
+                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('desk').index(mark) + 1), sticky='ew')
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -1297,7 +1294,7 @@ def certificate__editing_certificate():
             btn = Checkbutton(frame, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               variable=sanatorium_profile.get(mark), command=select_profile,
-                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='blue')
+                              onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=row, column=col, sticky='ew')
             col += 1
             if col == 3:
@@ -1617,6 +1614,9 @@ def certificate__editing_certificate():
 
     Button(edit_cert_root, text='Создать справку', command=create_certificate,
            font=('Comic Sans MS', data.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
+
+    if type_certificate in ('Об обслуживании в поликлинике', 'ЦКРОиР'):
+        create_certificate()
 
     edit_cert_root.mainloop()
 
@@ -2091,7 +2091,7 @@ def analyzes__ask_analyzes():
                 btn = Checkbutton(frame, text=analyzes,
                                   font=('Comic Sans MS', data.get('text_size')),
                                   variable=analyzes_category_vars.get(analyzes), command=select_category_analyzes,
-                                  onvalue=1, offvalue=0, indicatoron=False, selectcolor='blue', bg='#cdcdcd')
+                                  onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff', bg='#cdcdcd')
                 btn.grid(row=row, column=col, sticky='ew')
                 analyzes_buttons[analyzes] = btn
                 col += 1
@@ -2105,7 +2105,7 @@ def analyzes__ask_analyzes():
                 btn = Checkbutton(frame, text=analyzes,
                                   font=('Comic Sans MS', data.get('text_size')),
                                   variable=analyzes_vars[category].get(analyzes), command=select_analyzes,
-                                  onvalue=1, offvalue=0, indicatoron=False, selectcolor='blue', bg='#cdcdcd')
+                                  onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff', bg='#cdcdcd')
                 btn.grid(row=row, column=col, sticky='ew')
                 analyzes_buttons[analyzes] = btn
                 col += 1
@@ -2336,7 +2336,7 @@ def direction__ask_type_blanks():
         btn = Radiobutton(frame_where, text=mark,
                           font=('Comic Sans MS', data.get('text_size')),
                           value=mark, variable=selected_where,
-                          command=select_where, indicatoron=False, selectcolor='blue')
+                          command=select_where, indicatoron=False, selectcolor='#77f1ff')
         btn.grid(row=0, column=(type_direct.index(mark) + 1), sticky='ew')
 
     frame_where.columnconfigure(index='all', minsize=40, weight=1)
@@ -2364,7 +2364,7 @@ def direction__ask_type_blanks():
             btn = Radiobutton(frame_hospital, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_hospital,
-                              command=select_hospital, indicatoron=False, selectcolor='blue')
+                              command=select_hospital, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=row, column=col, sticky='ew')
             col += 1
             if col == 5:
@@ -2389,7 +2389,7 @@ def direction__ask_type_blanks():
         btn = Radiobutton(frame_doctor, text=mark,
                           font=('Comic Sans MS', data.get('text_size')),
                           value=mark, variable=selected_doctor,
-                          command=select_doctor, indicatoron=False, selectcolor='blue')
+                          command=select_doctor, indicatoron=False, selectcolor='#77f1ff')
         btn.grid(row=row, column=col, sticky='ew')
         col += 1
         if col == 5:
@@ -3034,15 +3034,15 @@ Label(frame_main, text='Что хотите сделать?', font=('Comic Sans 
       anchor='center').grid(column=0, row=0, columnspan=2, sticky='ew')
 
 Button(frame_main, text='Справка', command=certificate_cmd,
-       font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=1)
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=1, sticky='ew')
 Button(frame_main, text='Анализы', command=analyzes_cmd,
-       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=1)
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=1, sticky='ew')
 Button(frame_main, text='Вкладыши', command=blanks_cmd,
-       font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=2)
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=2, sticky='ew')
 Button(frame_main, text='Прививки', command=vaccination_cmd,
-       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=2)
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=2, sticky='ew')
 Button(frame_main, text='Направления', command=direction_cmd,
-       font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=3, columnspan=2)
+       font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=3, columnspan=2, sticky='ew')
 
 frame_main.columnconfigure(index='all', minsize=40, weight=1)
 frame_main.rowconfigure(index='all', minsize=20)
