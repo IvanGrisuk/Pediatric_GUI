@@ -1,16 +1,16 @@
+import shutil
+import pyperclip
+import os
+import random
+
 from tkinter import *
 import sqlite3 as sq
 from tkinter.ttk import Combobox
 from tkinter import messagebox, Label, Frame
 
-import shutil
-
-import pyperclip
 
 from datetime import datetime, timedelta
 from tkinter.scrolledtext import ScrolledText
-import os
-import random
 
 from docx.enum.section import WD_ORIENT
 from docx.shared import Cm
@@ -373,6 +373,7 @@ def save_certificate_ped_div(district_pd, data_cert, type_table):
 
 
 def append_doctor_data():
+    print("append_doctor_data")
     with sq.connect('data_base.db') as conn:
         cur = conn.cursor()
 
@@ -381,9 +382,10 @@ def append_doctor_data():
     doctor_name, district, ped_div, manager, text_size = cur.fetchone()
     user['text_size'] = int(text_size)
     user['doctor_name'] = doctor_name
-    user['district'] = district
+    user['doctor_district'] = district
     user['ped_div'] = ped_div
     user['manager'] = manager
+    print(user)
 
 
 def data_base():
@@ -579,6 +581,7 @@ def certificate_cmd():
 
         if not data.get('doctor'):
             data['doctor'] = dict()
+        print('user.get', user.get('doctor_district', ''))
         data['doctor']['doctor_name'] = user.get('doctor_name', '')
         data['doctor']['manager'] = user.get('manager', '')
         data['doctor']['ped_div'] = user.get('ped_div', '')
@@ -600,7 +603,10 @@ def certificate__ask_type_certificate():
         data['certificate']['type_certificate'] = all_data_certificate.get('type')[int(num) - 2]
         type_cert_root.destroy()
         type_cert_root.quit()
-        certificate__editing_certificate()
+        if data['certificate'].get('type_certificate') in ('Об обслуживании в поликлинике', 'ЦКРОиР'):
+            certificate__create_doc()
+        else:
+            certificate__editing_certificate()
 
     type_cert_root = Toplevel()
     type_cert_root.title('Выбор справки')
@@ -1420,6 +1426,11 @@ def certificate__editing_certificate():
                         f"{render_data.get('diagnosis')}" \
                         f"  Группа по физкультуре: {data['certificate'].get('physical')};"
 
+            if type_certificate == 'Может работать по специальности...':
+
+                render_data['diagnosis'] = \
+                    f"{render_data.get('diagnosis')} {hobby_txt.get()}"
+
             if type_certificate in ('Годовой медосмотр',
                                     'Оформление в ДДУ / СШ / ВУЗ',
                                     'В детский лагерь',
@@ -2023,8 +2034,9 @@ def analyzes__ask_analyzes():
                     if not user_analyzes.get(category_b):
                         user_analyzes[category_b] = list()
                     user_analyzes[category_b].append(analyzes_lbl)
-        analyzes__create_doc(user_analyzes)
         analyzes_root.quit()
+        analyzes_root.destroy()
+        analyzes__create_doc(user_analyzes)
 
     def select_analyzes():
         for category_b in all_blanks_anal:
@@ -2314,6 +2326,8 @@ def direction__ask_type_blanks():
             frame_doctor.pack(fill='both', expand=True, padx=2, pady=2)
             but_create_doc.pack(fill='both', expand=True, padx=2, pady=2)
         else:
+            type_blanks_root.quit()
+            type_blanks_root.destroy()
             direction__create_direction()
 
     for mark in type_direct:
@@ -2387,6 +2401,8 @@ def direction__ask_type_blanks():
         if not data.get('hospital'):
             messagebox.showinfo('Ошибка', 'Не указан стационар')
         else:
+            type_blanks_root.quit()
+            type_blanks_root.destroy()
             direction__create_direction()
 
     but_create_doc = Button(type_blanks_root, text='Создать направление', command=create_doc,
@@ -2453,6 +2469,8 @@ def direction__create_direction():
 
     os.system(f"start .{os.sep}generated{os.sep}Направление.docx")
     statistic_write('приложение', f"Направления_DOC_{data.get('doctor_name')}")
+    data.clear()
+    render_data.clear()
 
 
 def create_vaccination(user_id, size):
