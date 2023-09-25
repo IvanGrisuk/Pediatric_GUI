@@ -2345,7 +2345,7 @@ def direction__ask_type_blanks():
 
     frame_hospital = Frame(type_blanks_root, borderwidth=1, relief="solid", padx=4, pady=4)
     Label(frame_hospital, text="Куда направить:",
-          font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, rowspan=5)
+          font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, columnspan=5)
 
     selected_hospital = StringVar()
 
@@ -2358,7 +2358,7 @@ def direction__ask_type_blanks():
             col = 0
             row += 2
             Label(frame_hospital, text=mark,
-                  font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=col, row=row - 1, rowspan=5)
+                  font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=col, row=row - 1, columnspan=5)
         else:
 
             btn = Radiobutton(frame_hospital, text=mark,
@@ -2376,7 +2376,7 @@ def direction__ask_type_blanks():
 
     frame_doctor = Frame(type_blanks_root, borderwidth=1, relief="solid", padx=4, pady=4)
     Label(frame_doctor, text="На консультацию:",
-          font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, rowspan=5)
+          font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, columnspan=5)
 
     selected_doctor = StringVar()
 
