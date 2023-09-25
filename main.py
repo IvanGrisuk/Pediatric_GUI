@@ -1664,6 +1664,7 @@ def certificate__create_doc():
                     render_data.get('address'),
                     type_cert,
                     doctor_name]
+            print(info)
             number = save_certificate_ped_div(data_cert=info,
                                               type_table='certificate_ped_div',
                                               district_pd=pediatric_division)
@@ -1933,6 +1934,7 @@ def certificate__create_doc():
                         render_data.get('birth_date'),
                         render_data.get('gender'),
                         render_data.get('address')]
+                print(info)
                 number = save_certificate_ped_div(data_cert=info,
                                                   type_table='certificate_camp',
                                                   district_pd=data['doctor'].get('doctor_district'))
