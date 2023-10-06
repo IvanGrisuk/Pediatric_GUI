@@ -9,7 +9,6 @@ from tkinter.ttk import Combobox
 from tkinter import messagebox, Label, Frame
 import tkinter as tk
 
-
 from datetime import datetime, timedelta
 from tkinter.scrolledtext import ScrolledText
 
@@ -443,22 +442,21 @@ all_data_diagnosis = {
                       "полоскать горло", "орошать горло", "промывать нос",
                       "диета", "Смекта"),
 
-                      ("Антибиотик Амоксициллин",
-                        "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 250", "таб. 500", "таб. 1000",
-                        "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут"),
+                     ("Антибиотик Амоксициллин",
+                      "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 250", "таб. 500", "таб. 1000",
+                      "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут"),
 
-                       ("Антибиотик Амоксициллин + клавулановая кислота",
-                        "Форма", "сусп. 125/31.25/5", "сусп. 200/28.5/5",
-                        "сусп. 250/62.5/5", "сусп. 400/57/5", "сусп. 600/42.9/5",
-                         "таб. 250/125", "таб. 500/125", "таб. 875/125",
-                        "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут"),
+                     ("Антибиотик Амоксициллин + клавулановая кислота",
+                      "Форма", "сусп. 125/31.25/5", "сусп. 200/28.5/5",
+                      "сусп. 250/62.5/5", "сусп. 400/57/5", "сусп. 600/42.9/5",
+                      "таб. 250/125", "таб. 500/125", "таб. 875/125",
+                      "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут"),
 
-                       ("Антибиотик Цефуроксим",
-                        "Форма", "сусп. 125/5", "таб. 125", "таб. 250",
-                        "Дозировка", "20 мг/кг/сут", "30 мг/кг/сут")
-                       )
+                     ("Антибиотик Цефуроксим",
+                      "Форма", "сусп. 125/5", "таб. 125", "таб. 250",
+                      "Дозировка", "20 мг/кг/сут", "30 мг/кг/сут")
+                     )
 }
-
 
 render_data = dict()
 
@@ -883,7 +881,6 @@ def certificate__editing_certificate():
                     hobby_txt.insert('end', f", {hobby}")
                 else:
                     hobby_txt.insert('end', ' и участия в соревнованиях')
-
 
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
         if type_certificate == 'На кружки и секции':
@@ -1564,7 +1561,6 @@ def certificate__editing_certificate():
                         f"  Группа по физкультуре: {data['certificate'].get('physical')};"
 
             if type_certificate == 'Может работать по специальности...':
-
                 render_data['diagnosis'] = \
                     f"{render_data.get('diagnosis')} {hobby_txt.get()}"
 
@@ -1781,8 +1777,8 @@ def certificate__create_doc():
     if type_certificate in ('ЦКРОиР', 'О нуждаемости в сан-кур лечении',
                             'Об усыновлении (удочерении)', 'Бесплатное питание') \
             or (data['certificate'].get('type_certificate') == 'Оформление в ДДУ / СШ / ВУЗ' and not
-                ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
-                 ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
+    ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
+     ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
         doctor_name, district, pediatric_division = (data['doctor'].get('doctor_name'),
                                                      data['doctor'].get('doctor_district'),
                                                      data['doctor'].get('ped_div'))
@@ -2001,7 +1997,7 @@ def certificate__create_doc():
             'школе с _______ лет', f"школе с {age} лет")
 
     if (type_certificate == "Оформление в ДДУ / СШ / ВУЗ" and "Детское Дошкольное Учреждение"
-            not in render_data.get('place_of_requirement')) or type_certificate == 'Об усыновлении (удочерении)':
+        not in render_data.get('place_of_requirement')) or type_certificate == 'Об усыновлении (удочерении)':
         doc_name = ""
         if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_справка_Оформление.docx"
@@ -2130,7 +2126,6 @@ def certificate__create_doc():
 
 
 def analyzes_cmd():
-
     if not patient.get('name'):
         messagebox.showinfo('Ошибка', "Не выбран пациент!")
     else:
@@ -2152,7 +2147,6 @@ def analyzes_cmd():
 
 
 def analyzes__ask_analyzes():
-
     analyzes_root = Toplevel()
     analyzes_root.title('Выбор анализов')
     analyzes_root.config(bg='white')
@@ -2195,7 +2189,6 @@ def analyzes__ask_analyzes():
 
                     for category_b in all_blanks_anal:
                         if button in all_blanks_anal.get(category_b):
-
                             active_btn = analyzes_vars[category_b].get(button)
                             active_btn.set(1)
 
@@ -2256,7 +2249,6 @@ def analyzes__ask_analyzes():
 
 
 def analyzes__create_doc(analyzes):
-
     render_data['ped_div'] = data.get('ped_div')
     render_data['district'] = data.get('patient_district')
     render_data['doc_name'] = data.get('doctor_name')
@@ -2369,9 +2361,9 @@ def create_blanks__ask_type_blanks():
             if i.isdigit():
                 num += i
 
-        doc = DocxTemplate(f".{os.sep}example{os.sep}амб_карта{os.sep}{blanks[int(num)-2]}.docx")
+        doc = DocxTemplate(f".{os.sep}example{os.sep}амб_карта{os.sep}{blanks[int(num) - 2]}.docx")
         doc.render(render_data)
-        file_name = f".{os.sep}generated{os.sep}{blanks[int(num)-2]}_{data.get('patient_name').split()[0]}.docx"
+        file_name = f".{os.sep}generated{os.sep}{blanks[int(num) - 2]}_{data.get('patient_name').split()[0]}.docx"
         doc.save(file_name)
         os.system(f"start {file_name}")
         statistic_write('приложение', f"Вкладыши_DOC_{data.get('doctor_name')}")
@@ -2831,7 +2823,6 @@ def examination_cmd():
             destroy_elements['complaints'] = list()
             data['examination']['complaints_buttons'] = dict()
 
-
             frame_complaints_1 = Frame(frame_complaints)
             frame_loc = Frame(frame_complaints_1)
 
@@ -2863,11 +2854,10 @@ def examination_cmd():
                     destroy_elements['complaints'].append(frame_loc)
 
                     label_complaints_loc = Label(master=frame_loc, text=f"{mark[0]}",
-                                             font=('Comic Sans MS', user.get('text_size')), bg='white')
+                                                 font=('Comic Sans MS', user.get('text_size')), bg='white')
                     label_complaints_loc.grid(row=row, column=col, sticky='ew')
                     col += 1
                     for mark_2 in mark[1:]:
-
                         btn = Checkbutton(frame_loc, text=mark_2,
                                           font=('Comic Sans MS', user.get('text_size')),
                                           onvalue=1, offvalue=0,
@@ -2991,7 +2981,7 @@ def examination_cmd():
         num = f"{event.widget}".split('.!')[-2].replace('frame', '')
         if not num:
             num = '1'
-        data['examination']['examination_frame'] = data['examination'].get('examination_frame_list')[int(num)-1]
+        data['examination']['examination_frame'] = data['examination'].get('examination_frame_list')[int(num) - 1]
         for el in destroy_elements.get('examination'):
             el.destroy()
         destroy_elements['examination'].clear()
@@ -3104,8 +3094,8 @@ def examination_cmd():
 
     frame_diagnosis_txt = Frame(examination_root, borderwidth=1, relief="solid")
     txt_diagnosis = ScrolledText(frame_diagnosis_txt, width=70, height=3,
-                                   font=('Comic Sans MS', user.get('text_size')),
-                                   wrap="word")
+                                 font=('Comic Sans MS', user.get('text_size')),
+                                 wrap="word")
     txt_diagnosis.pack(fill='both', expand=True)
     txt_diagnosis.insert(1.0, 'Диагноз: ')
     frame_diagnosis_txt.pack(fill='both', expand=True)
@@ -3263,7 +3253,8 @@ def examination_cmd():
                             btn = Checkbutton(frame_loc, text=mark_2,
                                               font=('Comic Sans MS', user.get('text_size')),
                                               onvalue=1, offvalue=0,
-                                              variable=data['examination']['prescription_but'].get(f"{mark[0]}_{mark_2}"),
+                                              variable=data['examination']['prescription_but'].get(
+                                                  f"{mark[0]}_{mark_2}"),
                                               command=select_prescription,
                                               indicatoron=False, selectcolor='#77f1ff')
                             btn.grid(row=row, column=col, sticky='ew')
@@ -3294,17 +3285,23 @@ def examination_cmd():
     paste_frame_prescription()
 
     def create_examination_doc():
-        render_data['patient_info'] = f"ФИО: {patient.get('name')}\tдата рождения: {patient.get('birth_date')}\t" \
-               f"{patient.get('patient_district')}-й уч\nМесто осмотра: {selected_place.get()}"
+        date_now, time_now = datetime.now().strftime("%d.%m.%Y %H:%M:%S").split()
+        render_data['patient_info'] = f"Дата: {date_now}\t Время: {time_now}\n" \
+                                      f"ФИО: {patient.get('name')}\tдата рождения: {patient.get('birth_date')}\t" \
+                                      f"{patient.get('patient_district')}-й уч\nМесто осмотра: {selected_place.get()}"
         render_data['complaints'] = f"{txt_complaints.get(1.0, 'end')}\n"
-        render_data['examination'] = f"Данные объективного обследования: {txt_examination.get(1.0, 'end')}"
-        render_data['txt_diagnosis'] = f"{txt_prescription.get(1.0, 'end')}"
+        render_data['examination'] = f" {txt_examination.get(1.0, 'end')}"
+        render_data['diagnosis'] = f"{txt_diagnosis.get(1.0, 'end')}"
         render_data['prescription'] = f"{txt_prescription.get(1.0, 'end')}"
+
+        doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра.docx")
+        doc.render(render_data)
+        doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_осмотр.docx"
+        doc.save(doc_name)
+        os.system(f"start {doc_name}")
 
     button_create_examination_doc = Button(examination_root, text='Создать документ', command=create_examination_doc)
     button_create_examination_doc.pack(fill='both', expand=True, padx=2, pady=2)
-
-
 
 
 def create_vaccination(user_id, size):
