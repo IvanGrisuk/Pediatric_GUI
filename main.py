@@ -599,6 +599,7 @@ class ExaminationRoot(tk.Toplevel):
                     doc.save(doc_name)
                     os.system(f"start {doc_name}")
                     render_data.clear()
+                    data.clear()
                     self.destroy()
 
             def paste_hr_br():
