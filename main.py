@@ -540,7 +540,7 @@ class ExaminationRoot(tk.Toplevel):
                     if type_ln == 'Уход обеспечен':
                         add_info += "Уход обеспечен\n"
                     elif type_ln in ('Лист ВН', 'Справка ВН'):
-                        add_info += f"{type_ln} №{txt_ln_num.get()} c {txt_ln_from.get()} по {txt_ln_until.get()}\n"
+                        add_info += f"{type_ln} № {txt_ln_num.get()} c {txt_ln_from.get()} по {txt_ln_until.get()}\n"
                     if txt_second_examination.get():
                         add_info += f"Повторный осмотр: {txt_second_examination.get()}\n"
                     add_info += f"Врач-педиатр: {user.get('doctor_name')}"
@@ -598,6 +598,8 @@ class ExaminationRoot(tk.Toplevel):
                     doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_осмотр.docx"
                     doc.save(doc_name)
                     os.system(f"start {doc_name}")
+                    render_data.clear()
+                    self.destroy()
 
             def paste_hr_br():
                 age = get_age(patient.get('birth_date'))
