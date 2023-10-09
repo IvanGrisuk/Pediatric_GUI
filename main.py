@@ -492,7 +492,7 @@ class ExaminationRoot(tk.Toplevel):
         self.scroll_x = tk.Scrollbar(self, orient=tk.HORIZONTAL)
         self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, width=user.get('text_size', 10)*3)
 
-        self.canvas = tk.Canvas(self, height=self.winfo_screenheight()-20,
+        self.canvas = tk.Canvas(self, height=self.winfo_screenheight()-100,
                                 xscrollcommand=self.scroll_x.set,
                                 yscrollcommand=self.scroll_y.set)
         self.scroll_x.config(command=self.canvas.xview)
@@ -1748,8 +1748,7 @@ class ExaminationRoot(tk.Toplevel):
     def resize(self, event):
         region = self.canvas.bbox(tk.ALL)
         self.canvas.configure(scrollregion=region)
-
-        self.minsize(int(self.examination_root.winfo_width()), self.winfo_screenheight()-20)
+        self.minsize(width=int(self.examination_root.winfo_width()), height=self.canvas.winfo_screenheight()-100)
 
         self.canvas['width'] = int(self.examination_root.winfo_width())
 
