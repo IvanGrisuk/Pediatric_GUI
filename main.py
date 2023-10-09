@@ -1460,7 +1460,7 @@ class ExaminationRoot(tk.Toplevel):
                     paste_calendar(text_field='ln_from__Больничный с ...')
 
                 def calendar_ln_until():
-                    paste_calendar(text_field='ln_until__Больничный с ...')
+                    paste_calendar(text_field='ln_until__Больничный по ...')
 
                 def calendar_second_examination():
                     paste_calendar(text_field='second_examination__Повторный осмотр')
@@ -2313,6 +2313,19 @@ def certificate__editing_certificate():
             frame.pack(fill='both', expand=True, padx=2, pady=2)
 
     if type_certificate == 'По выздоровлении':
+        def calendar_ori_from():
+            paste_calendar(text_field='ori_from__Болеет с ...')
+
+        def calendar_ori_until():
+            paste_calendar(text_field='ori_until__Болеет по ...')
+
+        def calendar_ori_home_regime():
+            paste_calendar(text_field='ori_home_regime__Домашний режим до ...')
+
+        def calendar_ori_add_to_childhood():
+            paste_calendar(text_field='ori_add_to_childhood__Допуск в детский коллектив с ...')
+
+
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Диагноз:",
@@ -2324,17 +2337,43 @@ def certificate__editing_certificate():
         combo_diagnosis.grid(column=1, row=0)
 
         Label(frame, text="c",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=2, row=0)
+              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=2, row=0, sticky='ew')
         ori_from = Entry(frame, width=15,
                          font=('Comic Sans MS', data.get('text_size')))
         ori_from.grid(column=3, row=0)
 
+        Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
+               command=calendar_ori_from).grid(row=1, column=3, sticky='ew')
+
         Label(frame, text="по",
-              font=('Comic Sans MS', data.get('text_size')), bg='white', compound="center").grid(column=4, row=0)
+              font=('Comic Sans MS', data.get('text_size')), bg='white',
+              compound="center").grid(column=4, row=0, sticky='ew')
         ori_until = Entry(frame, width=15,
                           font=('Comic Sans MS', data.get('text_size')))
         ori_until.grid(column=5, row=0)
         ori_until.insert(0, datetime.now().strftime("%d.%m.%Y"))
+        Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
+               command=calendar_ori_until).grid(row=1, column=5, sticky='ew')
+
+        Label(frame, text="Домашний режим до:",
+              font=('Comic Sans MS', data.get('text_size')),
+              bg='white', compound="center").grid(column=0, row=3, columnspan=2, sticky='ew')
+        ori_home_regime = Entry(frame, width=15, font=('Comic Sans MS', data.get('text_size')))
+        ori_home_regime.grid(column=2, row=3)
+        Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
+               command=calendar_ori_home_regime).grid(row=3, column=3, sticky='ew', columnspan=3)
+
+        Label(frame, text="Допуск в детский коллектив с",
+              font=('Comic Sans MS', data.get('text_size')),
+              bg='white', compound="center").grid(column=0, row=4, columnspan=2, sticky='ew')
+        ori_add_to_childhood = Entry(frame, width=15, font=('Comic Sans MS', data.get('text_size')))
+        ori_add_to_childhood.grid(column=2, row=4)
+        Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
+               command=calendar_ori_add_to_childhood).grid(row=4, column=3, sticky='ew', columnspan=3)
+
+
+
+
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
         frame.rowconfigure(index='all', minsize=20)
@@ -2875,6 +2914,13 @@ def certificate__editing_certificate():
                 render_data['diagnosis'] = f"{combo_diagnosis.get()} c {ori_from.get()} по {ori_until.get()}"
                 render_data['date_of_issue'] = ori_until.get()
 
+                if ori_home_regime.get():
+                    render_data['recommendation'] = f"{render_data.get('recommendation')}\n" \
+                                                    f"Домашний режим до {ori_home_regime.get()}"
+                if ori_add_to_childhood.get():
+                    render_data['recommendation'] = f"{render_data.get('recommendation')}\n" \
+                                                    f"Допуск в детский коллектив с {ori_add_to_childhood.get()}"
+
             if type_certificate == 'Годовой медосмотр':
                 date = data['patient'].get('birth_date')
                 while datetime.now() > datetime.strptime(date, "%d.%m.%Y"):
@@ -3098,6 +3144,152 @@ def certificate__editing_certificate():
 
     if type_certificate in ('Об обслуживании в поликлинике', 'ЦКРОиР'):
         create_certificate()
+
+    def paste_calendar(text_field):
+        command, marker = text_field.split('__')
+
+        calendar_root = Toplevel()
+        calendar_root.title(f'Календарь {marker}')
+        calendar_root.config(bg='white')
+
+        selected_day = StringVar()
+        actual_data = dict()
+
+        now = datetime.now()
+        actual_data['year'] = now.year
+        actual_data['month'] = now.month
+
+        def prev_month():
+            curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+            new = curr - timedelta(days=1)
+            actual_data['year'] = int(new.year)
+            actual_data['month'] = int(new.month)
+            create_calendar()
+
+        def next_month():
+            curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+            new = curr + timedelta(days=31)
+            actual_data['year'] = int(new.year)
+            actual_data['month'] = int(new.month)
+            create_calendar()
+
+        def select_day():
+            day = selected_day.get()
+            if day.isdigit():
+                year = actual_data.get('year')
+                month = actual_data.get('month')
+                if len(day) == 1:
+                    day = f"0{day}"
+                answer = f"{day}.{month}.{year}"
+            else:
+                answer = datetime.now().strftime("%d.%m.%Y")
+
+            if command == 'ori_from':
+                ori_from.delete(0, 'end')
+                ori_from.insert(0, answer)
+
+            if command == 'ori_until':
+                ori_until.delete(0, 'end')
+                ori_until.insert(0, answer)
+
+            if command == 'ori_home_regime':
+                ori_home_regime.delete(0, 'end')
+                ori_home_regime.insert(0, answer)
+
+            if command == 'ori_add_to_childhood':
+                ori_add_to_childhood.delete(0, 'end')
+                ori_add_to_childhood.insert(0, answer)
+
+            calendar_root.destroy()
+
+        frame_month_year = Frame(calendar_root, relief="solid", padx=1, pady=1)
+
+        but_prev_month = Button(frame_month_year, text='<', command=prev_month,
+                                font=('Comic Sans MS', user.get('text_size')))
+        but_prev_month.grid(column=0, row=0, sticky='ew')
+
+        lbl_month_year = Label(frame_month_year, text="", font=('Comic Sans MS', user.get('text_size')),
+                               bg='white')
+        lbl_month_year.grid(column=1, row=0, sticky='ew')
+
+        but_next_month = Button(frame_month_year, text='>', command=next_month,
+                                font=('Comic Sans MS', user.get('text_size')))
+        but_next_month.grid(column=2, row=0, sticky='ew')
+
+        frame_month_year.columnconfigure(index='all', minsize=40, weight=1)
+        frame_month_year.rowconfigure(index='all', minsize=20)
+        frame_month_year.pack(fill='both', expand=True)
+
+        def create_calendar():
+            year = actual_data.get('year')
+            month = actual_data.get('month')
+
+            if destroy_elements.get('calendar_frame_days'):
+                frame_days = destroy_elements.get('calendar_frame_days')
+                frame_days.destroy()
+
+            frame_days = Frame(calendar_root, relief="solid", padx=1, pady=1)
+            destroy_elements['calendar_frame_days'] = frame_days
+
+            month_name = {
+                'January': 'Январь',
+                'February': 'Февраль',
+                'March': 'Март',
+                'April': 'Апрель',
+                'May': 'Май',
+                'June': 'Июнь',
+                'July': 'Июль',
+                'August': 'Август',
+                'September': 'Сентябрь',
+                'October': 'Октябрь',
+                'November': 'Ноябрь',
+                'December': 'Декабрь'
+            }
+
+            lbl_month_year['text'] = f"{month_name.get(calendar.month_name[month])} {str(year)}"
+
+            # Second row - Week Days
+            column = 0
+            for day in ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]:
+                lbl = Label(frame_days, text=day, font=('Comic Sans MS', user.get('text_size')), bg='white')
+                lbl.grid(column=column, row=0, sticky='ew')
+                column += 1
+
+            row, col = 0, 0
+
+            my_calendar = calendar.monthcalendar(year, month)
+            for week in my_calendar:
+                row += 1
+                col = 0
+                for day in week:
+                    if day == 0:
+                        col += 1
+                    else:
+                        day = str(day)
+                        btn = Radiobutton(frame_days, text=day,
+                                          font=('Comic Sans MS', user.get('text_size')),
+                                          value=day, variable=selected_day, command=select_day,
+                                          indicatoron=False, selectcolor='#77f1ff')
+                        btn.grid(row=row, column=col, sticky='ew')
+                        col += 1
+
+                        if datetime.strptime(f"{day}.{month}.{year}", "%d.%m.%Y").weekday() in (5, 6):
+                            btn['bg'] = '#b4ffff'
+                        if datetime.now().year == year and datetime.now().month == month and datetime.now().day == int(
+                                day):
+                            btn['bg'] = '#ff7b81'
+
+            btn = Radiobutton(frame_days, text="Сегодня",
+                              font=('Comic Sans MS', user.get('text_size')),
+                              value="Сегодня", variable=selected_day, command=select_day,
+                              indicatoron=False, selectcolor='#77f1ff')
+            btn.grid(row=row + 1, column=0, sticky='ew', columnspan=7)
+
+            frame_days.columnconfigure(index='all', minsize=40, weight=1)
+            frame_days.rowconfigure(index='all', minsize=20)
+            frame_days.pack(fill='both', expand=True)
+
+        create_calendar()
 
     edit_cert_root.mainloop()
 
@@ -4444,6 +4636,13 @@ def write_lbl_doc():
                       f'Зав: {info_doc[3]};    ' \
                       f'Участок: {info_doc[1]};    ' \
                       f'ПО: {info_doc[2]}'
+    if 'константинова' in info_doc[0].lower():
+        lbl_doc['text'] = f'Учетная запись:\n' \
+                          f'Доктор: Яночка Константиновна\n' \
+                          f'Зав: {info_doc[3]};    ' \
+                          f'Участок: {info_doc[1]};    ' \
+                          f'ПО: {info_doc[2]}'
+
     root.update()
     frame_main.update()
 
