@@ -13,7 +13,6 @@ from tkinter.scrolledtext import ScrolledText
 from datetime import datetime, timedelta
 import calendar
 
-
 from docx.enum.section import WD_ORIENT
 from docx.shared import Cm
 from docx.shared import Pt
@@ -490,9 +489,9 @@ class ExaminationRoot(tk.Toplevel):
     def __init__(self):
         super().__init__()
         self.scroll_x = tk.Scrollbar(self, orient=tk.HORIZONTAL)
-        self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, width=user.get('text_size', 10)*3)
+        self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, width=user.get('text_size', 10) * 3)
 
-        self.canvas = tk.Canvas(self, height=self.winfo_screenheight()-100,
+        self.canvas = tk.Canvas(self, height=self.winfo_screenheight() - 100,
                                 xscrollcommand=self.scroll_x.set,
                                 yscrollcommand=self.scroll_y.set)
         self.scroll_x.config(command=self.canvas.xview)
@@ -508,7 +507,26 @@ class ExaminationRoot(tk.Toplevel):
             selected_diagnosis = StringVar()
             selected_type_ln = StringVar()
 
-            def create_examination_doc():
+            def change_all_kb_status():
+                if not data['examination'].get('all_kb_status'):
+                    for marker in ('complaints', 'examination', 'prescription'):
+                        data['examination'][f'open_{marker}_kb'] = True
+
+                    data['examination']['all_kb_status'] = True
+                    button_change_all_kb_status['text'] = 'Открыть\nвсе\nклавиатуры'
+                else:
+                    for marker in ('complaints', 'examination', 'prescription'):
+                        data['examination'][f'open_{marker}_kb'] = False
+                    data['examination']['all_kb_status'] = False
+                    button_change_all_kb_status['text'] = 'Скрыть\nвсе\nклавиатуры'
+
+                change_complaints_kb_status()
+                change_examination_kb_status()
+                change_prescription_kb_status()
+
+                self.update()
+
+            def create_examination_doc(doc_size):
 
                 type_ln = selected_type_ln.get()
                 if type_ln in ('Лист ВН', 'Справка ВН') and not txt_ln_num.get():
@@ -516,9 +534,7 @@ class ExaminationRoot(tk.Toplevel):
                     txt_ln_num.focus()
                 elif not selected_place.get():
                     messagebox.showerror('Ошибка!', 'Не указано место осмотра!')
-                elif not selected_place.get():
-                    messagebox.showerror('Ошибка!', 'Не указано место осмотра!')
-
+                    frame_1.focus()
                 else:
                     render_data.clear()
 
@@ -541,7 +557,13 @@ class ExaminationRoot(tk.Toplevel):
                     if type_ln == 'Уход обеспечен':
                         add_info += "Уход обеспечен\n"
                     elif type_ln in ('Лист ВН', 'Справка ВН'):
-                        add_info += f"{type_ln} № {txt_ln_num.get()} c {txt_ln_from.get()} по {txt_ln_until.get()}\n"
+                        if data['examination'].get('ln_closed'):
+                            if type_ln == 'Лист ВН':
+                                add_info += f"{type_ln} № {txt_ln_num.get()} закрыт к труду\n"
+                            else:
+                                add_info += f"{type_ln} № {txt_ln_num.get()} закрыта к труду\n"
+                        else:
+                            add_info += f"{type_ln} № {txt_ln_num.get()} c {txt_ln_from.get()} по {txt_ln_until.get()}\n"
                     if txt_second_examination.get():
                         add_info += f"Повторный осмотр: {txt_second_examination.get()}\n"
                     add_info += f"Врач-педиатр: {user.get('doctor_name')}"
@@ -575,7 +597,10 @@ class ExaminationRoot(tk.Toplevel):
                         for word in txt_ln_num.get().strip():
                             if word.isdigit():
                                 num_ln += word
-                        ln_data = f"{type_ln}__{num_ln}__{txt_ln_from.get().strip()}__{txt_ln_until.get().strip()}"
+                        if data['examination'].get('ln_closed'):
+                            ln_data = f"{type_ln}__{num_ln}__closed"
+                        else:
+                            ln_data = f"{type_ln}__{num_ln}__{txt_ln_from.get().strip()}__{txt_ln_until.get().strip()}"
                     else:
                         ln_data = type_ln
 
@@ -593,7 +618,7 @@ class ExaminationRoot(tk.Toplevel):
                         cur = conn.cursor()
                         cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", save_info_examination)
 
-                    doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра.docx")
+                    doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
                     doc.render(render_data)
                     doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
                     doc.save(doc_name)
@@ -601,7 +626,6 @@ class ExaminationRoot(tk.Toplevel):
                     render_data.clear()
                     data.clear()
                     self.destroy()
-
 
             def paste_hr_br():
                 age = get_age(patient.get('birth_date'))
@@ -700,21 +724,15 @@ class ExaminationRoot(tk.Toplevel):
                     if text != 'Рекомендации: ':
                         txt_prescription.insert(1.0, text)
 
-                    select_prescription()
-
-                    for marker in ('complaints', 'examination', 'prescription'):
-                        data['examination'][f'open_{marker}_kb'] = True
-
                     txt_diagnosis.delete(1.0, 'end')
                     txt_diagnosis.insert(1.0, f'Диагноз: {selected_diagnosis.get()} ')
 
-                    change_complaints_kb_status()
-                    change_examination_kb_status()
-                    change_prescription_kb_status()
-
+                    select_prescription()
                     paste_diagnosis_kb()
-
-                    frame_diagnosis.update()
+                    if not data['examination'].get('all_kb_status'):
+                        change_all_kb_status()
+                    else:
+                        self.update()
 
                 row, col = 0, 0
                 for mark in all_data_diagnosis.get('diagnosis')[1:]:
@@ -773,13 +791,22 @@ class ExaminationRoot(tk.Toplevel):
                 frame_date_time.pack(fill='both', expand=True, side=tk.LEFT)
 
             def paste_frame_button_create():
-                frame_button = Frame(frame_1, borderwidth=1, relief="solid")
+                def create_examination_doc_a5():
+                    create_examination_doc('а5')
 
-                button_create_examination_doc = Button(frame_button, text='Создать \nдокумент',
-                                                       command=create_examination_doc,
-                                                       font=('Comic Sans MS', user.get('text_size')))
+                def create_examination_doc_a6():
+                    create_examination_doc('а6')
 
-                button_create_examination_doc.pack(fill='both', expand=True, padx=2, pady=2)
+                button_change_all_kb_status.grid(column=0, row=0, rowspan=2)
+
+                Button(frame_button, text='Создать документ А5',
+                       command=create_examination_doc_a5,
+                       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, columnspan=2)
+
+                Button(frame_button, text='Создать документ А6',
+                       command=create_examination_doc_a6,
+                       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=1, columnspan=2)
+
                 frame_button.columnconfigure(index='all', minsize=40, weight=1)
                 frame_button.rowconfigure(index='all', minsize=20)
                 frame_button.pack(fill='both', expand=True, side=tk.LEFT)
@@ -799,6 +826,10 @@ class ExaminationRoot(tk.Toplevel):
             txt_date_time = Entry(frame_date_time, width=15,
                                   font=('Comic Sans MS', user.get('text_size')),
                                   justify="center")
+            frame_button = Frame(frame_1, borderwidth=1, relief="solid")
+            button_change_all_kb_status = Button(frame_button, text='Скрыть\nвсе\nклавиатуры',
+                                                 command=change_all_kb_status,
+                                                 font=('Comic Sans MS', user.get('text_size')))
 
             paste_frame_1()
 
@@ -1467,8 +1498,6 @@ class ExaminationRoot(tk.Toplevel):
                                     except Exception:
                                         pass
 
-
-
                         if not ln_num:
                             found_info = list()
                             found_info.clear()
@@ -1523,8 +1552,8 @@ class ExaminationRoot(tk.Toplevel):
                 lbl_type_ln.grid(row=0, column=0, sticky='ew')
 
                 txt_ln_num.grid(row=0, column=1, sticky='ew')
-                Label(master=frame_ln_add, text="c",
-                      font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=2, sticky='ew')
+                but_ln_closed.grid(row=1, column=0, columnspan=2, sticky='ew')
+                lbl_ln_from.grid(row=0, column=2, sticky='ew')
                 txt_ln_from.grid(row=0, column=3, sticky='ew')
                 Button(frame_ln_add, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
                        command=calendar_ln_from).grid(row=1, column=3, sticky='ew')
@@ -1552,6 +1581,20 @@ class ExaminationRoot(tk.Toplevel):
                 frame_ln_main.rowconfigure(index='all', minsize=20)
                 frame_ln_main.pack(fill='both', expand=True, padx=2, pady=2)
 
+            def ln_closed():
+                if not data['examination'].get('ln_closed'):
+                    data['examination']['ln_closed'] = True
+                    lbl_ln_from.grid_configure(columnspan=4)
+                    lbl_ln_from.tkraise()
+                    lbl_ln_from['text'] = f"{selected_type_ln.get()} закрыт к труду"
+                    but_ln_closed['text'] = "отменить закрытие"
+                else:
+                    data['examination']['ln_closed'] = False
+                    lbl_ln_from.grid_configure(columnspan=1)
+                    lbl_ln_from['text'] = "продление с"
+                    but_ln_closed['text'] = "закрыть к труду"
+
+
             frame_ln_main = Frame(self.examination_root, relief="solid", padx=1, pady=1)
             frame_ln = Frame(frame_ln_main, relief="solid", padx=1, pady=1)
             frame_ln_add = Frame(frame_ln, relief="solid", padx=1, pady=1)
@@ -1562,8 +1605,13 @@ class ExaminationRoot(tk.Toplevel):
             txt_ln_until = Entry(frame_ln_add, width=15, font=('Comic Sans MS', user.get('text_size')))
             txt_second_examination = Entry(frame_second_examination, width=15,
                                            font=('Comic Sans MS', user.get('text_size')))
-            lbl_type_ln = Label(master=frame_ln_add, text=f"",
+            lbl_type_ln = Label(master=frame_ln_add, text="",
                                 font=('Comic Sans MS', user.get('text_size')), bg='white')
+            lbl_ln_from = Label(master=frame_ln_add, text="продление с",
+                                font=('Comic Sans MS', user.get('text_size')), bg='white')
+            but_ln_closed = Button(frame_ln_add, text='закрыть к труду',
+                                   font=('Comic Sans MS', user.get('text_size')),
+                                   command=ln_closed)
 
             paste_frame_ln()
 
@@ -1748,10 +1796,9 @@ class ExaminationRoot(tk.Toplevel):
     def resize(self, event):
         region = self.canvas.bbox(tk.ALL)
         self.canvas.configure(scrollregion=region)
-        self.minsize(width=int(self.examination_root.winfo_width()), height=self.canvas.winfo_screenheight()-100)
+        self.minsize(width=int(self.examination_root.winfo_width()), height=self.canvas.winfo_screenheight() - 100)
 
         self.canvas['width'] = int(self.examination_root.winfo_width())
-
 
         # self['width'] = int(self.examination_root.winfo_geometry().split('x')[0])
         #
@@ -3904,9 +3951,9 @@ def examination_cmd():
     else:
         app_examination = ExaminationRoot()
         app_examination.title(f"Осмотр "
-                  f"{patient.get('name').split()[0]} "
-                  f"{patient.get('name').split()[1]} "
-                  f"{patient.get('birth_date')}")
+                              f"{patient.get('name').split()[0]} "
+                              f"{patient.get('name').split()[1]} "
+                              f"{patient.get('birth_date')}")
         app_examination.mainloop()
 
 
@@ -4452,9 +4499,9 @@ combo_doc.grid(column=0, row=1, columnspan=3)
 combo_doc.bind("<<ComboboxSelected>>", selected)
 
 button_add_new_doctor = Button(frame_main, text='Добавить доктора', command=add_new_doctor)
-button_add_new_doctor.grid(column=0, row=2)
+button_add_new_doctor.grid(column=0, row=2, sticky='ew')
 button_redact_doctor = Button(frame_main, text='Редактировать', command=redact_doctor)
-button_redact_doctor.grid(column=2, row=2)
+button_redact_doctor.grid(column=2, row=2, sticky='ew')
 
 frame_main.columnconfigure(index='all', minsize=40, weight=1)
 frame_main.rowconfigure(index='all', minsize=20)
@@ -4463,7 +4510,7 @@ frame_main.pack(fill='both', expand=True, padx=2, pady=2)
 frame_main = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
 
 lbl_patient_main = Label(frame_main, text='Окно данных пациента')
-lbl_patient_main.grid(column=0, row=2, columnspan=3)
+lbl_patient_main.grid(column=0, row=2, columnspan=3, sticky='ew')
 
 txt_patient_data = Entry(frame_main, width=40)
 txt_patient_data.grid(column=0, row=3)
@@ -4471,19 +4518,19 @@ txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
 txt_patient_data.bind('<Return>', search_patient)
 
 patient_info = Label(frame_main, text='')
-patient_info.grid(column=0, row=4)
+patient_info.grid(column=0, row=4, sticky='ew')
 
 button_search_patient = Button(frame_main, text='Поиск', command=search_patient)
-button_search_patient.grid(column=1, row=3)
+button_search_patient.grid(column=1, row=3, sticky='ew')
 
 button_updating_patient_data_base = Button(frame_main, text='Обновить БД', command=updating_patient_data_base)
-button_updating_patient_data_base.grid(column=1, row=4)
+button_updating_patient_data_base.grid(column=1, row=4, sticky='ew')
 
 button_delete_txt_patient_data = Button(frame_main, text='Удалить', command=delete_txt_patient_data)
-button_delete_txt_patient_data.grid(column=2, row=3)
+button_delete_txt_patient_data.grid(column=2, row=3, sticky='ew')
 
 button_paste_txt_patient_data = Button(frame_main, text='Вставить', command=paste_txt_patient_data)
-button_paste_txt_patient_data.grid(column=2, row=4)
+button_paste_txt_patient_data.grid(column=2, row=4, sticky='ew')
 
 frame_main.columnconfigure(index='all', minsize=40, weight=1)
 frame_main.rowconfigure(index='all', minsize=20)
