@@ -1591,7 +1591,7 @@ class ExaminationRoot(tk.Toplevel):
                 else:
                     data['examination']['ln_closed'] = False
                     lbl_ln_from.grid_configure(columnspan=1)
-                    lbl_ln_from['text'] = "продление с"
+                    lbl_ln_from['text'] = " с "
                     but_ln_closed['text'] = "закрыть к труду"
 
 
@@ -1607,7 +1607,7 @@ class ExaminationRoot(tk.Toplevel):
                                            font=('Comic Sans MS', user.get('text_size')))
             lbl_type_ln = Label(master=frame_ln_add, text="",
                                 font=('Comic Sans MS', user.get('text_size')), bg='white')
-            lbl_ln_from = Label(master=frame_ln_add, text="продление с",
+            lbl_ln_from = Label(master=frame_ln_add, text=" с ",
                                 font=('Comic Sans MS', user.get('text_size')), bg='white')
             but_ln_closed = Button(frame_ln_add, text='закрыть к труду',
                                    font=('Comic Sans MS', user.get('text_size')),
@@ -3954,6 +3954,7 @@ def examination_cmd():
                               f"{patient.get('name').split()[0]} "
                               f"{patient.get('name').split()[1]} "
                               f"{patient.get('birth_date')}")
+        app_examination.geometry('+0+0')
         app_examination.mainloop()
 
 
