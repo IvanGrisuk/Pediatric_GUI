@@ -621,7 +621,8 @@ class ExaminationRoot(tk.Toplevel):
                     doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
                     doc.render(render_data)
                     doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
-                    doc.save(doc_name)
+                    doc_name = save_document(doc=doc, doc_name=doc_name)
+
                     os.system(f"start {doc_name}")
                     render_data.clear()
                     data.clear()
@@ -1486,6 +1487,7 @@ class ExaminationRoot(tk.Toplevel):
                                              key=lambda i: (datetime.now() -
                                                             datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).days)
                             if (datetime.now() - datetime.strptime(f"{last_visit[0]}", "%d.%m.%Y %H:%M")).days < 14:
+                                print(last_visit)
                                 if last_visit[1].split('__')[-1] != 'closed':
                                     ln_num = last_visit[1].split('__')[1].replace('_', '')
                                     try:
@@ -1765,8 +1767,7 @@ class ExaminationRoot(tk.Toplevel):
         self.examination_root.columnconfigure(index='all', minsize=40, weight=1)
         self.examination_root.rowconfigure(index='all', minsize=20)
 
-        self.canvas.create_window((0, 0), window=self.examination_root,
-                                  anchor=tk.N + tk.W)
+        self.canvas.create_window((0, 0), window=self.examination_root, anchor="nw")
 
         self.canvas.grid(row=0, column=0, sticky="nswe")
         self.scroll_x.grid(row=1, column=0, sticky="we")
@@ -1821,6 +1822,28 @@ class ExaminationRoot(tk.Toplevel):
 
     def on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+
+def save_document(doc:Document, doc_name:str):
+    try:
+        doc.save(doc_name)
+    except Exception:
+        counter = 1
+        doc_name = doc_name.replace('.docx', '') + f"_{counter}.docx"
+        while True:
+            try:
+                doc.save(doc_name)
+            except Exception:
+                counter += 1
+                if counter == 100:
+                    messagebox.showerror('Ошибка', "Невозможно создать документ")
+                    return False
+                doc_name = '_'.join(doc_name.replace('.docx', '').split('_')[:-1]) + f"_{counter}.docx"
+            else:
+                return doc_name
+
+    else:
+        return doc_name
 
 
 def statistic_write(user_id, info):
@@ -3564,22 +3587,27 @@ def certificate__create_doc():
 
         doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а4 годовая.docx")
         doc.render(render_data)
-        doc.save(doc_name)
+        doc_name = save_document(doc=doc, doc_name=doc_name)
 
-        if create_vaccination(user_id=data['patient'].get('amb_cart'), size=4):
+        file_name_vac = create_vaccination(user_id=data['patient'].get('amb_cart'), size=4)
+        if file_name_vac:
             master = Document(doc_name)
             master.add_page_break()
             composer = Composer(master)
-            doc_temp = Document(f'.{os.sep}generated{os.sep}прививки.docx')
+            doc_temp = Document(file_name_vac)
             composer.append(doc_temp)
-            composer.save(doc_name)
+            doc_name = save_document(doc=composer, doc_name=doc_name)
+
+            # composer.save(doc_name)
 
         os.system(f"start {doc_name}")
 
         doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
         doc.render(render_data)
-        doc.save(f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_осмотр.docx")
-        os.system(f"start .{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_осмотр.docx")
+        doc_name_exam = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_осмотр.docx"
+        doc_name_exam = save_document(doc=doc, doc_name=doc_name_exam)
+
+        os.system(f"start {doc_name_exam}")
 
 
     else:
@@ -3588,14 +3616,14 @@ def certificate__create_doc():
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}выписка ЦКРОиР.docx")
             doc.render(render_data)
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_ЦКРОиР.docx"
-            doc.save(doc_name)
+            doc_name = save_document(doc=doc, doc_name=doc_name)
 
         elif type_certificate.startswith('Бесплатное питание'):
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}Выписка.docx")
             doc.render(render_data)
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_" \
                        f"Выписка_Бесплатное_питание.docx"
-            doc.save(doc_name)
+            doc_name = save_document(doc=doc, doc_name=doc_name)
 
         elif type_certificate in ('Годовой медосмотр', 'В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
             if data['certificate'].get('type_certificate').startswith('В детский лагерь'):
@@ -3612,6 +3640,13 @@ def certificate__create_doc():
 
                 # save_certificate_ped_div(data=info, type_table='certificate_camp')
                 render_data['number_cert'] = f"№ {data['doctor'].get('doctor_district')} / {number}"
+            if data['certificate'].get('type_certificate').startswith('Оформление в ДДУ / СШ / ВУЗ'):
+                manager = data["doctor"].get('manager')
+                if manager:
+                    render_data['manager'] = manager
+                else:
+                    render_data['manager'] = '______________________'
+
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_" \
                        f"справка_{type_certificate}.docx".replace(' в ДДУ / СШ / ВУЗ', '').replace(' ', '_')
 
@@ -3620,8 +3655,9 @@ def certificate__create_doc():
             composer = Composer(master)
 
             if type_certificate in ('В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
-                if create_vaccination(user_id=data['patient'].get('amb_cart'), size=5):
-                    doc_temp = Document(f'.{os.sep}generated{os.sep}прививки.docx')
+                file_name_vac = create_vaccination(user_id=data['patient'].get('amb_cart'), size=5)
+                if file_name_vac:
+                    doc_temp = Document(file_name_vac)
                     composer.append(doc_temp)
                     master.add_page_break()
 
@@ -3631,33 +3667,37 @@ def certificate__create_doc():
             master.sections[-1].page_height = master.sections[0].page_width
             doc_temp = Document(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
             composer.append(doc_temp)
+            doc_name = save_document(doc=composer, doc_name=doc_name)
 
-            composer.save(doc_name)
+            # composer.save(doc_name)
 
             doc = DocxTemplate(doc_name)
             doc.render(render_data)
 
-            doc.save(doc_name)
+            doc_name = save_document(doc=doc, doc_name=doc_name)
+
 
         else:
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
             doc.render(render_data)
             doc_name = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]} " \
                        f"справка {type_certificate}.docx".replace(' ', '_')
-            doc.save(doc_name)
+            doc_name = save_document(doc=doc, doc_name=doc_name)
 
             if (data['certificate'].get('type_certificate') in ('В детский лагерь',
                                                                 'Может работать по специальности...') or
                     (data['certificate'].get('type_certificate') == 'Об отсутствии контактов' and
                      data['certificate'].get('place_of_requirement') == 'В стационар')):
-
-                if create_vaccination(user_id=data['patient'].get('amb_cart'), size=5):
+                file_name_vac = create_vaccination(user_id=data['patient'].get('amb_cart'), size=5)
+                if file_name_vac:
                     master = Document(doc_name)
                     master.add_page_break()
                     composer = Composer(master)
-                    doc_temp = Document(f'.{os.sep}generated{os.sep}прививки.docx')
+                    doc_temp = Document(file_name_vac)
                     composer.append(doc_temp)
-                    composer.save(doc_name)
+                    doc_name = save_document(doc=composer, doc_name=doc_name)
+
+                    # composer.save(doc_name)
 
         os.system(f"start {doc_name}")
 
@@ -3691,6 +3731,7 @@ def analyzes__ask_analyzes():
     analyzes_root = Toplevel()
     analyzes_root.title('Выбор анализов')
     analyzes_root.config(bg='white')
+    analyzes_root.geometry('+0+0')
 
     Label(analyzes_root, text='Выберите анализы',
           font=('Comic Sans MS', data.get('text_size')), bg='white').pack(fill='both', expand=True,
@@ -3860,16 +3901,20 @@ def analyzes__create_doc(analyzes):
         master.add_page_break()
         doc_temp = Document(link)
         composer.append(doc_temp)
-    composer.save(f".{os.sep}generated{os.sep}Анализы.docx")
-    os.system(f"start .{os.sep}generated{os.sep}Анализы.docx")
+    doc_name = f".{os.sep}generated{os.sep}Анализы.docx"
+    doc_name = save_document(doc=composer, doc_name=doc_name)
+
+    # composer.save(")
+    os.system(f"start {doc_name}")
     statistic_write('приложение', f"Анализы_DOC_{data.get('doctor_name')}")
     render_data.clear()
     data.clear()
 
 
 def vaccination_cmd():
-    if create_vaccination(patient.get('amb_cart'), 5):
-        os.system(f"start .{os.sep}generated{os.sep}прививки.docx")
+    file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=5)
+    if file_name_vac:
+        os.system(f"start {file_name_vac}")
     else:
         messagebox.showinfo('Ошибка!', 'Не удалось создать прививки!')
 
@@ -3905,7 +3950,7 @@ def create_blanks__ask_type_blanks():
         doc = DocxTemplate(f".{os.sep}example{os.sep}амб_карта{os.sep}{blanks[int(num) - 2]}.docx")
         doc.render(render_data)
         file_name = f".{os.sep}generated{os.sep}{blanks[int(num) - 2]}_{data.get('patient_name').split()[0]}.docx"
-        doc.save(file_name)
+        file_name = save_document(doc=doc, doc_name=file_name)
         os.system(f"start {file_name}")
         statistic_write('приложение', f"Вкладыши_DOC_{data.get('doctor_name')}")
 
@@ -4120,18 +4165,22 @@ def direction__create_direction():
 
     doc = DocxTemplate(f".{os.sep}example{os.sep}direction{os.sep}{data.get('type_direction')}.docx")
     doc.render(render_data)
-    doc.save(f".{os.sep}generated{os.sep}Направление.docx")
+    file_name = f".{os.sep}generated{os.sep}Направление.docx"
+    file_name = save_document(doc=doc, doc_name=file_name)
 
     if data.get('type_direction') == 'НА ГОСПИТАЛИЗАЦИЮ':
-        if create_vaccination(user_id=data.get('amb_cart'), size=5):
-            master = Document(f".{os.sep}generated{os.sep}Направление.docx")
+        file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=5)
+        if file_name_vac:
+            master = Document(file_name)
             master.add_page_break()
             composer = Composer(master)
-            doc_temp = Document(f'.{os.sep}generated{os.sep}прививки.docx')
+            doc_temp = Document(file_name_vac)
             composer.append(doc_temp)
-            composer.save(f".{os.sep}generated{os.sep}Направление.docx")
+            file_name = save_document(doc=composer, doc_name=file_name)
 
-    os.system(f"start .{os.sep}generated{os.sep}Направление.docx")
+            # composer.save(f".{os.sep}generated{os.sep}Направление.docx")
+
+    os.system(f"start {file_name}")
     statistic_write('приложение', f"Направления_DOC_{data.get('doctor_name')}")
     data.clear()
     render_data.clear()
@@ -4259,12 +4308,13 @@ def create_vaccination(user_id, size):
                 section.page_height = Cm(21)
                 section.page_width = Cm(14.8)
 
-        document.save(f'.{os.sep}generated{os.sep}прививки.docx')
+        file_name_vac = f'.{os.sep}generated{os.sep}прививки.docx'
+        file_name_vac = save_document(doc=document, doc_name=file_name_vac)
 
         if info:
             statistic_write('приложение', f"Прививки_DOC_{user.get('doctor_name')}")
 
-            return True
+            return file_name_vac
 
         else:
             return False
