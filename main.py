@@ -32,17 +32,22 @@ all_data_certificate = {
         "diet": ("А", "Б", "Д", "М", 'П', 'ПП', 'Ц'),
         "desk": ("по росту", "1", "2", "3", "средний ряд")
     },
-    "diagnosis": (("<< КАРДИОЛОГИЯ >>", "САС:", "ООО", "ДХЛЖ", "НК0", "НБПНПГ", "ФСШ", "ВПС:", "ДМЖП", "ДМПП"),
+    "diagnosis": (("<< КАРДИОЛОГИЯ >>", "САС:", "ООО", "ДХЛЖ", "НК0", "НБПНПГ", "ФСШ", "ВПС:", "ДМЖП", "ДМПП",
+                   "НРС:", "умеренная", "выраженная", "тахикардия", "брадикардия", "укорочение инт. PQ"),
                   ("<< ЛОГОПЕДИЯ >>", "ОНР", "ФНР", "ФФНР", "ЗРР", "стертая дизартрия",
                    "ур.р.р.", "1", "2", "3"),
                   ("<< ОФТАЛЬМОЛОГИЯ >>", "Спазм аккомодации", "Миопия", "Гиперметропия",
-                   "слабой степени", "средней степени", "тяжелой степени", "OD", "OS", "OU", "с ast"),
+                   "слабой степени", "средней степени", "тяжелой степени",
+                   "миопический", "гиперметропический", "OD", "OS", "OU", "ast", "с ast"),
                   ("<< ОРТОПЕДИЯ >>", "Нарушение осанки", "Сколиотическая осанка", "Плоскостопие", "ПВУС",
                    "ИС:", "левосторонняя", "правосторонняя", "кифотическая", "грудная", "поясничная",
-                   "грудо-поясничная", "деформация позвоночника", "ГПС", "1 ст.", "2 ст.", "3 ст."),
-                  ("<< ЛОР >>", "ГА", "ГНМ", "хр. тонзиллит", "1ст", "2ст", "3ст"),
+                   "грудо-поясничная", "деформация позвоночника", "остаточная дисплазия ТБС",
+                   "ГПС", "1 ст.", "2 ст.", "3 ст."),
+                  ("<< ЛОР >>", "ГА", "ГНМ", "хр. тонзиллит", "искривление носовой перегородки", "1ст", "2ст", "3ст"),
                   ("<< ПРОЧЕЕ >>", "рецидивирующие заболевания ВДП", "Атопический дерматит", "Кариес",
-                   "угроза", "БРА", "хр. гастрит", "СДН", "ВСД")),
+                   "угроза", "БРА", "хр. гастрит", "СДН", "ВСД", "нефроптоз", "справа", "слева",
+                   "аллергический ринит", "анемия", "легкой ст.", "средней ст.", "тяжелой ст.",
+                   "субклинич. гипотиреоз", "ИМТ", "ДМТ", "СД")),
 
     'place': ('Средняя школа (гимназия)',
               'Детское Дошкольное Учреждение',
@@ -317,16 +322,16 @@ all_diagnosis = {
                         'Сыпь': ['нет'],
                         'Слизистая глотки': ['гиперемирована', 'зернистая'],
                         'Нёбные миндалины': ['увеличены', '1ст.', "налетов нет"],
-                        'Носовое дыхание': ['затруднено', 'из носа', 'слизистое отделяемое'],
+                        'Носовое дыхание': ['затруднено', 'из носа -', 'слизистое отделяемое'],
                         'Периферические лимфоузлы': ['увеличены', 'шейные', 'подчелюстные', "эластичные",
                                                      "безболезненные", "при пальпации"],
-                        'Легкие': ["ЧД", 'дыхание', 'везикулярное', "проводится во все отделы", "хрипов нет"],
+                        'Легкие': ["ЧД", "дыхание -", 'везикулярное', "проводится во все отделы", "хрипов нет"],
                         'Сердце': ["ЧСС", 'тоны сердца', 'ясные', 'ритмичные', "границы в пределах возрастной нормы"],
                         'Живот': ['мягкий', 'безболезненный', "доступен глубокой пальпации",
                                   "Печень у края реберной дуги", "селезенка не пальпируется"],
                         'Мочеиспускание': ['регулярное', 'безболезненное'],
                         'Стул': ['оформленный', 'коричневый', 'без патологических примесей'],
-                        'Прочее': ['Менингеальные симптомы', "отрицательные"]},
+                        'Дополнительно': ['Менингеальные симптомы', "отрицательные"]},
         "prescription": {"Рекомендации": ["домашний режим", "Парацетамол", "Ибупрофен", "питьевой режим",
                                           "полоскать горло", "орошать горло", "промывать нос"]}
     },
@@ -340,15 +345,15 @@ all_diagnosis = {
                         'Нёбные миндалины': ['увеличены', '1ст.'],
                         'Носовое дыхание': ['свободное'],
                         'Периферические лимфоузлы': ['в норме'],
-                        'Легкие': ["ЧД", 'дыхание', 'везикулярное', "проводится во все отделы", "хрипов нет"],
+                        'Легкие': ["ЧД", "дыхание -", 'везикулярное', "проводится во все отделы", "хрипов нет"],
                         'Сердце': ["ЧСС", 'тоны сердца', 'ясные', 'ритмичные', "границы в пределах возрастной нормы"],
-                        'Живот': ['мягкий', 'болезненный', "в эпигастральной обл", "доступен глубокой пальпации",
+                        'Живот': ['мягкий', 'болезненный -', "в эпигастральной обл", "доступен глубокой пальпации",
                                   "Печень у края реберной дуги", "селезенка не пальпируется"],
                         'Мочеиспускание': ['регулярное', 'безболезненное'],
-                        'Прочее': ['Аппендикулярные симптомы', "Перитониальные симптомы", "Пузырные симптомы",
-                                   "отрицательные"]},
+                        'Дополнительно': ['Аппендикулярные симптомы', "Перитониальные симптомы", "Пузырные симптомы",
+                                          "отрицательные"]},
         "prescription": {"Рекомендации": ["домашний режим", "Парацетамол", "Ибупрофен", "питьевой режим",
-                                          "диета", "Смекта"]}
+                                          "диета", "Смекта", "Пробиотик"]}
     },
     'Ветряная оспа': {
         "complaints": {'температура до': ['37.5'],
@@ -362,13 +367,13 @@ all_diagnosis = {
                         'Носовое дыхание': ['свободное'],
                         'Периферические лимфоузлы': ['увеличены', 'шейные', 'подчелюстные', "эластичные",
                                                      "безболезненные", "при пальпации"],
-                        'Легкие': ["ЧД", 'дыхание', 'везикулярное', "проводится во все отделы", "хрипов нет"],
+                        'Легкие': ["ЧД", "дыхание -", 'везикулярное', "проводится во все отделы", "хрипов нет"],
                         'Сердце': ["ЧСС", 'тоны сердца', 'ясные', 'ритмичные', "границы в пределах возрастной нормы"],
                         'Живот': ['мягкий', 'безболезненный', "доступен глубокой пальпации",
                                   "Печень у края реберной дуги", "селезенка не пальпируется"],
                         'Мочеиспускание': ['регулярное', 'безболезненное'],
                         'Стул': ['оформленный', 'коричневый', 'без патологических примесей'],
-                        'Прочее': ['Менингеальные симптомы', "отрицательные"]},
+                        'Дополнительно': ['Менингеальные симптомы', "отрицательные"]},
         "prescription": {"Рекомендации": ["домашний режим", "Парацетамол", "питьевой режим",
                                           "обработка элементов раствором 'Каламин'",
                                           "карантин 5 дней с момента появления последнего элемента"]}
@@ -383,7 +388,7 @@ all_diagnosis = {
                         'Нёбные миндалины': ['увеличены', '1ст.'],
                         'Носовое дыхание': ['свободное'],
                         'Периферические лимфоузлы': ['не увеличены', 'эластичные', "безболезненные", "при пальпации"],
-                        'Легкие': ["ЧД", 'дыхание', 'везикулярное', "проводится во все отделы", "хрипов нет"],
+                        'Легкие': ["ЧД", "дыхание -", 'везикулярное', "проводится во все отделы", "хрипов нет"],
                         'Сердце': ["ЧСС", 'тоны сердца', 'ясные', 'ритмичные', "границы в пределах возрастной нормы"],
                         'Живот': ['мягкий', 'безболезненный', "доступен глубокой пальпации",
                                   "Печень у края реберной дуги", "селезенка не пальпируется"],
@@ -402,6 +407,7 @@ all_data_diagnosis = {
                       "продолжает болеть", "улучшение", 'реконвалесцент'),
     'diagnosis_ФРК': ("продолжает болеть", "улучшение", 'реконвалесцент'),
     'diagnosis_Ветрянка': ("продолжает болеть", "улучшение", 'реконвалесцент'),
+    'diagnosis_Здоров': ("соматически здоров", 'реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы"),
 
     "diagnosis": ("Предварительный диагноз", 'ОРИ', 'ФРК', "Ветряная оспа", "Здоров"),
     "place": ("Место осмотра", 'на дому', 'в поликлинике'),
@@ -417,51 +423,64 @@ all_data_diagnosis = {
                     ("Кожные покровы", "влажные", "сухие", "чистые"),
                     ("Сыпь", "нет", "пятнистая", "папулезная", "пустулезная", "везикулярная", "мелкоточечная",
                      "геморрагическая",
-                     "на", "лице", "шее", "туловище", "руках", "кистях", "стопах", "ногах", "в паховой области",
-                     "в складках кожи", "по всему телу"),
+                     "на лице", "на шее", "на туловище", "на руках", "на кистях", "на стопах", "на ногах",
+                     "в паховой области", "в складках кожи", "по всему телу"),
                     ("Слизистая глотки", "без изменений", "гиперемирована", "зернистая"),
                     ("Нёбные миндалины", "без изменений", "увеличены", "1ст.", "2ст.", "3ст.",
                      "налетов нет", "обложены налетом", "белого цвета", "серого цвета"),
-                    ("Носовое дыхание", "свободное", "затруднено", "из носа",
+                    ("Носовое дыхание", "свободное", "затруднено", "из носа -",
                      "слизистое отделяемое", "гнойное отделяемое"),
                     ("Периферические лимфоузлы", "не увеличены", "увеличены", "подчелюстные", "шейные", "надключичные",
                      "подмышечные", "паховые", "справа", "слева", "с обеих сторон", "плотные", "эластичные",
                      "болезненные", "безболезненные", "при пальпации"),
-                    ("Легкие", "ЧД", "дыхание", "везикулярное", "пуэрильное", "жесткое", "ослабленное",
+                    ("Легкие", "ЧД", "дыхание -", "везикулярное", "пуэрильное", "жесткое", "ослабленное",
                      "проводится во все отделы", "хрипов нет",
-                     "хрипы", "сухие", "влажные", "проводные", "свистящие"),
-                    ("Сердце", "ЧСС", "тоны сердца", "ясные", "приглушены", "ритмичные",
+                     "хрипы -", "сухие", "влажные", "проводные", "свистящие"),
+                    ("Сердце", "ЧСС", "тоны сердца -", "ясные", "приглушены", "ритмичные",
                      "границы в пределах возрастной нормы", "систолический шум"),
-                    ("Живот", "мягкий", "безболезненный", "доступен глубокой пальпации", "твердый", "болезненный",
+                    ("Живот", "мягкий", "безболезненный", "доступен глубокой пальпации", "твердый", "болезненный -",
                      "в эпигастральной обл", "в мезогастральной обл", "в гипогастральной обл", "справа", "слева",
                      "Печень у края реберной дуги", "селезенка не пальпируется"),
                     ("Мочеиспускание", "регулярное", "безболезненное", "диурез снижен", "боль при мочеиспускании"),
                     ("Стул", "оформленный", "послабленный", "разжиженный", "кашицеобразный",
                      "коричневый", "зеленый", "обесцвеченный", "желтый", "без патологических примесей",
                      "с кровью", "с слизью", "регулярный", "частый", "редкий"),
-                    ("Отоскопия", "не проводилась", "без патологии", "справа", "слева", "с обеих сторон",
-                     "отит", "катаральный", "гнойный", "экссудативный", "наружный диффузный"),
-                    ("Прочее", "Менингеальные симптомы", "Аппендикулярные симптомы",
+                    ("Отоскопия", "не проводилась", "без патологии", "справа -", "слева -", "с обеих сторон -",
+                     "серная пробка", "отит", "катаральный", "гнойный", "экссудативный", "наружный диффузный"),
+                    ("Дополнительно", "Менингеальные симптомы", "Аппендикулярные симптомы",
                      "Перитониальные симптомы", "Пузырные симптомы",
                      "отрицательные", "положительные", "сомнительные")),
     "prescription": ("Назначения", ("Анализы", "ОАК", "ОАМ", "Глюкоза", "Копрограмма", "я/глист"),
                      ("Рекомендации", "домашний режим", "Парацетамол", "Ибупрофен", "питьевой режим",
                       "полоскать горло", "орошать горло", "промывать нос",
-                      "диета", "Смекта"),
+                      "диета", "Смекта", "Пробиотик", "АЦЦ"),
 
                      ("Антибиотик Амоксициллин",
                       "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 250", "таб. 500", "таб. 1000",
-                      "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут"),
+                      "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут",
+                      "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
                      ("Антибиотик Амоксициллин + клавулановая кислота",
                       "Форма", "сусп. 125/31.25/5", "сусп. 200/28.5/5",
                       "сусп. 250/62.5/5", "сусп. 400/57/5", "сусп. 600/42.9/5",
                       "таб. 250/125", "таб. 500/125", "таб. 875/125",
-                      "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут"),
+                      "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут",
+                      "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
                      ("Антибиотик Цефуроксим",
-                      "Форма", "сусп. 125/5", "таб. 125", "таб. 250",
-                      "Дозировка", "20 мг/кг/сут", "30 мг/кг/сут")
+                      "Форма", "сусп. 125/5", "таб. 125", "таб. 250", "таб. 500",
+                      "Дозировка", "20 мг/кг/сут", "30 мг/кг/сут",
+                      "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+
+                     ("Антибиотик Кларитромицин",
+                      "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 250", "таб. 500",
+                      "Дозировка", "15 мг/кг/сут",
+                      "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+
+                     ("Антибиотик Азитромицин",
+                      "Форма", "сусп. 200/5", "таб. 125", "таб. 250", "таб. 500",
+                      "Дозировка", "10 мг/кг/сут",
+                      "Кратность", "1 р/сут", "2 р/сут", "3 р/сут")
                      )
 }
 
@@ -485,8 +504,8 @@ user = {'text_size': 10,
         'doctor_district': ''}
 
 
-class ExaminationRoot(tk.Toplevel):
-    def __init__(self):
+class ScrolledRoot(tk.Toplevel):
+    def __init__(self, marker=None, func=None):
         super().__init__()
         self.scroll_x = tk.Scrollbar(self, orient=tk.HORIZONTAL)
         self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, width=user.get('text_size', 10) * 3)
@@ -497,1277 +516,18 @@ class ExaminationRoot(tk.Toplevel):
         self.scroll_x.config(command=self.canvas.xview)
         self.scroll_y.config(command=self.canvas.yview)
 
-        self.examination_root = Frame(self.canvas, borderwidth=1)
-
-        def paste_examination_cmd_main():
-            destroy_elements = dict()
-            data['examination'] = dict()
-
-            selected_place = StringVar()
-            selected_diagnosis = StringVar()
-            selected_type_ln = StringVar()
-
-            def change_all_kb_status():
-                if not data['examination'].get('all_kb_status'):
-                    for marker in ('complaints', 'examination', 'prescription'):
-                        data['examination'][f'open_{marker}_kb'] = True
-
-                    data['examination']['all_kb_status'] = True
-                    button_change_all_kb_status['text'] = 'Открыть\nвсе\nклавиатуры'
-                else:
-                    for marker in ('complaints', 'examination', 'prescription'):
-                        data['examination'][f'open_{marker}_kb'] = False
-                    data['examination']['all_kb_status'] = False
-                    button_change_all_kb_status['text'] = 'Скрыть\nвсе\nклавиатуры'
-
-                change_complaints_kb_status()
-                change_examination_kb_status()
-                change_prescription_kb_status()
-
-                self.update()
-
-            def create_examination_doc(doc_size):
-
-                type_ln = selected_type_ln.get()
-                if type_ln in ('Лист ВН', 'Справка ВН') and not txt_ln_num.get():
-                    messagebox.showerror('Ошибка!', 'Не указан номер документа ВН!')
-                    txt_ln_num.focus()
-                elif not selected_place.get():
-                    messagebox.showerror('Ошибка!', 'Не указано место осмотра!')
-                    frame_1.focus()
-                else:
-                    render_data.clear()
-
-                    date_time_str = txt_date_time.get().strip()
-                    if date_time_str:
-                        render_data['date_time'] = f"Дата осмотра: {date_time_str}\n"
-                    else:
-                        render_data['date_time'] = ""
-
-                    render_data['patient_info'] = f"ФИО: {patient.get('name')}\t" \
-                                                  f"дата рождения: {patient.get('birth_date')}\t" \
-                                                  f"{patient.get('patient_district')}-й уч\n" \
-                                                  f"Место осмотра: {selected_place.get()}"
-                    render_data['complaints'] = f"{txt_complaints.get(1.0, 'end').strip()}"
-                    render_data['examination'] = f" {txt_examination.get(1.0, 'end').strip()}"
-                    render_data['diagnosis'] = f"{txt_diagnosis.get(1.0, 'end').strip()}"
-                    render_data['prescription'] = f"{txt_prescription.get(1.0, 'end').strip()}"
-
-                    add_info = ''
-                    if type_ln == 'Уход обеспечен':
-                        add_info += "Уход обеспечен\n"
-                    elif type_ln in ('Лист ВН', 'Справка ВН'):
-                        if data['examination'].get('ln_closed'):
-                            if type_ln == 'Лист ВН':
-                                add_info += f"{type_ln} № {txt_ln_num.get()} закрыт к труду\n"
-                            else:
-                                add_info += f"{type_ln} № {txt_ln_num.get()} закрыта к труду\n"
-                        else:
-                            add_info += f"{type_ln} № {txt_ln_num.get()} c {txt_ln_from.get()} по {txt_ln_until.get()}\n"
-                    if txt_second_examination.get():
-                        add_info += f"Повторный осмотр: {txt_second_examination.get()}\n"
-                    add_info += f"Врач-педиатр: {user.get('doctor_name')}"
-                    render_data['add_info'] = add_info
-
-                    active_but = ""
-                    for mark in ('complaints', 'examination', 'prescription'):
-                        active_but += f'{mark}:__'
-                        for but in data['examination'].get(f'{mark}_but'):
-                            if data['examination'][f'{mark}_but'].get(but).get() == 1:
-                                active_but += f'__{but}'
-                        active_but += '\n'
-
-                    active_but = f"{active_but}" \
-                                 f"complaints_text:__{render_data.get('complaints')}\n" \
-                                 f"examination_text:__{render_data.get('examination')}\n" \
-                                 f"diagnosis_text:__{render_data.get('diagnosis')}\n" \
-                                 f"prescription_text:__{render_data.get('prescription')}\n"
-
-                    active_examination = f"Жалобы: {render_data.get('complaints')}\n" \
-                                         f"Осмотр: {render_data.get('examination')}\n" \
-                                         f"Диагноз: {render_data.get('diagnosis')}\n" \
-                                         f"Лечение: {render_data.get('prescription')}\n"
-
-                    if type_ln in ('Лист ВН', 'Справка ВН'):
-                        num_ln = ''
-                        for word in txt_ln_num.get().strip():
-                            if not word.isdigit():
-                                num_ln += word
-                        num_ln += '_'
-                        for word in txt_ln_num.get().strip():
-                            if word.isdigit():
-                                num_ln += word
-                        if data['examination'].get('ln_closed'):
-                            ln_data = f"{type_ln}__{num_ln}__closed"
-                        else:
-                            ln_data = f"{type_ln}__{num_ln}__{txt_ln_from.get().strip()}__{txt_ln_until.get().strip()}"
-                    else:
-                        ln_data = type_ln
-
-                    save_info_examination = [
-                        f"{datetime.now().strftime('%d.%m.%Y %H:%M')}",
-                        f"{user.get('doctor_name')}",
-                        None,
-                        ln_data,
-                        f"{patient.get('name')}__{patient.get('birth_date')}",
-                        active_examination,
-                        active_but,
-                        None]
-
-                    with sq.connect('data_base.db') as conn:
-                        cur = conn.cursor()
-                        cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", save_info_examination)
-
-                    doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
-                    doc.render(render_data)
-                    doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
-                    doc_name = save_document(doc=doc, doc_name=doc_name)
-
-                    os.system(f"start {doc_name}")
-                    render_data.clear()
-                    data.clear()
-                    self.destroy()
-
-            def paste_hr_br():
-                age = get_age(patient.get('birth_date'))
-                indicators = {
-                    '0-3': {
-                        'br': (22, 28),
-                        'hr': (80, 100),
-                        'bp': (90, 100, 60, 70)},
-                    '3-6': {
-                        'br': (20, 28),
-                        'hr': (80, 100),
-                        'bp': (96, 110, 60, 70)},
-                    '6-12': {
-                        'br': (18, 22),
-                        'hr': (70, 90),
-                        'bp': (100, 110, 60, 75)},
-                    '>12': {
-                        'br': (18, 22),
-                        'hr': (70, 80),
-                        'bp': (110, 120, 70, 78)},
-                }
-
-                if age <= 3:
-                    indicator = indicators['0-3']
-                elif age <= 6:
-                    indicator = indicators['3-6']
-                elif age <= 12:
-                    indicator = indicators['6-12']
-                else:
-                    indicator = indicators['>12']
-
-                render_data['br'] = random.randrange(start=indicator['br'][0], stop=indicator['br'][1], step=2)
-                render_data['hr'] = random.randrange(start=indicator['hr'][0], stop=indicator['hr'][1], step=2)
-
-            def paste_frame_diagnosis():
-                frame_diagnosis = Frame(frame_1, borderwidth=1, relief="solid")
-                label_diagnosis = Label(master=frame_diagnosis, text=f"{all_data_diagnosis.get('diagnosis')[0]}",
-                                        font=('Comic Sans MS', user.get('text_size')), bg='white')
-                label_diagnosis.pack(fill='both', expand=True)
-                frame_diagnosis_1 = Frame(frame_diagnosis, borderwidth=1)
-
-                def select_diagnosis():
-                    data['examination']['diagnosis'] = selected_diagnosis.get()
-
-                    for el in destroy_elements.get('examination'):
-                        el.destroy()
-                    destroy_elements['examination'].clear()
-                    for mark_ in data['examination'].get('complaints_but'):
-                        data['examination']['complaints_but'].get(mark_).set(0)
-                    for mark_ in data['examination'].get('examination_but'):
-                        data['examination']['examination_but'].get(mark_).set(0)
-                    for mark_ in data['examination'].get('prescription_but'):
-                        data['examination']['prescription_but'].get(mark_).set(0)
-
-                    for complaints_but in all_diagnosis.get(selected_diagnosis.get()).get("complaints"):
-                        complaints_list = all_diagnosis.get(selected_diagnosis.get()).get("complaints").get(
-                            complaints_but)
-                        if isinstance(complaints_list, list):
-                            for complaints in complaints_list:
-                                if f"{complaints_but}_{complaints}" in data['examination'].get('complaints_but'):
-                                    data['examination']['complaints_but'][f"{complaints_but}_{complaints}"].set(1)
-                        else:
-                            if complaints_but in data['examination'].get('complaints_but'):
-                                data['examination']['complaints_but'][complaints_but].set(1)
-
-                    select_complaints()
-
-                    for examination_but in all_diagnosis.get(selected_diagnosis.get()).get("examination"):
-                        examination_list = all_diagnosis.get(selected_diagnosis.get()).get("examination").get(
-                            examination_but)
-                        if isinstance(examination_list, list):
-                            for examination in examination_list:
-                                if f"{examination_but}_{examination}" in data['examination'].get('examination_but'):
-                                    data['examination']['examination_but'][f"{examination_but}_{examination}"].set(1)
-                        else:
-                            if examination_but in data['examination'].get('examination_but'):
-                                data['examination']['examination_but'][examination_but].set(1)
-
-                    select_examination()
-
-                    txt_prescription.delete(1.0, 'end')
-                    text = 'Рекомендации: '
-                    for prescription_but in all_diagnosis.get(selected_diagnosis.get()).get("prescription"):
-                        prescription_list = all_diagnosis.get(selected_diagnosis.get()).get("prescription").get(
-                            prescription_but)
-                        if isinstance(prescription_list, list):
-                            for prescription in prescription_list:
-                                if f"{prescription_but}_{prescription}" in data['examination'].get('prescription_but'):
-                                    data['examination']['prescription_but'][f"{prescription_but}_{prescription}"].set(1)
-                                else:
-                                    text += f"{prescription}, "
-                        else:
-                            if prescription_but in data['examination'].get('prescription_but'):
-                                data['examination']['prescription_but'][prescription_but].set(1)
-
-                    if text != 'Рекомендации: ':
-                        txt_prescription.insert(1.0, text)
-
-                    txt_diagnosis.delete(1.0, 'end')
-                    txt_diagnosis.insert(1.0, f'Диагноз: {selected_diagnosis.get()} ')
-
-                    select_prescription()
-                    paste_diagnosis_kb()
-                    if not data['examination'].get('all_kb_status'):
-                        change_all_kb_status()
-                    else:
-                        self.update()
-
-                row, col = 0, 0
-                for mark in all_data_diagnosis.get('diagnosis')[1:]:
-                    btn = Radiobutton(frame_diagnosis_1, text=mark,
-                                      font=('Comic Sans MS', user.get('text_size')),
-                                      value=mark, variable=selected_diagnosis, command=select_diagnosis,
-                                      indicatoron=False, selectcolor='#77f1ff')
-                    btn.grid(row=row, column=col, sticky='ew')
-                    col += 1
-
-                frame_diagnosis_1.columnconfigure(index='all', minsize=40, weight=1)
-                frame_diagnosis_1.rowconfigure(index='all', minsize=20)
-                frame_diagnosis_1.pack(fill='both', expand=True)
-
-                frame_diagnosis.columnconfigure(index='all', minsize=40, weight=1)
-                frame_diagnosis.rowconfigure(index='all', minsize=20)
-                frame_diagnosis.pack(fill='both', expand=True, side=tk.LEFT)
-
-            def paste_frame_place():
-                frame_place = Frame(frame_1, borderwidth=1, relief="solid")
-                label_place = Label(master=frame_place, text=f"{all_data_diagnosis.get('place')[0]}",
-                                    font=('Comic Sans MS', user.get('text_size')), bg='white')
-                label_place.pack(fill='both', expand=True)
-                frame_place_1 = Frame(frame_place, borderwidth=1)
-
-                def select_place():
-                    data['examination']['place'] = selected_place.get()
-                    label_place['text'] = f"{all_data_diagnosis.get('place')[0]}: {selected_place.get()}"
-
-                row, col = 0, 0
-                for mark in all_data_diagnosis.get('place')[1:]:
-                    btn = Radiobutton(frame_place_1, text=mark,
-                                      font=('Comic Sans MS', user.get('text_size')),
-                                      value=mark, variable=selected_place, command=select_place,
-                                      indicatoron=False, selectcolor='#77f1ff')
-                    btn.grid(row=row, column=col, sticky='ew')
-                    col += 1
-
-                frame_place_1.columnconfigure(index='all', minsize=40, weight=1)
-                frame_place_1.rowconfigure(index='all', minsize=20)
-                frame_place_1.pack(fill='both', expand=True)
-
-                frame_place.columnconfigure(index='all', minsize=40, weight=1)
-                frame_place.rowconfigure(index='all', minsize=20)
-                frame_place.pack(fill='both', expand=True, side=tk.LEFT)
-
-            def paste_frame_date_time():
-                label_date_time = Label(master=frame_date_time, text="Дата и время осмотра:",
-                                        font=('Comic Sans MS', user.get('text_size')), bg='white')
-                label_date_time.pack(fill='both', expand=True)
-                txt_date_time.pack(fill='both', expand=True)
-                txt_date_time.insert(0, datetime.now().strftime("%d.%m.%Y %H:%M"))
-
-                frame_date_time.columnconfigure(index='all', minsize=40, weight=1)
-                frame_date_time.rowconfigure(index='all', minsize=20)
-                frame_date_time.pack(fill='both', expand=True, side=tk.LEFT)
-
-            def paste_frame_button_create():
-                def create_examination_doc_a5():
-                    create_examination_doc('а5')
-
-                def create_examination_doc_a6():
-                    create_examination_doc('а6')
-
-                button_change_all_kb_status.grid(column=0, row=0, rowspan=2)
-
-                Button(frame_button, text='Создать документ А5',
-                       command=create_examination_doc_a5,
-                       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, columnspan=2)
-
-                Button(frame_button, text='Создать документ А6',
-                       command=create_examination_doc_a6,
-                       font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=1, columnspan=2)
-
-                frame_button.columnconfigure(index='all', minsize=40, weight=1)
-                frame_button.rowconfigure(index='all', minsize=20)
-                frame_button.pack(fill='both', expand=True, side=tk.LEFT)
-
-            def paste_frame_1():
-                paste_frame_diagnosis()
-                paste_frame_place()
-                paste_frame_date_time()
-                paste_frame_button_create()
-
-                frame_1.columnconfigure(index='all', minsize=40, weight=1)
-                frame_1.rowconfigure(index='all', minsize=20)
-                frame_1.pack(fill='both', expand=True)
-
-            frame_1 = Frame(self.examination_root, borderwidth=1, relief="solid", padx=4, pady=4)
-            frame_date_time = Frame(frame_1, borderwidth=1, relief="solid")
-            txt_date_time = Entry(frame_date_time, width=15,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  justify="center")
-            frame_button = Frame(frame_1, borderwidth=1, relief="solid")
-            button_change_all_kb_status = Button(frame_button, text='Скрыть\nвсе\nклавиатуры',
-                                                 command=change_all_kb_status,
-                                                 font=('Comic Sans MS', user.get('text_size')))
-
-            paste_frame_1()
-
-            def paste_frame_complaints():
-
-                label_complaints = Label(master=frame_complaints_main,
-                                         text=f"{all_data_diagnosis.get('complaints')[0]}",
-                                         font=('Comic Sans MS', user.get('text_size')), bg='white')
-                label_complaints.grid(row=0, column=0, sticky='ew')
-
-                txt_complaints.grid(column=0, row=1, sticky='ew', columnspan=2)
-                data['examination']['complaints_but'] = dict()
-
-                for mark in all_data_diagnosis.get('complaints')[1:]:
-                    if isinstance(mark, tuple):
-                        for mark_2 in mark[1:]:
-                            data['examination']['complaints_but'][f"{mark[0]}_{mark_2}"] = IntVar()
-                    else:
-                        data['examination']['complaints_but'][mark] = IntVar()
-
-                change_complaints_kb_button.grid(column=1, row=0, sticky='ew')
-
-                frame_complaints_main.columnconfigure(index='all', minsize=10, weight=1)
-                frame_complaints_main.rowconfigure(index='all', minsize=10)
-                # frame_complaints_main.pack(fill='both', expand=True, side=tk.LEFT)
-                frame_complaints_main.grid(row=0, column=0, sticky='ew')
-
-                paste_complaints_kb()
-                frame_complaints.columnconfigure(index='all', minsize=40, weight=1)
-                frame_complaints.rowconfigure(index='all', minsize=20)
-                frame_complaints.pack(fill='both', expand=True, padx=2, pady=2)
-
-            def select_complaints():
-                text = ''
-                for mark in data['examination'].get('complaints_but'):
-                    if data['examination']['complaints_but'].get(mark).get() == 1:
-                        if mark == 'нет':
-                            text = 'нет'
-                            for mark_ in data['examination'].get('complaints_but'):
-                                data['examination']['complaints_but'].get(mark_).set(0)
-                            break
-                        else:
-                            if '_' not in mark:
-                                text += f"{mark}, "
-                            else:
-                                mark_1, mark_2 = mark.split('_')
-                                if mark_1 == 'температура до':
-                                    if 'температура до' not in text:
-                                        text += f"температура до {mark_2}, "
-                                    else:
-                                        text = text[:-2]
-                                        text += f" - {mark_2}, "
-
-                                else:
-                                    if mark_1 not in text:
-                                        if mark_1 == 'диарея: стул':
-                                            text += f"{mark_1} {mark_2}, "
-                                        else:
-                                            text += f"{mark_1}: {mark_2}, "
-                                    else:
-                                        text += f"{mark_2}, "
-
-                txt_complaints.delete(1.0, 'end')
-                if text != 'нет':
-                    text = text[:-2] + '.'
-                txt_complaints.insert(1.0, text)
-
-                if data['examination'].get('open_complaints_kb'):
-                    for but in data['examination'].get('complaints_buttons'):
-                        if data['examination']['complaints_but'].get(but).get() == 1:
-                            data['examination']['complaints_buttons'][but]['bg'] = '#77f1ff'
-                        else:
-                            data['examination']['complaints_buttons'][but]['bg'] = '#cdcdcd'
-
-            def change_complaints_kb_status():
-                if data['examination'].get('open_complaints_kb'):
-                    for el in destroy_elements.get('complaints'):
-                        el.destroy()
-                    data['examination']['open_complaints_kb'] = False
-                    destroy_elements['complaints'].clear()
-                    change_complaints_kb_button['text'] = 'открыть клавиатуру жалоб'
-                    txt_complaints['height'] = 2
-                    frame_complaints_main.grid(row=0, column=0, sticky='ew', columnspan=3)
-                    data['examination']['complaints_buttons'].clear()
-
-                else:
-                    destroy_elements['complaints'].clear()
-                    change_complaints_kb_button['text'] = 'скрыть клавиатуру жалоб'
-                    paste_complaints_kb()
-                    txt_complaints['height'] = 6
-                    frame_complaints_main.grid(row=0, column=0, sticky='ew', columnspan=1)
-
-            def paste_complaints_kb():
-
-                data['examination']['open_complaints_kb'] = True
-                destroy_elements['complaints'] = list()
-                data['examination']['complaints_buttons'] = dict()
-
-                frame_complaints_1 = Frame(frame_complaints)
-                frame_loc = Frame(frame_complaints_1)
-
-                destroy_elements['complaints'].append(frame_complaints_1)
-
-                row, col = 0, 0
-                for mark in all_data_diagnosis.get('complaints')[1:]:
-                    if isinstance(mark, tuple):
-                        pass
-                    else:
-                        btn = Checkbutton(frame_loc, text=mark,
-                                          font=('Comic Sans MS', user.get('text_size')),
-                                          onvalue=1, offvalue=0,
-                                          variable=data['examination']['complaints_but'].get(mark),
-                                          command=select_complaints,
-                                          indicatoron=False, selectcolor='#77f1ff')
-                        btn.grid(row=1, column=col, sticky='ew')
-                        data['examination']['complaints_buttons'][mark] = btn
-
-                        col += 1
-                frame_loc.columnconfigure(index='all', minsize=10, weight=1)
-                frame_loc.rowconfigure(index='all', minsize=10)
-                frame_loc.pack(fill='both', expand=True)
-
-                for mark in all_data_diagnosis.get('complaints')[1:]:
-                    if isinstance(mark, tuple):
-                        row, col = 0, 0
-                        frame_loc = Frame(frame_complaints_1)
-                        destroy_elements['complaints'].append(frame_loc)
-
-                        label_complaints_loc = Label(master=frame_loc, text=f"{mark[0]}",
-                                                     font=('Comic Sans MS', user.get('text_size')), bg='white')
-                        label_complaints_loc.grid(row=row, column=col, sticky='ew')
-                        col += 1
-                        for mark_2 in mark[1:]:
-                            btn = Checkbutton(frame_loc, text=mark_2,
-                                              font=('Comic Sans MS', user.get('text_size')),
-                                              onvalue=1, offvalue=0,
-                                              variable=data['examination']['complaints_but'].get(f"{mark[0]}_{mark_2}"),
-                                              command=select_complaints,
-                                              indicatoron=False, selectcolor='#77f1ff')
-                            btn.grid(row=row, column=col, sticky='ew')
-                            data['examination']['complaints_buttons'][f"{mark[0]}_{mark_2}"] = btn
-
-                            col += 1
-                        frame_loc.columnconfigure(index='all', minsize=10, weight=1)
-                        frame_loc.rowconfigure(index='all', minsize=10)
-                        frame_loc.pack(fill='both', expand=True)
-
-                frame_complaints_1.columnconfigure(index='all', minsize=10, weight=1)
-                frame_complaints_1.rowconfigure(index='all', minsize=10)
-                # frame_complaints_1.pack(fill='both', expand=True).grid(row=0, column=0, sticky='ew')
-                frame_complaints_1.grid(row=0, column=1, sticky='ew', columnspan=2)
-
-            frame_complaints = Frame(self.examination_root, relief="solid", padx=1, pady=1)
-            frame_complaints_main = Frame(frame_complaints, padx=1, pady=1)
-            txt_complaints = ScrolledText(frame_complaints_main, width=15, height=6,
-                                          font=('Comic Sans MS', user.get('text_size')),
-                                          wrap="word")
-            change_complaints_kb_button = Button(frame_complaints_main, text='скрыть клавиатуру жалоб',
-                                                 command=change_complaints_kb_status,
-                                                 font=('Comic Sans MS', user.get('text_size')))
-
-            paste_frame_complaints()
-
-            def paste_frame_examination():
-
-                label_examination = Label(master=frame_examination_main,
-                                          text=f"{all_data_diagnosis.get('examination')[0]}",
-                                          font=('Comic Sans MS', user.get('text_size')), bg='white')
-                label_examination.grid(row=0, column=0, sticky='ew')
-
-                txt_examination.grid(column=0, row=1, sticky='ew', columnspan=2)
-
-                data['examination']['examination_but'] = dict()
-                for mark_ in all_data_diagnosis.get('examination')[1:]:
-                    if isinstance(mark_, tuple):
-                        for mark_2_ in mark_[1:]:
-                            data['examination']['examination_but'][f"{mark_[0]}_{mark_2_}"] = IntVar()
-
-                change_examination_kb_button.grid(column=1, row=0, sticky='ew')
-
-                frame_examination_main.columnconfigure(index='all', minsize=40, weight=1)
-                frame_examination_main.rowconfigure(index='all', minsize=20)
-                frame_examination_main.pack(fill='both', expand=True, side=tk.LEFT)
-
-                paste_examination_kb()
-                frame_examination.columnconfigure(index='all', minsize=40, weight=1)
-                frame_examination.rowconfigure(index='all', minsize=20)
-                frame_examination.pack(fill='both', expand=True, padx=2, pady=2)
-
-            def select_examination_frame(event):
-                num = f"{event.widget}".split('.!')[-2].replace('frame', '')
-                if not num:
-                    num = '1'
-                data['examination']['examination_frame'] = data['examination'].get('examination_frame_list')[
-                    int(num) - 1]
-                for el in destroy_elements.get('examination'):
-                    el.destroy()
-                destroy_elements['examination'].clear()
-
-                paste_examination_kb()
-
-            def change_examination_kb_status():
-                if data['examination'].get('open_examination_kb'):
-                    for el in destroy_elements.get('examination'):
-                        el.destroy()
-                    data['examination']['open_examination_kb'] = False
-                    destroy_elements['examination'].clear()
-                    change_examination_kb_button['text'] = 'открыть клавиатуру осмотра'
-                    txt_examination['height'] = 8
-                    txt_examination['width'] = 100
-
-                else:
-                    destroy_elements['examination'].clear()
-                    change_examination_kb_button['text'] = 'скрыть клавиатуру осмотра'
-                    paste_examination_kb()
-                    txt_examination['height'] = 20
-                    txt_examination['width'] = 20
-
-            def select_examination():
-                text = ''
-                if not render_data.get('hr'):
-                    paste_hr_br()
-                for mark in data['examination'].get('examination_but'):
-                    if data['examination']['examination_but'].get(mark).get() == 1:
-                        mark_1, mark_2 = mark.split('_')
-                        if mark_1 == 'Легкие' and mark_2 == 'ЧД':
-                            mark_2 = f"ЧД {render_data.get('br', '')}/мин."
-                        elif mark_1 == 'Сердце' and mark_2 == 'ЧСС':
-                            mark_2 = f"ЧСС {render_data.get('hr', '')}/мин."
-
-                        if mark_1 == 'Прочее':
-                            text += f"{mark_2}, "
-
-                        else:
-                            if mark_1 not in text:
-                                if text:
-                                    text = text[:-2] + '. '
-                                text += f"{mark_1}: {mark_2}, "
-                            else:
-                                text += f"{mark_2}, "
-
-                txt_examination.delete(1.0, 'end')
-                text = text[:-2] + '.'
-                txt_examination.insert(1.0, text)
-
-            def paste_examination_kb():
-                data['examination']['open_examination_kb'] = True
-                destroy_elements['examination'] = list()
-                data['examination']['examination_frame_list'] = list()
-                data['examination']['examination_buttons'] = dict()
-
-                txt_examination['height'] = 20
-                txt_examination['width'] = 20
-
-                frame_examination_kb = Frame(frame_examination, borderwidth=1)
-
-                destroy_elements['examination'].append(frame_examination_kb)
-
-                for mark in all_data_diagnosis.get('examination')[1:]:
-                    if isinstance(mark, tuple):
-                        data['examination']['examination_frame_list'].append(mark[0])
-
-                        frame_loc = Frame(frame_examination_kb, borderwidth=1)
-
-                        if mark[0] != data['examination'].get('examination_frame', ''):
-
-                            text = f"{mark[0]}: "
-                            if selected_diagnosis.get():
-                                if all_diagnosis.get(selected_diagnosis.get()).get('examination').get(mark[0]):
-                                    for i in all_diagnosis.get(selected_diagnosis.get()).get('examination').get(
-                                            mark[0]):
-                                        text += f"{i}, "
-                            text = text[:-2]
-
-                            lbl_0 = Label(frame_loc, text=text,
-                                          font=('Comic Sans MS', user.get('text_size')), border=1, compound='left',
-                                          bg='#f0fffe', relief='ridge')
-                            lbl_0.pack(fill='both', expand=True)
-                            lbl_0.bind('<Button-1>', select_examination_frame)
-
-                        else:
-
-                            row, col = 0, 0
-
-                            label_examination_loc = Label(master=frame_loc, text=f"{mark[0]}",
-                                                          font=('Comic Sans MS', user.get('text_size')), bg='white')
-                            label_examination_loc.grid(row=row, column=col, sticky='ew')
-                            col += 1
-                            for mark_2 in mark[1:]:
-
-                                btn = Checkbutton(frame_loc, text=mark_2,
-                                                  font=('Comic Sans MS', user.get('text_size')),
-                                                  onvalue=1, offvalue=0,
-                                                  variable=data['examination']['examination_but'].get(
-                                                      f"{mark[0]}_{mark_2}"),
-                                                  command=select_examination,
-                                                  indicatoron=False, selectcolor='#77f1ff')
-                                btn.grid(row=row, column=col, sticky='ew')
-                                if data['examination']['examination_but'].get(f"{mark[0]}_{mark_2}").get() == 1:
-                                    btn['bg'] = '#77f1ff'
-
-                                col += 1
-                                if col == 5:
-                                    col = 0
-                                    row += 1
-                        frame_loc.columnconfigure(index='all', minsize=40, weight=1)
-                        frame_loc.rowconfigure(index='all', minsize=20)
-                        frame_loc.pack(fill='both', expand=True)
-
-                    else:
-                        pass
-
-                frame_examination_kb.columnconfigure(index='all', minsize=40, weight=1)
-                frame_examination_kb.rowconfigure(index='all', minsize=20)
-                frame_examination_kb.pack(fill='both', expand=True, padx=2, pady=2)
-
-            frame_examination = Frame(self.examination_root, borderwidth=1, relief="solid")
-            frame_examination_main = Frame(frame_examination, borderwidth=1)
-            txt_examination = ScrolledText(frame_examination_main, width=20, height=20,
-                                           font=('Comic Sans MS', user.get('text_size')),
-                                           wrap="word")
-            change_examination_kb_button = Button(frame_examination_main, text='скрыть клавиатуру осмотра',
-                                                  command=change_examination_kb_status,
-                                                  font=('Comic Sans MS', user.get('text_size')))
-
-            paste_frame_examination()
-
-            def paste_diagnosis_kb():
-
-                def select_diagnosis_kb():
-                    txt_diagnosis_info = txt_diagnosis.get(1.0, 'end')[:-1]
-                    for but in data['examination'].get('diagnosis_add_kb'):
-                        if data['examination']['diagnosis_add_kb'].get(but).get() == 1:
-                            if but not in txt_diagnosis_info:
-                                txt_diagnosis_info += f"{but} "
-                        else:
-                            txt_diagnosis_info = txt_diagnosis_info.replace(f'{but} ', '')
-
-                    txt_diagnosis.delete(1.0, 'end')
-                    txt_diagnosis.insert(1.0, txt_diagnosis_info)
-
-                if destroy_elements.get('frame_diagnosis_kb'):
-                    frame_diagnosis_kb = destroy_elements.get('frame_diagnosis_kb')
-                    frame_diagnosis_kb.destroy()
-                    destroy_elements['frame_diagnosis_kb'] = None
-
-                if data['examination'].get('diagnosis') == 'ОРИ':
-                    txt_diagnosis['width'] = 30
-                    txt_diagnosis['height'] = 5
-                    data['examination']['diagnosis_add_kb'] = dict()
-                    frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-                    destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-
-                    row, col = 0, 0
-                    for mark in all_data_diagnosis.get('diagnosis_ori'):
-                        data['examination']['diagnosis_add_kb'][mark] = IntVar()
-                        btn = Checkbutton(frame_diagnosis_kb, text=mark,
-                                          font=('Comic Sans MS', user.get('text_size')),
-                                          onvalue=1, offvalue=0,
-                                          variable=data['examination']['diagnosis_add_kb'].get(mark),
-                                          command=select_diagnosis_kb,
-                                          indicatoron=False, selectcolor='#77f1ff')
-                        btn.grid(row=row, column=col, sticky='ew')
-                        col += 1
-                        if col == 4:
-                            col = 0
-                            row += 1
-
-                    frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-                    frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-                    frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-
-                elif data['examination'].get('diagnosis') == 'ФРК':
-                    txt_diagnosis['width'] = 30
-                    txt_diagnosis['height'] = 5
-                    data['examination']['diagnosis_add_kb'] = dict()
-                    frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-                    destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-
-                    row, col = 0, 0
-                    for mark in all_data_diagnosis.get('diagnosis_ФРК'):
-                        data['examination']['diagnosis_add_kb'][mark] = IntVar()
-                        btn = Checkbutton(frame_diagnosis_kb, text=mark,
-                                          font=('Comic Sans MS', user.get('text_size')),
-                                          onvalue=1, offvalue=0,
-                                          variable=data['examination']['diagnosis_add_kb'].get(mark),
-                                          command=select_diagnosis_kb,
-                                          indicatoron=False, selectcolor='#77f1ff')
-                        btn.grid(row=row, column=col, sticky='ew')
-                        col += 1
-                        if col == 4:
-                            col = 0
-                            row += 1
-
-                    frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-                    frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-                    frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-
-                elif data['examination'].get('diagnosis') == 'Ветряная оспа':
-                    txt_diagnosis['width'] = 30
-                    txt_diagnosis['height'] = 5
-                    data['examination']['diagnosis_add_kb'] = dict()
-                    frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-                    destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-
-                    row, col = 0, 0
-                    for mark in all_data_diagnosis.get('diagnosis_Ветрянка'):
-                        data['examination']['diagnosis_add_kb'][mark] = IntVar()
-                        btn = Checkbutton(frame_diagnosis_kb, text=mark,
-                                          font=('Comic Sans MS', user.get('text_size')),
-                                          onvalue=1, offvalue=0,
-                                          variable=data['examination']['diagnosis_add_kb'].get(mark),
-                                          command=select_diagnosis_kb,
-                                          indicatoron=False, selectcolor='#77f1ff')
-                        btn.grid(row=row, column=col, sticky='ew')
-                        col += 1
-                        if col == 4:
-                            col = 0
-                            row += 1
-
-                    frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-                    frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-                    frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-
-                else:
-
-                    txt_diagnosis['width'] = 70
-                    txt_diagnosis['height'] = 3
-
-            frame_diagnosis_txt = Frame(self.examination_root, borderwidth=1, relief="solid")
-            txt_diagnosis = ScrolledText(frame_diagnosis_txt, width=70, height=3,
-                                         font=('Comic Sans MS', user.get('text_size')),
-                                         wrap="word")
-            txt_diagnosis.pack(fill='both', expand=True, side=tk.LEFT)
-            txt_diagnosis.insert(1.0, 'Диагноз: ')
-            frame_diagnosis_txt.pack(fill='both', expand=True)
-
-            def paste_frame_prescription():
-                label_prescription = Label(master=frame_prescription_main,
-                                           text=f"{all_data_diagnosis.get('prescription')[0]}",
-                                           font=('Comic Sans MS', user.get('text_size')), bg='white')
-                label_prescription.grid(row=0, column=0, sticky='ew')
-
-                txt_prescription.grid(column=0, row=1, sticky='ew', columnspan=2)
-
-                data['examination']['prescription_but'] = dict()
-                for mark_ in all_data_diagnosis.get('prescription')[1:]:
-                    if isinstance(mark_, tuple):
-                        for mark_2_ in mark_[1:]:
-                            data['examination']['prescription_but'][f"{mark_[0]}_{mark_2_}"] = IntVar()
-
-                change_prescription_kb_button.grid(column=1, row=0, sticky='ew')
-
-                frame_prescription_main.columnconfigure(index='all', minsize=40, weight=1)
-                frame_prescription_main.rowconfigure(index='all', minsize=20)
-                frame_prescription_main.pack(fill='both', expand=True, side=tk.LEFT)
-
-                paste_prescription_kb()
-                frame_prescription.columnconfigure(index='all', minsize=40, weight=1)
-                frame_prescription.rowconfigure(index='all', minsize=20)
-                frame_prescription.pack(fill='both', expand=True, padx=2, pady=2)
-
-            def select_prescription_frame(event):
-                num = f"{event.widget}".split('.!')[-2].replace('frame', '')
-                if not num:
-                    num = '1'
-                data['examination']['prescription_frame'] = data['examination'].get('prescription_frame_list')[
-                    int(num) - 1]
-                for el in destroy_elements.get('prescription'):
-                    el.destroy()
-                destroy_elements['prescription'].clear()
-
-                paste_prescription_kb()
-
-            def select_prescription():
-
-                text = txt_prescription.get(1.0, 'end')[:-1]
-                for mark in data['examination'].get('prescription_but'):
-                    mark_1, mark_2 = mark.split('_')
-                    if mark_2 == "Парацетамол":
-                        mark_2 = "Парацетамол 15 мг/кг"
-                    if mark_2 == "Ибупрофен":
-                        mark_2 = "Ибупрофен 10 мг/кг"
-
-                    if data['examination']['prescription_but'].get(mark).get() == 1:
-                        if mark_2 not in text:
-                            if text and text[-1] in ('.', ','):
-                                text += ' '
-                            if mark_1 not in text:
-
-                                if text and text[-2:] == ', ':
-                                    text = text[:-2] + '. '
-                                text += f"{mark_1}: {mark_2}, "
-                            else:
-                                if text[-2:] == '. ':
-                                    text = text[:-2] + ', '
-
-                                text += f"{mark_2}, "
-                    else:
-                        if 'Антибиотик' in mark:
-                            pass
-                        else:
-                            if f"{mark_2}, " in text:
-                                text = text.replace(f"{mark_2}, ", '')
-                            elif f", {mark_2}" in text:
-                                text = text.replace(f", {mark_2}", '')
-
-                            elif f"{mark_2}" in text:
-                                text = text.replace(f"{mark_2}", ' ')
-
-                txt_prescription.delete(1.0, 'end')
-                if text[-2:] == ', ':
-                    text = text[:-2] + '.'
-                text = text.replace(' .', '')
-                txt_prescription.insert(1.0, text)
-
-            def paste_prescription_kb():
-                txt_prescription['height'] = 5
-                txt_prescription['width'] = 20
-
-                data['examination']['open_prescription_kb'] = True
-                destroy_elements['prescription'] = list()
-                data['examination']['prescription_frame_list'] = list()
-                data['examination']['prescription_buttons'] = dict()
-
-                frame_prescription_kb = Frame(frame_prescription, borderwidth=1)
-
-                destroy_elements['prescription'].append(frame_prescription_kb)
-
-                for mark in all_data_diagnosis.get('prescription')[1:]:
-                    if isinstance(mark, tuple):
-                        data['examination']['prescription_frame_list'].append(mark[0])
-
-                        frame_loc = Frame(frame_prescription_kb, borderwidth=1)
-
-                        if mark[0] != data['examination'].get('prescription_frame', ''):
-
-                            text = f"{mark[0]}: "
-                            if selected_diagnosis.get():
-                                if all_diagnosis.get(selected_diagnosis.get()).get('prescription').get(mark[0]):
-                                    for i in all_diagnosis.get(selected_diagnosis.get()).get('prescription').get(
-                                            mark[0]):
-                                        text += f"{i}, "
-                            text = text[:-2]
-
-                            lbl_0 = Label(frame_loc, text=text,
-                                          font=('Comic Sans MS', user.get('text_size')), border=1, compound='left',
-                                          bg='#f0fffe', relief='ridge')
-                            lbl_0.pack(fill='both', expand=True)
-                            lbl_0.bind('<Button-1>', select_prescription_frame)
-
-                        else:
-
-                            row, col = 0, 0
-
-                            label_prescription_loc = Label(master=frame_loc, text=f"{mark[0]}",
-                                                           font=('Comic Sans MS', user.get('text_size')), bg='white')
-                            label_prescription_loc.grid(row=row, column=col, sticky='ew')
-                            col += 1
-                            for mark_2 in mark[1:]:
-                                if mark_2 in ('Форма', 'Дозировка'):
-                                    row += 1
-                                    col = 0
-
-                                    label_prescription_loc = Label(master=frame_loc, text=f"{mark_2}",
-                                                                   font=('Comic Sans MS', user.get('text_size')),
-                                                                   bg='white')
-                                    label_prescription_loc.grid(row=row, column=col, sticky='ew')
-                                    col += 1
-                                else:
-
-                                    btn = Checkbutton(frame_loc, text=mark_2,
-                                                      font=('Comic Sans MS', user.get('text_size')),
-                                                      onvalue=1, offvalue=0,
-                                                      variable=data['examination']['prescription_but'].get(
-                                                          f"{mark[0]}_{mark_2}"),
-                                                      command=select_prescription,
-                                                      indicatoron=False, selectcolor='#77f1ff')
-                                    btn.grid(row=row, column=col, sticky='ew')
-                                    if data['examination']['prescription_but'].get(f"{mark[0]}_{mark_2}").get() == 1:
-                                        btn['bg'] = '#77f1ff'
-                                    col += 1
-                                    if col == 6:
-                                        col = 0
-                                        row += 1
-
-                        frame_loc.columnconfigure(index='all', minsize=40, weight=1)
-                        frame_loc.rowconfigure(index='all', minsize=20)
-                        frame_loc.pack(fill='both', expand=True)
-
-                    else:
-                        pass
-
-                frame_prescription_kb.columnconfigure(index='all', minsize=40, weight=1)
-                frame_prescription_kb.rowconfigure(index='all', minsize=20)
-                frame_prescription_kb.pack(fill='both', expand=True, padx=2, pady=2)
-
-            def change_prescription_kb_status():
-                if data['examination'].get('open_prescription_kb'):
-                    for el in destroy_elements.get('prescription'):
-                        el.destroy()
-                    data['examination']['open_prescription_kb'] = False
-                    destroy_elements['prescription'].clear()
-                    change_prescription_kb_button['text'] = 'открыть клавиатуру рекомендаций'
-                    txt_prescription['height'] = 3
-                    txt_prescription['width'] = 70
-
-                else:
-                    destroy_elements['prescription'].clear()
-                    change_prescription_kb_button['text'] = 'скрыть клавиатуру рекомендаций'
-                    paste_prescription_kb()
-                    txt_prescription['height'] = 5
-                    txt_prescription['width'] = 20
-
-            frame_prescription = Frame(self.examination_root, relief="solid", padx=1, pady=1)
-            frame_prescription_main = Frame(frame_prescription, padx=1, pady=1)
-            txt_prescription = ScrolledText(frame_prescription_main, width=15, height=4,
-                                            font=('Comic Sans MS', user.get('text_size')),
-                                            wrap="word")
-            change_prescription_kb_button = Button(frame_prescription_main, text='скрыть клавиатуру рекомендаций',
-                                                   command=change_prescription_kb_status,
-                                                   font=('Comic Sans MS', user.get('text_size')))
-
-            paste_frame_prescription()
-
-            def paste_frame_ln():
-                def calendar_ln_from():
-                    paste_calendar(text_field='ln_from__Больничный с ...')
-
-                def calendar_ln_until():
-                    paste_calendar(text_field='ln_until__Больничный по ...')
-
-                def calendar_second_examination():
-                    paste_calendar(text_field='second_examination__Повторный осмотр')
-
-                def select_type_ln():
-                    type_ln = selected_type_ln.get()
-                    ln_num = ''
-                    date_from_cont = ''
-
-                    if type_ln in ("Справка ВН", "Лист ВН"):
-                        with sq.connect('data_base.db') as conn:
-                            cur = conn.cursor()
-
-                            cur.execute(f"SELECT date_time, LN_type FROM examination "
-                                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                        f"AND patient_info LIKE "
-                                        f"'{patient.get('name')}__{patient.get('birth_date')}' "
-                                        f"AND LN_type LIKE '{type_ln}%'")
-
-                            found_info = cur.fetchall()
-                        if found_info:
-                            last_visit = min(found_info,
-                                             key=lambda i: (datetime.now() -
-                                                            datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).days)
-                            if (datetime.now() - datetime.strptime(f"{last_visit[0]}", "%d.%m.%Y %H:%M")).days < 14:
-                                print(last_visit)
-                                if last_visit[1].split('__')[-1] != 'closed':
-                                    ln_num = last_visit[1].split('__')[1].replace('_', '')
-                                    try:
-                                        date_from_cont = datetime.strptime(f"{last_visit[1].split('__')[3]}",
-                                                                           "%d.%m.%Y") + timedelta(days=1)
-                                        date_from_cont = date_from_cont.strftime("%d.%m.%Y")
-                                        txt_ln_from.delete(0, 'end')
-                                        txt_ln_from.insert(0, date_from_cont)
-
-                                    except Exception:
-                                        pass
-
-                        if not ln_num:
-                            found_info = list()
-                            found_info.clear()
-                            with sq.connect('data_base.db') as conn:
-                                cur = conn.cursor()
-                                cur.execute(f"SELECT LN_type FROM examination "
-                                            f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                            f"AND LN_type LIKE '{type_ln}%'")
-                                for num in cur.fetchall():
-                                    if num[0]:
-                                        found_info.append(num[0])
-                            if found_info:
-                                print(found_info)
-                                last_ln_num = max(found_info, key=lambda i: int(i.split('__')[1].split('_')[-1]))
-                                ln_num_digit = last_ln_num.split('__')[1].split('_')[-1]
-                                ln_num = f"{last_ln_num.split('__')[1].split('_')[-1].replace(ln_num_digit, '')}" \
-                                         f"{int(ln_num_digit) + 1}".replace('_', '')
-                                txt_ln_from.delete(0, 'end')
-                                txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
-
-                    txt_ln_num.delete(0, 'end')
-                    if ln_num:
-                        txt_ln_num.insert(0, ln_num)
-
-                    if destroy_elements.get('frame_type_ln'):
-                        frame_type_ln = destroy_elements.get('frame_type_ln')
-                        frame_type_ln.destroy()
-                    frame_type_ln = Frame(frame_ln_add)
-                    destroy_elements['frame_type_ln'] = frame_type_ln
-
-                    if type_ln in ("Справка ВН", "Лист ВН"):
-                        lbl_type_ln['text'] = f"{type_ln} номер:"
-                        frame_ln_add.grid(row=0, column=3, sticky='ew')
-                    else:
-                        frame_ln_add.grid_remove()
-                        # Label(master=frame_ln, text=f"{ln_num}",
-                        #       font=('Comic Sans MS', user.get('text_size')), bg='white').
-                        #       grid(row=0, column=3, sticky='ew',
-                        #                                                                       columnspan=2)
-                    frame_type_ln.columnconfigure(index='all', minsize=40, weight=1)
-                    frame_type_ln.rowconfigure(index='all', minsize=20)
-                    frame_type_ln.grid(row=0, column=4, sticky='ew')
-
-                col = 0
-                for but in ("Справка ВН", "Лист ВН", "Уход обеспечен"):
-                    btn = Radiobutton(frame_ln, text=but,
-                                      font=('Comic Sans MS', user.get('text_size')),
-                                      value=but, variable=selected_type_ln, command=select_type_ln,
-                                      indicatoron=False, selectcolor='#77f1ff')
-                    btn.grid(row=0, column=col, sticky='ew')
-                    col += 1
-                lbl_type_ln.grid(row=0, column=0, sticky='ew')
-
-                txt_ln_num.grid(row=0, column=1, sticky='ew')
-                but_ln_closed.grid(row=1, column=0, columnspan=2, sticky='ew')
-                lbl_ln_from.grid(row=0, column=2, sticky='ew')
-                txt_ln_from.grid(row=0, column=3, sticky='ew')
-                Button(frame_ln_add, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
-                       command=calendar_ln_from).grid(row=1, column=3, sticky='ew')
-                Label(master=frame_ln_add, text=" по ",
-                      font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=4, sticky='ew')
-                txt_ln_until.grid(row=0, column=5, sticky='ew')
-                Button(frame_ln_add, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
-                       command=calendar_ln_until).grid(row=1, column=5, sticky='ew')
-
-                Label(master=frame_second_examination, text="Повторный осмотр",
-                      font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=1, column=0, sticky='ew')
-                txt_second_examination.grid(row=1, column=1, sticky='ew', columnspan=2)
-                Button(frame_second_examination, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
-                       command=calendar_second_examination).grid(row=1, column=3, sticky='ew')
-
-                frame_ln.columnconfigure(index='all', minsize=40, weight=1)
-                frame_ln.rowconfigure(index='all', minsize=20)
-                frame_ln.pack(fill='both', expand=True, padx=2, pady=2)
-
-                frame_second_examination.columnconfigure(index='all', minsize=40, weight=1)
-                frame_second_examination.rowconfigure(index='all', minsize=20)
-                frame_second_examination.pack(fill='both', expand=True, padx=2, pady=2)
-
-                frame_ln_main.columnconfigure(index='all', minsize=40, weight=1)
-                frame_ln_main.rowconfigure(index='all', minsize=20)
-                frame_ln_main.pack(fill='both', expand=True, padx=2, pady=2)
-
-            def ln_closed():
-                if not data['examination'].get('ln_closed'):
-                    data['examination']['ln_closed'] = True
-                    lbl_ln_from.grid_configure(columnspan=4)
-                    lbl_ln_from.tkraise()
-                    lbl_ln_from['text'] = f"{selected_type_ln.get()} закрыт к труду"
-                    but_ln_closed['text'] = "отменить закрытие"
-                else:
-                    data['examination']['ln_closed'] = False
-                    lbl_ln_from.grid_configure(columnspan=1)
-                    lbl_ln_from['text'] = " с "
-                    but_ln_closed['text'] = "закрыть к труду"
-
-
-            frame_ln_main = Frame(self.examination_root, relief="solid", padx=1, pady=1)
-            frame_ln = Frame(frame_ln_main, relief="solid", padx=1, pady=1)
-            frame_ln_add = Frame(frame_ln, relief="solid", padx=1, pady=1)
-            frame_second_examination = Frame(frame_ln_main, relief="solid", padx=1, pady=1)
-
-            txt_ln_num = Entry(frame_ln_add, width=15, font=('Comic Sans MS', user.get('text_size')))
-            txt_ln_from = Entry(frame_ln_add, width=15, font=('Comic Sans MS', user.get('text_size')))
-            txt_ln_until = Entry(frame_ln_add, width=15, font=('Comic Sans MS', user.get('text_size')))
-            txt_second_examination = Entry(frame_second_examination, width=15,
-                                           font=('Comic Sans MS', user.get('text_size')))
-            lbl_type_ln = Label(master=frame_ln_add, text="",
-                                font=('Comic Sans MS', user.get('text_size')), bg='white')
-            lbl_ln_from = Label(master=frame_ln_add, text=" с ",
-                                font=('Comic Sans MS', user.get('text_size')), bg='white')
-            but_ln_closed = Button(frame_ln_add, text='закрыть к труду',
-                                   font=('Comic Sans MS', user.get('text_size')),
-                                   command=ln_closed)
-
-            paste_frame_ln()
-
-            def paste_calendar(text_field):
-                command, marker = text_field.split('__')
-
-                calendar_root = Toplevel()
-                calendar_root.title(f'Календарь {marker}')
-                calendar_root.config(bg='white')
-
-                selected_day = StringVar()
-                actual_data = dict()
-
-                now = datetime.now()
-                actual_data['year'] = now.year
-                actual_data['month'] = now.month
-
-                def prev_month():
-                    curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
-                    new = curr - timedelta(days=1)
-                    actual_data['year'] = int(new.year)
-                    actual_data['month'] = int(new.month)
-                    create_calendar()
-
-                def next_month():
-                    curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
-                    new = curr + timedelta(days=31)
-                    actual_data['year'] = int(new.year)
-                    actual_data['month'] = int(new.month)
-                    create_calendar()
-
-                def select_day():
-                    day = selected_day.get()
-                    if day.isdigit():
-                        year = actual_data.get('year')
-                        month = actual_data.get('month')
-                        if len(day) == 1:
-                            day = f"0{day}"
-                        answer = f"{day}.{month}.{year}"
-                    else:
-                        answer = datetime.now().strftime("%d.%m.%Y")
-
-                    if command == 'ln_from':
-                        txt_ln_from.delete(0, 'end')
-                        txt_ln_from.insert(0, answer)
-
-                    if command == 'ln_until':
-                        txt_ln_until.delete(0, 'end')
-                        txt_ln_until.insert(0, answer)
-
-                        txt_second_examination.delete(0, 'end')
-                        txt_second_examination.insert(0, answer)
-
-                    if command == 'second_examination':
-                        txt_second_examination.delete(0, 'end')
-                        txt_second_examination.insert(0, answer)
-
-                    calendar_root.destroy()
-
-                frame_month_year = Frame(calendar_root, relief="solid", padx=1, pady=1)
-
-                but_prev_month = Button(frame_month_year, text='<', command=prev_month,
-                                        font=('Comic Sans MS', user.get('text_size')))
-                but_prev_month.grid(column=0, row=0, sticky='ew')
-
-                lbl_month_year = Label(frame_month_year, text="", font=('Comic Sans MS', user.get('text_size')),
-                                       bg='white')
-                lbl_month_year.grid(column=1, row=0, sticky='ew')
-
-                but_next_month = Button(frame_month_year, text='>', command=next_month,
-                                        font=('Comic Sans MS', user.get('text_size')))
-                but_next_month.grid(column=2, row=0, sticky='ew')
-
-                frame_month_year.columnconfigure(index='all', minsize=40, weight=1)
-                frame_month_year.rowconfigure(index='all', minsize=20)
-                frame_month_year.pack(fill='both', expand=True)
-
-                def create_calendar():
-                    year = actual_data.get('year')
-                    month = actual_data.get('month')
-
-                    if destroy_elements.get('calendar_frame_days'):
-                        frame_days = destroy_elements.get('calendar_frame_days')
-                        frame_days.destroy()
-
-                    frame_days = Frame(calendar_root, relief="solid", padx=1, pady=1)
-                    destroy_elements['calendar_frame_days'] = frame_days
-
-                    month_name = {
-                        'January': 'Январь',
-                        'February': 'Февраль',
-                        'March': 'Март',
-                        'April': 'Апрель',
-                        'May': 'Май',
-                        'June': 'Июнь',
-                        'July': 'Июль',
-                        'August': 'Август',
-                        'September': 'Сентябрь',
-                        'October': 'Октябрь',
-                        'November': 'Ноябрь',
-                        'December': 'Декабрь'
-                    }
-
-                    lbl_month_year['text'] = f"{month_name.get(calendar.month_name[month])} {str(year)}"
-
-                    # Second row - Week Days
-                    column = 0
-                    for day in ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]:
-                        lbl = Label(frame_days, text=day, font=('Comic Sans MS', user.get('text_size')), bg='white')
-                        lbl.grid(column=column, row=0, sticky='ew')
-                        column += 1
-
-                    row, col = 0, 0
-
-                    my_calendar = calendar.monthcalendar(year, month)
-                    for week in my_calendar:
-                        row += 1
-                        col = 0
-                        for day in week:
-                            if day == 0:
-                                col += 1
-                            else:
-                                day = str(day)
-                                btn = Radiobutton(frame_days, text=day,
-                                                  font=('Comic Sans MS', user.get('text_size')),
-                                                  value=day, variable=selected_day, command=select_day,
-                                                  indicatoron=False, selectcolor='#77f1ff')
-                                btn.grid(row=row, column=col, sticky='ew')
-                                col += 1
-
-                                if datetime.strptime(f"{day}.{month}.{year}", "%d.%m.%Y").weekday() in (5, 6):
-                                    btn['bg'] = '#b4ffff'
-                                if datetime.now().year == year and datetime.now().month == month and datetime.now().day == int(
-                                        day):
-                                    btn['bg'] = '#ff7b81'
-
-                    btn = Radiobutton(frame_days, text="Сегодня",
-                                      font=('Comic Sans MS', user.get('text_size')),
-                                      value="Сегодня", variable=selected_day, command=select_day,
-                                      indicatoron=False, selectcolor='#77f1ff')
-                    btn.grid(row=row + 1, column=0, sticky='ew', columnspan=7)
-
-                    frame_days.columnconfigure(index='all', minsize=40, weight=1)
-                    frame_days.rowconfigure(index='all', minsize=20)
-                    frame_days.pack(fill='both', expand=True)
-
-                create_calendar()
-
-        paste_examination_cmd_main()
-
-        self.examination_root.columnconfigure(index='all', minsize=40, weight=1)
-        self.examination_root.rowconfigure(index='all', minsize=20)
-
-        self.canvas.create_window((0, 0), window=self.examination_root, anchor="nw")
+        self.canvas_frame = Frame(self.canvas, borderwidth=1)
+        if marker == 'paste_examination_cmd_main':
+            paste_examination_cmd_main(self, self.canvas_frame)
+        if marker == 'past_examination':
+            func(self.canvas_frame)
+        if marker == 'delete_diagnosis_root':
+            func(self.canvas_frame)
+
+        self.canvas_frame.columnconfigure(index='all', minsize=40, weight=1)
+        self.canvas_frame.rowconfigure(index='all', minsize=20)
+
+        self.canvas.create_window((0, 0), window=self.canvas_frame, anchor="nw")
 
         self.canvas.grid(row=0, column=0, sticky="nswe")
         self.scroll_x.grid(row=1, column=0, sticky="we")
@@ -1779,40 +539,16 @@ class ExaminationRoot(tk.Toplevel):
         self.update_idletasks()
         self.minsize(self.winfo_width(), self.winfo_height())
 
-        # width = self.canvas.winfo_geometry()
-        # print("self.canvas", width)
-        #
-        # width = self.examination_root.winfo_geometry()
-        # print("self.examination_root", width)
-        #
-        # width = frame_examination.winfo_geometry()
-        # print("frame_examination", width)
-        #
-        # print("высота экрана", self.winfo_screenheight())
-
-        self.canvas['width'] = int(self.examination_root.winfo_geometry().split('x')[0])
+        self.canvas['width'] = int(self.canvas_frame.winfo_geometry().split('x')[0])
         self.canvas.bind("<Enter>", self.on_binds)
         self.canvas.bind("<Leave>", self.off_binds)
 
     def resize(self, event):
         region = self.canvas.bbox(tk.ALL)
         self.canvas.configure(scrollregion=region)
-        self.minsize(width=int(self.examination_root.winfo_width()), height=self.canvas.winfo_screenheight() - 100)
+        self.minsize(width=int(self.canvas_frame.winfo_width()), height=self.canvas.winfo_screenheight() - 100)
 
-        self.canvas['width'] = int(self.examination_root.winfo_width())
-
-        # self['width'] = int(self.examination_root.winfo_geometry().split('x')[0])
-        #
-        # height = int(self.examination_root.winfo_geometry().split('x')[1].split('+')[0])
-        # print(f"examination_root {self.examination_root.winfo_geometry()}\n"
-        #       f"self {self.winfo_geometry()}\n"
-        #       f"height {height}\n"
-        #       f"self.winfo_screenheight() {self.winfo_screenheight()}\n")
-        # if self.winfo_screenheight() < height:
-        #     self['height'] = height
-        #     self.minsize(int(self.examination_root.winfo_geometry().split('x')[0]), height)
-        #
-        #     self.update()
+        self.canvas['width'] = int(self.canvas_frame.winfo_width())
 
     def on_binds(self, event):
         self.idbind = self.bind_all("<MouseWheel>", self.on_mousewheel)
@@ -1821,10 +557,2160 @@ class ExaminationRoot(tk.Toplevel):
         self.unbind_all("<MouseWheel>")
 
     def on_mousewheel(self, event):
-        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        if os.name == 'posix':
+            self.canvas.yview_scroll(int(-1 * event.delta), "units")
+        else:
+            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
 
-def save_document(doc:Document, doc_name:str):
+def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Frame):
+    destroy_elements = dict()
+    data['examination'] = dict()
+    data['examination']['all_kb_status'] = 'open'
+
+    selected_place = StringVar()
+    selected_diagnosis = StringVar()
+    selected_type_ln = StringVar()
+    err_msd_weight = StringVar()
+    selected_examination_frame = StringVar()
+    selected_prescription_frame = StringVar()
+    age = get_age(patient.get('birth_date'))
+
+    def paste_past_examination():
+        def past_examination(past_examination_frame: Frame):
+            def selected_past_but():
+                selected_past_but_info = ''
+                for but_info in past_examination_data.get('buttons'):
+                    if past_examination_data['buttons'].get(but_info).get() == 1:
+                        selected_past_but_info = but_info
+                        past_examination_data['buttons'][but_info].set(0)
+                if selected_past_but_info:
+                    rowid_, command = selected_past_but_info.split('__')
+                    if command == 'Удалить осмотр':
+                        try:
+                            with sq.connect('data_base.db') as connect:
+                                cursor = connect.cursor()
+                                cursor.execute(f"DELETE FROM examination WHERE rowid LIKE '{rowid_}'")
+                        except Exception as ex:
+                            messagebox.showerror('Ошибка', f"Ошибка удаления записи: \n{ex}")
+                        else:
+                            past_examination_data['destroy_elements'].get(rowid_).destroy()
+
+                    if command == 'Загрузить в текущий':
+                        for but_marker in ('complaints', 'examination', 'prescription'):
+                            for mark_ in data['examination'].get(f'{but_marker}_but'):
+                                data['examination'][f'{but_marker}_but'].get(mark_).set(0)
+
+                        for selected_marker in past_examination_data['found_info'].get(rowid_).split('__<end!>__\n'):
+                            if 'selected_diagnosis_get:____' in selected_marker:
+                                selected_diagnosis.set(selected_marker.split(':____')[-1])
+                            else:
+                                for but_marker in ('complaints', 'examination', 'prescription', 'diagnosis', 'weight'):
+                                    if f"{but_marker}:____" in selected_marker:
+                                        all_buttons = selected_marker.replace(f"{but_marker}:____", '').split("__")
+                                        for button in all_buttons:
+                                            if button in data['examination'].get(f'{but_marker}_but'):
+                                                data['examination'][f'{but_marker}_but'].get(button).set(1)
+
+                                    elif f"{but_marker}_text:____" in selected_marker:
+                                        text_inserted = selected_marker.replace(f"{but_marker}_text:____", '')
+
+                                        if but_marker == 'complaints':
+                                            txt_complaints.delete(1.0, 'end')
+                                            txt_complaints.insert(1.0, text_inserted)
+                                        if but_marker == 'examination':
+                                            txt_examination.delete(1.0, 'end')
+                                            txt_examination.insert(1.0, text_inserted)
+                                        if but_marker == 'diagnosis':
+                                            txt_diagnosis.delete(1.0, 'end')
+                                            txt_diagnosis.insert(1.0, text_inserted)
+                                        if but_marker == 'prescription':
+                                            txt_prescription.delete(1.0, 'end')
+                                            txt_prescription.insert(1.0, text_inserted)
+                                        if but_marker == 'weight':
+                                            txt_weight.delete(0, 'end')
+                                            txt_weight.insert(0, text_inserted)
+
+                        past_examination_root.destroy()
+                        examination_root.update()
+                        edit_examination_kb_text()
+
+            past_examination_data = dict()
+            past_examination_data['buttons'] = dict()
+            past_examination_data['found_info'] = dict()
+            past_examination_data['destroy_elements'] = dict()
+
+            with sq.connect('data_base.db') as conn:
+                cur = conn.cursor()
+
+                cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
+                            f"examination_text, examination_key "
+                            f"FROM examination "
+                            f"WHERE patient_info LIKE "
+                            f"'{patient.get('name')}__{patient.get('birth_date')}'")
+
+                found_info = cur.fetchall()
+            if not found_info:
+                Label(master=past_examination_frame, text="История о прошлых осмотрах пациента пуста",
+                      font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True)
+            else:
+                found_info = sorted(found_info,
+                                    key=lambda i: (datetime.now() -
+                                                   datetime.strptime(f"{i[1]}", "%d.%m.%Y %H:%M")).seconds)
+
+                for info in found_info:
+                    local_frame = Frame(past_examination_frame, borderwidth=1, relief="solid", padx=3, pady=3)
+                    rowid, date_time, doctor_name, ln_type, patient_info_, examination_text, examination_key = info
+
+                    past_examination_data['destroy_elements'][f"{rowid}"] = local_frame
+
+                    past_examination_data['found_info'][f"{rowid}"] = examination_key
+                    past_exam_text = f"Время редактирования: {date_time}\n"
+                    counter = 0
+                    for text in examination_text.split(" "):
+                        counter += len(text)
+                        if '\n' in text:
+                            counter = 0
+                        if counter >= 100:
+                            past_exam_text += '\n'
+                            counter = 0
+
+                        past_exam_text += text + ' '
+                    past_exam_text += f"\nЛН: {ln_type}\nВрач: {doctor_name}".replace('_', ' ')
+                    Label(master=local_frame, width=100,
+                          text=past_exam_text,
+                          justify='left',
+                          font=('Comic Sans MS', user.get('text_size')),
+                          bg='white').pack(fill='both', expand=True, side="top")
+
+                    for mark in ('Удалить осмотр', 'Загрузить в текущий'):
+                        past_examination_data['buttons'][f"{rowid}__{mark}"] = IntVar()
+
+                        Checkbutton(local_frame, text=mark,
+                                    font=('Comic Sans MS', user.get('text_size')),
+                                    onvalue=1, offvalue=0,
+                                    variable=past_examination_data['buttons'].get(f"{rowid}__{mark}"),
+                                    command=selected_past_but,
+                                    indicatoron=False,
+                                    selectcolor='#77f1ff').pack(fill='both', expand=True, side="left")
+
+                    local_frame.columnconfigure(index='all', minsize=40, weight=1)
+                    local_frame.rowconfigure(index='all', minsize=20)
+                    local_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+        past_examination_root = ScrolledRoot(marker='past_examination', func=past_examination)
+        past_examination_root.title(f"Осмотры пациента "
+                                    f"{patient.get('name').split()[0]} "
+                                    f"{patient.get('name').split()[1]} "
+                                    f"{patient.get('birth_date')}")
+        past_examination_root.geometry('+0+0')
+        past_examination_root.mainloop()
+
+    def change_all_kb_status():
+
+        if data['examination'].get('all_kb_status') == 'open':
+            for marker in ('complaints', 'examination', 'prescription'):
+                if data['examination'].get(f'open_{marker}_kb') != 'closed':
+                    if marker == 'complaints':
+                        change_complaints_kb_status()
+                    elif marker == 'examination':
+                        change_examination_kb_status()
+                    elif marker == 'prescription':
+                        change_prescription_kb_status()
+            data['examination']['all_kb_status'] = 'closed'
+            button_change_all_kb_status['text'] = 'Открыть\nвсе\nклавиатуры'
+
+        elif data['examination'].get('all_kb_status') == 'closed':
+            for marker in ('complaints', 'examination', 'prescription'):
+                if not data['examination'].get(f'open_{marker}_kb') == 'open':
+                    if marker == 'complaints':
+                        change_complaints_kb_status()
+                    elif marker == 'examination':
+                        change_examination_kb_status()
+                    elif marker == 'prescription':
+                        change_prescription_kb_status()
+            data['examination']['all_kb_status'] = 'open'
+            button_change_all_kb_status['text'] = 'Скрыть\nвсе\nклавиатуры'
+
+        root_examination.update()
+
+    def create_examination_doc(doc_size):
+
+        type_ln = selected_type_ln.get()
+        if type_ln in ('Лист ВН', 'Справка ВН') and not txt_ln_num.get():
+            messagebox.showerror('Ошибка!', 'Не указан номер документа ВН!')
+            txt_ln_num.focus()
+        elif not selected_place.get():
+            messagebox.showerror('Ошибка!', 'Не указано место осмотра!')
+            frame_1.focus()
+        else:
+            render_data.clear()
+
+            date_time_str = txt_date_time.get().strip()
+            if date_time_str:
+                render_data['date_time'] = f"Дата осмотра: {date_time_str}\n"
+            else:
+                render_data['date_time'] = ""
+
+            render_data['patient_info'] = f"ФИО: {patient.get('name')}\t" \
+                                          f"дата рождения: {patient.get('birth_date')}\t" \
+                                          f"{patient.get('patient_district')}-й уч\n" \
+                                          f"Место осмотра: {selected_place.get()}"
+            render_data['complaints'] = f"{txt_complaints.get(1.0, 'end').strip()}"
+            render_data['examination'] = f" {txt_examination.get(1.0, 'end').strip()}"
+            render_data['diagnosis'] = f"{txt_diagnosis.get(1.0, 'end').strip()}"
+            render_data['prescription'] = f"{txt_prescription.get(1.0, 'end').strip()}"
+
+            add_info = ''
+            if type_ln == 'Уход обеспечен':
+                add_info += "Уход обеспечен\n"
+            elif type_ln in ('Лист ВН', 'Справка ВН'):
+                if data['examination'].get('ln_closed'):
+                    if type_ln == 'Лист ВН':
+                        add_info += f"{type_ln} № {txt_ln_num.get()} закрыт к труду\n"
+                    else:
+                        add_info += f"{type_ln} № {txt_ln_num.get()} закрыта к труду\n"
+                else:
+                    add_info += f"{type_ln} № {txt_ln_num.get()} c {txt_ln_from.get()} по {txt_ln_until.get()}\n"
+            if txt_second_examination.get():
+                add_info += f"Повторный осмотр: {txt_second_examination.get()}\n"
+            add_info += f"Врач-педиатр: {user.get('doctor_name')}"
+            render_data['add_info'] = add_info
+
+            active_but = ""
+            if selected_diagnosis.get():
+                active_but += f"selected_diagnosis_get:____{selected_diagnosis.get()}__<end!>__\n"
+            for mark in ('complaints', 'examination', 'prescription'):
+                active_but += f'{mark}:__'
+                for but in data['examination'].get(f'{mark}_but'):
+                    if data['examination'][f'{mark}_but'].get(but).get() == 1:
+                        active_but += f'__{but}'
+                active_but += '__<end!>__\n'
+
+            active_but = f"{active_but}" \
+                         f"complaints_text:____{render_data.get('complaints')}__<end!>__\n" \
+                         f"examination_text:____{render_data.get('examination')}__<end!>__\n" \
+                         f"diagnosis_text:____{render_data.get('diagnosis')}__<end!>__\n" \
+                         f"prescription_text:____{render_data.get('prescription')}__<end!>__\n"
+            if txt_weight.get():
+                render_data['examination'] = f"Вес: {txt_weight.get()} кг. {render_data.get('examination')}"
+                active_but = f"{active_but}" \
+                             f"weight_text:____{float(txt_weight.get().replace(',', '.'))}__<end!>__\n"
+
+            active_examination = f"{render_data.get('date_time')}{render_data.get('patient_info')}\n" \
+                                 f"Жалобы: {render_data.get('complaints')}\n" \
+                                 f"Осмотр: {render_data.get('examination')}\n" \
+                                 f"Диагноз: {render_data.get('diagnosis')}\n" \
+                                 f"Лечение: {render_data.get('prescription')}\n"
+
+            if type_ln in ('Лист ВН', 'Справка ВН'):
+                num_ln = ''
+                for word in txt_ln_num.get().strip():
+                    if not word.isdigit():
+                        num_ln += word
+                num_ln += '_'
+                for word in txt_ln_num.get().strip():
+                    if word.isdigit():
+                        num_ln += word
+                if data['examination'].get('ln_closed'):
+                    ln_data = f"{type_ln}__{num_ln}__closed"
+                else:
+                    ln_data = f"{type_ln}__{num_ln}__{txt_ln_from.get().strip()}__{txt_ln_until.get().strip()}"
+            else:
+                ln_data = type_ln
+
+            save_info_examination = [
+                f"{datetime.now().strftime('%d.%m.%Y %H:%M')}",
+                f"{user.get('doctor_name')}",
+                None,
+                ln_data,
+                f"{patient.get('name')}__{patient.get('birth_date')}",
+                active_examination,
+                active_but,
+                None]
+
+            with sq.connect('data_base.db') as conn:
+                cur = conn.cursor()
+                cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", save_info_examination)
+
+            doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
+            doc.render(render_data)
+            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
+            doc_name = save_document(doc=doc, doc_name=doc_name)
+
+            os.system(f"start {doc_name}")
+            render_data.clear()
+            data.clear()
+            root_examination.destroy()
+
+    def paste_hr_br():
+        indicators = {
+            '0-3': {
+                'br': (22, 28),
+                'hr': (80, 100),
+                'bp': (90, 100, 60, 70)},
+            '3-6': {
+                'br': (20, 28),
+                'hr': (80, 100),
+                'bp': (96, 110, 60, 70)},
+            '6-12': {
+                'br': (18, 22),
+                'hr': (70, 90),
+                'bp': (100, 110, 60, 75)},
+            '>12': {
+                'br': (18, 22),
+                'hr': (70, 80),
+                'bp': (110, 120, 70, 78)},
+        }
+
+        if age <= 3:
+            indicator = indicators['0-3']
+        elif age <= 6:
+            indicator = indicators['3-6']
+        elif age <= 12:
+            indicator = indicators['6-12']
+        else:
+            indicator = indicators['>12']
+
+        render_data['br'] = random.randrange(start=indicator['br'][0], stop=indicator['br'][1], step=2)
+        render_data['hr'] = random.randrange(start=indicator['hr'][0], stop=indicator['hr'][1], step=2)
+
+    def paste_frame_diagnosis():
+        label_diagnosis = Label(master=frame_diagnosis, text=f"{all_data_diagnosis.get('diagnosis')[0]}",
+                                font=('Comic Sans MS', user.get('text_size')), bg='white')
+        label_diagnosis.pack(fill='both', expand=True)
+        frame_diagnosis_1 = Frame(frame_diagnosis, borderwidth=1)
+
+        def select_diagnosis():
+            data['examination']['diagnosis'] = selected_diagnosis.get()
+
+            for mark_ in data['examination'].get('complaints_but'):
+                data['examination']['complaints_but'].get(mark_).set(0)
+            for mark_ in data['examination'].get('examination_but'):
+                data['examination']['examination_but'].get(mark_).set(0)
+            for mark_ in data['examination'].get('prescription_but'):
+                data['examination']['prescription_but'].get(mark_).set(0)
+
+            for complaints_but in all_diagnosis.get(selected_diagnosis.get()).get("complaints"):
+                complaints_list = all_diagnosis.get(selected_diagnosis.get()).get("complaints").get(
+                    complaints_but)
+                if isinstance(complaints_list, list):
+                    for complaints in complaints_list:
+                        if f"{complaints_but}_{complaints}" in data['examination'].get('complaints_but'):
+                            data['examination']['complaints_but'][f"{complaints_but}_{complaints}"].set(1)
+                else:
+                    if complaints_but in data['examination'].get('complaints_but'):
+                        data['examination']['complaints_but'][complaints_but].set(1)
+
+            select_complaints()
+
+            for examination_but in all_diagnosis.get(selected_diagnosis.get()).get("examination"):
+                examination_list = all_diagnosis.get(selected_diagnosis.get()).get("examination").get(
+                    examination_but)
+                if isinstance(examination_list, list):
+                    for examination in examination_list:
+                        if f"{examination_but}_{examination}" in data['examination'].get('examination_but'):
+                            data['examination']['examination_but'][f"{examination_but}_{examination}"].set(1)
+                else:
+                    if examination_but in data['examination'].get('examination_but'):
+                        data['examination']['examination_but'][examination_but].set(1)
+
+            select_examination()
+
+            txt_prescription.delete(1.0, 'end')
+            text = 'Рекомендации: '
+            for prescription_but in all_diagnosis.get(selected_diagnosis.get()).get("prescription"):
+                prescription_list = all_diagnosis.get(selected_diagnosis.get()).get("prescription").get(
+                    prescription_but)
+                if isinstance(prescription_list, list):
+                    for prescription in prescription_list:
+                        if f"{prescription_but}_{prescription}" in data['examination'].get('prescription_but'):
+                            data['examination']['prescription_but'][f"{prescription_but}_{prescription}"].set(1)
+                        else:
+                            text += f"{prescription}, "
+                else:
+                    if prescription_but in data['examination'].get('prescription_but'):
+                        data['examination']['prescription_but'][prescription_but].set(1)
+
+            if text != 'Рекомендации: ':
+                txt_prescription.insert(1.0, text)
+
+            txt_diagnosis.delete(1.0, 'end')
+            txt_diagnosis.insert(1.0, f'Диагноз: {selected_diagnosis.get()} ')
+
+            select_prescription()
+            paste_diagnosis_kb()
+            edit_examination_kb_text()
+            if not data['examination'].get('all_kb_status'):
+                change_all_kb_status()
+            else:
+                root_examination.update()
+
+        row, col = 0, 0
+        for mark in all_data_diagnosis.get('diagnosis')[1:]:
+            btn = Radiobutton(frame_diagnosis_1, text=mark,
+                              font=('Comic Sans MS', user.get('text_size')),
+                              value=mark, variable=selected_diagnosis, command=select_diagnosis,
+                              indicatoron=False, selectcolor='#77f1ff')
+            btn.grid(row=row, column=col, sticky='ew')
+            col += 1
+
+        frame_diagnosis_1.columnconfigure(index='all', minsize=40, weight=1)
+        frame_diagnosis_1.rowconfigure(index='all', minsize=20)
+        frame_diagnosis_1.pack(fill='both', expand=True)
+
+        frame_diagnosis.columnconfigure(index='all', minsize=40, weight=1)
+        frame_diagnosis.rowconfigure(index='all', minsize=20)
+        frame_diagnosis.pack(fill='both', expand=True, side=tk.LEFT)
+
+    def paste_frame_date_time():
+        label_date_time = Label(master=frame_date_time, text="Дата и время осмотра:",
+                                font=('Comic Sans MS', user.get('text_size')), bg='white')
+        label_date_time.pack(fill='both', expand=True)
+        txt_date_time.pack(fill='both', expand=True)
+        txt_date_time.insert(0, datetime.now().strftime("%d.%m.%Y %H:%M"))
+
+        frame_date_time.columnconfigure(index='all', minsize=40, weight=1)
+        frame_date_time.rowconfigure(index='all', minsize=20)
+        frame_date_time.pack(fill='both', expand=True, side=tk.LEFT)
+
+    def paste_frame_button_create():
+        def create_examination_doc_a5():
+            create_examination_doc('а5')
+
+        def create_examination_doc_a6():
+            create_examination_doc('а6')
+
+        button_change_all_kb_status.grid(column=0, row=0, rowspan=2)
+
+        Button(frame_button, text='Загрузить\nпрошлые\nосмотры',
+               command=paste_past_examination,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, rowspan=2)
+
+        Button(frame_button, text='Создать документ А5',
+               command=create_examination_doc_a5,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=0, columnspan=2)
+
+        Button(frame_button, text='Создать документ А6',
+               command=create_examination_doc_a6,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1, columnspan=2)
+
+        frame_button.columnconfigure(index='all', minsize=40, weight=1)
+        frame_button.rowconfigure(index='all', minsize=20)
+        frame_button.pack(fill='both', expand=True, side=tk.LEFT)
+
+    def my_saved_diagnosis():
+
+        def delete_my_diagnosis():
+
+            def get_found_diagnosis():
+                with sq.connect('data_base.db') as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"SELECT rowid, diagnosis, examination_key "
+                                   f"FROM my_saved_diagnosis "
+                                   f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
+                return cursor.fetchall()
+
+            found_diagnosis = get_found_diagnosis()
+            if not found_diagnosis:
+                messagebox.showerror('Ошибка!', f'История о сохраненных осмотрах пуста!\n')
+                examination_root.focus()
+
+            else:
+                def delete_my_diagnosis_root(delete_my_diagnosis_root_main: Frame):
+                    def select_delete_diagnosis():
+                        with sq.connect('data_base.db') as connect:
+                            cursor = connect.cursor()
+                            cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE rowid LIKE "
+                                           f"'{selected_delete_diagnosis.get()}'")
+                            messagebox.showinfo('Инфо', f'Осмотр успешно удален')
+                            delete_my_diagnosis_root_main.focus()
+
+                            destroy_elements['delete_my_diagnosis'][f"{selected_delete_diagnosis.get()}"].destroy()
+
+                    selected_delete_diagnosis = StringVar()
+                    destroy_elements['delete_my_diagnosis'] = dict()
+
+                    for rowid, diagnosis_, examination_key_ in found_diagnosis:
+                        frame_loc = Frame(delete_my_diagnosis_root_main, borderwidth=1, relief="solid", padx=3, pady=3)
+                        destroy_elements['delete_my_diagnosis'][f"{rowid}"] = frame_loc
+                        text = f'Имя шаблона: {diagnosis_}\n'
+                        for info in examination_key_.split('__<end!>__\n'):
+                            if 'complaints_text:____' in info:
+                                for i in info.replace('complaints_text:____', 'Жалобы: ').split():
+                                    if len(text.split('\n')[-1]) > 90:
+                                        text += '\n'
+                                    text += f"{i} "
+                                text += "\n"
+                            if 'examination_text:____' in info:
+                                for i in info.replace('examination_text:____', 'Осмотр: ').split():
+                                    if len(text.split('\n')[-1]) > 90:
+                                        text += '\n'
+                                    text += f"{i} "
+                                text += "\n"
+                            if 'diagnosis_text:____' in info:
+                                for i in info.replace('diagnosis_text:____', 'Диагноз: ').split():
+                                    if len(text.split('\n')[-1]) > 90:
+                                        text += '\n'
+                                    text += f"{i} "
+                                text += "\n"
+                            if 'prescription_text:____' in info:
+                                for i in info.replace('prescription_text:____', 'Рекомендации: ').split():
+                                    if len(text.split('\n')[-1]) > 90:
+                                        text += '\n'
+                                    text += f"{i} "
+                                text += "\n"
+
+                        Label(master=frame_loc, text=text, justify="left",
+                              font=('Comic Sans MS', user.get('text_size')),
+                              bg='white').pack(fill='both', expand=True)
+
+                        Radiobutton(master=frame_loc, text=f"Удалить {diagnosis_}",
+                                    font=('Comic Sans MS', user.get('text_size')),
+                                    value=f"{rowid}", variable=selected_delete_diagnosis,
+                                    command=select_delete_diagnosis,
+                                    indicatoron=False, selectcolor='#77f1ff').pack(fill='both', expand=True)
+
+                        frame_loc.pack(fill='both', expand=True)
+
+                delete_diagnosis_root = ScrolledRoot(marker='delete_diagnosis_root', func=delete_my_diagnosis_root)
+                delete_diagnosis_root.title(f"Удаление моих осмотров")
+                delete_diagnosis_root.geometry('+0+0')
+                delete_diagnosis_root.mainloop()
+
+        def select_my_saved_diagnosis():
+            my_selected_diagnosis = \
+                data['examination']['my_saved_diagnosis'].get(selected_diagnosis.get().replace('my__', ''))
+
+            for but_marker in ('complaints', 'examination', 'prescription'):
+                for mark_ in data['examination'].get(f'{but_marker}_but'):
+                    data['examination'][f'{but_marker}_but'].get(mark_).set(0)
+
+            for selected_marker in my_selected_diagnosis.split('__<end!>__\n'):
+                if 'selected_diagnosis_get:____' in selected_marker:
+                    selected_diagnosis.set(selected_marker.split(':____')[-1])
+                else:
+                    for but_marker in ('complaints', 'examination', 'prescription', 'diagnosis'):
+                        if f"{but_marker}:____" in selected_marker:
+                            all_buttons = selected_marker.replace(f"{but_marker}:____", '').split("__")
+                            for button in all_buttons:
+                                if button in data['examination'].get(f'{but_marker}_but'):
+                                    data['examination'][f'{but_marker}_but'].get(button).set(1)
+
+                        elif f"{but_marker}_text:____" in selected_marker:
+                            text_inserted = selected_marker.replace(f"{but_marker}_text:____", '')
+
+                            if but_marker == 'complaints':
+                                txt_complaints.delete(1.0, 'end')
+                                txt_complaints.insert(1.0, text_inserted)
+                            if but_marker == 'examination':
+                                txt_examination.delete(1.0, 'end')
+                                txt_examination.insert(1.0, text_inserted)
+                            if but_marker == 'diagnosis':
+                                txt_diagnosis.delete(1.0, 'end')
+                                txt_diagnosis.insert(1.0, text_inserted)
+                            if but_marker == 'prescription':
+                                txt_prescription.delete(1.0, 'end')
+                                txt_prescription.insert(1.0, text_inserted)
+                edit_examination_kb_text()
+
+        def saved_new_diagnosis():
+            def final_save_new_diagnosis():
+                try:
+                    with sq.connect('data_base.db') as connect:
+                        cursor = connect.cursor()
+                        cursor.execute(f"INSERT INTO my_saved_diagnosis "
+                                       f"VALUES('{user.get('doctor_name')}', "
+                                       f"'{new_diagnosis_name.get()}', "
+                                       f"'{render_text}')")
+                except Exception as ex:
+                    messagebox.showerror('Ошибка!', f'Ошибка при сохранении!\n'
+                                                    f'{ex}')
+                else:
+                    messagebox.showinfo('Инфо', f'Осмотр успешно сохранен')
+                    saved_new_diagnosis_root.destroy()
+                    root_examination.destroy()
+
+            if not new_diagnosis_name.get():
+                messagebox.showerror('Ошибка!', 'Не указано имя осмотра для сохранения!')
+                new_diagnosis_name.focus()
+            else:
+                saved_new_diagnosis_root = Toplevel()
+                saved_new_diagnosis_root.title('Проверка осмотра')
+                saved_new_diagnosis_root.config(bg='white')
+
+                text = f"Имя осмотра: {new_diagnosis_name.get()}\n"
+                render_text = ''
+                if selected_place.get():
+                    text += f"Место осмотра: {selected_place.get()}\n"
+                    render_text += f"selected_place:____{selected_place.get()}__<end!>__\n"
+
+                for mark in ('complaints', 'examination', 'prescription'):
+                    render_text += f'{mark}:__'
+                    # text += f"{mark}: ".replace('complaints', 'Жалобы (кнопки)') \
+                    #     .replace('examination', 'Осмотр (кнопки)') \
+                    #     .replace('prescription', 'Назначения (кнопки)')
+                    for but in data['examination'].get(f'{mark}_but'):
+
+                        if data['examination'][f'{mark}_but'].get(but).get() == 1:
+                            if len(text.split('\n')[-1]) > 100:
+                                text += '\n'
+                            render_text += f'__{but}'
+                            # text += f"{but} "
+
+                    # text += '\n'
+                    render_text += '__<end!>__\n'
+
+                render_text += f"complaints_text:____{txt_complaints.get(1.0, 'end').strip()}__<end!>__\n" \
+                               f"examination_text:____{txt_examination.get(1.0, 'end').strip()}__<end!>__\n" \
+                               f"diagnosis_text:____{txt_diagnosis.get(1.0, 'end').strip()}__<end!>__\n" \
+                               f"prescription_text:____{txt_prescription.get(1.0, 'end').strip()}__<end!>__\n"
+                render_text = render_text.replace("'", '').replace("\"", '')
+                if txt_complaints.get(1.0, 'end').strip():
+                    text += '\nЖалобы: '
+                    for word in txt_complaints.get(1.0, 'end').strip().split():
+                        if len(text.split('\n')[-1]) > 100:
+                            text += '\n'
+                        text += word + " "
+                if txt_examination.get(1.0, 'end').strip():
+                    text += '\nОсмотр: '
+                    for word in txt_examination.get(1.0, 'end').strip().split():
+                        if len(text.split('\n')[-1]) > 100:
+                            text += '\n'
+                        text += word + " "
+                if txt_diagnosis.get(1.0, 'end').strip():
+                    text += '\nДиагноз: '
+                    for word in txt_diagnosis.get(1.0, 'end').strip().split():
+                        if len(text.split('\n')[-1]) > 100:
+                            text += '\n'
+                        text += word + " "
+                if txt_prescription.get(1.0, 'end').strip():
+                    text += '\nНазначения: '
+                    for word in txt_prescription.get(1.0, 'end').strip().split():
+                        if len(text.split('\n')[-1]) > 100:
+                            text += '\n'
+                        text += word + " "
+                # text += f"Жалобы (текст): {txt_complaints.get(1.0, 'end').strip()}\n" \
+                #         f"Осмотр (текст): {txt_examination.get(1.0, 'end').strip()}\n" \
+                #         f"Диагноз (текст): {txt_diagnosis.get(1.0, 'end').strip()}\n" \
+                #         f"Назначения (текст): {txt_prescription.get(1.0, 'end').strip()}"
+
+                Label(master=saved_new_diagnosis_root, text=text, justify="left",
+                      font=('Comic Sans MS', user.get('text_size')),
+                      bg='white').pack(fill='both', expand=True)
+                Button(saved_new_diagnosis_root, text='Сохранить',
+                       command=final_save_new_diagnosis,
+                       font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True)
+
+                saved_new_diagnosis_root.mainloop()
+
+        def add_frame_new_diagnosis():
+
+            if not data['examination'].get('add_frame_new_diagnosis'):
+                data['examination']['add_frame_new_diagnosis'] = 'closed'
+
+            if data['examination'].get('add_frame_new_diagnosis') == "closed":
+                data['examination']['add_frame_new_diagnosis'] = 'open'
+
+                frame_new_my_diagnosis.columnconfigure(index='all', minsize=40, weight=1)
+                frame_new_my_diagnosis.rowconfigure(index='all', minsize=20)
+                frame_new_my_diagnosis.pack(fill='both', expand=True, before=frame_my_saved_diagnosis, side="bottom")
+
+            elif data['examination'].get('add_frame_new_diagnosis') == "open":
+                data['examination']['add_frame_new_diagnosis'] = 'closed'
+
+                frame_new_my_diagnosis.pack_forget()
+
+        with sq.connect('data_base.db') as conn:
+            cur = conn.cursor()
+            cur.execute(f"SELECT diagnosis, examination_key "
+                        f"FROM my_saved_diagnosis "
+                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
+
+            found_info = cur.fetchall()
+        col, row = 0, 0
+        if not found_info:
+            lbl_my_saved_diagnosis['text'] = "История о сохраненных осмотрах пуста"
+            lbl_my_saved_diagnosis.grid(column=col, row=row, sticky='ew', columnspan=2)
+            col += 2
+        else:
+            data['examination']['my_saved_diagnosis'] = dict()
+            lbl_my_saved_diagnosis['text'] = "Мои осмотры:"
+            lbl_my_saved_diagnosis.grid(column=col, row=row, sticky='ew')
+            col += 1
+            for diagnosis, examination_key in found_info:
+                data['examination']['my_saved_diagnosis'][f"{diagnosis}"] = examination_key
+                btn = Radiobutton(master=frame_my_saved_diagnosis, text=diagnosis,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  value=f"my__{diagnosis}", variable=selected_diagnosis,
+                                  command=select_my_saved_diagnosis,
+                                  indicatoron=False, selectcolor='#77f1ff')
+                btn.grid(column=col, row=row, sticky='ew')
+                col += 1
+                if col == 5:
+                    row += 1
+                    col = 0
+        Button(frame_my_saved_diagnosis, text='Сохранить осмотр в избранное',
+               command=add_frame_new_diagnosis,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=col, row=row)
+        col += 1
+        Button(frame_my_saved_diagnosis, text='Удалить шаблоны',
+               command=delete_my_diagnosis,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=col, row=row)
+
+        new_diagnosis_lbl = Label(master=frame_new_my_diagnosis, text="Название осмотра",
+                                  font=('Comic Sans MS', user.get('text_size')), bg='white')
+        new_diagnosis_lbl.pack(fill='both', expand=True, side='left')
+
+        new_diagnosis_name = Entry(frame_new_my_diagnosis, width=15, font=('Comic Sans MS', user.get('text_size')))
+        new_diagnosis_name.pack(fill='both', expand=True, side='left')
+
+        button_saved_new_diagnosis = Button(frame_new_my_diagnosis, text='Сохранить',
+                                            command=saved_new_diagnosis,
+                                            font=('Comic Sans MS', user.get('text_size')))
+        button_saved_new_diagnosis.pack(fill='both', expand=True, side='left')
+
+        button_my_saved_diagnosis.pack(fill='both', expand=True)
+
+        frame_my_saved_diagnosis_but.columnconfigure(index='all', minsize=40, weight=1)
+        frame_my_saved_diagnosis_but.rowconfigure(index='all', minsize=20)
+        frame_my_saved_diagnosis_but.pack(fill='both', expand=True, side=tk.LEFT)
+
+    def my_saved_diagnosis_change_status():
+        if not data['examination'].get('my_saved_diagnosis_status'):
+            data['examination']['my_saved_diagnosis_status'] = 'closed'
+            button_my_saved_diagnosis['text'] = 'Закрыть мои осмотры'
+
+        if data['examination'].get('my_saved_diagnosis_status') == "closed":
+            data['examination']['my_saved_diagnosis_status'] = 'open'
+            button_my_saved_diagnosis['text'] = 'Закрыть мои осмотры'
+
+            frame_my_saved_diagnosis.columnconfigure(index='all', minsize=40, weight=1)
+            frame_my_saved_diagnosis.rowconfigure(index='all', minsize=20)
+            frame_my_saved_diagnosis.pack(fill='both', expand=True, before=frame_diagnosis, side="bottom")
+
+        elif data['examination'].get('my_saved_diagnosis_status') == "open":
+            data['examination']['my_saved_diagnosis_status'] = 'closed'
+            button_my_saved_diagnosis['text'] = 'Открыть мои осмотры'
+
+            frame_my_saved_diagnosis.pack_forget()
+
+    def paste_frame_1():
+        paste_frame_diagnosis()
+        # paste_frame_place()
+        paste_frame_date_time()
+        paste_frame_button_create()
+        my_saved_diagnosis()
+
+        frame_1.columnconfigure(index='all', minsize=40, weight=1)
+        frame_1.rowconfigure(index='all', minsize=20)
+        frame_1.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+    frame_1 = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    frame_diagnosis = Frame(frame_1, borderwidth=1, relief="solid")
+    frame_date_time = Frame(frame_1, borderwidth=1, relief="solid")
+    txt_date_time = Entry(frame_date_time, width=15,
+                          font=('Comic Sans MS', user.get('text_size')),
+                          justify="center")
+    frame_button = Frame(frame_1, borderwidth=1, relief="solid")
+
+    button_change_all_kb_status = Button(frame_button, text='Скрыть\nвсе\nклавиатуры',
+                                         command=change_all_kb_status,
+                                         font=('Comic Sans MS', user.get('text_size')))
+
+    frame_my_saved_diagnosis_but = Frame(frame_diagnosis, borderwidth=1)
+    frame_my_saved_diagnosis = Frame(frame_1, borderwidth=1, relief="solid", padx=3, pady=3)
+    frame_new_my_diagnosis = Frame(frame_1, borderwidth=1, relief="solid", padx=3, pady=3)
+
+    lbl_my_saved_diagnosis = Label(master=frame_my_saved_diagnosis, text="",
+                                   font=('Comic Sans MS', user.get('text_size')), bg='white')
+
+    button_my_saved_diagnosis = Button(frame_my_saved_diagnosis_but, text='Открыть мои осмотры',
+                                       command=my_saved_diagnosis_change_status,
+                                       font=('Comic Sans MS', user.get('text_size')))
+
+    paste_frame_1()
+
+    def paste_frame_place_weight():
+        def select_place():
+            data['examination']['place'] = selected_place.get()
+            label_place['text'] = f"{all_data_diagnosis.get('place')[0]}: {selected_place.get()}"
+
+        label_place = Label(master=frame_place, text=f"{all_data_diagnosis.get('place')[0]}",
+                            font=('Comic Sans MS', user.get('text_size')), bg='white')
+        label_place.pack(fill='both', expand=True, side="left")
+
+        for mark in all_data_diagnosis.get('place')[1:]:
+            btn = Radiobutton(master=frame_place, text=mark,
+                              font=('Comic Sans MS', user.get('text_size')),
+                              value=mark, variable=selected_place, command=select_place,
+                              indicatoron=False, selectcolor='#77f1ff')
+            btn.pack(fill='both', expand=True, side="left")
+
+        Label(master=frame_weight, text=f"Вес ребенка кг",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg='white').pack(fill='both', expand=True, side="left")
+        txt_weight.pack(fill='both', expand=True, side="left")
+        err_msd_lbl_weight.pack(fill='both', expand=True, side="left")
+
+        frame_weight.pack(fill='both', expand=True, side="left")
+
+        frame_place.columnconfigure(index='all', minsize=40, weight=1)
+        frame_place.rowconfigure(index='all', minsize=20)
+        frame_place.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+    def is_valid__weight(weight):
+        weight = weight.replace(',', '.')
+        if not weight:
+            err_msd_weight.set('Укажите вес ребенка')
+            return True
+        try:
+            float(weight)
+        except ValueError:
+            return False
+        else:
+            if float(weight) < 3:
+                err_msd_weight.set('вес ребенка меньше 3 кг!')
+            elif float(weight) > 100:
+                err_msd_weight.set('вес ребенка больше 100 кг!')
+            else:
+                err_msd_weight.set('')
+            select_prescription(float(weight))
+            return True
+
+    frame_place = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    frame_weight = Frame(frame_place, borderwidth=0.5, relief="solid", padx=1, pady=1)
+    err_msd_lbl_weight = Label(master=frame_weight, textvariable=err_msd_weight,
+                               font=('Comic Sans MS', user.get('text_size')), bg='white',
+                               foreground="red")
+
+    check_weight = (root_examination.register(is_valid__weight), "%P")
+    txt_weight_variable = StringVar()
+    txt_weight = Entry(frame_weight, width=10,
+                       font=('Comic Sans MS', user.get('text_size')),
+                       justify="center",
+                       validate="all",
+                       textvariable=txt_weight_variable,
+                       validatecommand=check_weight)
+
+    paste_frame_place_weight()
+
+    def paste_frame_complaints():
+
+        label_complaints = Label(master=frame_complaints_main,
+                                 text=f"{all_data_diagnosis.get('complaints')[0]}",
+                                 font=('Comic Sans MS', user.get('text_size')), bg='white')
+        label_complaints.grid(row=0, column=0, sticky='ew')
+
+        txt_complaints.grid(column=0, row=1, sticky='ew', columnspan=2)
+        data['examination']['complaints_but'] = dict()
+
+        for mark in all_data_diagnosis.get('complaints')[1:]:
+            if isinstance(mark, tuple):
+                for mark_2 in mark[1:]:
+                    data['examination']['complaints_but'][f"{mark[0]}_{mark_2}"] = IntVar()
+            else:
+                data['examination']['complaints_but'][mark] = IntVar()
+
+        change_complaints_kb_button.grid(column=1, row=0, sticky='ew')
+
+        frame_complaints_main.columnconfigure(index='all', minsize=10, weight=1)
+        frame_complaints_main.rowconfigure(index='all', minsize=10)
+        # frame_complaints_main.pack(fill='both', expand=True, side=tk.LEFT)
+        frame_complaints_main.grid(row=0, column=0, sticky='ew')
+
+        paste_complaints_kb()
+        frame_complaints.columnconfigure(index='all', minsize=40, weight=1)
+        frame_complaints.rowconfigure(index='all', minsize=20)
+        frame_complaints.pack(fill='both', expand=True, padx=2, pady=2)
+
+    def select_complaints():
+        text = ''
+        for mark in data['examination'].get('complaints_but'):
+            if data['examination']['complaints_but'].get(mark).get() == 1:
+                if mark == 'нет':
+                    text = 'нет'
+                    for mark_ in data['examination'].get('complaints_but'):
+                        data['examination']['complaints_but'].get(mark_).set(0)
+                    break
+                else:
+                    if '_' not in mark:
+                        text += f"{mark}, "
+                    else:
+                        mark_1, mark_2 = mark.split('_')
+                        if mark_1 == 'температура до':
+                            if 'температура до' not in text:
+                                text += f"температура до {mark_2}, "
+                            else:
+                                text = text[:-2]
+                                text += f" - {mark_2}, "
+
+                        else:
+                            if mark_1 not in text:
+                                if mark_1 == 'диарея: стул':
+                                    text += f"{mark_1} {mark_2}, "
+                                else:
+                                    text += f"{mark_1}: {mark_2}, "
+                            else:
+                                text += f"{mark_2}, "
+
+        txt_complaints.delete(1.0, 'end')
+        if text != 'нет':
+            text = text[:-2] + '.'
+        txt_complaints.insert(1.0, text)
+
+        if data['examination'].get('open_complaints_kb'):
+            for but in data['examination'].get('complaints_buttons'):
+                if data['examination']['complaints_but'].get(but).get() == 1:
+                    data['examination']['complaints_buttons'][but]['bg'] = '#77f1ff'
+                else:
+                    data['examination']['complaints_buttons'][but]['bg'] = '#cdcdcd'
+
+    def change_complaints_kb_status():
+
+        if data['examination'].get('open_complaints_kb') == 'open':
+            data['examination']['open_complaints_kb'] = 'closed'
+            change_complaints_kb_button['text'] = 'открыть клавиатуру жалоб'
+            txt_complaints['height'] = 2
+            txt_complaints['width'] = 100
+            frame_complaints_buttons.grid_forget()
+            frame_complaints_main.grid_configure(row=0, column=0, sticky='ew', columnspan=3)
+        else:
+            data['examination']['open_complaints_kb'] = 'open'
+            change_complaints_kb_button['text'] = 'скрыть клавиатуру жалоб'
+            txt_complaints['height'] = 6
+            txt_complaints['width'] = 15
+            frame_complaints_buttons.grid(row=0, column=1, sticky='ew', columnspan=2)
+            frame_complaints_main.grid_configure(row=0, column=0, sticky='ew', columnspan=1)
+
+    def paste_complaints_kb():
+        destroy_elements['complaints'] = list()
+        data['examination']['complaints_buttons'] = dict()
+        data['examination']['open_complaints_kb'] = 'open'
+
+        frame_loc = Frame(frame_complaints_buttons)
+
+        row, col = 0, 0
+        for mark in all_data_diagnosis.get('complaints')[1:]:
+            if isinstance(mark, tuple):
+                pass
+            else:
+                btn = Checkbutton(frame_loc, text=mark,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  onvalue=1, offvalue=0,
+                                  variable=data['examination']['complaints_but'].get(mark),
+                                  command=select_complaints,
+                                  indicatoron=False, selectcolor='#77f1ff')
+                btn.grid(row=1, column=col, sticky='ew')
+                data['examination']['complaints_buttons'][mark] = btn
+
+                col += 1
+        frame_loc.columnconfigure(index='all', minsize=10, weight=1)
+        frame_loc.rowconfigure(index='all', minsize=10)
+        frame_loc.pack(fill='both', expand=True)
+
+        for mark in all_data_diagnosis.get('complaints')[1:]:
+            if isinstance(mark, tuple):
+                row, col = 0, 0
+                frame_loc = Frame(frame_complaints_buttons)
+                destroy_elements['complaints'].append(frame_loc)
+
+                label_complaints_loc = Label(master=frame_loc, text=f"{mark[0]}",
+                                             font=('Comic Sans MS', user.get('text_size')), bg='white')
+                label_complaints_loc.grid(row=row, column=col, sticky='ew')
+                col += 1
+                for mark_2 in mark[1:]:
+                    btn = Checkbutton(frame_loc, text=mark_2,
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      onvalue=1, offvalue=0,
+                                      variable=data['examination']['complaints_but'].get(f"{mark[0]}_{mark_2}"),
+                                      command=select_complaints,
+                                      indicatoron=False, selectcolor='#77f1ff')
+                    btn.grid(row=row, column=col, sticky='ew')
+                    data['examination']['complaints_buttons'][f"{mark[0]}_{mark_2}"] = btn
+
+                    col += 1
+                frame_loc.columnconfigure(index='all', minsize=10, weight=1)
+                frame_loc.rowconfigure(index='all', minsize=10)
+                frame_loc.pack(fill='both', expand=True)
+        frame_complaints_buttons.columnconfigure(index='all', minsize=10, weight=1)
+        frame_complaints_buttons.rowconfigure(index='all', minsize=10)
+        # frame_complaints_1.pack(fill='both', expand=True).grid(row=0, column=0, sticky='ew')
+        frame_complaints_buttons.grid(row=0, column=1, sticky='ew', columnspan=2)
+
+    frame_complaints = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    frame_complaints_main = Frame(frame_complaints, padx=1, pady=1)
+    frame_complaints_buttons = Frame(frame_complaints, padx=1, pady=1)
+    txt_complaints = ScrolledText(frame_complaints_main, width=15, height=6,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  wrap="word")
+    change_complaints_kb_button = Button(frame_complaints_main, text='скрыть клавиатуру жалоб',
+                                         command=change_complaints_kb_status,
+                                         font=('Comic Sans MS', user.get('text_size')))
+
+    paste_frame_complaints()
+
+    def paste_frame_examination():
+
+        label_examination = Label(master=frame_examination_main,
+                                  text=f"{all_data_diagnosis.get('examination')[0]}",
+                                  font=('Comic Sans MS', user.get('text_size')), bg='white')
+        label_examination.grid(row=0, column=0, sticky='ew')
+
+        txt_examination.grid(column=0, row=1, sticky='ew', columnspan=2)
+
+        data['examination']['examination_but'] = dict()
+        for mark_ in all_data_diagnosis.get('examination')[1:]:
+            if isinstance(mark_, tuple):
+                for mark_2_ in mark_[1:]:
+                    data['examination']['examination_but'][f"{mark_[0]}_{mark_2_}"] = IntVar()
+
+        change_examination_kb_button.grid(column=1, row=0, sticky='ew')
+
+        frame_examination_main.columnconfigure(index='all', minsize=40, weight=1)
+        frame_examination_main.rowconfigure(index='all', minsize=20)
+        frame_examination_main.pack(fill='both', expand=True, side=tk.LEFT)
+
+        paste_examination_kb()
+        frame_examination.columnconfigure(index='all', minsize=40, weight=1)
+        frame_examination.rowconfigure(index='all', minsize=20)
+        frame_examination.pack(fill='both', expand=True, padx=2, pady=2)
+
+    def select_examination_frame():
+
+        if data['examination']['examination_frame'].get('open_frame'):
+            data['examination']['examination_frame'].get('open_frame').pack_forget()
+
+        frame_loc = data['examination']['examination_frame'].get(selected_examination_frame.get())
+        data['examination']['examination_frame']['open_frame'] = frame_loc
+        frame_loc.pack(fill='both', expand=True)
+
+    def change_examination_kb_status():
+        if data['examination'].get('open_examination_kb') == 'open':
+            data['examination']['open_examination_kb'] = 'closed'
+            frame_examination_buttons.pack_forget()
+            change_examination_kb_button['text'] = 'открыть клавиатуру осмотра'
+            txt_examination['height'] = 8
+            txt_examination['width'] = 100
+
+        else:
+            data['examination']['open_examination_kb'] = 'open'
+            frame_examination_buttons.pack(fill='both', expand=True, padx=2, pady=2)
+            change_examination_kb_button['text'] = 'скрыть клавиатуру осмотра'
+            txt_examination['height'] = 30
+            txt_examination['width'] = 20
+            edit_examination_kb_text()
+
+    def select_examination():
+        text = ''
+        if not render_data.get('hr'):
+            paste_hr_br()
+        for mark in data['examination'].get('examination_but'):
+            if data['examination']['examination_but'].get(mark).get() == 1:
+                mark_1, mark_2 = mark.split('_')
+                if mark_1 == 'Легкие' and mark_2 == 'ЧД':
+                    mark_2 = f"ЧД {render_data.get('br', '')}/мин."
+                elif mark_1 == 'Сердце' and mark_2 == 'ЧСС':
+                    mark_2 = f"ЧСС {render_data.get('hr', '')}/мин."
+
+                if mark_1 == 'Дополнительно' and mark_2 in ("отрицательные", "положительные", "сомнительные"):
+                    if text[-2:] == ', ':
+                        text = text[:-2] + ' '
+                    text += f"{mark_2}, "
+
+                else:
+                    if mark_1 not in text:
+                        if text:
+                            text = text[:-2] + '. '
+                        text += f"{mark_1}: {mark_2}, "
+                    else:
+                        if mark_2[-1] == '-':
+                            text += f"{mark_2} "
+                        else:
+                            text += f"{mark_2}, "
+
+        txt_examination.delete(1.0, 'end')
+        text = text[:-2] + '.'
+        txt_examination.insert(1.0, text)
+        edit_examination_kb_text()
+
+    def edit_examination_kb_text():
+        for button_name in data['examination'].get('examination_buttons'):
+            text = f"{button_name}: "
+            for mark_ in data['examination'].get('examination_but'):
+                if mark_.startswith(button_name):
+                    if data['examination']['examination_but'].get(mark_).get() == 1:
+                        text += f"{mark_.split('_')[-1]}, "
+                        if len(text.split('\n')[-1]) > 80:
+                            text += "\n"
+            text = text[:-2]
+            btn = data['examination']['examination_buttons'].get(button_name)
+            btn['text'] = text
+
+        for button_name in data['examination'].get('examination_buttons_2_color'):
+            if data['examination']['examination_but'].get(button_name):
+                if data['examination']['examination_but'].get(button_name).get() == 1:
+                    data['examination']['examination_buttons_2_color'][button_name]['bg'] = '#77f1ff'
+                else:
+                    data['examination']['examination_buttons_2_color'][button_name]['bg'] = '#cdcdcd'
+
+    def paste_examination_kb():
+        data['examination']['open_examination_kb'] = 'open'
+        data['examination']['examination_frame'] = dict()
+        data['examination']['examination_buttons'] = dict()
+        data['examination']['examination_buttons_2_color'] = dict()
+
+        for mark in all_data_diagnosis.get('examination')[1:]:
+            if isinstance(mark, tuple):
+                frame_loc = Frame(frame_examination_buttons, borderwidth=1)
+
+                btn = Radiobutton(frame_loc, text=f"{mark[0]}",
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  value=f"{mark[0]}", variable=selected_examination_frame,
+                                  command=select_examination_frame,
+                                  indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+                btn.pack(fill='both', expand=True)
+                data['examination']['examination_buttons'][mark[0]] = btn
+
+                row, col = 0, 0
+
+                frame_loc_but = Frame(frame_loc, borderwidth=1)
+                for mark_2 in mark[1:]:
+                    data['examination']['examination_frame'][mark[0]] = frame_loc_but
+
+                    btn = Checkbutton(frame_loc_but, text=mark_2,
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      onvalue=1, offvalue=0,
+                                      variable=data['examination']['examination_but'].get(
+                                          f"{mark[0]}_{mark_2}"),
+                                      command=select_examination,
+                                      indicatoron=False, selectcolor='#77f1ff')
+                    btn.grid(row=row, column=col, sticky='ew')
+                    data['examination']['examination_buttons_2_color'][f"{mark[0]}_{mark_2}"] = btn
+
+                    col += 1
+                    if col == 5 and mark[0] != 'Температура':
+                        col = 0
+                        row += 1
+
+                frame_loc_but.columnconfigure(index='all', minsize=40, weight=1)
+                frame_loc_but.rowconfigure(index='all', minsize=20)
+
+                frame_loc.columnconfigure(index='all', minsize=40, weight=1)
+                frame_loc.rowconfigure(index='all', minsize=20)
+                frame_loc.pack(fill='both', expand=True)
+
+        frame_examination_buttons.columnconfigure(index='all', minsize=40, weight=1)
+        frame_examination_buttons.rowconfigure(index='all', minsize=20)
+        frame_examination_buttons.pack(fill='both', expand=True, padx=2, pady=2)
+
+    frame_examination = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    frame_examination_main = Frame(frame_examination, borderwidth=1)
+    frame_examination_buttons = Frame(frame_examination, borderwidth=1)
+
+    txt_examination = ScrolledText(frame_examination_main, width=20, height=30,
+                                   font=('Comic Sans MS', user.get('text_size')),
+                                   wrap="word")
+    change_examination_kb_button = Button(frame_examination_main, text='скрыть клавиатуру осмотра',
+                                          command=change_examination_kb_status,
+                                          font=('Comic Sans MS', user.get('text_size')))
+
+    paste_frame_examination()
+
+    def paste_diagnosis_kb():
+
+        def select_diagnosis_kb():
+            txt_diagnosis_info = txt_diagnosis.get(1.0, 'end')[:-1]
+            for but in data['examination'].get('diagnosis_add_kb'):
+                if data['examination']['diagnosis_add_kb'].get(but).get() == 1:
+                    if but not in txt_diagnosis_info:
+                        txt_diagnosis_info += f"{but} "
+                else:
+                    txt_diagnosis_info = txt_diagnosis_info.replace(f'{but} ', '')
+
+            txt_diagnosis.delete(1.0, 'end')
+            txt_diagnosis.insert(1.0, txt_diagnosis_info)
+
+        if destroy_elements.get('frame_diagnosis_kb'):
+            frame_diagnosis_kb = destroy_elements.get('frame_diagnosis_kb')
+            frame_diagnosis_kb.destroy()
+            destroy_elements['frame_diagnosis_kb'] = None
+
+        if data['examination'].get('diagnosis') == 'ОРИ':
+            txt_diagnosis['width'] = 30
+            txt_diagnosis['height'] = 5
+            data['examination']['diagnosis_add_kb'] = dict()
+            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+
+            row, col = 0, 0
+            for mark in all_data_diagnosis.get('diagnosis_ori'):
+                data['examination']['diagnosis_add_kb'][mark] = IntVar()
+                btn = Checkbutton(frame_diagnosis_kb, text=mark,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  onvalue=1, offvalue=0,
+                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
+                                  command=select_diagnosis_kb,
+                                  indicatoron=False, selectcolor='#77f1ff')
+                btn.grid(row=row, column=col, sticky='ew')
+                col += 1
+                if col == 4:
+                    col = 0
+                    row += 1
+
+            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+
+        elif data['examination'].get('diagnosis') == 'ФРК':
+            txt_diagnosis['width'] = 30
+            txt_diagnosis['height'] = 5
+            data['examination']['diagnosis_add_kb'] = dict()
+            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+
+            row, col = 0, 0
+            for mark in all_data_diagnosis.get('diagnosis_ФРК'):
+                data['examination']['diagnosis_add_kb'][mark] = IntVar()
+                btn = Checkbutton(frame_diagnosis_kb, text=mark,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  onvalue=1, offvalue=0,
+                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
+                                  command=select_diagnosis_kb,
+                                  indicatoron=False, selectcolor='#77f1ff')
+                btn.grid(row=row, column=col, sticky='ew')
+                col += 1
+                if col == 4:
+                    col = 0
+                    row += 1
+
+            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+
+        elif data['examination'].get('diagnosis') == 'Ветряная оспа':
+            txt_diagnosis['width'] = 30
+            txt_diagnosis['height'] = 5
+            data['examination']['diagnosis_add_kb'] = dict()
+            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+
+            row, col = 0, 0
+            for mark in all_data_diagnosis.get('diagnosis_Ветрянка'):
+                data['examination']['diagnosis_add_kb'][mark] = IntVar()
+                btn = Checkbutton(frame_diagnosis_kb, text=mark,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  onvalue=1, offvalue=0,
+                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
+                                  command=select_diagnosis_kb,
+                                  indicatoron=False, selectcolor='#77f1ff')
+                btn.grid(row=row, column=col, sticky='ew')
+                col += 1
+                if col == 4:
+                    col = 0
+                    row += 1
+
+            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+
+        elif data['examination'].get('diagnosis') == 'Здоров':
+            txt_diagnosis['width'] = 30
+            txt_diagnosis['height'] = 5
+            data['examination']['diagnosis_add_kb'] = dict()
+            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+
+            row, col = 0, 0
+            for mark in all_data_diagnosis.get('diagnosis_Здоров'):
+                data['examination']['diagnosis_add_kb'][mark] = IntVar()
+                btn = Checkbutton(frame_diagnosis_kb, text=mark,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  onvalue=1, offvalue=0,
+                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
+                                  command=select_diagnosis_kb,
+                                  indicatoron=False, selectcolor='#77f1ff')
+                btn.grid(row=row, column=col, sticky='ew')
+                col += 1
+                if col == 4:
+                    col = 0
+                    row += 1
+
+            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+
+        else:
+
+            txt_diagnosis['width'] = 70
+            txt_diagnosis['height'] = 3
+
+    frame_diagnosis_txt = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    txt_diagnosis = ScrolledText(frame_diagnosis_txt, width=70, height=3,
+                                 font=('Comic Sans MS', user.get('text_size')),
+                                 wrap="word")
+    txt_diagnosis.pack(fill='both', expand=True, side=tk.LEFT)
+    txt_diagnosis.insert(1.0, 'Диагноз: ')
+    frame_diagnosis_txt.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+    def paste_frame_prescription():
+        label_prescription = Label(master=frame_prescription_main,
+                                   text=f"{all_data_diagnosis.get('prescription')[0]}",
+                                   font=('Comic Sans MS', user.get('text_size')), bg='white')
+        label_prescription.grid(row=0, column=0, sticky='ew')
+
+        txt_prescription.grid(column=0, row=1, sticky='nwse', columnspan=2)
+
+        data['examination']['prescription_but'] = dict()
+        for mark_ in all_data_diagnosis.get('prescription')[1:]:
+            if 'Антибиотик' not in mark_[0]:
+                for mark_2_ in mark_[1:]:
+                    data['examination']['prescription_but'][f"{mark_[0]}_{mark_2_}"] = IntVar()
+
+        change_prescription_kb_button.grid(column=1, row=0, sticky='ew')
+
+        frame_prescription_main.columnconfigure(index='all', minsize=40, weight=1)
+        frame_prescription_main.rowconfigure(index='all', minsize=20)
+        frame_prescription_main.pack(fill='both', expand=True, side=tk.LEFT)
+
+        paste_prescription_kb()
+        frame_prescription.columnconfigure(index='all', minsize=40, weight=1)
+        frame_prescription.rowconfigure(index='all', minsize=20)
+        frame_prescription.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+    def select_prescription_frame():
+        if data['examination']['prescription_frame'].get('last_open_frame', '') == selected_prescription_frame.get():
+            data['examination']['prescription_frame'].get('open_frame').pack_forget()
+            data['examination']['prescription_frame']['last_open_frame'] = ''
+            if 'Антибиотик ' in selected_prescription_frame.get():
+                ab_name = selected_prescription_frame.get()
+                for ab_mark in data['examination']['prescription_but_ab_value'].get(ab_name):
+                    data['examination']['prescription_but_ab_value'][ab_name][ab_mark].set('')
+        else:
+            if 'Антибиотик' in selected_prescription_frame.get():
+                txt_prescription['height'] = 16
+            else:
+                txt_prescription['height'] = 8
+
+            if data['examination']['prescription_frame'].get('open_frame') and \
+                    'Антибиотик ' not in selected_prescription_frame.get():
+                data['examination']['prescription_frame'].get('open_frame').pack_forget()
+
+            frame_loc = data['examination']['prescription_frame'].get(selected_prescription_frame.get())
+            data['examination']['prescription_frame']['open_frame'] = frame_loc
+            frame_loc.pack(fill='both', expand=True)
+            data['examination']['prescription_frame']['last_open_frame'] = selected_prescription_frame.get()
+
+    def select_prescription(weight=None):
+        edit_prescription_text()
+
+        text_paracetamol = ""
+        text_ibuprofen = ""
+        text_antibiotic = ""
+        text_analyzes = ""
+        text_prescription = ""
+
+        for ab_name in data['examination'].get('prescription_but_ab_value'):
+            ab_key_dosa = data['examination']['prescription_but_ab_value'][ab_name].get('Дозировка').get()
+            ab_key_form = data['examination']['prescription_but_ab_value'][ab_name].get('Форма').get()
+            ab_key_count = data['examination']['prescription_but_ab_value'][ab_name].get('Кратность').get()
+
+            if ab_key_dosa and ab_key_form:
+                text_antibiotic_loc = f"{ab_name}: {ab_key_form}"
+
+                if txt_weight.get():
+                    if not weight:
+                        weight = float(txt_weight.get().replace(',', '.'))
+                    if weight > 40:
+                        weight = 40
+                    ab_weight = ''
+                    if 'сусп. ' in ab_key_form:
+                        ab_weight = ab_key_form.split('/')[0].replace('сусп. ', '').strip()
+                    if 'таб. ' in ab_key_form:
+                        ab_weight = ab_key_form.replace('таб. ', '').split('/')[0].strip()
+
+                    ab_dosage = int(ab_key_dosa.split()[0])
+                    ab_dosage_day = weight * ab_dosage
+                    ab_volume_day = ab_dosage_day / int(ab_weight)
+                    if ab_key_count:
+                        ab_key_count = ab_key_count.replace(' р/сут', '')
+                    if not ab_key_count.isdigit():
+                        ab_key_count = '2'
+                    ab_key_count = int(ab_key_count)
+                    ab_volume_single = ab_volume_day / ab_key_count
+                    if 'сусп. ' in ab_key_form:
+                        ab_volume_single = ab_volume_single * 5
+                        text_antibiotic_loc += f" по {round(ab_volume_single, 1)}мл. {ab_key_count} р/сут " \
+                                               f"({round(ab_dosage_day / weight)}мг/кг/сут)"
+
+                    else:
+                        if str(ab_volume_single).split('.')[-1][0] in ('4', '5', '6'):
+                            ab_volume_single = float(f"{str(ab_volume_single).split('.')[0]}.5")
+                        else:
+                            ab_volume_single = round(ab_volume_single)
+                        text_antibiotic_loc += f" по {round(ab_volume_single, 1)}таб. {ab_key_count} р/сут " \
+                                               f"({round((ab_volume_single * ab_key_count * int(ab_weight)) / weight)}мг/кг/сут)"
+
+                else:
+                    text_antibiotic_loc += f" - {ab_key_dosa} {ab_key_count}"
+
+                if text_antibiotic:
+                    text_antibiotic += '\n'
+                text_antibiotic += text_antibiotic_loc
+
+        for i in txt_prescription.get(1.0, 'end')[:-1].strip().split('\n'):
+            if 'Рекомендации' in i:
+                text_prescription = i.strip()
+                if len(text_prescription.replace('Рекомендации', '')) < 5:
+                    text_prescription = ''
+        if text_prescription and text_prescription[-1] in ('.', ','):
+            text_prescription = text_prescription[:-1] + ', '
+
+        for mark in data['examination'].get('prescription_but'):
+            mark_1, mark_2 = mark.split('_')
+
+            if data['examination']['prescription_but'].get(mark).get() == 1:
+                if mark_2 in ('Парацетамол', 'Ибупрофен'):
+                    if txt_weight.get():
+                        if not weight:
+                            weight = float(txt_weight.get().replace(',', '.'))
+                        if weight > 40:
+                            weight = 40
+                        paracetamol_min, paracetamol_max = (weight * 10, weight * 15)
+                        ibuprofen_min, ibuprofen_max = (weight * 5, weight * 10)
+
+                        if mark_2 == 'Парацетамол':
+                            supp = []
+                            for i in (50, 80, 100, 125, 150, 170, 250, 300, 330):
+                                if paracetamol_min < i < paracetamol_max:
+                                    supp.append(i)
+                            if supp:
+                                supp_text = 'Супп. '
+                                for i in supp:
+                                    supp_text += str(i) + 'мг. '
+                                text_paracetamol += supp_text
+                            text_paracetamol += f'Cусп. 30мг/мл - {round(weight * 0.5, 1)}мл; '
+
+                            if age > 5:
+                                if paracetamol_max < 100:
+                                    text_paracetamol += ""
+                                elif paracetamol_max < 200:
+                                    text_paracetamol += "Таб. 200 мг: 1/2 т.; "
+                                elif paracetamol_max < 300:
+                                    text_paracetamol += "Таб. 200 мг: 1 т.; "
+                                elif paracetamol_max < 400:
+                                    text_paracetamol += "Таб. 200 мг: 1.5 т.; "
+                                elif 400 <= paracetamol_max:
+                                    text_paracetamol += "Таб. 200 мг: 2 т.; "
+
+                                if paracetamol_min < 250 <= paracetamol_max:
+                                    text_paracetamol += "Таб. 500 мг: 1/2 т.; "
+                                elif 500 <= paracetamol_max:
+                                    text_paracetamol += "Таб. 500 мг: 1 т.; "
+                            text_paracetamol = f"Парацетамол 15 мг/кг при темп. выше 38.5 ({text_paracetamol}) " \
+                                               f"не 4 > р/сут"
+
+                        elif mark_2 == 'Ибупрофен':
+
+                            if ibuprofen_min < 60 <= ibuprofen_max:
+                                text_ibuprofen += f'Супп. 60 мг.; '
+
+                            text_ibuprofen += f"Cусп. 100мг/5мл - {round(ibuprofen_max / 20, 1)}мл; " \
+                                              f"Cусп. 200мг/5мл - {round(ibuprofen_max / 40, 1)}мл; "
+                            if age > 5:
+                                if ibuprofen_max < 100:
+                                    pass
+                                elif ibuprofen_max < 200:
+                                    text_ibuprofen += "Таб. 200 мг: 1/2 таб;"
+                                elif ibuprofen_max < 300:
+                                    text_ibuprofen += "Таб. 200 мг: 1 таб;"
+                                elif ibuprofen_max < 400:
+                                    text_ibuprofen += "Таб. 200 мг: 1.5 таб;"
+                                elif 400 <= ibuprofen_max:
+                                    text_ibuprofen += "Таб. 200 мг: 2 таб;"
+
+                            text_ibuprofen = f"Ибупрофен 10 мг/кг при темп. выше 38.5 ({text_ibuprofen}) не 4 > р/сут"
+
+                        if mark_2 in text_prescription:
+                            if f"{mark_2}, " in text_prescription:
+                                text_prescription = text_prescription.replace(f"{mark_2}, ", '')
+                            elif f"{mark_2}." in text_prescription:
+                                text_prescription = text_prescription.replace(f"{mark_2}.", '')
+                            else:
+                                text_prescription = text_prescription.replace(mark_2, '')
+
+                    else:
+                        if mark_2 not in text_prescription:
+                            text_prescription += f"{mark_2}, "
+
+                elif mark_1 == 'Анализы':
+                    text_analyzes += f"{mark_2}, "
+
+                elif mark_1 == 'Рекомендации':
+                    if not text_prescription:
+                        text_prescription = 'Рекомендации: '
+
+                    if mark_2 not in text_prescription:
+                        text_prescription += f"{mark_2}, "
+
+            else:
+                if mark_1 == 'Рекомендации':
+                    if mark_2 in text_prescription:
+                        if f"{mark_2}, " in text_prescription:
+                            text_prescription = text_prescription.replace(f"{mark_2}, ", '')
+                        elif f"{mark_2}." in text_prescription:
+                            text_prescription = text_prescription.replace(f"{mark_2}.", '')
+                        else:
+                            text_prescription = text_prescription.replace(mark_2, '')
+
+        txt_prescription.delete(1.0, 'end')
+        text = ''
+
+        if text_analyzes:
+            text = f"Анализы: {text_analyzes[:-2]};\n"
+        if text_prescription:
+            text = f"{text}{text_prescription[:-2]}.\n"
+        if text_paracetamol:
+            text = f"{text}{text_paracetamol}\n"
+        if text_ibuprofen:
+            text = f"{text}{text_ibuprofen}\n"
+        if text_antibiotic:
+            text = f"{text}{text_antibiotic}"
+        text = text.strip()
+        txt_prescription.insert(1.0, text)
+
+        frame_prescription_main.columnconfigure(index='all', minsize=40, weight=1)
+        frame_prescription_main.rowconfigure(index='all', minsize=20)
+
+        frame_prescription.columnconfigure(index='all', minsize=40, weight=1)
+        frame_prescription.rowconfigure(index='all', minsize=20)
+
+    def edit_prescription_text():
+        for button_name in data['examination'].get('prescription_buttons'):
+            text = f"{button_name}: "
+            for mark_ in data['examination'].get('prescription_but'):
+                if mark_.startswith(button_name):
+                    if data['examination']['prescription_but'].get(mark_).get() == 1:
+                        text += f"{mark_.split('_')[-1]}, "
+                        if len(text.split('\n')[-1]) > 80:
+                            text += "\n"
+            text = text[:-2]
+            btn = data['examination']['prescription_buttons'].get(button_name)
+            btn['text'] = text
+
+        for button_name in data['examination'].get('prescription_buttons_2_color'):
+            if data['examination']['prescription_but'].get(button_name):
+                if data['examination']['prescription_but'].get(button_name).get() == 1:
+                    data['examination']['prescription_buttons_2_color'][button_name]['bg'] = '#77f1ff'
+                else:
+                    data['examination']['prescription_buttons_2_color'][button_name]['bg'] = '#cdcdcd'
+
+    def paste_prescription_kb():
+
+        data['examination']['open_prescription_kb'] = 'open'
+        data['examination']['prescription_frame'] = dict()
+        data['examination']['prescription_buttons'] = dict()
+        data['examination']['prescription_buttons_2_color'] = dict()
+
+        data['examination']['prescription_but_ab_value'] = dict()
+
+        for mark in all_data_diagnosis.get('prescription')[1:]:
+            if 'Антибиотик' not in mark[0]:
+                frame_loc = Frame(frame_prescription_buttons, borderwidth=1)
+                btn = Radiobutton(frame_loc, text=f"{mark[0]}",
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  value=f"{mark[0]}", variable=selected_prescription_frame,
+                                  command=select_prescription_frame,
+                                  indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+                btn.pack(fill='both', expand=True)
+                data['examination']['prescription_buttons'][mark[0]] = btn
+                row, col = 0, 0
+                frame_loc_but = Frame(frame_loc, borderwidth=1)
+                data['examination']['prescription_frame'][mark[0]] = frame_loc_but
+                for mark_2 in mark[1:]:
+                    btn = Checkbutton(frame_loc_but, text=mark_2,
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      onvalue=1, offvalue=0,
+                                      variable=data['examination']['prescription_but'].get(
+                                          f"{mark[0]}_{mark_2}"),
+                                      command=select_prescription,
+                                      indicatoron=False, selectcolor='#77f1ff')
+                    btn.grid(row=row, column=col, sticky='ew')
+                    data['examination']['prescription_buttons_2_color'][f"{mark[0]}_{mark_2}"] = btn
+
+                    col += 1
+                    if col == 6:
+                        col = 0
+                        row += 1
+
+                frame_loc_but.columnconfigure(index='all', minsize=40, weight=1)
+                frame_loc_but.rowconfigure(index='all', minsize=20)
+
+                frame_loc.columnconfigure(index='all', minsize=40, weight=1)
+                frame_loc.rowconfigure(index='all', minsize=20)
+                frame_loc.pack(fill='both', expand=True)
+
+        btn = Radiobutton(frame_prescription_buttons_antibiotic_main, text=f"Антибиотик",
+                          font=('Comic Sans MS', user.get('text_size')),
+                          value=f"Антибиотик", variable=selected_prescription_frame,
+                          command=select_prescription_frame,
+                          indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+        btn.pack(fill='both', expand=True)
+        data['examination']['prescription_frame']['Антибиотик'] = frame_prescription_buttons_antibiotic_buttons
+
+        for mark in all_data_diagnosis.get('prescription')[1:]:
+            if 'Антибиотик' in mark[0]:
+                frame_loc = Frame(frame_prescription_buttons_antibiotic_buttons, borderwidth=1)
+                btn = Radiobutton(frame_loc, text=f"{mark[0]}",
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  value=f"{mark[0]}", variable=selected_prescription_frame,
+                                  command=select_prescription_frame,
+                                  indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+
+                btn.pack(fill='both', expand=True)
+                row, col = 0, 0
+                frame_loc_but = Frame(frame_loc, borderwidth=1)
+                data['examination']['prescription_frame'][mark[0]] = frame_loc_but
+                for mark_2 in mark[1:]:
+                    if mark_2 in ('Форма', 'Дозировка', "Кратность"):
+                        if not data['examination']['prescription_but_ab_value'].get(mark[0]):
+                            data['examination']['prescription_but_ab_value'][mark[0]] = dict()
+                        data['examination']['prescription_but_ab_value'][mark[0]][mark_2] = StringVar()
+
+                        if mark_2 in ('Дозировка', "Кратность"):
+                            row += 1
+                            col = 0
+                        Label(master=frame_loc_but, text=f"{mark_2}",
+                              font=('Comic Sans MS', user.get('text_size')),
+                              bg='white').grid(row=row, column=col, sticky='ew')
+                        col += 1
+                    else:
+                        btn = Radiobutton(frame_loc_but, text=mark_2,
+                                          font=('Comic Sans MS', user.get('text_size')),
+                                          value=mark_2,
+                                          command=select_prescription,
+                                          indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+
+                        if 'сусп.' in mark_2 or 'таб.' in mark_2:
+                            btn['variable'] = \
+                                data['examination']['prescription_but_ab_value'][mark[0]].get('Форма')
+                        if 'мг/кг/сут' in mark_2:
+                            btn['variable'] = \
+                                data['examination']['prescription_but_ab_value'][mark[0]].get('Дозировка')
+                        if 'р/сут' in mark_2:
+                            btn['variable'] = \
+                                data['examination']['prescription_but_ab_value'][mark[0]].get('Кратность')
+                        btn.grid(row=row, column=col, sticky='ew')
+
+                        col += 1
+                        if col == 6:
+                            col = 0
+                            row += 1
+
+                frame_loc_but.columnconfigure(index='all', minsize=40, weight=1)
+                frame_loc_but.rowconfigure(index='all', minsize=20)
+
+                frame_loc.columnconfigure(index='all', minsize=40, weight=1)
+                frame_loc.rowconfigure(index='all', minsize=20)
+                frame_loc.pack(fill='both', expand=True)
+
+        frame_prescription_buttons.columnconfigure(index='all', minsize=40, weight=1)
+        frame_prescription_buttons.rowconfigure(index='all', minsize=20)
+        frame_prescription_buttons.pack(fill='both', expand=True, padx=2, pady=2)
+
+        frame_prescription_buttons_antibiotic_main.columnconfigure(index='all', minsize=40, weight=1)
+        frame_prescription_buttons_antibiotic_main.rowconfigure(index='all', minsize=20)
+        frame_prescription_buttons_antibiotic_main.pack(fill='both', expand=True, padx=2, pady=2)
+
+    def change_prescription_kb_status():
+        if data['examination'].get('open_prescription_kb') == 'open':
+            data['examination']['open_prescription_kb'] = 'closed'
+            change_prescription_kb_button['text'] = 'открыть клавиатуру рекомендаций'
+            txt_prescription['height'] = 4
+            txt_prescription['width'] = 70
+            frame_prescription_buttons.pack_forget()
+
+        else:
+            data['examination']['open_prescription_kb'] = 'open'
+            frame_prescription_buttons.pack(fill='both', expand=True, padx=2, pady=2)
+            change_prescription_kb_button['text'] = 'закрыть клавиатуру рекомендаций'
+            txt_prescription['height'] = 8
+            txt_prescription['width'] = 60
+
+            edit_examination_kb_text()
+
+    frame_prescription = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    frame_prescription_main = Frame(frame_prescription, padx=1, pady=1)
+    frame_prescription_buttons = Frame(frame_prescription, padx=1, pady=1)
+    frame_prescription_buttons_antibiotic_main = Frame(frame_prescription_buttons, padx=1, pady=1)
+    frame_prescription_buttons_antibiotic_buttons = Frame(frame_prescription_buttons_antibiotic_main, padx=1, pady=1)
+
+    txt_prescription = ScrolledText(frame_prescription_main, width=15, height=8,
+                                    font=('Comic Sans MS', user.get('text_size')),
+                                    wrap="word")
+    change_prescription_kb_button = Button(frame_prescription_main, text='скрыть клавиатуру рекомендаций',
+                                           command=change_prescription_kb_status,
+                                           font=('Comic Sans MS', user.get('text_size')))
+
+    paste_frame_prescription()
+
+    def paste_frame_ln():
+        def calendar_ln_from():
+            paste_calendar(text_field='ln_from__Больничный с ...')
+
+        def calendar_ln_until():
+            paste_calendar(text_field='ln_until__Больничный по ...')
+
+        def calendar_second_examination():
+            paste_calendar(text_field='second_examination__Повторный осмотр')
+
+        def select_type_ln():
+            if data['examination'].get('open_frame_ln_my_blanks', '') == 'open':
+                data['examination']['open_frame_ln_my_blanks'] = 'closed'
+                frame_ln_my_blanks.pack_forget()
+
+            type_ln = selected_type_ln.get()
+            ln_num = ''
+
+            if type_ln in ("Справка ВН", "Лист ВН"):
+                with sq.connect('data_base.db') as conn:
+                    cur = conn.cursor()
+
+                    cur.execute(f"SELECT date_time, LN_type FROM examination "
+                                f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                f"AND patient_info LIKE "
+                                f"'{patient.get('name')}__{patient.get('birth_date')}' "
+                                f"AND LN_type LIKE '{type_ln}%'")
+
+                    found_info = cur.fetchall()
+                if found_info:
+                    last_visit = min(found_info,
+                                     key=lambda i: (datetime.now() -
+                                                    datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).seconds)
+                    print('last_visit', last_visit)
+                    if (datetime.now() - datetime.strptime(f"{last_visit[0]}", "%d.%m.%Y %H:%M")).days < 14:
+                        if last_visit[1].split('__')[-1] != 'closed':
+                            ln_num = last_visit[1].split('__')[1].replace('_', '')
+                            try:
+                                date_from_cont = datetime.strptime(f"{last_visit[1].split('__')[3]}",
+                                                                   "%d.%m.%Y") + timedelta(days=1)
+                                date_from_cont = date_from_cont.strftime("%d.%m.%Y")
+                                txt_ln_from.delete(0, 'end')
+                                txt_ln_from.insert(0, date_from_cont)
+
+                            except Exception:
+                                pass
+
+                if not ln_num:
+                    open_frame_ln_my_blanks()
+                else:
+                    txt_ln_num.delete(0, 'end')
+                    if ln_num:
+                        txt_ln_num.insert(0, ln_num)
+
+                    # found_info = list()
+                    # found_info.clear()
+                    # with sq.connect('data_base.db') as conn:
+                    #     cur = conn.cursor()
+                    #     cur.execute(f"SELECT LN_type FROM examination "
+                    #                 f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                    #                 f"AND LN_type LIKE '{type_ln}%'")
+                    #     for num in cur.fetchall():
+                    #         if num[0]:
+                    #             found_info.append(num[0])
+                    # if found_info:
+                    #     last_ln_num = max(found_info, key=lambda i: int(i.split('__')[1].split('_')[-1]))
+                    #     ln_num_digit = last_ln_num.split('__')[1].split('_')[-1]
+                    #     ln_num = f"{last_ln_num.split('__')[1].split('_')[0]}" \
+                    #              f"{int(ln_num_digit) + 1}".replace('_', '')
+                    #     txt_ln_from.delete(0, 'end')
+                    #     txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
+
+
+            if type_ln in ("Справка ВН", "Лист ВН"):
+                lbl_type_ln['text'] = f"{type_ln} номер:"
+                frame_ln_add.grid(row=0, column=3, rowspan=2, sticky='ew')
+                but_ln_my_blanks.grid(row=1, column=0, columnspan=3, sticky='ew')
+            else:
+                frame_ln_add.grid_remove()
+                but_ln_my_blanks.grid_remove()
+
+        col = 0
+        for but in ("Справка ВН", "Лист ВН", "Уход обеспечен"):
+            btn = Radiobutton(frame_ln, text=but,
+                              font=('Comic Sans MS', user.get('text_size')),
+                              value=but, variable=selected_type_ln, command=select_type_ln,
+                              indicatoron=False, selectcolor='#77f1ff')
+            btn.grid(row=0, column=col, sticky='ew')
+            col += 1
+        lbl_type_ln.grid(row=0, column=0, sticky='ew')
+
+        txt_ln_num.grid(row=0, column=1, sticky='ew')
+        but_ln_closed.grid(row=1, column=0, columnspan=2, sticky='ew')
+        lbl_ln_from.grid(row=0, column=2, sticky='ew')
+        txt_ln_from.grid(row=0, column=3, sticky='ew')
+        Button(frame_ln_add, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
+               command=calendar_ln_from).grid(row=1, column=3, sticky='ew')
+        Label(master=frame_ln_add, text=" по ",
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=4, sticky='ew')
+        txt_ln_until.grid(row=0, column=5, sticky='ew')
+        Button(frame_ln_add, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
+               command=calendar_ln_until).grid(row=1, column=5, sticky='ew')
+
+        Label(master=frame_second_examination, text="Повторный осмотр",
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=1, column=0, sticky='ew')
+        txt_second_examination.grid(row=1, column=1, sticky='ew', columnspan=2)
+        Button(frame_second_examination, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
+               command=calendar_second_examination).grid(row=1, column=3, sticky='ew')
+
+        frame_ln.columnconfigure(index='all', minsize=40, weight=1)
+        frame_ln.rowconfigure(index='all', minsize=20)
+        frame_ln.pack(fill='both', expand=True, padx=2, pady=2)
+
+        frame_second_examination.columnconfigure(index='all', minsize=40, weight=1)
+        frame_second_examination.rowconfigure(index='all', minsize=20)
+        frame_second_examination.pack(fill='both', expand=True, padx=2, pady=2)
+
+        frame_ln_main.columnconfigure(index='all', minsize=40, weight=1)
+        frame_ln_main.rowconfigure(index='all', minsize=20)
+        frame_ln_main.pack(fill='both', expand=True, padx=2, pady=2)
+
+    def ln_closed():
+        if not data['examination'].get('ln_closed'):
+            data['examination']['ln_closed'] = True
+            lbl_ln_from.grid_configure(columnspan=4)
+            lbl_ln_from.tkraise()
+            lbl_ln_from['text'] = f"{selected_type_ln.get()} закрыт к труду"
+            but_ln_closed['text'] = "отменить закрытие"
+        else:
+            data['examination']['ln_closed'] = False
+            lbl_ln_from.grid_configure(columnspan=1)
+            lbl_ln_from['text'] = " с "
+            but_ln_closed['text'] = "закрыть к труду"
+
+    def open_frame_ln_my_blanks():
+        def select_ln_num():
+            txt_ln_num.delete(0, 'end')
+            txt_ln_num.insert(0, selected_ln_num.get())
+
+        def add_my_new_ln():
+            if not my_new_txt_ln_num.get():
+                messagebox.showerror('Ошибка!', "Не указан номер первого ЛН")
+            else:
+                if type_ln == 'Лист ВН':
+                    insert_data = f"{my_new_txt_ln_text.get()}__{my_new_txt_ln_num.get()}"
+                else:
+                    insert_data = f"__{my_new_txt_ln_num.get()}"
+
+                with sq.connect('data_base.db') as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"DELETE FROM my_LN "
+                                   f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                   f"AND ln_type LIKE '{type_ln}'")
+
+                    cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
+                                   [user.get('doctor_name'), type_ln, insert_data])
+                data['examination']['open_frame_ln_my_blanks'] = 'closed'
+                frame_ln_my_blanks.pack_forget()
+
+        def is_valid__new_ln(num_ln):
+            if num_ln.isdigit():
+                return True
+            else:
+                return False
+
+        selected_ln_num = StringVar()
+
+        if data['examination'].get('open_frame_ln_my_blanks', '') == 'open':
+            data['examination']['open_frame_ln_my_blanks'] = 'closed'
+            frame_ln_my_blanks.pack_forget()
+        elif data['examination'].get('open_frame_ln_my_blanks', '') == 'closed':
+            data['examination']['open_frame_ln_my_blanks'] = 'open'
+
+        elif not data['examination'].get('open_frame_ln_my_blanks'):
+            data['examination']['open_frame_ln_my_blanks'] = 'open'
+
+        if data['examination'].get('open_frame_ln_my_blanks', '') == 'open':
+            if data['examination'].get('frame_ln_my_blanks'):
+                data['examination']['frame_ln_my_blanks'].destroy()
+
+            frame_ln_my_blanks_local = Frame(frame_ln_my_blanks, padx=1, pady=1)
+
+            data['examination']['frame_ln_my_blanks'] = frame_ln_my_blanks_local
+
+            active_ln = False
+            type_ln = selected_type_ln.get()
+
+            with sq.connect('data_base.db') as conn:
+                cur = conn.cursor()
+                cur.execute(f"SELECT ln_num FROM my_LN "
+                            f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                            f"AND ln_type LIKE '{type_ln}'")
+                found_info = cur.fetchone()
+
+                cur.execute(f"SELECT LN_type FROM examination "
+                            f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                            f"AND LN_type LIKE '{type_ln}%'")
+                found_info_past = cur.fetchall()
+
+            row, col = 0, 0
+            if found_info:
+
+                frame_ln_my_blanks_local_1 = Frame(frame_ln_my_blanks_local, padx=1, pady=1)
+                first_ln_num = int(found_info[0].split('__')[-1])
+                first_ln_text = found_info[0].split('__')[0]
+                for ln_num in range(first_ln_num, first_ln_num + 10, 1):
+                    btn = Radiobutton(frame_ln_my_blanks_local_1, text=f"{first_ln_text} {first_ln_num}",
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      value=f"{first_ln_text} {first_ln_num}",
+                                      variable=selected_ln_num, command=select_ln_num,
+                                      indicatoron=False, selectcolor='#77f1ff')
+                    btn.grid(row=row, column=col, sticky='ew')
+                    if found_info_past:
+                        for i in found_info_past:
+                            if str(first_ln_num) in i[0]:
+                                btn['bg'] = '#cdcdcd'
+                                break
+                        else:
+                            btn['bg'] = "#cefeed"
+                            if not active_ln:
+                                active_ln = True
+                                txt_ln_num.delete(0, 'end')
+                                txt_ln_num.insert(0, f"{first_ln_text} {first_ln_num}")
+
+                    col += 1
+                    first_ln_num += 1
+                    if col == 5:
+                        col = 0
+                        row += 1
+                frame_ln_my_blanks_local_1.columnconfigure(index='all', minsize=40, weight=1)
+                frame_ln_my_blanks_local_1.rowconfigure(index='all', minsize=20)
+
+                frame_ln_my_blanks_local_1.pack(fill='both', expand=True)
+
+            frame_ln_my_blanks_local_1 = Frame(frame_ln_my_blanks_local, padx=1, pady=1)
+            if type_ln == 'Лист ВН':
+                Label(master=frame_ln_my_blanks_local_1, text="Новый десяток Листков ВН",
+                      font=('Comic Sans MS', user.get('text_size')),
+                      bg='white').grid(row=row, column=col, sticky='ew', columnspan=2)
+                col += 2
+                Label(master=frame_ln_my_blanks_local_1, text="Серия:",
+                      font=('Comic Sans MS', user.get('text_size')),
+                      bg='white').grid(row=row, column=col, sticky='ew')
+                col += 1
+
+                my_new_txt_ln_text = Entry(frame_ln_my_blanks_local_1, width=5,
+                                           justify="center",
+                                           font=('Comic Sans MS', user.get('text_size')))
+                my_new_txt_ln_text.grid(row=row, column=col, sticky='ew')
+                my_new_txt_ln_text.insert(0, 'ВА')
+                col += 1
+                Label(master=frame_ln_my_blanks_local_1, text="Номер:",
+                      font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=row, column=col, sticky='ew')
+                col += 1
+
+            else:
+                Label(master=frame_ln_my_blanks_local_1, text="Новый десяток Справок ВН",
+                      font=('Comic Sans MS', user.get('text_size')),
+                      bg='white').grid(row=row, column=col, sticky='ew', columnspan=2)
+                col += 2
+                Label(master=frame_ln_my_blanks_local_1, text="Номер:",
+                      font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=row, column=col, sticky='ew')
+                col += 1
+            check_new_ln = (root_examination.register(is_valid__new_ln), "%P")
+            my_new_txt_ln_num = Entry(frame_ln_my_blanks_local_1, width=15,
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      justify="center",
+                                      validatecommand=check_new_ln,
+                                      validate="all")
+
+            my_new_txt_ln_num.grid(row=row, column=col, sticky='ew')
+            col += 1
+            Button(frame_ln_my_blanks_local_1, text='Применить', font=('Comic Sans MS', user.get('text_size')),
+                   command=add_my_new_ln).grid(row=row, column=col, sticky='ew')
+
+            frame_ln_my_blanks_local_1.columnconfigure(index='all', minsize=40, weight=1)
+            frame_ln_my_blanks_local_1.rowconfigure(index='all', minsize=20)
+            frame_ln_my_blanks_local_1.pack(fill='both', expand=True)
+
+            frame_ln_my_blanks_local.columnconfigure(index='all', minsize=40, weight=1)
+            frame_ln_my_blanks_local.rowconfigure(index='all', minsize=20)
+            frame_ln_my_blanks_local.pack(fill='both', expand=True, padx=2, pady=2)
+
+            frame_ln_my_blanks.pack(fill='both', expand=True, padx=2, pady=2)
+
+    frame_ln_main = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    frame_ln = Frame(frame_ln_main, relief="solid", padx=1, pady=1)
+    frame_ln_add = Frame(frame_ln, borderwidth=1, relief="solid", padx=1, pady=1)
+    frame_ln_my_blanks = Frame(frame_ln_main, borderwidth=1, relief="solid", padx=1, pady=1)
+    but_ln_my_blanks = Button(frame_ln, text='Мои бланки',
+                              font=('Comic Sans MS', user.get('text_size')),
+                              command=open_frame_ln_my_blanks)
+
+    frame_second_examination = Frame(examination_root, relief="solid", padx=1, pady=1)
+
+    txt_ln_num = Entry(frame_ln_add, width=15, font=('Comic Sans MS', user.get('text_size')))
+    txt_ln_from = Entry(frame_ln_add, width=15, font=('Comic Sans MS', user.get('text_size')))
+    txt_ln_until = Entry(frame_ln_add, width=15, font=('Comic Sans MS', user.get('text_size')))
+    txt_second_examination = Entry(frame_second_examination, width=15,
+                                   font=('Comic Sans MS', user.get('text_size')))
+    lbl_type_ln = Label(master=frame_ln_add, text="",
+                        font=('Comic Sans MS', user.get('text_size')), bg='white')
+    lbl_ln_from = Label(master=frame_ln_add, text=" с ",
+                        font=('Comic Sans MS', user.get('text_size')), bg='white')
+    but_ln_closed = Button(frame_ln_add, text='закрыть к труду',
+                           font=('Comic Sans MS', user.get('text_size')),
+                           command=ln_closed)
+
+    paste_frame_ln()
+
+    def paste_calendar(text_field):
+        command, marker = text_field.split('__')
+
+        calendar_root = Toplevel()
+        calendar_root.title(f'Календарь {marker}')
+        calendar_root.config(bg='white')
+
+        selected_day = StringVar()
+        actual_data = dict()
+
+        now = datetime.now()
+        actual_data['year'] = now.year
+        actual_data['month'] = now.month
+
+        def prev_month():
+            curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+            new = curr - timedelta(days=1)
+            actual_data['year'] = int(new.year)
+            actual_data['month'] = int(new.month)
+            create_calendar()
+
+        def next_month():
+            curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+            new = curr + timedelta(days=31)
+            actual_data['year'] = int(new.year)
+            actual_data['month'] = int(new.month)
+            create_calendar()
+
+        def select_day():
+            day = selected_day.get()
+            if day.isdigit():
+                year = actual_data.get('year')
+                month = actual_data.get('month')
+                if len(day) == 1:
+                    day = f"0{day}"
+                answer = f"{day}.{month}.{year}"
+            else:
+                answer = datetime.now().strftime("%d.%m.%Y")
+
+            if command == 'ln_from':
+                txt_ln_from.delete(0, 'end')
+                txt_ln_from.insert(0, answer)
+
+            if command == 'ln_until':
+                txt_ln_until.delete(0, 'end')
+                txt_ln_until.insert(0, answer)
+
+                txt_second_examination.delete(0, 'end')
+                txt_second_examination.insert(0, answer)
+
+            if command == 'second_examination':
+                txt_second_examination.delete(0, 'end')
+                txt_second_examination.insert(0, answer)
+
+            calendar_root.destroy()
+
+        frame_month_year = Frame(calendar_root, relief="solid", padx=1, pady=1)
+
+        but_prev_month = Button(frame_month_year, text='<', command=prev_month,
+                                font=('Comic Sans MS', user.get('text_size')))
+        but_prev_month.grid(column=0, row=0, sticky='ew')
+
+        lbl_month_year = Label(frame_month_year, text="", font=('Comic Sans MS', user.get('text_size')),
+                               bg='white')
+        lbl_month_year.grid(column=1, row=0, sticky='ew')
+
+        but_next_month = Button(frame_month_year, text='>', command=next_month,
+                                font=('Comic Sans MS', user.get('text_size')))
+        but_next_month.grid(column=2, row=0, sticky='ew')
+
+        frame_month_year.columnconfigure(index='all', minsize=40, weight=1)
+        frame_month_year.rowconfigure(index='all', minsize=20)
+        frame_month_year.pack(fill='both', expand=True)
+
+        def create_calendar():
+            year = actual_data.get('year')
+            month = actual_data.get('month')
+
+            if destroy_elements.get('calendar_frame_days'):
+                frame_days = destroy_elements.get('calendar_frame_days')
+                frame_days.destroy()
+
+            frame_days = Frame(calendar_root, relief="solid", padx=1, pady=1)
+            destroy_elements['calendar_frame_days'] = frame_days
+
+            month_name = {
+                'January': 'Январь',
+                'February': 'Февраль',
+                'March': 'Март',
+                'April': 'Апрель',
+                'May': 'Май',
+                'June': 'Июнь',
+                'July': 'Июль',
+                'August': 'Август',
+                'September': 'Сентябрь',
+                'October': 'Октябрь',
+                'November': 'Ноябрь',
+                'December': 'Декабрь'
+            }
+
+            lbl_month_year['text'] = f"{month_name.get(calendar.month_name[month])} {str(year)}"
+
+            # Second row - Week Days
+            column = 0
+            for day in ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]:
+                lbl = Label(frame_days, text=day, font=('Comic Sans MS', user.get('text_size')), bg='white')
+                lbl.grid(column=column, row=0, sticky='ew')
+                column += 1
+
+            row, col = 0, 0
+
+            my_calendar = calendar.monthcalendar(year, month)
+            for week in my_calendar:
+                row += 1
+                col = 0
+                for day in week:
+                    if day == 0:
+                        col += 1
+                    else:
+                        day = str(day)
+                        btn = Radiobutton(frame_days, text=day,
+                                          font=('Comic Sans MS', user.get('text_size')),
+                                          value=day, variable=selected_day, command=select_day,
+                                          indicatoron=False, selectcolor='#77f1ff')
+                        btn.grid(row=row, column=col, sticky='ew')
+                        col += 1
+
+                        if datetime.strptime(f"{day}.{month}.{year}", "%d.%m.%Y").weekday() in (5, 6):
+                            btn['bg'] = '#b4ffff'
+                        if datetime.now().year == year and datetime.now().month == month and datetime.now().day == int(
+                                day):
+                            btn['bg'] = '#ff7b81'
+
+            btn = Radiobutton(frame_days, text="Сегодня",
+                              font=('Comic Sans MS', user.get('text_size')),
+                              value="Сегодня", variable=selected_day, command=select_day,
+                              indicatoron=False, selectcolor='#77f1ff')
+            btn.grid(row=row + 1, column=0, sticky='ew', columnspan=7)
+
+            frame_days.columnconfigure(index='all', minsize=40, weight=1)
+            frame_days.rowconfigure(index='all', minsize=20)
+            frame_days.pack(fill='both', expand=True)
+
+        create_calendar()
+
+
+def save_document(doc: Document, doc_name: str):
     try:
         doc.save(doc_name)
     except Exception:
@@ -1915,7 +2801,11 @@ def data_base():
                     "manager text, open_mark text, text_size text)")
         cur.execute("CREATE TABLE IF NOT EXISTS examination "
                     "(date_time text, doctor_name text, status text, "
-                    "LN_type text, patient_info text, examination_text text, examination_key text, add_info)")
+                    "LN_type text, patient_info text, examination_text text, examination_key text, add_info text)")
+        cur.execute("CREATE TABLE IF NOT EXISTS my_saved_diagnosis "
+                    "(doctor_name text, diagnosis text, examination_key tex)")
+        cur.execute("CREATE TABLE IF NOT EXISTS my_LN "
+                    "(doctor_name text, ln_type text, ln_num text)")
 
         cur.execute(f"SELECT doctor_name FROM врачи")
         doctor_data = list()
@@ -1939,7 +2829,16 @@ def updating_patient_data_base():
     try:
         shutil.copy2(r"\\SRV2\data_base\patient_data_base.db", f"patient_data_base.db")
     except Exception as ex:
-        messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}')
+        messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nПопытка логирования')
+        try:
+            import subprocess
+            subprocess.call(r'cmd /c "net use n: \\SRV2\data_base /Иван/profkiller97"')
+            shutil.copy2(r"\\SRV2\data_base\patient_data_base.db", f"patient_data_base.db")
+
+        except Exception as ex:
+            messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nLOGGING FAILED')
+        else:
+            messagebox.showinfo('Успех!', 'База данных обновлена\nлогирование успешно')
     else:
         messagebox.showinfo('Успех!', 'База данных обновлена')
 
@@ -2348,7 +3247,6 @@ def certificate__editing_certificate():
         def calendar_ori_add_to_childhood():
             paste_calendar(text_field='ori_add_to_childhood__Допуск в детский коллектив с ...')
 
-
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Диагноз:",
@@ -2393,10 +3291,6 @@ def certificate__editing_certificate():
         ori_add_to_childhood.grid(column=2, row=4)
         Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
                command=calendar_ori_add_to_childhood).grid(row=4, column=3, sticky='ew', columnspan=3)
-
-
-
-
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
         frame.rowconfigure(index='all', minsize=20)
@@ -2570,7 +3464,7 @@ def certificate__editing_certificate():
             lbl_d = Label(frame_diagnosis, text=f"{tuple_diagnosis[0]}",
                           font=('Comic Sans MS', data.get('text_size')), bg='white')
             local_destroy_elements.append(lbl_d)
-            lbl_d.grid(column=0, row=0)
+            lbl_d.grid(column=0, row=0, sticky="ew")
             lbl_d.bind('<Button-1>', select_category_diagnosis)
 
             frame_diagnosis.columnconfigure(index='all', minsize=40, weight=1)
@@ -4190,7 +5084,7 @@ def examination_cmd():
     if not patient.get('name'):
         messagebox.showinfo('Ошибка', "Не выбран пациент!")
     else:
-        app_examination = ExaminationRoot()
+        app_examination = ScrolledRoot(marker='paste_examination_cmd_main')
         app_examination.title(f"Осмотр "
                               f"{patient.get('name').split()[0]} "
                               f"{patient.get('name').split()[1]} "
@@ -4377,13 +5271,25 @@ def search_loop():
         search_loop()
 
     def search_in_db():
+        word_list = ["qwertyuiopasdfghjkl;'zxcvbnm,.", "йцукенгшщзфывапролджэячсмитьбю"]
         delete_txt_patient_data()
         txt_patient_data.insert(0, text_patient_data.get())
 
         patient_data = text_patient_data.get()
         name = list()
+
         for i in patient_data.split():
-            name.append(i.capitalize())
+            if i[0] in word_list[0]:
+                name_0 = ''
+                for q in i.lower():
+                    if q in word_list[0]:
+                        name_0 += word_list[1][word_list[0].index(q)]
+                    else:
+                        name_0 += q
+                name.append(name_0.capitalize())
+            else:
+                name.append(i.capitalize())
+
         sql_str = ''
         if patient_data.isdigit():
             sql_str += f"amb_cart LIKE '{patient_data}%'"
