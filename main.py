@@ -9,6 +9,7 @@ from tkinter.ttk import Combobox
 from tkinter import messagebox, Label, Frame
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
+from PIL import Image, ImageTk
 
 from datetime import datetime, timedelta
 import calendar
@@ -21,7 +22,7 @@ from docxtpl import DocxTemplate
 from docxcompose.composer import Composer
 
 all_data_certificate = {
-    'sport_section': ('баскетболом', 'волейболом', 'вольной борьбой', 'гандболом', 'греблей', 'каратэ',
+    'sport_section': ('баскетболом', 'волейболом', 'вольной борьбой', 'гандболом', 'греблей', "гимнастикой", 'каратэ',
                       'легкой атлетикой', 'музыкой', 'плаванием в бассейне', 'спортивной гимнастикой', 'танцами',
                       'теннисом', 'тхэквондо', "ушу", 'фигурным катанием', 'фигурным катанием', 'футболом', 'хоккеем',
                       'шахматами', 'шашками', '+ СОРЕВНОВАНИЯ'),
@@ -756,6 +757,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                           f"дата рождения: {patient.get('birth_date')}\t" \
                                           f"{patient.get('patient_district')}-й уч\n" \
                                           f"Место осмотра: {selected_place.get()}"
+            if selected_place.get() == 'в поликлинике':
+                render_data['patient_info'] = f"{render_data.get('patient_info')}\t{combo_company.get()}"
             render_data['complaints'] = f"{txt_complaints.get(1.0, 'end').strip()}"
             render_data['examination'] = f" {txt_examination.get(1.0, 'end').strip()}"
             render_data['diagnosis'] = f"{txt_diagnosis.get(1.0, 'end').strip()}"
@@ -1297,10 +1300,19 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     def paste_frame_1():
         paste_frame_diagnosis()
-        # paste_frame_place()
         paste_frame_date_time()
         paste_frame_button_create()
         my_saved_diagnosis()
+
+        with sq.connect('data_base.db') as conn:
+            cur = conn.cursor()
+            cur.execute(f"SELECT diagnosis, examination_key "
+                        f"FROM my_saved_diagnosis "
+                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
+
+            found_info = cur.fetchall()
+        if found_info:
+            my_saved_diagnosis_change_status()
 
         frame_1.columnconfigure(index='all', minsize=40, weight=1)
         frame_1.rowconfigure(index='all', minsize=20)
@@ -1331,10 +1343,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     paste_frame_1()
 
-    def paste_frame_place_weight():
+    def paste_frame_place_company():
         def select_place():
             data['examination']['place'] = selected_place.get()
             label_place['text'] = f"{all_data_diagnosis.get('place')[0]}: {selected_place.get()}"
+            if selected_place.get() == 'в поликлинике':
+                frame_company.pack(fill='both', expand=True, side="left")
+            else:
+                frame_company.pack_forget()
 
         label_place = Label(master=frame_place, text=f"{all_data_diagnosis.get('place')[0]}",
                             font=('Comic Sans MS', user.get('text_size')), bg='white')
@@ -1346,14 +1362,19 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                               value=mark, variable=selected_place, command=select_place,
                               indicatoron=False, selectcolor='#77f1ff')
             btn.pack(fill='both', expand=True, side="left")
+        selected_place.set('в поликлинике')
 
-        Label(master=frame_weight, text=f"Вес ребенка кг",
+        Label(master=frame_company, text=" На осмотре с ",
               font=('Comic Sans MS', user.get('text_size')),
               bg='white').pack(fill='both', expand=True, side="left")
-        txt_weight.pack(fill='both', expand=True, side="left")
-        err_msd_lbl_weight.pack(fill='both', expand=True, side="left")
 
-        frame_weight.pack(fill='both', expand=True, side="left")
+        combo_company['values'] = ['мамой', 'папой', 'братом', 'сестрой', 'бабушкой', 'дедушкой', 'один', 'одна']
+        combo_company.current(0)
+        combo_company.pack(fill='both', expand=True, side="left")
+
+        frame_company.columnconfigure(index='all', minsize=40, weight=1)
+        frame_company.rowconfigure(index='all', minsize=20)
+        frame_company.pack(fill='both', expand=True, side="left")
 
         frame_place.columnconfigure(index='all', minsize=40, weight=1)
         frame_place.rowconfigure(index='all', minsize=20)
@@ -1379,21 +1400,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             return True
 
     frame_place = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
-    frame_weight = Frame(frame_place, borderwidth=0.5, relief="solid", padx=1, pady=1)
-    err_msd_lbl_weight = Label(master=frame_weight, textvariable=err_msd_weight,
-                               font=('Comic Sans MS', user.get('text_size')), bg='white',
-                               foreground="red")
+    frame_company = Frame(frame_place)
 
-    check_weight = (root_examination.register(is_valid__weight), "%P")
-    txt_weight_variable = StringVar()
-    txt_weight = Entry(frame_weight, width=10,
-                       font=('Comic Sans MS', user.get('text_size')),
-                       justify="center",
-                       validate="all",
-                       textvariable=txt_weight_variable,
-                       validatecommand=check_weight)
+    combo_company = Combobox(frame_company, state="readonly", justify="center")
 
-    paste_frame_place_weight()
+    paste_frame_place_company()
 
     def paste_frame_complaints():
 
@@ -1660,6 +1671,16 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         data['examination']['examination_buttons'] = dict()
         data['examination']['examination_buttons_2_color'] = dict()
 
+        Label(master=frame_weight, text=f"Вес ребенка кг",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg='white').pack(fill='both', expand=True, side="left")
+        txt_weight.pack(fill='both', expand=True, side="left")
+        err_msd_lbl_weight.pack(fill='both', expand=True, side="left")
+
+        frame_weight.columnconfigure(index='all', minsize=40, weight=1)
+        frame_weight.rowconfigure(index='all', minsize=20)
+        frame_weight.pack(fill='both', expand=True)
+
         for mark in all_data_diagnosis.get('examination')[1:]:
             if isinstance(mark, tuple):
                 frame_loc = Frame(frame_examination_buttons, borderwidth=1)
@@ -1707,6 +1728,19 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     frame_examination = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
     frame_examination_main = Frame(frame_examination, borderwidth=1)
     frame_examination_buttons = Frame(frame_examination, borderwidth=1)
+
+    frame_weight = Frame(frame_examination_buttons, borderwidth=0.5, relief="solid", padx=1, pady=1)
+    err_msd_lbl_weight = Label(master=frame_weight, textvariable=err_msd_weight,
+                               font=('Comic Sans MS', user.get('text_size')), bg='white',
+                               foreground="red")
+    check_weight = (root_examination.register(is_valid__weight), "%P")
+    txt_weight_variable = StringVar()
+    txt_weight = Entry(frame_weight, width=10,
+                       font=('Comic Sans MS', user.get('text_size')),
+                       justify="center",
+                       validate="all",
+                       textvariable=txt_weight_variable,
+                       validatecommand=check_weight)
 
     txt_examination = ScrolledText(frame_examination_main, width=20, height=30,
                                    font=('Comic Sans MS', user.get('text_size')),
@@ -2326,7 +2360,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     #     txt_ln_from.delete(0, 'end')
                     #     txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
 
-
             if type_ln in ("Справка ВН", "Лист ВН"):
                 lbl_type_ln['text'] = f"{type_ln} номер:"
                 frame_ln_add.grid(row=0, column=3, rowspan=2, sticky='ew')
@@ -2806,6 +2839,8 @@ def data_base():
                     "(doctor_name text, diagnosis text, examination_key tex)")
         cur.execute("CREATE TABLE IF NOT EXISTS my_LN "
                     "(doctor_name text, ln_type text, ln_num text)")
+        cur.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
+                    "(doctor_name text, sport_section text)")
 
         cur.execute(f"SELECT doctor_name FROM врачи")
         doctor_data = list()
@@ -3137,21 +3172,38 @@ def certificate__editing_certificate():
             frame_hobby.destroy()
             frame_hobby.update()
 
-        def append_hobby(event):
-            hobby_index = str(event.widget).split('.!')[-1].replace('label', '')
-            if hobby_index == '':
-                hobby_index = '0'
-            hobby = all_data_certificate.get('sport_section')[int(hobby_index) - 2]
-            if len(hobby_txt.get()) == 0:
-                if hobby != '+ СОРЕВНОВАНИЯ':
-                    hobby_txt.insert(0, hobby)
-                else:
-                    hobby_txt.insert(0, 'участия в соревнованиях по ')
+        def append_hobby():
+
+            hobby_txt.delete(0, 'end')
+
+            for hobby in data['certificate'].get('regime_but'):
+                if data['certificate']['regime_but'][hobby].get() == 1:
+                    if len(hobby_txt.get()) == 0:
+                        if hobby != '+ СОРЕВНОВАНИЯ':
+                            hobby_txt.insert(0, hobby)
+                        else:
+                            hobby_txt.insert(0, 'участия в соревнованиях по ')
+                    else:
+                        if hobby != '+ СОРЕВНОВАНИЯ':
+                            hobby_txt.insert('end', f", {hobby}")
+                        else:
+                            hobby_txt.insert('end', ' и участия в соревнованиях')
+
+        def save_new_hobby():
+            if not new_hobby_txt.get():
+                messagebox.showerror('Ошибка', "Не указан кружок / секция для сохранения")
+                new_hobby_txt.focus()
             else:
-                if hobby != '+ СОРЕВНОВАНИЯ':
-                    hobby_txt.insert('end', f", {hobby}")
-                else:
-                    hobby_txt.insert('end', ' и участия в соревнованиях')
+                with sq.connect('data_base.db') as connect:
+                    cursor = connect.cursor()
+                    cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
+                                   [user.get('doctor_name'), new_hobby_txt.get()])
+                messagebox.showinfo('Инфо', "Секция сохранена в избранное")
+                edit_cert_root.destroy()
+                certificate__editing_certificate()
+
+        def delete_new_hobby():
+            pass
 
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
         if type_certificate == 'На кружки и секции':
@@ -3169,27 +3221,90 @@ def certificate__editing_certificate():
 
         if type_certificate == 'На кружки и секции':
             frame_hobby = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-            Label(frame_hobby, text='Кружки и секции',
-                  font=('Comic Sans MS', data.get('text_size')), bg='white').grid(row=0, column=0, columnspan=5)
 
-            row, col = 1, 0
-            for lbl in all_data_certificate.get('sport_section'):
-                lbl_0 = Label(frame_hobby, text=lbl,
-                              font=('Comic Sans MS', data.get('text_size')), border=1, compound='left',
-                              bg='#f0fffe', relief='ridge')
-                lbl_0.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew', row=row, column=col)
-                lbl_0.bind('<Button-1>', append_hobby)
+            row, col = 0, 0
+
+            data['certificate']['regime_but'] = dict()
+            with sq.connect('data_base.db') as conn:
+                cur = conn.cursor()
+
+                cur.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
+                            "(doctor_name text, sport_section text)")
+                cur.execute(f"SELECT sport_section "
+                            f"FROM my_sport_section "
+                            f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
+                found_info = cur.fetchall()
+            if found_info:
+
+                frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+                Label(frame, text='Мои кружки и секции',
+                      font=('Comic Sans MS', data.get('text_size')), bg='white').grid(row=0, column=0, sticky='ew')
+
+                col += 1
+                for mark in found_info:
+                    mark = mark[0]
+                    data['certificate']['regime_but'][mark] = IntVar()
+                    btn = Checkbutton(frame, text=mark,
+                                      font=('Comic Sans MS', data.get('text_size')),
+                                      variable=data['certificate']['regime_but'].get(mark), command=append_hobby,
+                                      onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
+                    btn.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew', row=row, column=col)
+
+                    col += 1
+                    if col == 5:
+                        col = 0
+                        row += 1
+
+                    Button(frame, text='Редактировать мой список', command=delete_new_hobby,
+                           font=('Comic Sans MS', data.get('text_size'))).grid(ipadx=2, ipady=2, padx=2, pady=2,
+                                                                               sticky='ew', row=row, column=col)
+
+
+                frame.columnconfigure(index='all', minsize=40, weight=1)
+                frame.rowconfigure(index='all', minsize=20)
+                frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+            frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+            Label(frame, text="Добавить кружок или секцию в избранное: ",
+                  font=('Comic Sans MS', data.get('text_size')),
+                  bg='white').pack(fill='both', expand=True, side='left')
+
+            new_hobby_txt = Entry(frame, width=70, font=('Comic Sans MS', data.get('text_size')))
+            new_hobby_txt.pack(fill='both', expand=True, side='left')
+            Button(frame, text='Сохранить', command=save_new_hobby,
+                   font=('Comic Sans MS', data.get('text_size'))).pack(fill='both', expand=True, side='left')
+
+            frame.columnconfigure(index='all', minsize=40, weight=1)
+            frame.rowconfigure(index='all', minsize=20)
+            frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+
+            row, col = 0, 0
+
+            for mark in all_data_certificate.get('sport_section'):
+                data['certificate']['regime_but'][mark] = IntVar()
+
+                btn = Checkbutton(frame_hobby, text=mark,
+                                  font=('Comic Sans MS', data.get('text_size')),
+                                  variable=data['certificate']['regime_but'].get(mark), command=append_hobby,
+                                  onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
+                btn.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew', row=row, column=col)
+
                 col += 1
                 if col == 5:
                     col = 0
                     row += 1
 
+
             Button(frame_hobby, text='Скрыть', command=close_frame_hobby,
-                   font=('Comic Sans MS', data.get('text_size'))).grid(column=col, row=row)
+                   font=('Comic Sans MS', data.get('text_size'))).grid(column=col, row=row, sticky="ew")
 
             frame_hobby.columnconfigure(index='all', minsize=40, weight=1)
             frame_hobby.rowconfigure(index='all', minsize=20)
             frame_hobby.pack(fill='both', expand=True, padx=2, pady=2)
+
 
             frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
@@ -5639,10 +5754,16 @@ def update_font_main():
 data_base()
 
 root = Tk()
-root.title('Временная замена БОТа v_0.0.1')
+root.title('Генератор справок v_0.0.1')
 root.config(bg='white')
 
 frame_main = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
+
+pil_image = Image.open('Crynet-Systems.png')
+pil_image = pil_image.resize((50, 50))
+image = ImageTk.PhotoImage(pil_image)
+image_sprite = Label(frame_main, image=image, anchor='ne')
+image_sprite.grid(column=2, row=0, sticky='nwse')
 
 lbl_doc = Label(frame_main, text='')
 write_lbl_doc()
