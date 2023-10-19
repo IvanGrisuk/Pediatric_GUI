@@ -3204,39 +3204,43 @@ def certificate__editing_certificate():
                 certificate__editing_certificate()
 
         def delete_new_hobby():
-            def delete_sport_section():
-                with sq.connect('data_base.db') as connect:
-                    cursor = connect.cursor()
-
-                    cursor.execute(f"DELETE FROM my_sport_section "
-                                   f"WHERE rowid LIKE '{selected_delete_sport_section.get()}'")
-                delete_new_hobby_root.destroy()
-                delete_new_hobby()
-
-            delete_new_hobby_root = Toplevel()
-            delete_new_hobby_root.title('Удаление секций')
-            delete_new_hobby_root.config(bg='white')
-
-            selected_delete_sport_section = StringVar()
 
             with sq.connect('data_base.db') as connect:
                 cursor = connect.cursor()
-                cursor.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
-                            "(doctor_name text, sport_section text)")
+                # cursor.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
+                #             "(doctor_name text, sport_section text)")
                 cursor.execute(f"SELECT rowid, sport_section "
-                            f"FROM my_sport_section "
-                            f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
-                found_info = cur.fetchall()
+                                f"FROM my_sport_section "
+                                f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
+                found_info = cursor.fetchall()
+                print(found_info)
             if not found_info:
-                Label(delete_new_hobby_root, text="Нет данных", font=('Comic Sans MS', data.get('text_size')),
-                      bg='white').grid(row=0, column=0)
-            else:
-                Label(delete_new_hobby_root, text="Выберите секцию для удаления", font=('Comic Sans MS', data.get('text_size')),
-                      bg='white').grid(row=0, column=0, columnspan=2)
+                messagebox.showinfo('Инфо', "Нет сохраненных данных")
 
-                col, row = 2, 0
+            else:
+                def delete_sport_section():
+                    with sq.connect('data_base.db') as connect:
+                        cursor = connect.cursor()
+
+                        cursor.execute(f"DELETE FROM my_sport_section "
+                                       f"WHERE rowid LIKE '{selected_delete_sport_section.get()}'")
+
+                    delete_new_hobby_root.destroy()
+                    delete_new_hobby()
+
+                delete_new_hobby_root = Toplevel()
+                delete_new_hobby_root.title('Удаление секций')
+                delete_new_hobby_root.config(bg='white')
+
+                selected_delete_sport_section = StringVar()
+
+                Label(delete_new_hobby_root, text="Выберите секцию для удаления", font=('Comic Sans MS', data.get('text_size')),
+                      bg='white').pack(fill='both', expand=True, padx=2, pady=2)
+                frame_delete_new_hobby = Frame(delete_new_hobby_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+                col, row = 0, 0
                 for rowid, sport_section in found_info:
-                    btn = Radiobutton(delete_new_hobby_root, text=sport_section,
+                    btn = Radiobutton(frame_delete_new_hobby, text=sport_section,
                                       font=('Comic Sans MS', data.get('text_size')),
                                       value=f"{rowid}", variable=selected_delete_sport_section,
                                       command=delete_sport_section, indicatoron=False, selectcolor='#77f1ff')
@@ -3245,6 +3249,10 @@ def certificate__editing_certificate():
                     if col == 5:
                         col = 0
                         row += 1
+                frame_delete_new_hobby.columnconfigure(index='all', minsize=40, weight=1)
+                frame_delete_new_hobby.rowconfigure(index='all', minsize=20)
+                frame_delete_new_hobby.pack(fill='both', expand=True, padx=2, pady=2)
+
 
 
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
