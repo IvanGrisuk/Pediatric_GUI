@@ -3203,7 +3203,13 @@ def certificate__editing_certificate():
                 certificate__editing_certificate()
 
         def delete_new_hobby():
-            pass
+            delete_new_hobby_root = Toplevel()
+
+
+            with sq.connect('data_base.db') as connect:
+                cursor = connect.cursor()
+                cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
+                               [user.get('doctor_name'), new_hobby_txt.get()])
 
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
         if type_certificate == 'На кружки и секции':
