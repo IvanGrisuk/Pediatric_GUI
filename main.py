@@ -678,7 +678,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                         past_exam_text += text + ' '
                     past_exam_text += f"\nЛН: {ln_type}\nВрач: {doctor_name}".replace('_', ' ')
-                    Label(master=local_frame,
+                    Label(master=local_frame, width=100,
                           text=past_exam_text,
                           justify='left',
                           font=('Comic Sans MS', user.get('text_size')),
