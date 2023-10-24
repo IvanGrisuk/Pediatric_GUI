@@ -517,6 +517,8 @@ class ScrolledRoot(tk.Toplevel):
         self.scroll_x.config(command=self.canvas.xview)
         self.scroll_y.config(command=self.canvas.yview)
 
+        self.bind("<Control-KeyPress>", keypress)
+
         self.canvas_frame = Frame(self.canvas, borderwidth=1)
         if marker == 'paste_examination_cmd_main':
             paste_examination_cmd_main(self, self.canvas_frame)
@@ -2972,6 +2974,7 @@ def certificate__ask_type_certificate():
 def certificate__editing_certificate():
     destroy_elements = dict()
     edit_cert_root = Toplevel()
+    edit_cert_root.bind("<Control-KeyPress>", keypress)
 
     type_certificate = data['certificate'].get('type_certificate')
 
@@ -5443,12 +5446,11 @@ def decoding_name(patient_data):
 
 
 def keypress(event):
-    print(event.keycode)
-    if event.keycode == 86:
+    if event.keycode == 86 or event.keycode == 150994966:
         event.widget.event_generate('<<Paste>>')
-    elif event.keycode == 67:
+    elif event.keycode == 67 or event.keycode == 134217731:
         event.widget.event_generate('<<Copy>>')
-    elif event.keycode == 88:
+    elif event.keycode == 88 or event.keycode == 117440536:
         event.widget.event_generate('<<Cut>>')
 
 
