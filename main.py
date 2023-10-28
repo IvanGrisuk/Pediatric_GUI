@@ -5808,7 +5808,6 @@ def main_root():
     root = Tk()
     root.title('Генератор справок v_0.0.1')
     root.config(bg='white')
-    root.bind("<Control-KeyPress>", keypress)
 
     frame_main = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
 
