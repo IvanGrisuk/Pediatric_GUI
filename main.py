@@ -6115,5 +6115,6 @@ def paste_log_in_root():
 
 
 if __name__ == "__main__":
-    data_base()
-    main_root()
+    paste_log_in_root()
+    # data_base()
+    # main_root()
