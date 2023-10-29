@@ -6256,7 +6256,7 @@ def main_root():
 
     root = Tk()
     root.title('Генератор справок v_0.1.1')
-    root.config(bg='white')
+    root.config(bg="#36566d")
     root.geometry('+0+0')
     root.bind("<Control-KeyPress>", keypress)
 
