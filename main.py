@@ -2957,6 +2957,8 @@ def certificate__ask_type_certificate():
         certificate__editing_certificate()
 
     type_cert_root = Toplevel()
+    type_cert_root.geometry('+0+0')
+
     type_cert_root.title('Выбор справки')
     type_cert_root.config(bg='white')
 
@@ -2975,6 +2977,8 @@ def certificate__ask_type_certificate():
 def certificate__editing_certificate():
     destroy_elements = dict()
     edit_cert_root = Toplevel()
+    edit_cert_root.geometry('+0+0')
+
     edit_cert_root.bind("<Control-KeyPress>", keypress)
 
     type_certificate = data['certificate'].get('type_certificate')
@@ -4918,6 +4922,8 @@ def create_blanks__ask_type_blanks():
     type_blanks_root = Toplevel()
     type_blanks_root.title('Выбор бланков')
     type_blanks_root.config(bg='white')
+    type_blanks_root.geometry('+0+0')
+
 
     Label(type_blanks_root, text='Какие бланки создать?\n',
           font=('Comic Sans MS', data.get('text_size')), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
@@ -5591,6 +5597,8 @@ def main_root():
         search_root = Toplevel()
         search_root.title('Поиск пациента')
         search_root.config(bg='white')
+        search_root.geometry('+0+0')
+
         counter_patient = Label(search_root, text='', font=('Comic Sans MS', 16), bg='white')
         counter_patient.grid(column=0, row=2, columnspan=3)
 
@@ -5808,6 +5816,8 @@ def main_root():
     root = Tk()
     root.title('Генератор справок v_0.0.1')
     root.config(bg='white')
+    root.geometry('+0+0')
+
 
     frame_main = Frame(borderwidth=1, relief="solid", padx=8, pady=10)
 
@@ -5927,6 +5937,10 @@ def paste_log_in_root():
         return True
 
     def connect_to_srv_data_base():
+        load_info_text.set(f"{load_info_text.get()}\n"
+                           f"Попытка подключения к базе данных...")
+        time.sleep(2)
+        log_in_root.update()
         if not os.path.exists(path=f".{os.sep}data_base"):
             os.mkdir(path=f".{os.sep}data_base")
         error_connection = False
@@ -5958,6 +5972,8 @@ def paste_log_in_root():
             else:
                 load_info_text.set(f"{load_info_text.get()}\n"
                                    f"Логирование завершено успешно")
+        time.sleep(2)
+        log_in_root.update()
 
         if last_edit_srv:
             with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
@@ -5974,6 +5990,12 @@ def paste_log_in_root():
                              f".{os.sep}data_base{os.sep}patient_data_base.db")
                 load_info_text.set(f"{load_info_text.get()}\n"
                                    f"База данных пациентов обновлена")
+            else:
+                load_info_text.set(f"{load_info_text.get()}\n"
+                                   f"У вас актуальная версия базы данных")
+
+        time.sleep(2)
+        log_in_root.update()
 
         try:
             with sq.connect(r"\\SRV2\data_base\application_data_base.db") as conn:
@@ -6032,65 +6054,30 @@ def paste_log_in_root():
         except Exception:
             pass
 
-
-        #         messagebox.showinfo('Успех!', 'База данных обновлена\nлогирование успешно')
-        #
-        #
-        #     with sq.connect(r"\\SRV2\data_base\patient_data_base.db") as conn:
-        #         cur = conn.cursor()
-        #         cur.execute(f"SELECT last_edit FROM last_edit")
-        #         last_edit_local = cur.fetchall()[0]
-        #
-        #
-        #         type_info, _, district = info.split('_')
-        #         cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', '{user_id}', "
-        #                     f"'{type_info}', '{district}')")
-        # except Exception:
-        #     pass
-        #
-        #     with sq.connect(f'F:{os.sep}data_base{os.sep}patient_data_base.db') as connect:
-        #         cursor = connect.cursor()
-        #         cursor.execute(f'''DROP TABLE IF EXISTS last_edit''')
-        #         cursor.execute(f'''CREATE TABLE IF NOT EXISTS last_edit (last_edit TEXT)''')
-        #         cursor.execute(f"INSERT INTO last_edit VALUES ('{now}')")
-        #
-        #     try:
-        #         shutil.copy2(r"\\SRV2\data_base\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
-        #     except Exception as ex:
-        #         messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nПопытка логирования')
-        #         try:
-        #             import subprocess
-        #             subprocess.call(r'cmd /c "net use n: \\SRV2\data_base /Иван/profkiller97"')
-        #             shutil.copy2(r"\\SRV2\data_base\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
-        #
-        #         except Exception as ex:
-        #             messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nLOGGING FAILED')
-        #         else:
-        #             messagebox.showinfo('Успех!', 'База данных обновлена\nлогирование успешно')
-        #     else:
-        #         messagebox.showinfo('Успех!', 'База данных обновлена')
-
+    import time
     log_in_root = Tk()
     log_in_root.title('Генератор справок v_0.0.1')
     log_in_root.config(bg='white')
+    log_in_root.geometry('+0+0')
+
     log_in_root.bind("<Control-KeyPress>", keypress)
 
     load_info_text = StringVar()
+    load_info_text.set('Запуск программы...')
     selected_doctor_name = StringVar()
     txt_password_variable = StringVar()
     text_is_correct_password = StringVar()
 
 
     users_passwords = dict()
-    load_info_text.set('Попытка подключения к базе данных...')
     load_info = Label(log_in_root, textvariable=load_info_text,
                       font=('Comic Sans MS', 12), bg='white')
     load_info.pack(fill='both', expand=True, padx=2, pady=2)
-
-
-
+    log_in_root.update()
     connect_to_srv_data_base()
+
     log_in_root.mainloop()
+
 
     # pil_image = Image.open('Crynet-Systems.png')
     # pil_image = pil_image.resize((50, 50))
