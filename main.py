@@ -5742,7 +5742,7 @@ def main_root():
         import time
 
         if user.get('frame_main'):
-            user['frame_main'].pack_forget()
+            user['frame_main'].destroy()
 
         log_in_root = Frame(master=root)
         user['log_in_root'] = log_in_root
@@ -6141,11 +6141,10 @@ def main_root():
                 write_lbl_doc()
 
         def change_account():
-            root.destroy()
             paste_log_in_root()
 
         if user.get('log_in_root'):
-            user['log_in_root'].pack_forget()
+            user['log_in_root'].destroy()
 
         frame_main = Frame(master=root)
         user['frame_main'] = frame_main
@@ -6153,7 +6152,6 @@ def main_root():
         frame_main_loc = Frame(master=frame_main, borderwidth=1, relief="solid", padx=8, pady=10)
 
         lbl_doc = Label(frame_main_loc, text='')
-        lbl_doc.grid(column=0, row=0, columnspan=3)
 
         button_add_new_doctor = Button(frame_main_loc, text='Добавить доктора', command=add_new_doctor)
         button_redact_doctor = Button(frame_main_loc, text='Редактировать данные', command=redact_doctor)
@@ -6162,6 +6160,8 @@ def main_root():
         combo_doc = Combobox(frame_main_loc, state="readonly")
 
         if user.get('error_connection'):
+            lbl_doc.grid(column=0, row=0, columnspan=3)
+
             write_lbl_doc()
             combo_doc['values'] = get_doc_names()
             combo_doc.current(0)
@@ -6175,6 +6175,8 @@ def main_root():
             append_doctor_data()
 
         else:
+            lbl_doc.grid(column=0, row=0, columnspan=2)
+
             lbl_doc['text'] = f"Учетная запись:\n" \
                               f"Доктор: {user.get('doctor_name')}\n" \
                               f"Зав: {user.get('manager')};    " \
