@@ -5928,15 +5928,27 @@ def get_user_data_from_db():
 
 
 def paste_log_in_root():
+    def open_main_root():
+        load_info_text.set("LOADING")
+
+
     def is_valid__password(password):
         if password == users_passwords.get(selected_doctor_name.get()):
             text_is_correct_password.set('OK')
+            open_main_root()
         else:
             text_is_correct_password.set('Пароль не верен!')
 
         return True
 
     def connect_to_srv_data_base():
+        def select_doctor_name():
+            if users_passwords.get(selected_doctor_name.get()):
+                frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
+            else:
+                open_main_root()
+                frame_pass.pack_forget()
+
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"Попытка подключения к базе данных...")
         time.sleep(2)
@@ -6019,12 +6031,15 @@ def paste_log_in_root():
             frame_doc = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
 
             row, col = 0, 0
+            load_info_text.set("Выберите учетную запись")
+
             for doctor_name, password, district, ped_div, manager, open_mark, text_size, add_info \
                     in sorted(all_doctor_info, key=lambda i: i[0]):
                 users_passwords[doctor_name] = str(password)
 
                 btn = Radiobutton(master=frame_doc, text=doctor_name,
                                   font=('Comic Sans MS', user.get('text_size')),
+                                  command=select_doctor_name,
                                   value=doctor_name, variable=selected_doctor_name,
                                   indicatoron=False, selectcolor='#77f1ff')
                 btn.grid(row=row, column=col, sticky='ew')
@@ -6036,7 +6051,7 @@ def paste_log_in_root():
             frame_doc.pack(fill='both', expand=True, padx=2, pady=2)
 
             frame_pass = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
-            Label(frame_pass, text='Пароль: ',
+            Label(frame_pass, text='Введите пароль: ',
                   font=('Comic Sans MS', 12), bg='white').grid(row=0, column=0, sticky='ew')
 
             check_pass = (log_in_root.register(is_valid__password), "%P")
