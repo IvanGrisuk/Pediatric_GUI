@@ -5572,13 +5572,13 @@ def main_root():
             log_in_root.update()
 
             if not user.get('error_connection'):
-                user['doctor_name'] = all_users_info.get(selected_doctor_name.get()).pop()
-                user['password'] = all_users_info.get(selected_doctor_name.get()).pop()
-                user['district'] = all_users_info.get(selected_doctor_name.get()).pop()
-                user['ped_div'] = all_users_info.get(selected_doctor_name.get()).pop()
-                user['manager'] = all_users_info.get(selected_doctor_name.get()).pop()
-                user['text_size'] = all_users_info.get(selected_doctor_name.get()).pop()
-                user['add_info'] = all_users_info.get(selected_doctor_name.get()).pop()
+                user['doctor_name'] = all_users_info.get(selected_doctor_name.get())[0]
+                user['password'] = all_users_info.get(selected_doctor_name.get())[1]
+                user['doctor_district'] = all_users_info.get(selected_doctor_name.get())[2]
+                user['ped_div'] = all_users_info.get(selected_doctor_name.get())[3]
+                user['manager'] = all_users_info.get(selected_doctor_name.get())[4]
+                user['text_size'] = all_users_info.get(selected_doctor_name.get())[5]
+                user['add_info'] = all_users_info.get(selected_doctor_name.get())[6]
 
             print('USER')
             for i in user:
@@ -5693,10 +5693,16 @@ def main_root():
                         users_sorted_pd[ped_div].append(doctor_name)
 
                     row, col = 0, 0
-                    for ped_div in users_sorted_pd:
-                        Label(frame_doc, text=f'{ped_div}-е ПО',
+                    for ped_div in sorted(users_sorted_pd):
+                        row += 1
+                        if ped_div.isdigit():
+                            text = f'{ped_div}-е ПО'
+                        else:
+                            text = f'{ped_div}'
+                        Label(frame_doc, text=text,
                               font=('Comic Sans MS', 12), bg='white').grid(row=row, column=0, sticky='ew', columnspan=4)
                         row += 1
+                        col = 0
                         for doctor_name in users_sorted_pd.get(ped_div):
 
                             btn = Radiobutton(master=frame_doc, text=doctor_name,
@@ -6068,8 +6074,9 @@ def main_root():
             else:
                 search_loop()
 
-        def write_lbl_doc():
-            info_doc = get_doctor_data()
+        def write_lbl_doc(info_doc=None):
+            if not info_doc:
+                info_doc = get_doctor_data()
             user['text_size'] = int(info_doc[4])
             lbl_doc['text'] = f'Учетная запись:\n' \
                               f'Доктор: {info_doc[0]}\n' \
@@ -6168,6 +6175,12 @@ def main_root():
             append_doctor_data()
 
         else:
+            lbl_doc['text'] = f"Учетная запись:\n" \
+                              f"Доктор: {user.get('doctor_name')}\n" \
+                              f"Зав: {user.get('manager')};    " \
+                              f"Участок: {user.get('doctor_district')};    " \
+                              f"ПО: {user.get('ped_div')}"
+
             button_change_account.grid(column=0, row=2, sticky='ew')
             button_redact_doctor.grid(column=1, row=2, sticky='ew')
 
