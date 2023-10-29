@@ -6007,9 +6007,11 @@ def paste_log_in_root():
                                   indicatoron=False, selectcolor='#77f1ff')
                 btn.grid(row=row, column=col, sticky='ew')
                 col += 1
-                if col == 5:
+                if col == 4:
                     col = 0
                     row += 1
+
+            frame_doc.pack(fill='both', expand=True, padx=2, pady=2)
 
             frame_pass = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
             Label(frame_pass, text='Пароль: ',
@@ -6026,7 +6028,7 @@ def paste_log_in_root():
 
             Label(frame_pass, textvariable=text_is_correct_password,
                   font=('Comic Sans MS', 12), bg='white', foreground="red").grid(row=0, column=2, sticky='ew')
-
+            frame_pass.pack(fill='both', expand=True, padx=2, pady=2)
         except Exception:
             pass
 
@@ -6088,6 +6090,7 @@ def paste_log_in_root():
 
 
     connect_to_srv_data_base()
+    log_in_root.mainloop()
 
     # pil_image = Image.open('Crynet-Systems.png')
     # pil_image = pil_image.resize((50, 50))
