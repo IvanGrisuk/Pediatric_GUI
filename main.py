@@ -2401,6 +2401,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                               indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=col, sticky='ew')
             col += 1
+        selected_type_ln.set('Уход обеспечен')
         lbl_type_ln.grid(row=0, column=0, sticky='ew')
 
         txt_ln_num.grid(row=0, column=1, sticky='ew')
@@ -5744,7 +5745,7 @@ def main_root():
         if user.get('frame_main'):
             user['frame_main'].destroy()
 
-        log_in_root = Frame(master=root)
+        log_in_root = Frame(master=root, bg="#36566d")
         user['log_in_root'] = log_in_root
 
         load_info_text = StringVar()
@@ -5769,6 +5770,170 @@ def main_root():
         connect_to_srv_data_base()
 
     def paste_frame_main():
+        def get_certificate_for_district(district, type_table):
+            with sq.connect(f'F:{os.sep}data_base{os.sep}data_base.db') as conn:
+                cur = conn.cursor()
+                if type_table == 'certificate_ped_div':
+                    cur.execute(f"SELECT *"
+                                f" FROM {type_table} WHERE ped_div LIKE '{district}';")
+                elif type_table == 'certificate_camp':
+                    cur.execute(f"SELECT *"
+                                f" FROM {type_table} WHERE district LIKE '{district}';")
+
+                data = list()
+                for info in cur.fetchall():
+                    data.append(info)
+                return data
+
+        def download_ped_div():
+            pediatric_division = user.get('ped_div')
+            info = get_certificate_for_district(pediatric_division, 'certificate_ped_div')
+            if pediatric_division == '1':
+                document = Document()
+                table = document.add_table(rows=(len(info) + 1), cols=10)
+                table.style = 'Table Grid'
+                # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+                # for row in table.rows:
+                #     for idx, width in enumerate(widths):
+                #         row.cells[idx].width = width
+                data = ('№ п/п',
+                        'Дата',
+                        'ФИО лица, обратившегося за выдачей справки и (или) другого документа',
+                        'Адрес',
+                        'Документ, удостоверяющий личность',
+                        'Наименование справки и (или) другого запрашиваемого документа',
+                        'Срок исполнения',
+                        'Размер платы, взимаемый',
+                        'Дата выдачи справки и (или) другого запрашиваемого документа',
+                        'ФИО врача')
+                hdr_cells = table.rows[0].cells
+                for i in range(10):
+                    hdr_cells[i].text = data[i]
+
+                    rc = hdr_cells[i].paragraphs[0].runs[0]
+                    rc.font.name = 'Times New Roman'
+                    rc.font.size = Pt(10)
+                    rc.font.bold = True
+                for i in range(1, len(info) + 1):
+                    hdr_cells = table.rows[i].cells
+                    ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
+                    local_info = (
+                    num, date, name, address, 'паспорт', type_cert, '1 день', 'бесплатно', date, doctor_name)
+                    for q in range(10):
+                        hdr_cells[q].text = local_info[q]
+                        rc = hdr_cells[q].paragraphs[0].runs[0]
+                        rc.font.name = 'Times New Roman'
+                        rc.font.size = Pt(9)
+
+            else:
+                document = Document()
+                table = document.add_table(rows=(len(info) + 1), cols=11)
+                table.style = 'Table Grid'
+                # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+                # for row in table.rows:
+                #     for idx, width in enumerate(widths):
+                #         row.cells[idx].width = width
+                data = ('№ п/п',
+                        'ФИО, обратившегося за выдачей справки и (или) другого документа',
+                        "Дата рождения",
+                        'Домашний адрес',
+                        'Дата подачи заявления',
+                        'Наименование справки и (или) другого запрашиваемого документа',
+                        'Срок исполнения',
+                        'Документ, удостоверяющий личность',
+                        'Размер платы, взимаемой за подачу справки и (или) другого документа',
+                        'Дата выдачи справки и (или) другого запрашиваемого документа',
+                        'ФИО врача (роспись заявителя)')
+                hdr_cells = table.rows[0].cells
+                for i in range(11):
+                    hdr_cells[i].text = data[i]
+
+                    rc = hdr_cells[i].paragraphs[0].runs[0]
+                    rc.font.name = 'Times New Roman'
+                    rc.font.size = Pt(10)
+                    rc.font.bold = True
+                for i in range(1, len(info) + 1):
+                    hdr_cells = table.rows[i].cells
+                    ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
+                    type_cert = f"пункт {type_cert}"
+                    local_info = (
+                        num,
+                        name,
+                        birth_date,
+                        address,
+                        date,
+                        type_cert,
+                        '1 день',
+                        'паспорт',
+                        'бесплатно',
+                        date,
+                        doctor_name)
+                    for q in range(11):
+                        hdr_cells[q].text = local_info[q]
+                        rc = hdr_cells[q].paragraphs[0].runs[0]
+                        rc.font.name = 'Times New Roman'
+                        rc.font.size = Pt(9)
+
+            sections = document.sections
+            for section in sections:
+                section.orientation = WD_ORIENT.LANDSCAPE
+                section.top_margin = Cm(1.5)
+                section.bottom_margin = Cm(1.5)
+                section.left_margin = Cm(1.5)
+                section.right_margin = Cm(1.5)
+                section.page_height = Cm(21)
+                section.page_width = Cm(29.7)
+
+            document.save(f'.{os.sep}generated{os.sep}БРЕД {pediatric_division}_го ПО.docx')
+            file = open(f'.{os.sep}generated{os.sep}БРЕД {pediatric_division}_го ПО.docx', 'rb')
+            await bot.send_document(chat_id=message.chat.id, document=file)
+
+            await exit_in_main(message, state)
+
+        async def download_camp(message: types.Message, state: FSMContext):
+            _, district, _ = get_info(message.chat.id)
+            info = get_certificate_for_district(district, 'certificate_camp')
+
+            document = Document()
+            table = document.add_table(rows=(len(info) + 1), cols=7)
+            table.style = 'Table Grid'
+            widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+            for row in table.rows:
+                for idx, width in enumerate(widths):
+                    row.cells[idx].width = width
+            data = ('Участок', '№ п/п', 'Дата выписки', 'ФИО', 'Дата рождения', 'Пол', 'Адрес')
+            hdr_cells = table.rows[0].cells
+            for i in range(7):
+                hdr_cells[i].text = data[i]
+
+                rc = hdr_cells[i].paragraphs[0].runs[0]
+                rc.font.name = 'Times New Roman'
+                rc.font.size = Pt(8)
+                rc.font.bold = True
+            for i in range(1, len(info) + 1):
+                hdr_cells = table.rows[i].cells
+                for q in range(7):
+                    if info[i - 1][q]:
+                        hdr_cells[q].text = info[i - 1][q]
+
+                        rc = hdr_cells[q].paragraphs[0].runs[0]
+                        rc.font.name = 'Times New Roman'
+                        rc.font.size = Pt(8)
+
+            sections = document.sections
+            for section in sections:
+                section.top_margin = Cm(1.5)
+                section.bottom_margin = Cm(1.5)
+                section.left_margin = Cm(1.5)
+                section.right_margin = Cm(1.5)
+                section.page_height = Cm(21)
+                section.page_width = Cm(14.8)
+
+            document.save(f'.{os.sep}generated{os.sep}концлагерь {district} участка.docx')
+            file = open(f'.{os.sep}generated{os.sep}концлагерь {district} участка.docx', 'rb')
+            await bot.send_document(chat_id=message.chat.id, document=file)
+
+            await exit_in_main(message, state)
 
         def search_loop():
             patient_found_data = list()
@@ -6146,7 +6311,7 @@ def main_root():
         if user.get('log_in_root'):
             user['log_in_root'].destroy()
 
-        frame_main = Frame(master=root)
+        frame_main = Frame(master=root, bg="#36566d")
         user['frame_main'] = frame_main
 
         frame_main_loc = Frame(master=frame_main, borderwidth=1, relief="solid", padx=8, pady=10)
