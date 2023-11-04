@@ -2875,6 +2875,29 @@ def data_base(command,
                 cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
                             ['Иванов И.И.', 1, 1, 'Петров П.П.', True, 20])
 
+    elif command == 'create_SRV_db':
+        try:
+            with sq.connect(r"\\SRV2\data_base\examination_data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute("CREATE TABLE IF NOT EXISTS examination "
+                            "(date_time text, doctor_name text, status text, "
+                            "LN_type text, patient_info text, examination_text text, "
+                            "examination_key text, add_info text)")
+
+            with sq.connect(r"\\SRV2\data_base\application_data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute("CREATE TABLE IF NOT EXISTS врачи "
+                            "(doctor_name text, password text, district text, ped_div text, "
+                            "manager text, open_mark text, text_size text, add_info text)")
+                cur.execute("CREATE TABLE IF NOT EXISTS my_saved_diagnosis "
+                            "(doctor_name text, diagnosis text, examination_key text)")
+                cur.execute("CREATE TABLE IF NOT EXISTS my_LN "
+                            "(doctor_name text, ln_type text, ln_num text)")
+                cur.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
+                            "(doctor_name text, sport_section text)")
+        except Exception:
+            pass
+
     elif command == 'edit_examination_loc':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
@@ -2972,6 +2995,54 @@ def data_base(command,
         else:
             return answer
 
+    elif command == 'last_edit_patient_db_srv':
+        try:
+            with sq.connect(r"\\SRV2\data_base\patient_data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute(f"SELECT last_edit FROM last_edit")
+                last_edit_srv = cur.fetchall()[0]
+
+            return last_edit_srv
+
+        except Exception:
+            return False
+
+    elif command == 'last_edit_patient_db_loc':
+        with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
+            cur = conn.cursor()
+            cur.execute(f"SELECT last_edit FROM last_edit")
+            last_edit_loc = cur.fetchall()[0]
+        return last_edit_loc
+
+    elif command == 'get_all_doctor_info':
+        try:
+            with sq.connect(r"\\SRV2\data_base\application_data_base.db") as conn:
+                cur = conn.cursor()
+
+                cur.execute("SELECT * FROM врачи")
+                all_doctor_info = cur.fetchall()
+            return all_doctor_info
+        except Exception:
+            return False
+
+    elif command.startswith('get_certificate_for_district'):
+        _, type_table, marker = command.split('__')
+        try:
+            with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
+                cur = conn.cursor()
+            if type_table == 'certificate_ped_div':
+                cur.execute(f"SELECT *"
+                            f" FROM {type_table} WHERE ped_div LIKE '{marker}';")
+            elif type_table == 'certificate_camp':
+                cur.execute(f"SELECT *"
+                            f" FROM {type_table} WHERE district LIKE '{marker}';")
+
+            found_data = list()
+            for info in cur.fetchall():
+                found_data.append(info)
+            return found_data
+        except Exception:
+            return False
 
 
 
@@ -5605,18 +5676,16 @@ def paste_log_in_root(root):
         time.sleep(1)
         log_in_root.update()
 
-
-
-
-
-
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"Данные синхронизированы")
         time.sleep(1)
         log_in_root.update()
 
-
     def select_doctor_name():
+        load_info_text.set(f"Выбран доктор: {selected_doctor_name.get()}")
+        time.sleep(1)
+        log_in_root.update()
+
         if users_passwords.get(selected_doctor_name.get()):
             frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
         else:
@@ -5624,6 +5693,7 @@ def paste_log_in_root(root):
             frame_pass.pack_forget()
 
     def open_main_root():
+
         try:
             edit_local_db()
         except Exception as ex:
@@ -5664,29 +5734,26 @@ def paste_log_in_root(root):
                            f"Попытка подключения к базе данных...")
         time.sleep(1)
         log_in_root.update()
+
         if not os.path.exists(path=f".{os.sep}data_base"):
             os.mkdir(path=f".{os.sep}data_base")
-        last_edit_srv = None
 
-        try:
-            with sq.connect(r"\\SRV2\data_base\patient_data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute(f"SELECT last_edit FROM last_edit")
-                last_edit_srv = cur.fetchall()[0]
-                load_info_text.set(f"{load_info_text.get()}\n"
-                                   f"Соединение с сервером установлено")
-
-        except Exception as ex:
+        last_edit_srv = data_base('last_edit_patient_db_srv')
+        if last_edit_srv:
             load_info_text.set(f"{load_info_text.get()}\n"
-                               f"Ошибка подключения к базе данных!\n{ex}\nПопытка логирования")
+                               f"Соединение с сервером установлено")
+        else:
+            load_info_text.set(f"{load_info_text.get()}\n"
+                               f"Ошибка подключения к базе данных!\nПопытка логирования")
+        time.sleep(1)
+        log_in_root.update()
+
+        if not last_edit_srv:
             try:
                 import subprocess
                 subprocess.call(r'cmd /c "net use n: \\SRV2\patient_data_base /Иван/profkiller97"')
-
-                with sq.connect(r"\\SRV2\data_base\patient_data_base.db") as conn:
-                    cur = conn.cursor()
-                    cur.execute(f"SELECT last_edit FROM last_edit")
-                    last_edit_srv = cur.fetchall()[0]
+                time.sleep(1)
+                last_edit_srv = data_base('last_edit_patient_db_srv')
 
             except Exception as ex:
                 load_info_text.set(f"{load_info_text.get()}\n"
@@ -5699,15 +5766,13 @@ def paste_log_in_root(root):
         log_in_root.update()
 
         if last_edit_srv:
-            with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute(f"SELECT last_edit FROM last_edit")
-                last_edit_loc = cur.fetchall()[0]
+            last_edit_loc = data_base('last_edit_patient_db_loc')
 
             if last_edit_loc != last_edit_srv:
                 load_info_text.set(f"{load_info_text.get()}\n"
                                    f"Обнаружена новая версия базы данных пациентов\n"
                                    f"Начинаю обновление...")
+                log_in_root.update()
 
                 shutil.copy2(r"\\SRV2\data_base\patient_data_base.db",
                              f".{os.sep}data_base{os.sep}patient_data_base.db")
@@ -5721,32 +5786,9 @@ def paste_log_in_root(root):
         log_in_root.update()
 
         if not user.get('error_connection'):
-            try:
-                with sq.connect(r"\\SRV2\data_base\examination_data_base.db") as conn:
-                    cur = conn.cursor()
-                    cur.execute("CREATE TABLE IF NOT EXISTS examination "
-                                "(date_time text, doctor_name text, status text, "
-                                "LN_type text, patient_info text, examination_text text, "
-                                "examination_key text, add_info text)")
+            all_doctor_info = data_base('get_all_doctor_info')
+            if all_doctor_info:
 
-                with sq.connect(r"\\SRV2\data_base\application_data_base.db") as conn:
-                    cur = conn.cursor()
-                    # cur.execute("CREATE TABLE IF NOT EXISTS врачи "
-                    #             "(doctor_name text, password text, district text, ped_div text, "
-                    #             "manager text, open_mark text, text_size text, add_info text)")
-                    # cur.execute("CREATE TABLE IF NOT EXISTS examination "
-                    #             "(date_time text, doctor_name text, status text, "
-                    #             "LN_type text, patient_info text, examination_text text, "
-                    #             "examination_key text, add_info text)")
-                    # cur.execute("CREATE TABLE IF NOT EXISTS my_saved_diagnosis "
-                    #             "(doctor_name text, diagnosis text, examination_key text)")
-                    # cur.execute("CREATE TABLE IF NOT EXISTS my_LN "
-                    #             "(doctor_name text, ln_type text, ln_num text)")
-                    # cur.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
-                    #             "(doctor_name text, sport_section text)")
-
-                    cur.execute("SELECT * FROM врачи")
-                    all_doctor_info = cur.fetchall()
                 frame_doc = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
 
                 load_info_text.set("Выберите учетную запись")
@@ -5801,7 +5843,7 @@ def paste_log_in_root(root):
                 Label(frame_pass, textvariable=text_is_correct_password,
                       font=('Comic Sans MS', 12), bg='white', foreground="red").grid(row=0, column=2, sticky='ew')
 
-            except Exception:
+            else:
                 user['error_connection'] = True
 
         if user.get('error_connection'):
@@ -5838,28 +5880,12 @@ def paste_log_in_root(root):
 
 
 def paste_frame_main(root):
-    def get_certificate_for_district(district, type_table):
-        with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
-            cur = conn.cursor()
-            if type_table == 'certificate_ped_div':
-                cur.execute(f"SELECT *"
-                            f" FROM {type_table} WHERE ped_div LIKE '{district}';")
-            elif type_table == 'certificate_camp':
-                cur.execute(f"SELECT *"
-                            f" FROM {type_table} WHERE district LIKE '{district}';")
-
-            found_data = list()
-            for info in cur.fetchall():
-                found_data.append(info)
-            return found_data
 
     def download_ped_div():
         pediatric_division = user.get('ped_div')
-        try:
-            info = get_certificate_for_district(pediatric_division, 'certificate_ped_div')
-        except sq.Error:
+        info = data_base(f"get_certificate_for_district__certificate_ped_div__{pediatric_division}")
+        if not info:
             messagebox.showerror("Ошибка", "Ошибка подключения к базе данных")
-
         else:
             if pediatric_division == '1':
                 document = Document()
@@ -5962,9 +5988,8 @@ def paste_frame_main(root):
 
     def download_camp():
         district = user.get('doctor_district')
-        try:
-            info = get_certificate_for_district(district, 'certificate_camp')
-        except sq.Error:
+        info = data_base(f"get_certificate_for_district__certificate_camp__{district}")
+        if not info:
             messagebox.showerror("Ошибка", "Ошибка подключения к базе данных")
         else:
 
