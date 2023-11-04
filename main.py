@@ -1903,7 +1903,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
             frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
 
-
     frame_diagnosis_txt = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
     txt_diagnosis = ScrolledText(frame_diagnosis_txt, width=70, height=3,
                                  font=('Comic Sans MS', user.get('text_size')),
@@ -3133,8 +3132,8 @@ def certificate__editing_certificate():
                 # cursor.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
                 #             "(doctor_name text, sport_section text)")
                 cursor.execute(f"SELECT rowid, sport_section "
-                                f"FROM my_sport_section "
-                                f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
+                               f"FROM my_sport_section "
+                               f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
                 found_info = cursor.fetchall()
                 print(found_info)
             if not found_info:
@@ -3157,7 +3156,8 @@ def certificate__editing_certificate():
 
                 selected_delete_sport_section = StringVar()
 
-                Label(delete_new_hobby_root, text="Выберите секцию для удаления", font=('Comic Sans MS', data.get('text_size')),
+                Label(delete_new_hobby_root, text="Выберите секцию для удаления",
+                      font=('Comic Sans MS', data.get('text_size')),
                       bg='white').pack(fill='both', expand=True, padx=2, pady=2)
                 frame_delete_new_hobby = Frame(delete_new_hobby_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
@@ -3175,8 +3175,6 @@ def certificate__editing_certificate():
                 frame_delete_new_hobby.columnconfigure(index='all', minsize=40, weight=1)
                 frame_delete_new_hobby.rowconfigure(index='all', minsize=20)
                 frame_delete_new_hobby.pack(fill='both', expand=True, padx=2, pady=2)
-
-
 
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
         if type_certificate == 'На кружки и секции':
@@ -3233,7 +3231,6 @@ def certificate__editing_certificate():
                            font=('Comic Sans MS', data.get('text_size'))).grid(ipadx=2, ipady=2, padx=2, pady=2,
                                                                                sticky='ew', row=row, column=col)
 
-
                 frame.columnconfigure(index='all', minsize=40, weight=1)
                 frame.rowconfigure(index='all', minsize=20)
                 frame.pack(fill='both', expand=True, padx=2, pady=2)
@@ -3253,7 +3250,6 @@ def certificate__editing_certificate():
             frame.rowconfigure(index='all', minsize=20)
             frame.pack(fill='both', expand=True, padx=2, pady=2)
 
-
             row, col = 0, 0
 
             for mark in all_data_certificate.get('sport_section'):
@@ -3270,14 +3266,12 @@ def certificate__editing_certificate():
                     col = 0
                     row += 1
 
-
             Button(frame_hobby, text='Скрыть', command=close_frame_hobby,
                    font=('Comic Sans MS', data.get('text_size'))).grid(column=col, row=row, sticky="ew")
 
             frame_hobby.columnconfigure(index='all', minsize=40, weight=1)
             frame_hobby.rowconfigure(index='all', minsize=20)
             frame_hobby.pack(fill='both', expand=True, padx=2, pady=2)
-
 
             frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
@@ -4947,7 +4941,6 @@ def create_blanks__ask_type_blanks():
     type_blanks_root.config(bg='white')
     type_blanks_root.geometry('+0+0')
 
-
     Label(type_blanks_root, text='Какие бланки создать?\n',
           font=('Comic Sans MS', data.get('text_size')), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
     for text in blanks:
@@ -5485,7 +5478,6 @@ def keypress(event):
 
 
 def main_root():
-
     def paste_log_in_root():
         def edit_local_db():
             edit_local_data = {
@@ -5770,170 +5762,175 @@ def main_root():
         connect_to_srv_data_base()
 
     def paste_frame_main():
-        # def get_certificate_for_district(district, type_table):
-        #     with sq.connect(f'F:{os.sep}data_base{os.sep}data_base.db') as conn:
-        #         cur = conn.cursor()
-        #         if type_table == 'certificate_ped_div':
-        #             cur.execute(f"SELECT *"
-        #                         f" FROM {type_table} WHERE ped_div LIKE '{district}';")
-        #         elif type_table == 'certificate_camp':
-        #             cur.execute(f"SELECT *"
-        #                         f" FROM {type_table} WHERE district LIKE '{district}';")
-        #
-        #         data = list()
-        #         for info in cur.fetchall():
-        #             data.append(info)
-        #         return data
-        #
-        # def download_ped_div():
-        #     pediatric_division = user.get('ped_div')
-        #     info = get_certificate_for_district(pediatric_division, 'certificate_ped_div')
-        #     if pediatric_division == '1':
-        #         document = Document()
-        #         table = document.add_table(rows=(len(info) + 1), cols=10)
-        #         table.style = 'Table Grid'
-        #         # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
-        #         # for row in table.rows:
-        #         #     for idx, width in enumerate(widths):
-        #         #         row.cells[idx].width = width
-        #         data = ('№ п/п',
-        #                 'Дата',
-        #                 'ФИО лица, обратившегося за выдачей справки и (или) другого документа',
-        #                 'Адрес',
-        #                 'Документ, удостоверяющий личность',
-        #                 'Наименование справки и (или) другого запрашиваемого документа',
-        #                 'Срок исполнения',
-        #                 'Размер платы, взимаемый',
-        #                 'Дата выдачи справки и (или) другого запрашиваемого документа',
-        #                 'ФИО врача')
-        #         hdr_cells = table.rows[0].cells
-        #         for i in range(10):
-        #             hdr_cells[i].text = data[i]
-        #
-        #             rc = hdr_cells[i].paragraphs[0].runs[0]
-        #             rc.font.name = 'Times New Roman'
-        #             rc.font.size = Pt(10)
-        #             rc.font.bold = True
-        #         for i in range(1, len(info) + 1):
-        #             hdr_cells = table.rows[i].cells
-        #             ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
-        #             local_info = (
-        #             num, date, name, address, 'паспорт', type_cert, '1 день', 'бесплатно', date, doctor_name)
-        #             for q in range(10):
-        #                 hdr_cells[q].text = local_info[q]
-        #                 rc = hdr_cells[q].paragraphs[0].runs[0]
-        #                 rc.font.name = 'Times New Roman'
-        #                 rc.font.size = Pt(9)
-        #
-        #     else:
-        #         document = Document()
-        #         table = document.add_table(rows=(len(info) + 1), cols=11)
-        #         table.style = 'Table Grid'
-        #         # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
-        #         # for row in table.rows:
-        #         #     for idx, width in enumerate(widths):
-        #         #         row.cells[idx].width = width
-        #         data = ('№ п/п',
-        #                 'ФИО, обратившегося за выдачей справки и (или) другого документа',
-        #                 "Дата рождения",
-        #                 'Домашний адрес',
-        #                 'Дата подачи заявления',
-        #                 'Наименование справки и (или) другого запрашиваемого документа',
-        #                 'Срок исполнения',
-        #                 'Документ, удостоверяющий личность',
-        #                 'Размер платы, взимаемой за подачу справки и (или) другого документа',
-        #                 'Дата выдачи справки и (или) другого запрашиваемого документа',
-        #                 'ФИО врача (роспись заявителя)')
-        #         hdr_cells = table.rows[0].cells
-        #         for i in range(11):
-        #             hdr_cells[i].text = data[i]
-        #
-        #             rc = hdr_cells[i].paragraphs[0].runs[0]
-        #             rc.font.name = 'Times New Roman'
-        #             rc.font.size = Pt(10)
-        #             rc.font.bold = True
-        #         for i in range(1, len(info) + 1):
-        #             hdr_cells = table.rows[i].cells
-        #             ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
-        #             type_cert = f"пункт {type_cert}"
-        #             local_info = (
-        #                 num,
-        #                 name,
-        #                 birth_date,
-        #                 address,
-        #                 date,
-        #                 type_cert,
-        #                 '1 день',
-        #                 'паспорт',
-        #                 'бесплатно',
-        #                 date,
-        #                 doctor_name)
-        #             for q in range(11):
-        #                 hdr_cells[q].text = local_info[q]
-        #                 rc = hdr_cells[q].paragraphs[0].runs[0]
-        #                 rc.font.name = 'Times New Roman'
-        #                 rc.font.size = Pt(9)
-        #
-        #     sections = document.sections
-        #     for section in sections:
-        #         section.orientation = WD_ORIENT.LANDSCAPE
-        #         section.top_margin = Cm(1.5)
-        #         section.bottom_margin = Cm(1.5)
-        #         section.left_margin = Cm(1.5)
-        #         section.right_margin = Cm(1.5)
-        #         section.page_height = Cm(21)
-        #         section.page_width = Cm(29.7)
-        #
-        #     document.save(f'.{os.sep}generated{os.sep}БРЕД {pediatric_division}_го ПО.docx')
-        #     file = open(f'.{os.sep}generated{os.sep}БРЕД {pediatric_division}_го ПО.docx', 'rb')
-        #     await bot.send_document(chat_id=message.chat.id, document=file)
-        #
-        #     await exit_in_main(message, state)
-        #
-        # async def download_camp(message: types.Message, state: FSMContext):
-        #     _, district, _ = get_info(message.chat.id)
-        #     info = get_certificate_for_district(district, 'certificate_camp')
-        #
-        #     document = Document()
-        #     table = document.add_table(rows=(len(info) + 1), cols=7)
-        #     table.style = 'Table Grid'
-        #     widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
-        #     for row in table.rows:
-        #         for idx, width in enumerate(widths):
-        #             row.cells[idx].width = width
-        #     data = ('Участок', '№ п/п', 'Дата выписки', 'ФИО', 'Дата рождения', 'Пол', 'Адрес')
-        #     hdr_cells = table.rows[0].cells
-        #     for i in range(7):
-        #         hdr_cells[i].text = data[i]
-        #
-        #         rc = hdr_cells[i].paragraphs[0].runs[0]
-        #         rc.font.name = 'Times New Roman'
-        #         rc.font.size = Pt(8)
-        #         rc.font.bold = True
-        #     for i in range(1, len(info) + 1):
-        #         hdr_cells = table.rows[i].cells
-        #         for q in range(7):
-        #             if info[i - 1][q]:
-        #                 hdr_cells[q].text = info[i - 1][q]
-        #
-        #                 rc = hdr_cells[q].paragraphs[0].runs[0]
-        #                 rc.font.name = 'Times New Roman'
-        #                 rc.font.size = Pt(8)
-        #
-        #     sections = document.sections
-        #     for section in sections:
-        #         section.top_margin = Cm(1.5)
-        #         section.bottom_margin = Cm(1.5)
-        #         section.left_margin = Cm(1.5)
-        #         section.right_margin = Cm(1.5)
-        #         section.page_height = Cm(21)
-        #         section.page_width = Cm(14.8)
-        #
-        #     document.save(f'.{os.sep}generated{os.sep}концлагерь {district} участка.docx')
-        #     file = open(f'.{os.sep}generated{os.sep}концлагерь {district} участка.docx', 'rb')
-        #     await bot.send_document(chat_id=message.chat.id, document=file)
-        #
-        #     await exit_in_main(message, state)
+
+        def get_certificate_for_district(district, type_table):
+            with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
+                cur = conn.cursor()
+                if type_table == 'certificate_ped_div':
+                    cur.execute(f"SELECT *"
+                                f" FROM {type_table} WHERE ped_div LIKE '{district}';")
+                elif type_table == 'certificate_camp':
+                    cur.execute(f"SELECT *"
+                                f" FROM {type_table} WHERE district LIKE '{district}';")
+
+                found_data = list()
+                for info in cur.fetchall():
+                    found_data.append(info)
+                return found_data
+
+        def download_ped_div():
+            pediatric_division = user.get('ped_div')
+            try:
+                info = get_certificate_for_district(pediatric_division, 'certificate_ped_div')
+            except sq.Error:
+                messagebox.showerror("Ошибка", "Ошибка подключения к базе данных")
+
+            else:
+                if pediatric_division == '1':
+                    document = Document()
+                    table = document.add_table(rows=(len(info) + 1), cols=10)
+                    table.style = 'Table Grid'
+                    # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+                    # for row in table.rows:
+                    #     for idx, width in enumerate(widths):
+                    #         row.cells[idx].width = width
+                    data_table = ('№ п/п',
+                                  'Дата',
+                                  'ФИО лица, обратившегося за выдачей справки и (или) другого документа',
+                                  'Адрес',
+                                  'Документ, удостоверяющий личность',
+                                  'Наименование справки и (или) другого запрашиваемого документа',
+                                  'Срок исполнения',
+                                  'Размер платы, взимаемый',
+                                  'Дата выдачи справки и (или) другого запрашиваемого документа',
+                                  'ФИО врача')
+                    hdr_cells = table.rows[0].cells
+                    for i in range(10):
+                        hdr_cells[i].text = data_table[i]
+
+                        rc = hdr_cells[i].paragraphs[0].runs[0]
+                        rc.font.name = 'Times New Roman'
+                        rc.font.size = Pt(10)
+                        rc.font.bold = True
+                    for i in range(1, len(info) + 1):
+                        hdr_cells = table.rows[i].cells
+                        ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
+                        local_info = (
+                            num, date, name, address, 'паспорт', type_cert, '1 день', 'бесплатно', date, doctor_name)
+                        for q in range(10):
+                            hdr_cells[q].text = local_info[q]
+                            rc = hdr_cells[q].paragraphs[0].runs[0]
+                            rc.font.name = 'Times New Roman'
+                            rc.font.size = Pt(9)
+
+                else:
+                    document = Document()
+                    table = document.add_table(rows=(len(info) + 1), cols=11)
+                    table.style = 'Table Grid'
+                    # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+                    # for row in table.rows:
+                    #     for idx, width in enumerate(widths):
+                    #         row.cells[idx].width = width
+                    data_table = ('№ п/п',
+                                  'ФИО, обратившегося за выдачей справки и (или) другого документа',
+                                  "Дата рождения",
+                                  'Домашний адрес',
+                                  'Дата подачи заявления',
+                                  'Наименование справки и (или) другого запрашиваемого документа',
+                                  'Срок исполнения',
+                                  'Документ, удостоверяющий личность',
+                                  'Размер платы, взимаемой за подачу справки и (или) другого документа',
+                                  'Дата выдачи справки и (или) другого запрашиваемого документа',
+                                  'ФИО врача (роспись заявителя)')
+                    hdr_cells = table.rows[0].cells
+                    for i in range(11):
+                        hdr_cells[i].text = data_table[i]
+
+                        rc = hdr_cells[i].paragraphs[0].runs[0]
+                        rc.font.name = 'Times New Roman'
+                        rc.font.size = Pt(10)
+                        rc.font.bold = True
+                    for i in range(1, len(info) + 1):
+                        hdr_cells = table.rows[i].cells
+                        ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
+                        type_cert = f"пункт {type_cert}"
+                        local_info = (
+                            num,
+                            name,
+                            birth_date,
+                            address,
+                            date,
+                            type_cert,
+                            '1 день',
+                            'паспорт',
+                            'бесплатно',
+                            date,
+                            doctor_name)
+                        for q in range(11):
+                            hdr_cells[q].text = local_info[q]
+                            rc = hdr_cells[q].paragraphs[0].runs[0]
+                            rc.font.name = 'Times New Roman'
+                            rc.font.size = Pt(9)
+
+                sections = document.sections
+                for section in sections:
+                    section.orientation = WD_ORIENT.LANDSCAPE
+                    section.top_margin = Cm(1.5)
+                    section.bottom_margin = Cm(1.5)
+                    section.left_margin = Cm(1.5)
+                    section.right_margin = Cm(1.5)
+                    section.page_height = Cm(21)
+                    section.page_width = Cm(29.7)
+                doc_name = f'.{os.sep}generated{os.sep}БРЕД_{pediatric_division}_го ПО.docx'
+                document.save(doc_name)
+                os.system(f"start {doc_name}")
+
+        def download_camp():
+            district = user.get('doctor_district')
+            try:
+                info = get_certificate_for_district(district, 'certificate_camp')
+            except sq.Error:
+                messagebox.showerror("Ошибка", "Ошибка подключения к базе данных")
+            else:
+
+                document = Document()
+                table = document.add_table(rows=(len(info) + 1), cols=7)
+                table.style = 'Table Grid'
+                widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+                for row in table.rows:
+                    for idx, width in enumerate(widths):
+                        row.cells[idx].width = width
+                data_table = ('Участок', '№ п/п', 'Дата выписки', 'ФИО', 'Дата рождения', 'Пол', 'Адрес')
+                hdr_cells = table.rows[0].cells
+                for i in range(7):
+                    hdr_cells[i].text = data_table[i]
+
+                    rc = hdr_cells[i].paragraphs[0].runs[0]
+                    rc.font.name = 'Times New Roman'
+                    rc.font.size = Pt(8)
+                    rc.font.bold = True
+                for i in range(1, len(info) + 1):
+                    hdr_cells = table.rows[i].cells
+                    for q in range(7):
+                        if info[i - 1][q]:
+                            hdr_cells[q].text = info[i - 1][q]
+
+                            rc = hdr_cells[q].paragraphs[0].runs[0]
+                            rc.font.name = 'Times New Roman'
+                            rc.font.size = Pt(8)
+
+                sections = document.sections
+                for section in sections:
+                    section.top_margin = Cm(1.5)
+                    section.bottom_margin = Cm(1.5)
+                    section.left_margin = Cm(1.5)
+                    section.right_margin = Cm(1.5)
+                    section.page_height = Cm(21)
+                    section.page_width = Cm(14.8)
+
+                doc_name = f'.{os.sep}generated{os.sep}концлагерь_{district}_участка.docx'
+                document.save(doc_name)
+                os.system(f"start {doc_name}")
 
         def search_loop():
             patient_found_data = list()
@@ -6287,6 +6284,9 @@ def main_root():
             button_delete_doctor['font'] = ('Comic Sans MS', user.get('text_size'))
             button_change_account['font'] = ('Comic Sans MS', user.get('text_size'))
 
+            button_download_ped_div['font'] = ('Comic Sans MS', user.get('text_size'))
+            button_download_camp['font'] = ('Comic Sans MS', user.get('text_size'))
+
             root.update()
 
         def delete_doc_local():
@@ -6408,6 +6408,12 @@ def main_root():
 
         button_examination_cmd = Button(frame_main_loc, text='Осмотры', command=examination_cmd)
         button_examination_cmd.grid(column=1, row=3, sticky='ew')
+
+        button_download_camp = Button(frame_main_loc, text='Выгрузить лагерь', command=download_camp)
+        button_download_camp.grid(column=0, row=4, sticky='ew')
+
+        button_download_ped_div = Button(frame_main_loc, text='Журнал справок', command=download_ped_div)
+        button_download_ped_div.grid(column=1, row=4, sticky='ew')
 
         frame_main_loc.columnconfigure(index='all', minsize=40, weight=1)
         frame_main_loc.rowconfigure(index='all', minsize=20)
