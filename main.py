@@ -5587,19 +5587,24 @@ def paste_log_in_root(root):
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"Синхронизация осмотров...")
         time.sleep(1)
+        log_in_root.update()
 
         answer = data_base('edit_examination_loc')
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"{answer}")
         time.sleep(1)
+        log_in_root.update()
 
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"Синхронизация шаблонов...")
         time.sleep(1)
+        log_in_root.update()
         answer = data_base(command='edit_local_db', doctor_name=selected_doctor_name.get())
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"{answer}")
         time.sleep(1)
+        log_in_root.update()
+
 
 
 
@@ -5608,6 +5613,8 @@ def paste_log_in_root(root):
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"Данные синхронизированы")
         time.sleep(1)
+        log_in_root.update()
+
 
     def select_doctor_name():
         if users_passwords.get(selected_doctor_name.get()):
