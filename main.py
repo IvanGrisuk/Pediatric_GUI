@@ -511,7 +511,7 @@ class ScrolledRoot(tk.Toplevel):
         self.scroll_x = tk.Scrollbar(self, orient=tk.HORIZONTAL)
         self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, width=user.get('text_size', 10) * 3)
 
-        self.canvas = tk.Canvas(self, height=self.winfo_screenheight() - 100,
+        self.canvas = tk.Canvas(self, height=self.winfo_screenheight() - 200,
                                 xscrollcommand=self.scroll_x.set,
                                 yscrollcommand=self.scroll_y.set)
         self.scroll_x.config(command=self.canvas.xview)
@@ -519,7 +519,7 @@ class ScrolledRoot(tk.Toplevel):
 
         self.bind("<Control-KeyPress>", keypress)
 
-        self.canvas_frame = Frame(self.canvas, borderwidth=1)
+        self.canvas_frame = Frame(self.canvas, borderwidth=1, bg="#36566d")
         if marker == 'paste_examination_cmd_main':
             paste_examination_cmd_main(self, self.canvas_frame)
         if marker == 'past_examination':
@@ -643,19 +643,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             past_examination_data['found_info'] = dict()
             past_examination_data['destroy_elements'] = dict()
 
-            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                cur = conn.cursor()
+            past_examination_connect_status.set("Подключение к базе данных")
+            answer_connect, found_info = data_base(command='select_past_examination_srv')
+            past_examination_data['answer_connect'] = answer_connect
 
-                cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
-                            f"examination_text, examination_key "
-                            f"FROM examination "
-                            f"WHERE patient_info LIKE "
-                            f"'{patient.get('name')}__{patient.get('birth_date')}'")
-
-                found_info = cur.fetchall()
             if not found_info:
-                Label(master=past_examination_frame, text="История о прошлых осмотрах пациента пуста",
-                      font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True)
+                past_examination_connect_status.set("История о прошлых осмотрах пациента пуста")
             else:
                 found_info = sorted(found_info,
                                     key=lambda i: (datetime.now() -
@@ -707,6 +700,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                     f"{patient.get('name').split()[1]} "
                                     f"{patient.get('birth_date')}")
         past_examination_root.geometry('+0+0')
+        past_examination_connect_status = StringVar()
+        Label(master=past_examination_root, textvariable=past_examination_connect_status,
+              font=('Comic Sans MS', user.get('text_size')), bg="#36566d", fg='white').pack(fill='both', expand=True)
+
         past_examination_root.mainloop()
 
     def change_all_kb_status():
@@ -834,19 +831,23 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 active_but,
                 None]
 
-            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", save_info_examination)
-
             doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
             doc.render(render_data)
             doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
             doc_name = save_document(doc=doc, doc_name=doc_name)
-
             os.system(f"start {doc_name}")
+
+
+            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", save_info_examination)
+
+
             render_data.clear()
             data.clear()
             root_examination.destroy()
+            data_base(command="statistic_write",
+                      insert_data="Осмотр")
 
     def paste_hr_br():
         indicators = {
@@ -1095,7 +1096,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 if 'selected_diagnosis_get:____' in selected_marker:
                     selected_diagnosis.set(selected_marker.split(':____')[-1])
                 else:
-                    for but_marker in ('complaints', 'examination', 'prescription', 'diagnosis'):
+                    for but_marker in ('complaints', 'examination', 'prescription', 'diagnosis', "selected_place"):
                         if f"{but_marker}:____" in selected_marker:
                             all_buttons = selected_marker.replace(f"{but_marker}:____", '').split("__")
                             for button in all_buttons:
@@ -1121,20 +1122,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         def saved_new_diagnosis():
             def final_save_new_diagnosis():
-                try:
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
-                        cursor = connect.cursor()
-                        cursor.execute(f"INSERT INTO my_saved_diagnosis "
-                                       f"VALUES('{user.get('doctor_name')}', "
-                                       f"'{new_diagnosis_name.get()}', "
-                                       f"'{render_text}')")
-                except Exception as ex:
-                    messagebox.showerror('Ошибка!', f'Ошибка при сохранении!\n'
-                                                    f'{ex}')
-                else:
+                if data_base(command='save_new_diagnosis',
+                             insert_data=[user.get('doctor_name'), new_diagnosis_name.get(), render_text]):
                     messagebox.showinfo('Инфо', f'Осмотр успешно сохранен')
                     saved_new_diagnosis_root.destroy()
                     root_examination.destroy()
+                else:
+                    messagebox.showerror('Ошибка!', f'Ошибка при сохранении!')
 
             if not new_diagnosis_name.get():
                 messagebox.showerror('Ошибка!', 'Не указано имя осмотра для сохранения!')
@@ -2790,54 +2784,10 @@ def save_document(doc: Document, doc_name: str):
         return doc_name
 
 
-def statistic_write(user_id, info):
-    date_now, time_now = datetime.now().strftime("%d.%m.%Y %H:%M:%S").split()
-    try:
-        with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
-            cur = conn.cursor()
-            type_info, _, district = info.split('_')
-            cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', '{user_id}', "
-                        f"'{type_info}', '{district}')")
-    except Exception:
-        pass
-
-
-def save_certificate_ped_div(district_pd, data_cert, type_table):
-    try:
-
-        with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
-            cur = conn.cursor()
-            if type_table == 'certificate_ped_div':
-                cur.execute(f"SELECT num"
-                            f" FROM {type_table} WHERE ped_div LIKE '{district_pd}';")
-            elif type_table == 'certificate_camp':
-                cur.execute(f"SELECT num FROM {type_table} WHERE district LIKE '{district_pd}';")
-
-            numbers = list()
-            for num in cur.fetchall():
-                if isinstance(num, tuple) and len(num) > 0:
-                    num = num[0]
-                if num.isdigit():
-                    numbers.append(int(num))
-            if len(numbers) == 0:
-                numbers.append(0)
-
-            number = max(numbers) + 1
-            if type_table == 'certificate_ped_div':
-                data_cert[2] = number
-                cur.execute(f"INSERT INTO certificate_ped_div VALUES({'?, ' * 8}?)", data_cert)
-
-            elif type_table == 'certificate_camp':
-                data_cert[1] = number
-                cur.execute(f"INSERT INTO certificate_camp VALUES({'?, ' * 6}?)", data_cert)
-    except Exception as ex:
-        print(ex)
-        return '__________'
-    return number
-
-
 def data_base(command,
-              doctor_name=None):
+              doctor_name=None,
+              insert_data=None,
+              delete_data=None):
     if command == 'create_db':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
@@ -2988,12 +2938,13 @@ def data_base(command,
             answer = f"Синхронизация локальных данных - ОК"
 
         for marker in edit_local_data:
+            marker_0 = '_loc'
             if edit_local_data[f"{marker}"].get(f"{marker}_global"):
-                user[f"{marker}"] = edit_local_data[f"{marker}"].get(f"{marker}_global")
-            else:
-                user[f"{marker}"] = edit_local_data[f"{marker}"].get(f"{marker}_loc")
-        else:
-            return answer
+                marker_0 = '_global'
+            for info in edit_local_data[f"{marker}"].get(f"{marker}{marker_0}"):
+                user[f"{marker}"].append(info[1:])
+
+        return answer
 
     elif command == 'last_edit_patient_db_srv':
         try:
@@ -3043,6 +2994,177 @@ def data_base(command,
             return found_data
         except Exception:
             return False
+
+    elif command == 'save_new_diagnosis':
+        try:
+            try:
+                with sq.connect(r"\\SRV2\data_base\application_data_base.db", timeout=10.0) as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"INSERT INTO my_saved_diagnosis "
+                                   f"VALUES(?, ?, ?)", insert_data)
+            except Exception:
+                pass
+            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
+                cursor = connect.cursor()
+                cursor.execute(f"INSERT INTO my_saved_diagnosis "
+                               f"VALUES(?, ?, ?)", insert_data)
+
+            user['my_saved_diagnosis'].append(insert_data)
+
+        except Exception:
+            return False
+        else:
+            return True
+
+    elif command == 'save_new_hobby':
+        try:
+            try:
+                with sq.connect(database=r"\\SRV2\data_base\application_data_base.db", timeout=10.0) as connect:
+                    cursor = connect.cursor()
+                    cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
+                                   insert_data)
+            except Exception:
+                pass
+
+            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
+                cursor = connect.cursor()
+                cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
+                               insert_data)
+            user['my_sport_section'].append(insert_data)
+        except Exception:
+            return False
+        else:
+            return True
+
+    elif command == 'delete_sport_section':
+        try:
+            try:
+                with sq.connect(database=r"\\SRV2\data_base\application_data_base.db", timeout=10.0) as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"DELETE FROM my_sport_section "
+                                   f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                   f"AND sport_section LIKE '{delete_data}'")
+            except Exception:
+                pass
+
+            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
+                cursor = connect.cursor()
+                cursor.execute(f"DELETE FROM my_sport_section "
+                               f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                               f"AND sport_section LIKE '{delete_data}'")
+            if delete_data in user.get('my_sport_section'):
+                user['my_sport_section'].remove(insert_data)
+        except Exception:
+            return False
+        else:
+            return True
+
+    elif command == 'save_doctor_local':
+        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+            cur = conn.cursor()
+
+            cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи")
+            found_data = cur.fetchall()
+            cur.execute(f"DELETE FROM врачи")
+
+            for doctor_name, district, ped_div, manager, text_size in found_data:
+                if doctor_name == insert_data:
+                    cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
+                                [doctor_name, district, ped_div, manager, True, text_size])
+                else:
+                    cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
+                                [doctor_name, district, ped_div, manager, False, text_size])
+
+    elif command == 'append_local_doctor_data':
+        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+            cur = conn.cursor()
+
+            cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи "
+                        f"WHERE doctor_name LIKE '{insert_data}'")
+
+            doctor_name, district, ped_div, manager, text_size = cur.fetchone()
+            user['text_size'] = int(text_size)
+            user['doctor_name'] = doctor_name
+            user['doctor_district'] = district
+            user['ped_div'] = ped_div
+            user['manager'] = manager
+
+            for marker in ('my_saved_diagnosis', 'my_LN', 'my_sport_section'):
+                cur.execute(f"SELECT * FROM {marker} "
+                            f"WHERE doctor_name LIKE '{doctor_name}'")
+                user[marker] = list()
+                for i in cur.fetchall():
+                    user[marker].append(i[1:])
+
+    elif command == 'save_certificate_ped_div':
+        try:
+            district_pd = insert_data[0]
+            data_cert = insert_data[1]
+            type_table = insert_data[2]
+
+            with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
+                cur = conn.cursor()
+                if type_table == 'certificate_ped_div':
+                    cur.execute(f"SELECT num"
+                                f" FROM {type_table} WHERE ped_div LIKE '{district_pd}';")
+                elif type_table == 'certificate_camp':
+                    cur.execute(f"SELECT num FROM {type_table} WHERE district LIKE '{district_pd}';")
+
+                numbers = list()
+                for num in cur.fetchall():
+                    if isinstance(num, tuple) and len(num) > 0:
+                        num = num[0]
+                    if num.isdigit():
+                        numbers.append(int(num))
+                if len(numbers) == 0:
+                    numbers.append(0)
+
+                number = max(numbers) + 1
+                if type_table == 'certificate_ped_div':
+                    data_cert[2] = number
+                    cur.execute(f"INSERT INTO certificate_ped_div VALUES({'?, ' * 8}?)", data_cert)
+
+                elif type_table == 'certificate_camp':
+                    data_cert[1] = number
+                    cur.execute(f"INSERT INTO certificate_camp VALUES({'?, ' * 6}?)", data_cert)
+        except Exception as ex:
+            print(ex)
+            return '__________'
+        return number
+
+    elif command == 'statistic_write':
+        date_now, time_now = datetime.now().strftime("%d.%m.%Y %H:%M:%S").split()
+        try:
+            with sq.connect(r"\\SRV2\data_base\data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', 'приложение', "
+                            f"'{insert_data}', '{user.get('doctor_name')}')")
+        except Exception:
+            pass
+
+    elif command == 'select_past_examination_srv':
+        try:
+            with sq.connect(database=r"\\SRV2\data_base\examination_data_base.db", timeout=10.0) as conn:
+                cur = conn.cursor()
+
+                cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
+                            f"examination_text, examination_key "
+                            f"FROM examination "
+                            f"WHERE patient_info LIKE "
+                            f"'{patient.get('name')}__{patient.get('birth_date')}'")
+
+                return 'srv', cur.fetchall()
+        except Exception:
+            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                cur = conn.cursor()
+
+                cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
+                            f"examination_text, examination_key "
+                            f"FROM examination "
+                            f"WHERE patient_info LIKE "
+                            f"'{patient.get('name')}__{patient.get('birth_date')}'")
+
+                return 'loc', cur.fetchall()
 
 
 
@@ -3291,22 +3413,14 @@ def certificate__editing_certificate():
                 messagebox.showerror('Ошибка', "Не указан кружок / секция для сохранения")
                 new_hobby_txt.focus()
             else:
-                try:
-                    with sq.connect(database=r"\\SRV2\data_base\application_data_base.db", timeout=10.0) as connect:
-                        cursor = connect.cursor()
-                        cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
-                                       [user.get('doctor_name'), new_hobby_txt.get()])
-                except Exception:
-                    pass
+                if data_base(command='save_new_hobby',
+                             insert_data=[user.get('doctor_name'), new_hobby_txt.get()]):
 
-                with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
-                    cursor = connect.cursor()
-                    cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
-                                   [user.get('doctor_name'), new_hobby_txt.get()])
-                user['my_sport_section'].append(new_hobby_txt.get())
-                messagebox.showinfo('Инфо', "Секция сохранена в избранное")
-                edit_cert_root.destroy()
-                certificate__editing_certificate()
+                    messagebox.showinfo('Инфо', "Секция сохранена в избранное")
+                    edit_cert_root.destroy()
+                    certificate__editing_certificate()
+                else:
+                    messagebox.showinfo('Инфо', "Ошибка при сохранении")
 
         def delete_new_hobby():
             if not user.get('my_sport_section'):
@@ -3314,25 +3428,13 @@ def certificate__editing_certificate():
 
             else:
                 def delete_sport_section():
-                    try:
-                        with sq.connect(database=r"\\SRV2\data_base\application_data_base.db", timeout=10.0) as connect:
-                            cursor = connect.cursor()
-                            cursor.execute(f"DELETE FROM my_sport_section "
-                                           f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                           f"AND sport_section LIKE '{selected_delete_sport_section.get()}'")
-                    except Exception:
-                        pass
-
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
-                        cursor = connect.cursor()
-                        cursor.execute(f"DELETE FROM my_sport_section "
-                                       f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                       f"AND sport_section LIKE '{selected_delete_sport_section.get()}'")
-                    if selected_delete_sport_section.get() in user.get('my_sport_section'):
-                        user['my_sport_section'].remove(selected_delete_sport_section.get())
-
-                    delete_new_hobby_root.destroy()
-                    delete_new_hobby()
+                    if data_base(command='delete_sport_section',
+                                 delete_data=selected_delete_sport_section.get()):
+                        messagebox.showinfo("Инфо", "Запись удалена")
+                        delete_new_hobby_root.destroy()
+                        delete_new_hobby()
+                    else:
+                        messagebox.showerror("Ошибка", "Запись не удалена")
 
                 delete_new_hobby_root = Toplevel()
                 delete_new_hobby_root.title('Удаление секций')
@@ -4512,9 +4614,10 @@ def certificate__create_doc():
                     render_data.get('address'),
                     type_cert,
                     doctor_name]
-            number = save_certificate_ped_div(data_cert=info,
-                                              type_table='certificate_ped_div',
-                                              district_pd=pediatric_division)
+
+            number = data_base(command='save_certificate_ped_div',
+                      insert_data=[pediatric_division, info, 'certificate_ped_div'])
+
             render_data['number_cert'] = f"№ {number}"
         else:
             render_data['number_cert'] = f"№ _________"
@@ -4786,11 +4889,9 @@ def certificate__create_doc():
                         render_data.get('birth_date'),
                         render_data.get('gender'),
                         render_data.get('address')]
-                number = save_certificate_ped_div(data_cert=info,
-                                                  type_table='certificate_camp',
-                                                  district_pd=data['doctor'].get('doctor_district'))
+                number = data_base(command='save_certificate_ped_div',
+                                   insert_data=[user.get('doctor_district'), info, 'certificate_camp'])
 
-                # save_certificate_ped_div(data=info, type_table='certificate_camp')
                 render_data['number_cert'] = f"№ {data['doctor'].get('doctor_district')} / {number}"
             if data['certificate'].get('type_certificate').startswith('Оформление в ДДУ / СШ / ВУЗ'):
                 manager = data["doctor"].get('manager')
@@ -4852,8 +4953,8 @@ def certificate__create_doc():
                     # composer.save(doc_name)
 
         os.system(f"start {doc_name}")
-
-    statistic_write('приложение', f"Справка_DOC_{data['doctor'].get('doctor_name')}")
+    data_base(command="statistic_write",
+              insert_data="Справка")
     data.clear()
     render_data.clear()
 
@@ -5058,7 +5159,8 @@ def analyzes__create_doc(analyzes):
 
     # composer.save(")
     os.system(f"start {doc_name}")
-    statistic_write('приложение', f"Анализы_DOC_{data.get('doctor_name')}")
+    data_base(command="statistic_write",
+              insert_data="Анализы")
     render_data.clear()
     data.clear()
 
@@ -5104,7 +5206,8 @@ def create_blanks__ask_type_blanks():
         file_name = f".{os.sep}generated{os.sep}{blanks[int(num) - 2]}_{data.get('patient_name').split()[0]}.docx"
         file_name = save_document(doc=doc, doc_name=file_name)
         os.system(f"start {file_name}")
-        statistic_write('приложение', f"Вкладыши_DOC_{data.get('doctor_name')}")
+        data_base(command="statistic_write",
+                  insert_data="Вкладыши")
 
     def close_window():
         data.clear()
@@ -5334,7 +5437,8 @@ def direction__create_direction():
             # composer.save(f".{os.sep}generated{os.sep}Направление.docx")
 
     os.system(f"start {file_name}")
-    statistic_write('приложение', f"Направления_DOC_{data.get('doctor_name')}")
+    data_base(command="statistic_write",
+              insert_data="Направления")
     data.clear()
     render_data.clear()
 
@@ -5465,8 +5569,8 @@ def create_vaccination(user_id, size):
         file_name_vac = save_document(doc=document, doc_name=file_name_vac)
 
         if info:
-            statistic_write('приложение', f"Прививки_DOC_{user.get('doctor_name')}")
-
+            data_base(command="statistic_write",
+                      insert_data="Прививки")
             return file_name_vac
 
         else:
@@ -5982,7 +6086,7 @@ def paste_frame_main(root):
                 section.right_margin = Cm(1.5)
                 section.page_height = Cm(21)
                 section.page_width = Cm(29.7)
-            doc_name = f'.{os.sep}generated{os.sep}БРЕД_{pediatric_division}_го ПО.docx'
+            doc_name = f'.{os.sep}generated{os.sep}БРЕД_{pediatric_division}_го_ПО.docx'
             document.save(doc_name)
             os.system(f"start {doc_name}")
 
@@ -6185,19 +6289,6 @@ def paste_frame_main(root):
         search_in_db()
         search_root.mainloop()
 
-    def append_doctor_data():
-        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-            cur = conn.cursor()
-
-            cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи "
-                        f"WHERE doctor_name LIKE '{combo_doc.get()}'")
-        doctor_name, district, ped_div, manager, text_size = cur.fetchone()
-        user['text_size'] = int(text_size)
-        user['doctor_name'] = doctor_name
-        user['doctor_district'] = district
-        user['ped_div'] = ped_div
-        user['manager'] = manager
-
     def redact_doctor():
         change_doctor(command='redact')
 
@@ -6251,7 +6342,9 @@ def paste_frame_main(root):
                     new_root.destroy()
                     root.update()
                     write_lbl_doc()
-                    append_doctor_data()
+                    data_base(command='append_local_doctor_data',
+                              insert_data=combo_doc.get())
+
                     update_font_main()
 
         new_root = Toplevel()
@@ -6300,19 +6393,8 @@ def paste_frame_main(root):
         search_patient()
 
     def save_doctor(new_doctor_name):
-        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-            cur = conn.cursor()
-
-            cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи")
-
-            for doctor_name, district, ped_div, manager, text_size in cur.fetchall():
-                cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{doctor_name}'")
-                if doctor_name == new_doctor_name:
-                    cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
-                                [doctor_name, district, ped_div, manager, True, text_size])
-                else:
-                    cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
-                                [doctor_name, district, ped_div, manager, False, text_size])
+        data_base(command='save_doctor',
+                  insert_data=new_doctor_name)
         write_lbl_doc()
         update_font_main()
 
@@ -6356,7 +6438,10 @@ def paste_frame_main(root):
 
     def selected(event=None):
         save_doctor(new_doctor_name=combo_doc.get())
-        append_doctor_data()
+
+        data_base(command='append_local_doctor_data',
+                  insert_data=combo_doc.get())
+
         update_font_main()
 
     def delete_txt_patient_data():
@@ -6437,7 +6522,8 @@ def paste_frame_main(root):
         button_redact_doctor.grid(column=1, row=2, sticky='ew')
         button_delete_doctor.grid(column=2, row=2, sticky='ew')
 
-        append_doctor_data()
+        data_base(command='append_local_doctor_data',
+                  insert_data=combo_doc.get())
 
     else:
         lbl_doc.grid(column=0, row=0, columnspan=2)
@@ -6513,7 +6599,8 @@ def paste_frame_main(root):
     button_download_camp.grid(column=0, row=4, sticky='ew')
 
     button_download_ped_div = Button(frame_main_loc, text='Журнал справок', command=download_ped_div)
-    button_download_ped_div.grid(column=1, row=4, sticky='ew')
+    if 'local_admin' in user.get('add_info', ""):
+        button_download_ped_div.grid(column=1, row=4, sticky='ew')
 
     frame_main_loc.columnconfigure(index='all', minsize=40, weight=1)
     frame_main_loc.rowconfigure(index='all', minsize=20)
