@@ -3141,7 +3141,7 @@ def data_base(command,
                             f"examination_text, examination_key "
                             f"FROM examination "
                             f"WHERE patient_info LIKE "
-                            f"'{patient.get('name')}__{patient.get('birth_date')}'")
+                            f"'{patient.get('name')}%{patient.get('birth_date')}'")
 
                 return 'srv', cur.fetchall()
         except Exception:
@@ -3152,7 +3152,7 @@ def data_base(command,
                             f"examination_text, examination_key "
                             f"FROM examination "
                             f"WHERE patient_info LIKE "
-                            f"'{patient.get('name')}__{patient.get('birth_date')}'")
+                            f"'{patient.get('name')}%{patient.get('birth_date')}'")
 
                 return 'loc', cur.fetchall()
 
