@@ -641,6 +641,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             past_examination_data['found_info'] = dict()
             past_examination_data['destroy_elements'] = dict()
 
+            past_examination_connect_status = StringVar()
+            Label(master=past_examination_frame, textvariable=past_examination_connect_status,
+                  font=('Comic Sans MS', user.get('text_size')), bg="#36566d", fg='white').pack(fill='both',
+                                                                                                expand=True)
+
             past_examination_connect_status.set("Подключение к базе данных")
             answer_connect, found_info = data_base(command='select_past_examination_srv')
             past_examination_data['answer_connect'] = answer_connect
@@ -698,9 +703,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                     f"{patient.get('name').split()[1]} "
                                     f"{patient.get('birth_date')}")
         past_examination_root.geometry('+0+0')
-        past_examination_connect_status = StringVar()
-        Label(master=past_examination_root, textvariable=past_examination_connect_status,
-              font=('Comic Sans MS', user.get('text_size')), bg="#36566d", fg='white').pack(fill='both', expand=True)
 
         past_examination_root.mainloop()
 
