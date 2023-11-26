@@ -664,23 +664,36 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     past_examination_data['destroy_elements'][f"{rowid}"] = local_frame
 
                     past_examination_data['found_info'][f"{rowid}"] = examination_key
-                    past_exam_text = f"Время редактирования: {date_time}\n"
-                    counter = 0
-                    for text in examination_text.split(" "):
-                        counter += len(text)
-                        if '\n' in text:
-                            counter = 0
-                        if counter >= 100:
-                            past_exam_text += '\n'
-                            counter = 0
-
-                        past_exam_text += text + ' '
-                    past_exam_text += f"\nЛН: {ln_type}\nВрач: {doctor_name}".replace('_', ' ')
+                    past_exam_text = f"Время редактирования: {date_time}    Пользователь: {doctor_name}"
                     Label(master=local_frame, width=100,
                           text=past_exam_text,
                           justify='left',
                           font=('Comic Sans MS', user.get('text_size')),
                           bg='white').pack(fill='both', expand=True, side="top")
+
+                    txt_examination_past = ScrolledText(frame_complaints_main, width=100, height=10,
+                                                        font=('Comic Sans MS', user.get('text_size')),
+                                                        wrap="word")
+
+                    txt_examination_past.insert(1.0, f"{examination_text}\n"
+                                                     f"{ln_type}\nВрач: {doctor_name}".replace('_', ' '))
+                    txt_examination_past.pack(fill='both', expand=True, side="top")
+                    # counter = 0
+                    # for text in examination_text.split(" "):
+                    #     counter += len(text)
+                    #     if '\n' in text:
+                    #         counter = 0
+                    #     if counter >= 90:
+                    #         past_exam_text += '\n'
+                    #         counter = 0
+                    #
+                    #     past_exam_text += text + ' '
+                    # past_exam_text += f"\nЛН: {ln_type}\nВрач: {doctor_name}".replace('_', ' ')
+                    # Label(master=local_frame, width=100,
+                    #       text=past_exam_text,
+                    #       justify='left',
+                    #       font=('Comic Sans MS', user.get('text_size')),
+                    #       bg='white').pack(fill='both', expand=True, side="top")
 
                     for mark in ('Удалить осмотр', 'Загрузить в текущий'):
                         past_examination_data['buttons'][f"{rowid}__{mark}"] = IntVar()
@@ -3230,11 +3243,6 @@ def data_base(command,
             return True, True
 
 
-
-
-
-
-
 def updating_patient_data_base():
     try:
         shutil.copy2(r"\\srv2\data_base\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
@@ -4639,8 +4647,8 @@ def certificate__create_doc():
     if type_certificate in ('ЦКРОиР', 'О нуждаемости в сан-кур лечении',
                             'Об усыновлении (удочерении)', 'Бесплатное питание') \
             or (data['certificate'].get('type_certificate') == 'Оформление в ДДУ / СШ / ВУЗ' and not
-                ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
-                 ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
+    ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
+     ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
         doctor_name, district, pediatric_division = (data['doctor'].get('doctor_name'),
                                                      data['doctor'].get('doctor_district'),
                                                      data['doctor'].get('ped_div'))
