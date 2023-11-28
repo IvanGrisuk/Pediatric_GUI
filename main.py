@@ -590,19 +590,23 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 if selected_past_but_info:
                     rowid_, command = selected_past_but_info.split('__')
                     if command == 'Удалить осмотр':
-                        answer, message = data_base(command='examination__delete',
-                                                    insert_data=rowid_)
-                        if not answer:
-                            messagebox.showerror('Ошибка', f"Ошибка удаления записи: \n{message}")
-                        else:
-                            past_examination_data['destroy_elements'].get(rowid_).destroy()
+                        result = messagebox.askyesno(title='Удаление осмотра',
+                                                     message="Удалить осмотр?")
+                        if result:
+                            answer, message = data_base(command='examination__delete',
+                                                        insert_data=rowid_)
+                            if not answer:
+                                messagebox.showerror('Ошибка', f"Ошибка удаления записи: \n{message}")
+                            else:
+                                past_examination_data['destroy_elements'].get(rowid_).destroy()
 
-                    if command == 'Загрузить в текущий':
+                    elif command == 'Загрузить в текущий':
                         for but_marker in ('complaints', 'examination', 'prescription'):
                             for mark_ in data['examination'].get(f'{but_marker}_but'):
                                 data['examination'][f'{but_marker}_but'].get(mark_).set(0)
-
-                        for selected_marker in past_examination_data['found_info'].get(rowid_).split('__<end!>__\n'):
+                        all_markers = past_examination_data['found_info'].get(rowid_).\
+                            get('examination_key').split('__<end!>__\n')
+                        for selected_marker in all_markers:
                             if 'selected_diagnosis_get:____' in selected_marker:
                                 selected_diagnosis.set(selected_marker.split(':____')[-1])
                             else:
@@ -636,11 +640,86 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         examination_root.update()
                         edit_examination_kb_text()
 
+                    elif command == 'Сохранить изменения':
+                        saved_text = past_examination_data['found_info'][f"{rowid_}"].\
+                                         get('txt_examination_past').get(1.0, 'eng')[:-1]
+                        if saved_text == past_examination_data['found_info'][f"{rowid_}"].get("examination_text"):
+                            messagebox.showinfo('Инфо', f"Осмотры совпадают\n"
+                                                        f"Нет изменений для сохранения")
+                        else:
+                            answer, message = data_base(command='examination__delete',
+                                                        insert_data=rowid_)
+                            if not answer:
+                                messagebox.showerror('Ошибка', f"Ошибка удаления записи: \n{message}")
+                            else:
+
+                                save_info_examination = [
+                                    f"{datetime.now().strftime('%d.%m.%Y %H:%M')}",
+                                    f"{user.get('doctor_name')}",
+                                    None,
+                                    past_examination_data['found_info'][f"{rowid_}"].get("ln_type"),
+                                    past_examination_data['found_info'][f"{rowid_}"].get("patient_info_"),
+                                    saved_text,
+                                    past_examination_data['found_info'][f"{rowid_}"].get("examination_key"),
+                                    None]
+
+                                answer, message = data_base(command='examination__save',
+                                                            insert_data=save_info_examination)
+                                if not answer:
+                                    messagebox.showerror("Ошибка", f"Ошибка сохранения осмотра\n{message}")
+                                else:
+                                    messagebox.showinfo('Инфо', f"Осмотр успешно сохранен")
+
+                    elif command in ('Печать А5', 'Печать А6'):
+                        if command == 'Печать А5':
+                            text_size = 11
+                        else:
+                            text_size = 8
+                        exam_text = past_examination_data['found_info'][f"{rowid_}"].\
+                                         get('txt_examination_past').get(1.0, 'eng')[:-1]
+
+                        document = Document()
+
+                        for text in exam_text.split('\n'):
+                            for marker in ('Жалобы:', 'Данные объективного обследования:', 'Диагноз:'):
+                                if marker in text:
+                                    text = text.replace(marker, '')
+
+                                    paragraph = document.add_paragraph()
+                                    p = paragraph.add_run(marker)
+                                    r_fmt = p.font
+                                    r_fmt.name = 'Times New Roman'
+                                    r_fmt.size = Pt(text_size)
+                                    r_fmt.bold = True
+
+                            paragraph = document.add_paragraph()
+                            p = paragraph.add_run(f"{text}\n")
+                            r_fmt = p.font
+                            r_fmt.name = 'Times New Roman'
+                            r_fmt.size = Pt(text_size)
+
+                        sections = document.sections
+                        for section in sections:
+                            section.top_margin = Cm(1.5)
+                            section.bottom_margin = Cm(1.5)
+                            section.left_margin = Cm(1.5)
+                            section.right_margin = Cm(1.5)
+                            if command == 'Печать А5':
+                                section.page_height = Cm(21)
+                                section.page_width = Cm(14.8)
+                            else:
+                                section.page_height = Cm(14.8)
+                                section.page_width = Cm(10.5)
+
+                        file_name = f'.{os.sep}generated{os.sep}осмотр.docx'
+                        file_name = save_document(doc=document, doc_name=file_name)
+                        os.system(f"start {file_name}")
+
             past_examination_data = dict()
             past_examination_data['buttons'] = dict()
             past_examination_data['found_info'] = dict()
             past_examination_data['destroy_elements'] = dict()
-            past_examination_data['scrolled_text'] = dict()
+            past_examination_data['frame_info'] = dict()
 
             past_examination_connect_status = StringVar()
             Label(master=past_examination_frame, textvariable=past_examination_connect_status,
@@ -648,8 +727,15 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                                                                                 expand=True)
 
             past_examination_connect_status.set("Подключение к базе данных")
+            past_examination_frame.update()
             answer_connect, found_info = data_base(command='select_past_examination_srv')
             past_examination_data['answer_connect'] = answer_connect
+            if answer_connect == 'srv':
+                past_examination_connect_status.set("Подключение к базе данных сервера: успешно")
+            else:
+                past_examination_connect_status.set("Подключение к базе данных сервера: ошибка\n"
+                                                    "Загрузка локальных данных...")
+            past_examination_frame.update()
 
             if not found_info:
                 past_examination_connect_status.set("История о прошлых осмотрах пациента пуста")
@@ -664,22 +750,31 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                     past_examination_data['destroy_elements'][f"{rowid}"] = local_frame
 
-                    past_examination_data['found_info'][f"{rowid}"] = examination_key
-                    past_exam_text = f"Время редактирования: {date_time}    Пользователь: {doctor_name}"
+                    past_examination_data['found_info'][f"{rowid}"] = {
+                        "date_time": date_time,
+                        "doctor_name": doctor_name,
+                        "ln_type": ln_type,
+                        "patient_info_": patient_info_,
+                        "examination_text": examination_text,
+                        "examination_key": examination_key
+                    }
+                    past_exam_text = StringVar()
+                    past_examination_data['found_info'][f"{rowid}"]['past_exam_text'] = past_exam_text
+                    past_exam_text.set(f"Время редактирования: {date_time}    Пользователь: {doctor_name}")
                     Label(master=local_frame, width=100,
-                          text=past_exam_text,
+                          textvariable=past_exam_text,
                           justify='left',
                           font=('Comic Sans MS', user.get('text_size')),
                           bg='white').pack(fill='both', expand=True, side="top")
 
-                    txt_examination_past = ScrolledText(frame_complaints_main, width=100, height=20,
+                    txt_examination_past = ScrolledText(local_frame, width=100, height=20,
                                                         font=('Comic Sans MS', user.get('text_size')),
                                                         wrap="word")
 
                     txt_examination_past.insert(1.0, f"{examination_text}\n"
                                                      f"{ln_type}\nВрач: {doctor_name}".replace('_', ' '))
                     txt_examination_past.pack(fill='both', expand=True, side="top")
-                    past_examination_data['scrolled_text'][f"{rowid}"] = txt_examination_past
+                    past_examination_data['found_info'][f"{rowid}"]['txt_examination_past'] = txt_examination_past
                     # counter = 0
                     # for text in examination_text.split(" "):
                     #     counter += len(text)
@@ -820,10 +915,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                              f"weight_text:____{float(txt_weight.get().replace(',', '.'))}__<end!>__\n"
 
             active_examination = f"{render_data.get('date_time')}{render_data.get('patient_info')}\n" \
+                                 f"Осмотрен на чесотку, педикулез, микроспорию\n" \
+                                 f"Согласие на простое медицинское вмешательство получено" \
                                  f"Жалобы: {render_data.get('complaints')}\n" \
-                                 f"Осмотр: {render_data.get('examination')}\n" \
-                                 f"Диагноз: {render_data.get('diagnosis')}\n" \
-                                 f"Лечение: {render_data.get('prescription')}\n"
+                                 f"Данные объективного обследования: {render_data.get('examination')}\n" \
+                                 f"{render_data.get('diagnosis')}\n" \
+                                 f"{render_data.get('prescription')}\n"
 
             if type_ln in ('Лист ВН', 'Справка ВН'):
                 num_ln = ''
