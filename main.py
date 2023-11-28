@@ -705,11 +705,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             section.left_margin = Cm(1.5)
                             section.right_margin = Cm(1.5)
                             if command == 'Печать А5':
-                                section.page_height = Cm(21)
-                                section.page_width = Cm(14.8)
-                            else:
                                 section.page_height = Cm(14.8)
-                                section.page_width = Cm(10.5)
+                                section.page_width = Cm(21)
+                            else:
+                                section.page_height = Cm(10.5)
+                                section.page_width = Cm(14.8)
 
                         file_name = f'.{os.sep}generated{os.sep}осмотр.docx'
                         file_name = save_document(doc=document, doc_name=file_name)
