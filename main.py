@@ -642,7 +642,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                     elif command == 'Сохранить изменения':
                         saved_text = past_examination_data['found_info'][f"{rowid_}"].\
-                                         get('txt_examination_past').get(1.0, 'eng')[:-1]
+                                         get('txt_examination_past').get(1.0, 'end')[:-1]
                         if saved_text == past_examination_data['found_info'][f"{rowid_}"].get("examination_text"):
                             messagebox.showinfo('Инфо', f"Осмотры совпадают\n"
                                                         f"Нет изменений для сохранения")
@@ -676,7 +676,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         else:
                             text_size = 8
                         exam_text = past_examination_data['found_info'][f"{rowid_}"].\
-                                         get('txt_examination_past').get(1.0, 'eng')[:-1]
+                                         get('txt_examination_past').get(1.0, 'end')[:-1]
 
                         document = Document()
 
