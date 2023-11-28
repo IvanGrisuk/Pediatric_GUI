@@ -640,6 +640,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             past_examination_data['buttons'] = dict()
             past_examination_data['found_info'] = dict()
             past_examination_data['destroy_elements'] = dict()
+            past_examination_data['scrolled_text'] = dict()
 
             past_examination_connect_status = StringVar()
             Label(master=past_examination_frame, textvariable=past_examination_connect_status,
@@ -671,13 +672,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                           font=('Comic Sans MS', user.get('text_size')),
                           bg='white').pack(fill='both', expand=True, side="top")
 
-                    txt_examination_past = ScrolledText(frame_complaints_main, width=100, height=10,
+                    txt_examination_past = ScrolledText(frame_complaints_main, width=100, height=20,
                                                         font=('Comic Sans MS', user.get('text_size')),
                                                         wrap="word")
 
                     txt_examination_past.insert(1.0, f"{examination_text}\n"
                                                      f"{ln_type}\nВрач: {doctor_name}".replace('_', ' '))
                     txt_examination_past.pack(fill='both', expand=True, side="top")
+                    past_examination_data['scrolled_text'][f"{rowid}"] = txt_examination_past
                     # counter = 0
                     # for text in examination_text.split(" "):
                     #     counter += len(text)
@@ -695,16 +697,21 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     #       font=('Comic Sans MS', user.get('text_size')),
                     #       bg='white').pack(fill='both', expand=True, side="top")
 
-                    for mark in ('Удалить осмотр', 'Загрузить в текущий'):
+                    for mark in ('Удалить осмотр',
+                                 'Загрузить в текущий',
+                                 "Печать А5",
+                                 "Печать А6",
+                                 "Сохранить изменения"):
                         past_examination_data['buttons'][f"{rowid}__{mark}"] = IntVar()
-
-                        Checkbutton(local_frame, text=mark,
-                                    font=('Comic Sans MS', user.get('text_size')),
-                                    onvalue=1, offvalue=0,
-                                    variable=past_examination_data['buttons'].get(f"{rowid}__{mark}"),
-                                    command=selected_past_but,
-                                    indicatoron=False,
-                                    selectcolor='#77f1ff').pack(fill='both', expand=True, side="left")
+                        if mark not in ("Сохранить изменения", 'Удалить осмотр') \
+                                or doctor_name == user.get('doctor_name'):
+                            Checkbutton(local_frame, text=mark,
+                                        font=('Comic Sans MS', user.get('text_size')),
+                                        onvalue=1, offvalue=0,
+                                        variable=past_examination_data['buttons'].get(f"{rowid}__{mark}"),
+                                        command=selected_past_but,
+                                        indicatoron=False,
+                                        selectcolor='#77f1ff').pack(fill='both', expand=True, side="left")
 
                     local_frame.columnconfigure(index='all', minsize=40, weight=1)
                     local_frame.rowconfigure(index='all', minsize=20)
