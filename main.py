@@ -599,6 +599,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 messagebox.showerror('Ошибка', f"Ошибка удаления записи: \n{message}")
                             else:
                                 past_examination_data['destroy_elements'].get(rowid_).destroy()
+                        past_examination_frame.focus()
 
                     elif command == 'Загрузить в текущий':
                         for but_marker in ('complaints', 'examination', 'prescription'):
@@ -642,7 +643,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                     elif command == 'Сохранить изменения':
                         saved_text = past_examination_data['found_info'][f"{rowid_}"].\
-                                         get('txt_examination_past').get(1.0, 'end')[:-1]
+                                         get('txt_examination_past').get(1.0, 'end').strip()
                         if saved_text == past_examination_data['found_info'][f"{rowid_}"].get("examination_text"):
                             messagebox.showinfo('Инфо', f"Осмотры совпадают\n"
                                                         f"Нет изменений для сохранения")
@@ -669,6 +670,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                     messagebox.showerror("Ошибка", f"Ошибка сохранения осмотра\n{message}")
                                 else:
                                     messagebox.showinfo('Инфо', f"Осмотр успешно сохранен")
+                        past_examination_frame.focus()
 
                     elif command in ('Печать А5', 'Печать А6'):
                         if command == 'Печать А5':
@@ -770,8 +772,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                                         font=('Comic Sans MS', user.get('text_size')),
                                                         wrap="word")
 
-                    txt_examination_past.insert(1.0, f"{examination_text}\n"
-                                                     f"{ln_type}\nВрач: {doctor_name}".replace('_', ' '))
+                    txt_examination_past.insert(1.0, f"{examination_text}\n")
                     txt_examination_past.pack(fill='both', expand=True, side="top")
                     past_examination_data['found_info'][f"{rowid}"]['txt_examination_past'] = txt_examination_past
                     # counter = 0
@@ -919,7 +920,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                  f"Жалобы: {render_data.get('complaints')}\n" \
                                  f"Данные объективного обследования: {render_data.get('examination')}\n" \
                                  f"{render_data.get('diagnosis')}\n" \
-                                 f"{render_data.get('prescription')}\n"
+                                 f"{render_data.get('prescription')}\n" \
+                                 f"{render_data.get('add_info')}"
 
             if type_ln in ('Лист ВН', 'Справка ВН'):
                 num_ln = ''
