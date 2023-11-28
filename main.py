@@ -679,9 +679,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                          get('txt_examination_past').get(1.0, 'end')[:-1]
 
                         document = Document()
-
+                        paragraph = document.add_paragraph()
                         for text in exam_text.split('\n'):
-                            paragraph = document.add_paragraph()
 
                             for marker in ('Жалобы:', 'Данные объективного обследования:', 'Диагноз:'):
                                 if marker in text:
@@ -692,11 +691,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                     r_fmt.name = 'Times New Roman'
                                     r_fmt.size = Pt(text_size)
                                     r_fmt.bold = True
-
-                            p = paragraph.add_run(f"{text}\n")
-                            r_fmt = p.font
-                            r_fmt.name = 'Times New Roman'
-                            r_fmt.size = Pt(text_size)
+                            if text:
+                                p = paragraph.add_run(f"{text}\n")
+                                r_fmt = p.font
+                                r_fmt.name = 'Times New Roman'
+                                r_fmt.size = Pt(text_size)
 
                         sections = document.sections
                         for section in sections:
