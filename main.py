@@ -681,18 +681,18 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         document = Document()
 
                         for text in exam_text.split('\n'):
+                            paragraph = document.add_paragraph()
+
                             for marker in ('Жалобы:', 'Данные объективного обследования:', 'Диагноз:'):
                                 if marker in text:
                                     text = text.replace(marker, '')
 
-                                    paragraph = document.add_paragraph()
                                     p = paragraph.add_run(marker)
                                     r_fmt = p.font
                                     r_fmt.name = 'Times New Roman'
                                     r_fmt.size = Pt(text_size)
                                     r_fmt.bold = True
 
-                            paragraph = document.add_paragraph()
                             p = paragraph.add_run(f"{text}\n")
                             r_fmt = p.font
                             r_fmt.name = 'Times New Roman'
