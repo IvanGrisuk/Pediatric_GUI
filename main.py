@@ -2942,14 +2942,14 @@ def data_base(command,
 
     elif command == 'create_SRV_db':
         try:
-            with sq.connect(r"\\srv2\data_base\examination_data_base.db") as conn:
+            with sq.connect(r"\\192.168.19.1\database\examination_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute("CREATE TABLE IF NOT EXISTS examination "
                             "(date_time text, doctor_name text, status text, "
                             "LN_type text, patient_info text, examination_text text, "
                             "examination_key text, add_info text)")
 
-            with sq.connect(r"\\srv2\data_base\application_data_base.db") as conn:
+            with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute("CREATE TABLE IF NOT EXISTS врачи "
                             "(doctor_name text, password text, district text, ped_div text, "
@@ -2973,7 +2973,7 @@ def data_base(command,
             examination_loc = cur.fetchall()
         if examination_loc:
             try:
-                with sq.connect(database=r"\\srv2\data_base\examination_data_base.db", timeout=10.0) as conn:
+                with sq.connect(database=r"\\192.168.19.1\database\examination_data_base.db", timeout=10.0) as conn:
                     cur = conn.cursor()
                     if examination_loc:
                         for ex_info in examination_loc:
@@ -3018,7 +3018,7 @@ def data_base(command,
 
         try:
 
-            with sq.connect(database=r"\\srv2\data_base\application_data_base.db", timeout=10.0) as conn:
+            with sq.connect(database=r"\\192.168.19.1\database\application_data_base.db", timeout=10.0) as conn:
                 cur = conn.cursor()
                 for marker in edit_local_data:
                     cur.execute(f"SELECT * FROM {marker} "
@@ -3063,7 +3063,7 @@ def data_base(command,
 
     elif command == 'last_edit_patient_db_srv':
         try:
-            with sq.connect(r"\\srv2\data_base\patient_data_base.db") as conn:
+            with sq.connect(r"\\192.168.19.1\database\patient_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute(f"SELECT last_edit FROM last_edit")
                 last_edit_srv = cur.fetchall()[0]
@@ -3082,7 +3082,7 @@ def data_base(command,
 
     elif command == 'get_all_doctor_info':
         try:
-            with sq.connect(r"\\srv2\data_base\application_data_base.db") as conn:
+            with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as conn:
                 cur = conn.cursor()
 
                 cur.execute("SELECT * FROM врачи")
@@ -3094,7 +3094,7 @@ def data_base(command,
     elif command.startswith('get_certificate_for_district'):
         _, type_table, marker = command.split('__')
         try:
-            with sq.connect(r"\\srv2\data_base\data_base.db") as conn:
+            with sq.connect(r"\\192.168.19.1\database\data_base.db") as conn:
                 cur = conn.cursor()
             if type_table == 'certificate_ped_div':
                 cur.execute(f"SELECT *"
@@ -3113,7 +3113,7 @@ def data_base(command,
     elif command == 'save_new_diagnosis':
         try:
             try:
-                with sq.connect(r"\\srv2\data_base\application_data_base.db", timeout=10.0) as connect:
+                with sq.connect(r"\\192.168.19.1\database\application_data_base.db", timeout=10.0) as connect:
                     cursor = connect.cursor()
                     cursor.execute(f"INSERT INTO my_saved_diagnosis "
                                    f"VALUES(?, ?, ?)", insert_data)
@@ -3134,7 +3134,7 @@ def data_base(command,
     elif command == 'save_new_hobby':
         try:
             try:
-                with sq.connect(database=r"\\srv2\data_base\application_data_base.db", timeout=10.0) as connect:
+                with sq.connect(database=r"\\192.168.19.1\database\application_data_base.db", timeout=10.0) as connect:
                     cursor = connect.cursor()
                     cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
                                    insert_data)
@@ -3154,7 +3154,7 @@ def data_base(command,
     elif command == 'delete_sport_section':
         try:
             try:
-                with sq.connect(database=r"\\srv2\data_base\application_data_base.db", timeout=10.0) as connect:
+                with sq.connect(database=r"\\192.168.19.1\database\application_data_base.db", timeout=10.0) as connect:
                     cursor = connect.cursor()
                     cursor.execute(f"DELETE FROM my_sport_section "
                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
@@ -3217,7 +3217,7 @@ def data_base(command,
             data_cert = insert_data[1]
             type_table = insert_data[2]
 
-            with sq.connect(r"\\srv2\data_base\data_base.db") as conn:
+            with sq.connect(r"\\192.168.19.1\database\data_base.db") as conn:
                 cur = conn.cursor()
                 if type_table == 'certificate_ped_div':
                     cur.execute(f"SELECT num"
@@ -3250,7 +3250,7 @@ def data_base(command,
     elif command == 'statistic_write':
         date_now, time_now = datetime.now().strftime("%d.%m.%Y %H:%M:%S").split()
         try:
-            with sq.connect(r"\\srv2\data_base\data_base.db") as conn:
+            with sq.connect(r"\\192.168.19.1\database\data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', 'приложение', "
                             f"'{insert_data}', '{user.get('doctor_name')}')")
@@ -3259,7 +3259,7 @@ def data_base(command,
 
     elif command == 'select_past_examination_srv':
         try:
-            with sq.connect(database=r"\\srv2\data_base\examination_data_base.db", timeout=10.0) as conn:
+            with sq.connect(database=r"\\192.168.19.1\database\examination_data_base.db", timeout=10.0) as conn:
                 cur = conn.cursor()
 
                 cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
@@ -3320,7 +3320,7 @@ def data_base(command,
 
                     cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)", insert_data)
             else:
-                with sq.connect(r"\\srv2\data_base\application_data_base.db") as conn:
+                with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as conn:
                     cur = conn.cursor()
                     cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{insert_data[0]}'")
                     cur.execute(f"INSERT INTO врачи VALUES({'?, ' * (len(insert_data) - 1)}?)", insert_data)
@@ -3355,13 +3355,13 @@ def data_base(command,
 
 def updating_patient_data_base():
     try:
-        shutil.copy2(r"\\srv2\data_base\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
+        shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
     except Exception as ex:
         messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nПопытка логирования')
         try:
             import subprocess
-            subprocess.call(r'cmd /c "net use n: \\srv2\data_base /Иван/profkiller97"')
-            shutil.copy2(r"\\srv2\data_base\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
+            subprocess.call(r'cmd /c "net use n: \\192.168.19.1\database /Иван/profkiller97"')
+            shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
 
         except Exception as ex:
             messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nLOGGING FAILED')
@@ -6042,7 +6042,7 @@ def paste_log_in_root(root):
                                    f"Начинаю обновление...")
                 log_in_root.update()
 
-                shutil.copy2(r"\\srv2\data_base\patient_data_base.db",
+                shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db",
                              f".{os.sep}data_base{os.sep}patient_data_base.db")
                 load_info_text.set(f"{load_info_text.get()}\n"
                                    f"База данных пациентов обновлена")
