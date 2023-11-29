@@ -670,6 +670,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                     messagebox.showerror("Ошибка", f"Ошибка сохранения осмотра\n{message}")
                                 else:
                                     messagebox.showinfo('Инфо', f"Осмотр успешно сохранен")
+                                    text = past_examination_data['found_info'][f"{rowid_}"].get("past_exam_text")
+                                    text.set(f"Время редактирования: {datetime.now().strftime('%d.%m.%Y %H:%M')}    "
+                                             f"Пользователь: {user.get('doctor_name')}")
+                                    past_examination_frame.update()
+
                         past_examination_frame.focus()
 
                     elif command in ('Печать А5', 'Печать А6'):
