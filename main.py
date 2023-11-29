@@ -854,7 +854,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         root_examination.update()
 
-    def create_examination_doc(doc_size):
+    def create_examination_doc(doc_size=None):
 
         type_ln = selected_type_ln.get()
         if type_ln in ('Лист ВН', 'Справка ВН') and not txt_ln_num.get():
@@ -953,12 +953,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 active_examination,
                 active_but,
                 None]
-
-            doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
-            doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
-            doc_name = save_document(doc=doc, doc_name=doc_name)
-            os.system(f"start {doc_name}")
+            if doc_size:
+                doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
+                doc.render(render_data)
+                doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
+                doc_name = save_document(doc=doc, doc_name=doc_name)
+                os.system(f"start {doc_name}")
 
             answer, message = data_base(command='examination__save',
                                         insert_data=save_info_examination)
@@ -1109,18 +1109,25 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         def create_examination_doc_a6():
             create_examination_doc('а6')
 
+        def create_examination_doc_none():
+            create_examination_doc()
+
         button_change_all_kb_status.grid(column=0, row=0, rowspan=2)
 
         Button(frame_button, text='Загрузить\nпрошлые\nосмотры',
                command=paste_past_examination,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, rowspan=2)
 
-        Button(frame_button, text='Создать документ А5',
+        Button(frame_button, text='Печать А5',
                command=create_examination_doc_a5,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=0, columnspan=2)
 
-        Button(frame_button, text='Создать документ А6',
+        Button(frame_button, text='Печать А6',
                command=create_examination_doc_a6,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1, columnspan=2)
+
+        Button(frame_button, text='Сохранить',
+               command=create_examination_doc_none,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1, columnspan=2)
 
         frame_button.columnconfigure(index='all', minsize=40, weight=1)
@@ -1415,14 +1422,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         paste_frame_button_create()
         my_saved_diagnosis()
 
-        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-            cur = conn.cursor()
-            cur.execute(f"SELECT diagnosis, examination_key "
-                        f"FROM my_saved_diagnosis "
-                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
-
-            found_info = cur.fetchall()
-        if found_info:
+        # with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+        #     cur = conn.cursor()
+        #     cur.execute(f"SELECT diagnosis, examination_key "
+        #                 f"FROM my_saved_diagnosis "
+        #                 f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
+        #
+        #     found_info = cur.fetchall()
+        if user.get('my_saved_diagnosis'):
             my_saved_diagnosis_change_status()
 
         frame_1.columnconfigure(index='all', minsize=40, weight=1)
