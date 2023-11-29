@@ -2731,6 +2731,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     paste_frame_ln()
 
+    root_examination.mainloop()
+
     def paste_calendar(text_field):
         command, marker = text_field.split('__')
 
@@ -3357,16 +3359,17 @@ def updating_patient_data_base():
     try:
         shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
     except Exception as ex:
-        messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nПопытка логирования')
-        try:
-            import subprocess
-            subprocess.call(r'cmd /c "net use n: \\192.168.19.1\database /Иван/profkiller97"')
-            shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
-
-        except Exception as ex:
-            messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nLOGGING FAILED')
-        else:
-            messagebox.showinfo('Успех!', 'База данных обновлена\nлогирование успешно')
+        messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nLOGGING FAILED')
+        # messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nПопытка логирования')
+        # try:
+        #     import subprocess
+        #     subprocess.call(r'cmd /c "net use n: \\192.168.19.1\database /Иван/profkiller97"')
+        #     shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
+        #
+        # except Exception as ex:
+        #     messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nLOGGING FAILED')
+        # else:
+        #     messagebox.showinfo('Успех!', 'База данных обновлена\nлогирование успешно')
     else:
         messagebox.showinfo('Успех!', 'База данных обновлена')
 
@@ -6014,22 +6017,22 @@ def paste_log_in_root(root):
 
         log_in_root.update()
 
-        if not last_edit_srv:
-            try:
-                import subprocess
-                subprocess.call(r'cmd /c "net use n: \\SRV2\patient_data_base /Иван/profkiller97"')
-
-                last_edit_srv = data_base('last_edit_patient_db_srv')
-
-            except Exception as ex:
-                load_info_text.set(f"{load_info_text.get()}\n"
-                                   f"LOGGING FAILED!\n{ex}\nЗагрузка сохраненных данных")
-                user['error_connection'] = True
-            else:
-                load_info_text.set(f"{load_info_text.get()}\n"
-                                   f"Логирование завершено успешно")
-
-        log_in_root.update()
+        # if not last_edit_srv:
+        #     try:
+        #         import subprocess
+        #         subprocess.call(r'cmd /c "net use n: \\SRV2\patient_data_base /Иван/profkiller97"')
+        #
+        #         last_edit_srv = data_base('last_edit_patient_db_srv')
+        #
+        #     except Exception as ex:
+        #         load_info_text.set(f"{load_info_text.get()}\n"
+        #                            f"LOGGING FAILED!\n{ex}\nЗагрузка сохраненных данных")
+        #         user['error_connection'] = True
+        #     else:
+        #         load_info_text.set(f"{load_info_text.get()}\n"
+        #                            f"Логирование завершено успешно")
+        #
+        # log_in_root.update()
 
         if not last_edit_srv:
             user['error_connection'] = True
