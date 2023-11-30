@@ -521,7 +521,7 @@ class ScrolledRoot(tk.Toplevel):
 
         self.canvas_frame = Frame(self.canvas, borderwidth=1, bg="#36566d")
         if marker == 'paste_examination_cmd_main':
-            paste_examination_cmd_main(self, self.canvas_frame)
+            func(self, self.canvas_frame)
         if marker == 'past_examination':
             func(self.canvas_frame)
         if marker == 'delete_diagnosis_root':
@@ -827,7 +827,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         past_examination_root.mainloop()
 
     def change_all_kb_status():
-
         if data['examination'].get('all_kb_status') == 'open':
             for marker in ('complaints', 'examination', 'prescription'):
                 if data['examination'].get(f'open_{marker}_kb') != 'closed':
@@ -1138,15 +1137,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         def delete_my_diagnosis():
 
-            def get_found_diagnosis():
-                with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
-                    cursor = connect.cursor()
-                    cursor.execute(f"SELECT rowid, diagnosis, examination_key "
-                                   f"FROM my_saved_diagnosis "
-                                   f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
-                return cursor.fetchall()
-
-            found_diagnosis = get_found_diagnosis()
+            found_diagnosis = user.get('my_saved_diagnosis')
             if not found_diagnosis:
                 messagebox.showerror('Ошибка!', f'История о сохраненных осмотрах пуста!\n')
                 examination_root.focus()
@@ -1154,10 +1145,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             else:
                 def delete_my_diagnosis_root(delete_my_diagnosis_root_main: Frame):
                     def select_delete_diagnosis():
-                        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
-                            cursor = connect.cursor()
-                            cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE rowid LIKE "
-                                           f"'{selected_delete_diagnosis.get()}'")
+                        answer, mess = data_base(command='examination__delete_my_diagnosis',
+                                                 delete_data=selected_delete_diagnosis.get())
+                        if answer:
                             messagebox.showinfo('Инфо', f'Осмотр успешно удален')
                             delete_my_diagnosis_root_main.focus()
 
@@ -1166,9 +1156,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     selected_delete_diagnosis = StringVar()
                     destroy_elements['delete_my_diagnosis'] = dict()
 
-                    for rowid, diagnosis_, examination_key_ in found_diagnosis:
+                    for diagnosis_, examination_key_ in found_diagnosis:
                         frame_loc = Frame(delete_my_diagnosis_root_main, borderwidth=1, relief="solid", padx=3, pady=3)
-                        destroy_elements['delete_my_diagnosis'][f"{rowid}"] = frame_loc
+                        destroy_elements['delete_my_diagnosis'][f"{diagnosis_}"] = frame_loc
                         text = f'Имя шаблона: {diagnosis_}\n'
                         for info in examination_key_.split('__<end!>__\n'):
                             if 'complaints_text:____' in info:
@@ -1202,7 +1192,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                         Radiobutton(master=frame_loc, text=f"Удалить {diagnosis_}",
                                     font=('Comic Sans MS', user.get('text_size')),
-                                    value=f"{rowid}", variable=selected_delete_diagnosis,
+                                    value=f"{diagnosis_}", variable=selected_delete_diagnosis,
                                     command=select_delete_diagnosis,
                                     indicatoron=False, selectcolor='#77f1ff').pack(fill='both', expand=True)
 
@@ -2447,21 +2437,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             ln_num = ''
 
             if type_ln in ("Справка ВН", "Лист ВН"):
-                with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                    cur = conn.cursor()
-
-                    cur.execute(f"SELECT date_time, LN_type FROM examination "
-                                f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                f"AND patient_info LIKE "
-                                f"'{patient.get('name')}__{patient.get('birth_date')}' "
-                                f"AND LN_type LIKE '{type_ln}%'")
-
-                    found_info = cur.fetchall()
+                found_info = data_base(command='examination__get_last_patient_ln',
+                                       insert_data=type_ln)
                 if found_info:
                     last_visit = min(found_info,
                                      key=lambda i: (datetime.now() -
                                                     datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).seconds)
-                    print('last_visit', last_visit)
                     if (datetime.now() - datetime.strptime(f"{last_visit[0]}", "%d.%m.%Y %H:%M")).days < 14:
                         if last_visit[1].split('__')[-1] != 'closed':
                             ln_num = last_visit[1].split('__')[1].replace('_', '')
@@ -3351,6 +3332,29 @@ def data_base(command,
                     with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
                         cur = conn.cursor()
                         cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", insert_data)
+
+                elif command == 'examination__delete_my_diagnosis':
+                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
+                        cursor = connect.cursor()
+                        cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE doctor_name LIKE "
+                                       f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
+
+                elif command == 'examination__get_last_patient_ln':
+                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                        cur = conn.cursor()
+
+                        cur.execute(f"SELECT date_time, LN_type FROM examination "
+                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                    f"AND patient_info LIKE "
+                                    f"'{patient.get('name')}%{patient.get('birth_date')}' "
+                                    f"AND LN_type LIKE '{insert_data}%'")
+
+                        found_info = cur.fetchall()
+                    return found_info
+
+
+
+
 
 
 
@@ -5618,7 +5622,9 @@ def examination_cmd():
     if not patient.get('name'):
         messagebox.showinfo('Ошибка', "Не выбран пациент!")
     else:
-        app_examination = ScrolledRoot(marker='paste_examination_cmd_main')
+        # app_examination = ScrolledRoot(marker='paste_examination_cmd_main')
+        app_examination = ScrolledRoot(marker='paste_examination_cmd_main', func=paste_examination_cmd_main)
+
         app_examination.title(f"Осмотр "
                               f"{patient.get('name').split()[0]} "
                               f"{patient.get('name').split()[1]} "
