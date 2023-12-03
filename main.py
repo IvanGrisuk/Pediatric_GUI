@@ -579,6 +579,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     selected_prescription_frame = StringVar()
     age = get_age(patient.get('birth_date'))
 
+    Label(examination_root, text=f"ФИО: {patient.get('name')}    Дата рождения: {patient.get('birth_date')}\n"
+                                 f"Адрес: {patient.get('address')}",
+          font=('Comic Sans MS', user.get('text_size')),
+          bg="#36566d", fg='white').pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
     def paste_past_examination():
         def past_examination(past_examination_frame: Frame):
             def selected_past_but():
@@ -1127,7 +1132,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         Button(frame_button, text='Сохранить',
                command=create_examination_doc_none,
-               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1, columnspan=2)
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=2, columnspan=2)
 
         frame_button.columnconfigure(index='all', minsize=40, weight=1)
         frame_button.rowconfigure(index='all', minsize=20)
@@ -2718,8 +2723,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                            command=ln_closed)
 
     paste_frame_ln()
-
-    root_examination.mainloop()
 
     def paste_calendar(text_field):
         command, marker = text_field.split('__')
