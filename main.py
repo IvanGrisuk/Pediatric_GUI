@@ -5995,7 +5995,7 @@ def paste_log_in_root(root):
             user['doctor_district'] = all_users_info.get(selected_doctor_name.get())[2]
             user['ped_div'] = all_users_info.get(selected_doctor_name.get())[3]
             user['manager'] = all_users_info.get(selected_doctor_name.get())[4]
-            user['text_size'] = all_users_info.get(selected_doctor_name.get())[5]
+            user['text_size'] = int(all_users_info.get(selected_doctor_name.get())[5])
             user['add_info'] = all_users_info.get(selected_doctor_name.get())[6]
 
             print('USER')
