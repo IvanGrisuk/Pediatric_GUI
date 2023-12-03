@@ -579,6 +579,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     selected_prescription_frame = StringVar()
     age = get_age(patient.get('birth_date'))
 
+    print('user', user)
+    print('patient', patient)
+
     Label(examination_root, text=f"ФИО: {patient.get('name')}    Дата рождения: {patient.get('birth_date')}\n"
                                  f"Адрес: {patient.get('address')}",
           font=('Comic Sans MS', user.get('text_size')),
