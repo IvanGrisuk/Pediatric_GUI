@@ -1119,11 +1119,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         def create_examination_doc_none():
             create_examination_doc()
 
-        button_change_all_kb_status.grid(column=0, row=0, rowspan=2)
+        button_change_all_kb_status.grid(column=0, row=0, rowspan=3)
 
         Button(frame_button, text='Загрузить\nпрошлые\nосмотры',
                command=paste_past_examination,
-               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, rowspan=2)
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, rowspan=3)
 
         Button(frame_button, text='Печать А5',
                command=create_examination_doc_a5,
@@ -5975,6 +5975,7 @@ def paste_log_in_root(root):
 
         if users_passwords.get(selected_doctor_name.get()):
             frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
+            password_txt.focus()
         else:
             open_main_root()
             frame_pass.pack_forget()
@@ -5997,10 +5998,6 @@ def paste_log_in_root(root):
             user['manager'] = all_users_info.get(selected_doctor_name.get())[4]
             user['text_size'] = int(all_users_info.get(selected_doctor_name.get())[5])
             user['add_info'] = all_users_info.get(selected_doctor_name.get())[6]
-
-            print('USER')
-            for i in user:
-                print(i, user.get(i))
 
         paste_frame_main(root)
         # log_in_root.quit()
@@ -6120,13 +6117,6 @@ def paste_log_in_root(root):
                 Label(frame_pass, text='Введите пароль: ',
                       font=('Comic Sans MS', 12), bg='white').grid(row=0, column=0, sticky='ew')
 
-                check_pass = (log_in_root.register(is_valid__password), "%P")
-
-                password_txt = Entry(frame_pass, width=20, font=('Comic Sans MS', user.get('text_size')),
-                                     justify="center",
-                                     validate="all",
-                                     textvariable=txt_password_variable,
-                                     validatecommand=check_pass)
                 password_txt.grid(row=0, column=1, sticky='ew')
 
                 Label(frame_pass, textvariable=text_is_correct_password,
@@ -6159,6 +6149,14 @@ def paste_log_in_root(root):
                       font=('Comic Sans MS', 12), bg="#36566d", fg='white')
     load_info.pack(fill='both', expand=True, padx=2, pady=2)
     frame_pass = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
+
+    check_pass = (log_in_root.register(is_valid__password), "%P")
+
+    password_txt = Entry(frame_pass, width=20, font=('Comic Sans MS', user.get('text_size')),
+                         justify="center",
+                         validate="all",
+                         textvariable=txt_password_variable,
+                         validatecommand=check_pass)
 
     log_in_root.columnconfigure(index='all', minsize=40, weight=1)
     log_in_root.rowconfigure(index='all', minsize=20)
