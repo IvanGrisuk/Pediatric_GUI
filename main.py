@@ -2189,7 +2189,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
         #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
 
-    paste_diagnosis_kb()
+
 
     frame_diagnosis_txt = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
     txt_diagnosis = ScrolledText(frame_diagnosis_txt, width=70, height=3,
@@ -2198,6 +2198,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     txt_diagnosis.pack(fill='both', expand=True, side=tk.LEFT)
     txt_diagnosis.insert(1.0, 'Диагноз: ')
     frame_diagnosis_txt.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+    paste_diagnosis_kb()
 
     def paste_frame_prescription():
         label_prescription = Label(master=frame_prescription_main,
