@@ -2059,6 +2059,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 col = 0
                 row += 1
 
+        frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+        frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+        frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+
+
         # if data['examination'].get('diagnosis') == 'ОРИ':
         #     txt_diagnosis['width'] = 30
         #     txt_diagnosis['height'] = 5
@@ -6778,7 +6783,7 @@ def paste_frame_main(root):
         txt_text_size.grid(column=1, row=4, sticky='ew')
 
         if not user.get('error_connection'):
-            Label(new_root, text='Размер текста: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=5)
+            Label(new_root, text='Пароль: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=5)
             txt_password.grid(column=1, row=5, sticky='ew')
 
         Button(new_root, text='Сохранить', command=save, font=('Comic Sans MS', user.get('text_size'))).grid(
