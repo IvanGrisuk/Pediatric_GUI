@@ -405,7 +405,9 @@ all_data_diagnosis = {
                       'фарингит', 'ринофaрингит', "ларингит", "тонзиллит",
                       'трахеит', "обструктивный", 'бронхит', 'пневмония',
                       "кишечный с-м", "абдоминальный с-м",
-                      "продолжает болеть", "улучшение", 'реконвалесцент'),
+                      "продолжает болеть", "улучшение", 'реконвалесцент',
+                      "ОРИ", "ФРК", "Ветряной оспы",
+                      "соматически здоров"),
     'diagnosis_ФРК': ("продолжает болеть", "улучшение", 'реконвалесцент'),
     'diagnosis_Ветрянка': ("продолжает болеть", "улучшение", 'реконвалесцент'),
     'diagnosis_Здоров': ("соматически здоров", 'реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы"),
@@ -1224,7 +1226,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             txt_diagnosis.insert(1.0, f'Диагноз: {selected_diagnosis.get()} ')
 
             select_prescription()
-            paste_diagnosis_kb()
             edit_examination_kb_text()
             if not data['examination'].get('all_kb_status'):
                 change_all_kb_status()
@@ -2032,140 +2033,163 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             txt_diagnosis.delete(1.0, 'end')
             txt_diagnosis.insert(1.0, txt_diagnosis_info)
 
-        if destroy_elements.get('frame_diagnosis_kb'):
-            frame_diagnosis_kb = destroy_elements.get('frame_diagnosis_kb')
-            frame_diagnosis_kb.destroy()
-            destroy_elements['frame_diagnosis_kb'] = None
+        # if destroy_elements.get('frame_diagnosis_kb'):
+        #     frame_diagnosis_kb = destroy_elements.get('frame_diagnosis_kb')
+        #     frame_diagnosis_kb.destroy()
+        #     destroy_elements['frame_diagnosis_kb'] = None
 
-        if data['examination'].get('diagnosis') == 'ОРИ':
-            txt_diagnosis['width'] = 30
-            txt_diagnosis['height'] = 5
-            data['examination']['diagnosis_add_kb'] = dict()
-            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+        txt_diagnosis['width'] = 30
+        txt_diagnosis['height'] = 5
+        data['examination']['diagnosis_add_kb'] = dict()
+        frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+        destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
 
-            row, col = 0, 0
-            for mark in all_data_diagnosis.get('diagnosis_ori'):
-                data['examination']['diagnosis_add_kb'][mark] = IntVar()
-                btn = Checkbutton(frame_diagnosis_kb, text=mark,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  onvalue=1, offvalue=0,
-                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
-                                  command=select_diagnosis_kb,
-                                  indicatoron=False, selectcolor='#77f1ff')
-                btn.grid(row=row, column=col, sticky='ew')
-                col += 1
-                if col == 4:
-                    col = 0
-                    row += 1
+        row, col = 0, 0
+        for mark in all_data_diagnosis.get('diagnosis_ori'):
+            data['examination']['diagnosis_add_kb'][mark] = IntVar()
+            btn = Checkbutton(frame_diagnosis_kb, text=mark,
+                              font=('Comic Sans MS', user.get('text_size')),
+                              onvalue=1, offvalue=0,
+                              variable=data['examination']['diagnosis_add_kb'].get(mark),
+                              command=select_diagnosis_kb,
+                              indicatoron=False, selectcolor='#77f1ff')
+            btn.grid(row=row, column=col, sticky='ew')
+            col += 1
+            if col == 4:
+                col = 0
+                row += 1
 
-            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+        # if data['examination'].get('diagnosis') == 'ОРИ':
+        #     txt_diagnosis['width'] = 30
+        #     txt_diagnosis['height'] = 5
+        #     data['examination']['diagnosis_add_kb'] = dict()
+        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+        #
+        #     row, col = 0, 0
+        #     for mark in all_data_diagnosis.get('diagnosis_ori'):
+        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
+        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
+        #                           font=('Comic Sans MS', user.get('text_size')),
+        #                           onvalue=1, offvalue=0,
+        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
+        #                           command=select_diagnosis_kb,
+        #                           indicatoron=False, selectcolor='#77f1ff')
+        #         btn.grid(row=row, column=col, sticky='ew')
+        #         col += 1
+        #         if col == 4:
+        #             col = 0
+        #             row += 1
+        #
+        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+        #
+        # elif data['examination'].get('diagnosis') == 'ФРК':
+        #     txt_diagnosis['width'] = 30
+        #     txt_diagnosis['height'] = 5
+        #     data['examination']['diagnosis_add_kb'] = dict()
+        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+        #
+        #     row, col = 0, 0
+        #     for mark in all_data_diagnosis.get('diagnosis_ФРК'):
+        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
+        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
+        #                           font=('Comic Sans MS', user.get('text_size')),
+        #                           onvalue=1, offvalue=0,
+        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
+        #                           command=select_diagnosis_kb,
+        #                           indicatoron=False, selectcolor='#77f1ff')
+        #         btn.grid(row=row, column=col, sticky='ew')
+        #         col += 1
+        #         if col == 4:
+        #             col = 0
+        #             row += 1
+        #
+        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+        #
+        # elif data['examination'].get('diagnosis') == 'Ветряная оспа':
+        #     txt_diagnosis['width'] = 30
+        #     txt_diagnosis['height'] = 5
+        #     data['examination']['diagnosis_add_kb'] = dict()
+        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+        #
+        #     row, col = 0, 0
+        #     for mark in all_data_diagnosis.get('diagnosis_Ветрянка'):
+        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
+        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
+        #                           font=('Comic Sans MS', user.get('text_size')),
+        #                           onvalue=1, offvalue=0,
+        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
+        #                           command=select_diagnosis_kb,
+        #                           indicatoron=False, selectcolor='#77f1ff')
+        #         btn.grid(row=row, column=col, sticky='ew')
+        #         col += 1
+        #         if col == 4:
+        #             col = 0
+        #             row += 1
+        #
+        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+        #
+        # elif data['examination'].get('diagnosis') == 'Здоров':
+        #     txt_diagnosis['width'] = 30
+        #     txt_diagnosis['height'] = 5
+        #     data['examination']['diagnosis_add_kb'] = dict()
+        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+        #
+        #     row, col = 0, 0
+        #     for mark in all_data_diagnosis.get('diagnosis_Здоров'):
+        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
+        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
+        #                           font=('Comic Sans MS', user.get('text_size')),
+        #                           onvalue=1, offvalue=0,
+        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
+        #                           command=select_diagnosis_kb,
+        #                           indicatoron=False, selectcolor='#77f1ff')
+        #         btn.grid(row=row, column=col, sticky='ew')
+        #         col += 1
+        #         if col == 4:
+        #             col = 0
+        #             row += 1
+        #
+        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+        #
+        # else:
+        #     txt_diagnosis['width'] = 30
+        #     txt_diagnosis['height'] = 5
+        #     data['examination']['diagnosis_add_kb'] = dict()
+        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
+        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
+        #
+        #     row, col = 0, 0
+        #     for mark in all_data_diagnosis.get('diagnosis_ori'):
+        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
+        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
+        #                           font=('Comic Sans MS', user.get('text_size')),
+        #                           onvalue=1, offvalue=0,
+        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
+        #                           command=select_diagnosis_kb,
+        #                           indicatoron=False, selectcolor='#77f1ff')
+        #         btn.grid(row=row, column=col, sticky='ew')
+        #         col += 1
+        #         if col == 4:
+        #             col = 0
+        #             row += 1
+        #
+        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
+        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
+        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
 
-        elif data['examination'].get('diagnosis') == 'ФРК':
-            txt_diagnosis['width'] = 30
-            txt_diagnosis['height'] = 5
-            data['examination']['diagnosis_add_kb'] = dict()
-            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-
-            row, col = 0, 0
-            for mark in all_data_diagnosis.get('diagnosis_ФРК'):
-                data['examination']['diagnosis_add_kb'][mark] = IntVar()
-                btn = Checkbutton(frame_diagnosis_kb, text=mark,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  onvalue=1, offvalue=0,
-                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
-                                  command=select_diagnosis_kb,
-                                  indicatoron=False, selectcolor='#77f1ff')
-                btn.grid(row=row, column=col, sticky='ew')
-                col += 1
-                if col == 4:
-                    col = 0
-                    row += 1
-
-            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-
-        elif data['examination'].get('diagnosis') == 'Ветряная оспа':
-            txt_diagnosis['width'] = 30
-            txt_diagnosis['height'] = 5
-            data['examination']['diagnosis_add_kb'] = dict()
-            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-
-            row, col = 0, 0
-            for mark in all_data_diagnosis.get('diagnosis_Ветрянка'):
-                data['examination']['diagnosis_add_kb'][mark] = IntVar()
-                btn = Checkbutton(frame_diagnosis_kb, text=mark,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  onvalue=1, offvalue=0,
-                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
-                                  command=select_diagnosis_kb,
-                                  indicatoron=False, selectcolor='#77f1ff')
-                btn.grid(row=row, column=col, sticky='ew')
-                col += 1
-                if col == 4:
-                    col = 0
-                    row += 1
-
-            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-
-        elif data['examination'].get('diagnosis') == 'Здоров':
-            txt_diagnosis['width'] = 30
-            txt_diagnosis['height'] = 5
-            data['examination']['diagnosis_add_kb'] = dict()
-            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-
-            row, col = 0, 0
-            for mark in all_data_diagnosis.get('diagnosis_Здоров'):
-                data['examination']['diagnosis_add_kb'][mark] = IntVar()
-                btn = Checkbutton(frame_diagnosis_kb, text=mark,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  onvalue=1, offvalue=0,
-                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
-                                  command=select_diagnosis_kb,
-                                  indicatoron=False, selectcolor='#77f1ff')
-                btn.grid(row=row, column=col, sticky='ew')
-                col += 1
-                if col == 4:
-                    col = 0
-                    row += 1
-
-            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-
-        else:
-            txt_diagnosis['width'] = 30
-            txt_diagnosis['height'] = 5
-            data['examination']['diagnosis_add_kb'] = dict()
-            frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-            destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-
-            row, col = 0, 0
-            for mark in all_data_diagnosis.get('diagnosis_ori'):
-                data['examination']['diagnosis_add_kb'][mark] = IntVar()
-                btn = Checkbutton(frame_diagnosis_kb, text=mark,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  onvalue=1, offvalue=0,
-                                  variable=data['examination']['diagnosis_add_kb'].get(mark),
-                                  command=select_diagnosis_kb,
-                                  indicatoron=False, selectcolor='#77f1ff')
-                btn.grid(row=row, column=col, sticky='ew')
-                col += 1
-                if col == 4:
-                    col = 0
-                    row += 1
-
-            frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-            frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-            frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
+    paste_diagnosis_kb()
 
     frame_diagnosis_txt = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
     txt_diagnosis = ScrolledText(frame_diagnosis_txt, width=70, height=3,
@@ -3537,14 +3561,6 @@ def data_base(command,
 
                         found_info = cur.fetchall()
                     return found_info
-
-
-
-
-
-
-
-
 
 
         except Exception as ex:
