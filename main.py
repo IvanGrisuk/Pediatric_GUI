@@ -6330,8 +6330,6 @@ def paste_log_in_root(root):
 
                 password_txt.grid(row=0, column=1, sticky='ew')
 
-                label_password = Label(frame_pass, textvariable=text_is_correct_password,
-                                       font=('Comic Sans MS', 12), bg='white', foreground="red")
                 label_password.grid(row=0, column=2, sticky='ew')
 
             else:
@@ -6369,6 +6367,9 @@ def paste_log_in_root(root):
                          validate="all",
                          textvariable=txt_password_variable,
                          validatecommand=check_pass)
+
+    label_password = Label(frame_pass, textvariable=text_is_correct_password,
+                           font=('Comic Sans MS', 12), bg='white', foreground="red")
 
     log_in_root.columnconfigure(index='all', minsize=40, weight=1)
     log_in_root.rowconfigure(index='all', minsize=20)
