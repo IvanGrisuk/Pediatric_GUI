@@ -401,13 +401,13 @@ all_diagnosis = {
 }
 
 all_data_diagnosis = {
-    'diagnosis_ori': ('ринит', "синусит", "отит", "вирусная экзантема",
-                      'фарингит', 'ринофaрингит', "ларингит", "тонзиллит",
-                      'трахеит', "обструктивный", 'бронхит', 'пневмония',
-                      "кишечный с-м", "абдоминальный с-м",
-                      "продолжает болеть", "улучшение", 'реконвалесцент',
-                      "ОРИ", "ФРК", "Ветряной оспы",
-                      "соматически здоров"),
+    'diagnosis_ori': ('ринит', "синусит", "отит", "конъюнктивит",
+                      "вирусная экзантема", 'фарингит', 'ринофaрингит', "ларингит",
+                      "тонзиллит", 'трахеит', "обструктивный", 'бронхит',
+                      'пневмония', "кишечный с-м", "абдоминальный с-м",
+                      "продолжает болеть", "улучшение", "соматически здоров"
+                      'реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы",
+                      ),
     'diagnosis_ФРК': ("продолжает болеть", "улучшение", 'реконвалесцент'),
     'diagnosis_Ветрянка': ("продолжает болеть", "улучшение", 'реконвалесцент'),
     'diagnosis_Здоров': ("соматически здоров", 'реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы"),
@@ -1373,13 +1373,17 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             for selected_marker in my_selected_diagnosis.split('__<end!>__\n'):
                 if 'selected_diagnosis_get:____' in selected_marker:
                     selected_diagnosis.set(selected_marker.split(':____')[-1])
+                elif "selected_place:____" in selected_marker:
+                    selected_place.set(selected_marker.replace('selected_place:____', ''))
+
                 else:
-                    for but_marker in ('complaints', 'examination', 'prescription', 'diagnosis', "selected_place"):
+                    for but_marker in ('complaints', 'examination', 'prescription', 'diagnosis'):
                         if f"{but_marker}:____" in selected_marker:
                             all_buttons = selected_marker.replace(f"{but_marker}:____", '').split("__")
                             for button in all_buttons:
                                 if button in data['examination'].get(f'{but_marker}_but'):
                                     data['examination'][f'{but_marker}_but'].get(button).set(1)
+
 
                         elif f"{but_marker}_text:____" in selected_marker:
                             text_inserted = selected_marker.replace(f"{but_marker}_text:____", '')
