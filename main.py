@@ -1,4 +1,6 @@
 import shutil
+import time
+
 import pyperclip
 import os
 import random
@@ -1080,7 +1082,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             active_examination = f"{render_data.get('date_time')}{render_data.get('patient_info')}\n" \
                                  f"Осмотрен на чесотку, педикулез, микроспорию\n" \
-                                 f"Согласие на простое медицинское вмешательство получено" \
+                                 f"Согласие на простое медицинское вмешательство получено\n" \
                                  f"Жалобы: {render_data.get('complaints')}\n" \
                                  f"Данные объективного обследования: {render_data.get('examination')}\n" \
                                  f"{render_data.get('diagnosis')}\n" \
@@ -6206,13 +6208,14 @@ def paste_log_in_root(root):
             user['manager'] = all_users_info.get(selected_doctor_name.get())[4]
             user['text_size'] = int(all_users_info.get(selected_doctor_name.get())[5])
             user['add_info'] = all_users_info.get(selected_doctor_name.get())[6]
-
+        time.sleep(1)
         paste_frame_main(root)
         # log_in_root.quit()
 
     def is_valid__password(password):
         if password == users_passwords.get(selected_doctor_name.get()):
             text_is_correct_password.set('Пароль принят')
+            label_password['foreground'] = "green"
             open_main_root()
         else:
             text_is_correct_password.set('Пароль не верен!')
@@ -6327,8 +6330,9 @@ def paste_log_in_root(root):
 
                 password_txt.grid(row=0, column=1, sticky='ew')
 
-                Label(frame_pass, textvariable=text_is_correct_password,
-                      font=('Comic Sans MS', 12), bg='white', foreground="red").grid(row=0, column=2, sticky='ew')
+                label_password = Label(frame_pass, textvariable=text_is_correct_password,
+                                       font=('Comic Sans MS', 12), bg='white', foreground="red")
+                label_password.grid(row=0, column=2, sticky='ew')
 
             else:
                 user['error_connection'] = True
