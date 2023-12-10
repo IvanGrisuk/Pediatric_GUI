@@ -6197,7 +6197,7 @@ def paste_log_in_root(root):
                 edit_local_db()
             except Exception as ex:
                 print(ex)
-            load_info_text.set(f"LOADING {selected_doctor_name.get()}")
+            load_info_text.set(f"{load_info_text.get()}\n\nLOADING {selected_doctor_name.get()}")
 
             log_in_root.update()
 
