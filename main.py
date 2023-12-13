@@ -407,7 +407,7 @@ all_data_diagnosis = {
                       "вирусная экзантема", 'фарингит', 'ринофaрингит', "ларингит",
                       "тонзиллит", 'трахеит', "обструктивный", 'бронхит',
                       'пневмония', "кишечный с-м", "абдоминальный с-м",
-                      "продолжает болеть", "улучшение", "соматически здоров"
+                      "продолжает болеть", "улучшение", "соматически здоров",
                       'реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы",
                       ),
     'diagnosis_ФРК': ("продолжает болеть", "улучшение", 'реконвалесцент'),
@@ -598,7 +598,7 @@ all_data_diagnosis = {
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
             ("Цетиризин",
-             "Форма", "таб. 10мг", "таб. 25мг", "таб. 50мг",
+             "Форма", "кап. 10мг/мл", "таб. 10мг", "таб. 25мг", "таб. 50мг",
              "Дозировка", "1/4 таб", "1/2 таб", "1 таб",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
@@ -733,8 +733,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     selected_prescription_frame = StringVar()
     age = get_age(patient.get('birth_date'))
 
-    print('user', user)
-    print('patient', patient)
+    selected_complaints_button = StringVar()
+    selected_examination_button = StringVar()
+    selected_diagnosis_button = StringVar()
+    selected_recommendation_button = StringVar()
+
 
     Label(examination_root, text=f"ФИО: {patient.get('name')}    Дата рождения: {patient.get('birth_date')}\n"
                                  f"Адрес: {patient.get('address')}",
@@ -1084,7 +1087,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                  f"Осмотрен на чесотку, педикулез, микроспорию\n" \
                                  f"Согласие на простое медицинское вмешательство получено\n" \
                                  f"Жалобы: {render_data.get('complaints')}\n" \
-                                 f"Данные объективного обследования: {render_data.get('examination')}\n" \
+                                 f"Данные объективного обследования: " \
+                                 f"{render_data.get('examination')}\n" \
                                  f"{render_data.get('diagnosis')}\n" \
                                  f"{render_data.get('prescription')}\n" \
                                  f"{render_data.get('add_info')}"
@@ -1710,34 +1714,95 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         frame_complaints.pack(fill='both', expand=True, padx=2, pady=2)
 
     def select_complaints():
-        text = ''
-        for mark in data['examination'].get('complaints_but'):
-            if data['examination']['complaints_but'].get(mark).get() == 1:
-                if mark == 'нет':
-                    text = 'нет'
-                    for mark_ in data['examination'].get('complaints_but'):
-                        data['examination']['complaints_but'].get(mark_).set(0)
-                    break
-                else:
-                    if '_' not in mark:
-                        text += f"{mark}, "
+        text = txt_complaints.get(1.0, 'end').replace('. ', ', ').strip()
+        for i in ('кашель:', 'боль:', 'насморк:', 'диарея: стул'):
+            text = text.replace(i, f"\n{i}")
+
+        text = text.replace('кашель:', )
+        complaints_button = selected_complaints_button.get()
+        selected_complaints_button.set('')
+        if complaints_button:
+            if complaints_button == 'нет':
+                for mark_ in data['examination'].get('complaints_but'):
+                    data['examination']['complaints_but'].get(mark_).set(0)
+                text = 'нет'
+
+            else:
+                if data['examination']['complaints_but'].get(complaints_button):
+                    if data['examination']['complaints_but'].get(complaints_button).get() == 1:
+                        data['examination']['complaints_but'].get(complaints_button).set(0)
                     else:
-                        mark_1, mark_2 = mark.split('_')
-                        if mark_1 == 'температура до':
-                            if 'температура до' not in text:
-                                text += f"температура до {mark_2}, "
+                        data['examination']['complaints_but'].get(complaints_button).set(1)
+        if complaints_button != 'нет':
+            if '_' in complaints_button:
+                for string in text.split('\n'):
+                    if complaints_button.split('__')[0] in string:
+                        if complaints_button.split('__')[0] == 'температура до':
+                            if data['examination']['complaints_but'].get(complaints_button).get() == 1:
+                                text = text.replace(string, f"{string[:-2]} - {complaints_button.split('__')[-1]}, ")
                             else:
-                                text = text[:-2]
-                                text += f" - {mark_2}, "
+                                for mark_ in data['examination'].get('complaints_but'):
+                                    if data['examination']['complaints_but'].get(mark_).get() == 1 \
+                                            and complaints_button.split('__')[0] in mark_:
+
+                                        if f" - {complaints_button.split('__')[-1]}" in text:
+                                            text = text.replace(f" - {complaints_button.split('__')[-1]}", '')
+                                        elif f"{complaints_button.split('__')[-1]} - " in text:
+                                            text = text.replace(f"{complaints_button.split('__')[-1]} - ", '')
+                                        elif f"{complaints_button.split('__')[-1]}" in text:
+                                            text = text.replace(f"{complaints_button.split('__')[-1]}", '')
+
+                                        break
+                                else:
+                                    text = text.replace(string, '')
 
                         else:
-                            if mark_1 not in text:
-                                if mark_1 == 'диарея: стул':
-                                    text += f"{mark_1} {mark_2}, "
-                                else:
-                                    text += f"{mark_1}: {mark_2}, "
+                            if data['examination']['complaints_but'].get(complaints_button).get() == 1:
+                                text = text.replace(string, f"{string}{complaints_button.split('__')[-1]}, ")
                             else:
-                                text += f"{mark_2}, "
+                                for mark_ in data['examination'].get('complaints_but'):
+                                    if data['examination']['complaints_but'].get(mark_).get() == 1 \
+                                             and complaints_button.split('__')[0] in mark_:
+                                        if f"{complaints_button.split('__')[-1]}, " in text:
+                                            text = text.replace(f"{complaints_button.split('__')[-1]}, ", '')
+                                        elif f"{complaints_button.split('__')[-1]}" in text:
+                                            text = text.replace(f"{complaints_button.split('__')[-1]}", '')
+                                        break
+                                else:
+                                    text = text.replace(string, '')
+
+
+
+
+
+
+        # for mark in data['examination'].get('complaints_but'):
+        #     if data['examination']['complaints_but'].get(mark).get() == 1:
+        #         if mark == 'нет':
+        #             text = 'нет'
+        #             for mark_ in data['examination'].get('complaints_but'):
+        #                 data['examination']['complaints_but'].get(mark_).set(0)
+        #             break
+        #         else:
+        #             if '_' not in mark:
+        #                 text += f"{mark}, "
+        #             else:
+        #                 mark_1, mark_2 = mark.split('_')
+        #                 if mark_1 == 'температура до':
+        #                     if 'температура до' not in text:
+        #                         text += f"температура до {mark_2}, "
+        #                     else:
+        #                         text = text[:-2]
+        #                         text += f" - {mark_2}, "
+        #
+        #                 else:
+        #                     if mark_1 not in text:
+        #                         if mark_1 == 'диарея: стул':
+        #                             text += f"{mark_1} {mark_2}, "
+        #                         else:
+        #                             text += f"{mark_1}: {mark_2}, "
+        #                     else:
+        #                         text += f"{mark_2}, "
 
         txt_complaints.delete(1.0, 'end')
         if text != 'нет':
@@ -2039,11 +2104,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             txt_diagnosis.delete(1.0, 'end')
             txt_diagnosis.insert(1.0, txt_diagnosis_info)
 
-        # if destroy_elements.get('frame_diagnosis_kb'):
-        #     frame_diagnosis_kb = destroy_elements.get('frame_diagnosis_kb')
-        #     frame_diagnosis_kb.destroy()
-        #     destroy_elements['frame_diagnosis_kb'] = None
-
         txt_diagnosis['width'] = 30
         txt_diagnosis['height'] = 5
         data['examination']['diagnosis_add_kb'] = dict()
@@ -2068,138 +2128,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
         frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
         frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-
-
-        # if data['examination'].get('diagnosis') == 'ОРИ':
-        #     txt_diagnosis['width'] = 30
-        #     txt_diagnosis['height'] = 5
-        #     data['examination']['diagnosis_add_kb'] = dict()
-        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-        #
-        #     row, col = 0, 0
-        #     for mark in all_data_diagnosis.get('diagnosis_ori'):
-        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
-        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
-        #                           font=('Comic Sans MS', user.get('text_size')),
-        #                           onvalue=1, offvalue=0,
-        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
-        #                           command=select_diagnosis_kb,
-        #                           indicatoron=False, selectcolor='#77f1ff')
-        #         btn.grid(row=row, column=col, sticky='ew')
-        #         col += 1
-        #         if col == 4:
-        #             col = 0
-        #             row += 1
-        #
-        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-        #
-        # elif data['examination'].get('diagnosis') == 'ФРК':
-        #     txt_diagnosis['width'] = 30
-        #     txt_diagnosis['height'] = 5
-        #     data['examination']['diagnosis_add_kb'] = dict()
-        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-        #
-        #     row, col = 0, 0
-        #     for mark in all_data_diagnosis.get('diagnosis_ФРК'):
-        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
-        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
-        #                           font=('Comic Sans MS', user.get('text_size')),
-        #                           onvalue=1, offvalue=0,
-        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
-        #                           command=select_diagnosis_kb,
-        #                           indicatoron=False, selectcolor='#77f1ff')
-        #         btn.grid(row=row, column=col, sticky='ew')
-        #         col += 1
-        #         if col == 4:
-        #             col = 0
-        #             row += 1
-        #
-        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-        #
-        # elif data['examination'].get('diagnosis') == 'Ветряная оспа':
-        #     txt_diagnosis['width'] = 30
-        #     txt_diagnosis['height'] = 5
-        #     data['examination']['diagnosis_add_kb'] = dict()
-        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-        #
-        #     row, col = 0, 0
-        #     for mark in all_data_diagnosis.get('diagnosis_Ветрянка'):
-        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
-        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
-        #                           font=('Comic Sans MS', user.get('text_size')),
-        #                           onvalue=1, offvalue=0,
-        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
-        #                           command=select_diagnosis_kb,
-        #                           indicatoron=False, selectcolor='#77f1ff')
-        #         btn.grid(row=row, column=col, sticky='ew')
-        #         col += 1
-        #         if col == 4:
-        #             col = 0
-        #             row += 1
-        #
-        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-        #
-        # elif data['examination'].get('diagnosis') == 'Здоров':
-        #     txt_diagnosis['width'] = 30
-        #     txt_diagnosis['height'] = 5
-        #     data['examination']['diagnosis_add_kb'] = dict()
-        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-        #
-        #     row, col = 0, 0
-        #     for mark in all_data_diagnosis.get('diagnosis_Здоров'):
-        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
-        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
-        #                           font=('Comic Sans MS', user.get('text_size')),
-        #                           onvalue=1, offvalue=0,
-        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
-        #                           command=select_diagnosis_kb,
-        #                           indicatoron=False, selectcolor='#77f1ff')
-        #         btn.grid(row=row, column=col, sticky='ew')
-        #         col += 1
-        #         if col == 4:
-        #             col = 0
-        #             row += 1
-        #
-        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-        #
-        # else:
-        #     txt_diagnosis['width'] = 30
-        #     txt_diagnosis['height'] = 5
-        #     data['examination']['diagnosis_add_kb'] = dict()
-        #     frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
-        #     destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
-        #
-        #     row, col = 0, 0
-        #     for mark in all_data_diagnosis.get('diagnosis_ori'):
-        #         data['examination']['diagnosis_add_kb'][mark] = IntVar()
-        #         btn = Checkbutton(frame_diagnosis_kb, text=mark,
-        #                           font=('Comic Sans MS', user.get('text_size')),
-        #                           onvalue=1, offvalue=0,
-        #                           variable=data['examination']['diagnosis_add_kb'].get(mark),
-        #                           command=select_diagnosis_kb,
-        #                           indicatoron=False, selectcolor='#77f1ff')
-        #         btn.grid(row=row, column=col, sticky='ew')
-        #         col += 1
-        #         if col == 4:
-        #             col = 0
-        #             row += 1
-        #
-        #     frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
-        #     frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
-        #     frame_diagnosis_kb.pack(fill='both', expand=True, side=tk.LEFT)
-
 
 
     frame_diagnosis_txt = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
