@@ -319,6 +319,7 @@ all_diagnosis = {
                        'кашель': ['сухой'],
                        'боль': ['в горле'],
                        'насморк': ['сопли прозрачные']},
+        "complaints_text" : "температура до 38.5, кашель: сухой, боль: в горле, насморк: сопли прозрачные.",
         "examination": {'Общее состояние': ['удовлетворительное'],
                         "Температура": ['36.6'],
                         'Кожные покровы': ['влажные', 'чистые'],
@@ -335,11 +336,29 @@ all_diagnosis = {
                         'Мочеиспускание': ['регулярное', 'безболезненное'],
                         'Стул': ['оформленный', 'коричневый', 'без патологических примесей'],
                         'Дополнительно': ['Менингеальные симптомы', "отрицательные"]},
+        "examination_text": "Температура: 36.6. Общее состояние: удовлетворительное. "
+                            "Кожные покровы: влажные, чистые. Сыпь: нет. "
+                            "Слизистая глотки: гиперемирована, зернистая. "
+                            "Нёбные миндалины: увеличены, 1ст., налетов нет. "
+                            "Носовое дыхание: затруднено, из носа - слизистое отделяемое. "
+                            "Периферические лимфоузлы: увеличены, подчелюстные, шейные, эластичные, безболезненные, "
+                            "при пальпации. "
+                            "Легкие: ЧД 20/мин., дыхание - везикулярное, проводится во все отделы, хрипов нет. "
+                            "Сердце: ЧСС 86/мин., ясные, ритмичные, границы в пределах возрастной нормы. "
+                            "Живот: мягкий, безболезненный, доступен глубокой пальпации, "
+                            "Печень у края реберной дуги, селезенка не пальпируется. "
+                            "Мочеиспускание: регулярное, безболезненное. "
+                            "Стул: оформленный, коричневый, без патологических примесей. "
+                            "Дополнительно: Менингеальные симптомы отрицательные.",
+
         "prescription": {"Рекомендации": ["домашний режим", "Парацетамол", "Ибупрофен", "питьевой режим",
-                                          "полоскать горло", "орошать горло", "промывать нос"]}
+                                          "полоскать горло", "орошать горло", "промывать нос"]},
+        "prescription_text": "Рекомендации: домашний режим, Парацетамол, Ибупрофен, питьевой режим, "
+                             "полоскать горло, орошать горло, промывать нос."
     },
     'ФРК': {
         "complaints": {'боль': ['в животе']},
+        "complaints_text": "боль: в животе.",
         "examination": {'Общее состояние': ['удовлетворительное'],
                         "Температура": ['36.6'],
                         'Кожные покровы': ['влажные', 'чистые'],
@@ -355,12 +374,25 @@ all_diagnosis = {
                         'Мочеиспускание': ['регулярное', 'безболезненное'],
                         'Дополнительно': ['Аппендикулярные симптомы', "Перитониальные симптомы", "Пузырные симптомы",
                                           "отрицательные"]},
+        "examination_text": "Температура: 36.6. Общее состояние: удовлетворительное. Кожные покровы: влажные, чистые. "
+                            "Сыпь: нет. Слизистая глотки: гиперемирована, зернистая. Нёбные миндалины: увеличены, 1ст.. "
+                            "Носовое дыхание: свободное. Легкие: ЧД 20/мин., "
+                            "дыхание - везикулярное, проводится во все отделы, хрипов нет. "
+                            "Сердце: ЧСС 86/мин., ясные, ритмичные, границы в пределах возрастной нормы. "
+                            "Живот: мягкий, доступен глубокой пальпации, болезненный - в эпигастральной обл, "
+                            "Печень у края реберной дуги, селезенка не пальпируется. "
+                            "Мочеиспускание: регулярное, безболезненное. "
+                            "Дополнительно: Аппендикулярные симптомы, Перитониальные симптомы, "
+                            "Пузырные симптомы отрицательные.",
         "prescription": {"Рекомендации": ["домашний режим", "Парацетамол", "Ибупрофен", "питьевой режим",
-                                          "диета", "Смекта", "Пробиотик"]}
+                                          "диета", "Смекта", "Пробиотик"]},
+        "prescription_text": "Рекомендации: домашний режим, Парацетамол, Ибупрофен, "
+                             "питьевой режим, диета, Смекта, Пробиотик."
     },
     'Ветряная оспа': {
         "complaints": {'температура до': ['37.5'],
                        'сыпь': True},
+        "complaints_text": "сыпь, температура до 37.5.",
         "examination": {'Общее состояние': ['удовлетворительное'],
                         "Температура": ['36.6'],
                         'Кожные покровы': ['влажные', 'чистые'],
@@ -377,12 +409,28 @@ all_diagnosis = {
                         'Мочеиспускание': ['регулярное', 'безболезненное'],
                         'Стул': ['оформленный', 'коричневый', 'без патологических примесей'],
                         'Дополнительно': ['Менингеальные симптомы', "отрицательные"]},
+        "examination_text": "Температура: 36.6. Общее состояние: удовлетворительное. "
+                            "Кожные покровы: влажные, чистые. Сыпь: везикулярная. "
+                            "Слизистая глотки: гиперемирована, зернистая. Нёбные миндалины: увеличены, 1ст.. "
+                            "Носовое дыхание: свободное. Периферические лимфоузлы: увеличены, подчелюстные, шейные, "
+                            "эластичные, безболезненные, при пальпации. "
+                            "Легкие: ЧД 20/мин., дыхание - везикулярное, проводится во все отделы, хрипов нет. "
+                            "Сердце: ЧСС 86/мин., ясные, ритмичные, границы в пределах возрастной нормы. "
+                            "Живот: мягкий, безболезненный, доступен глубокой пальпации, "
+                            "Печень у края реберной дуги, селезенка не пальпируется. "
+                            "Мочеиспускание: регулярное, безболезненное. "
+                            "Стул: оформленный, коричневый, без патологических примесей. "
+                            "Дополнительно: Менингеальные симптомы отрицательные.",
         "prescription": {"Рекомендации": ["домашний режим", "Парацетамол", "питьевой режим",
                                           "обработка элементов раствором 'Каламин'",
-                                          "карантин 5 дней с момента появления последнего элемента"]}
+                                          "карантин 5 дней с момента появления последнего элемента"]},
+        "prescription_text": "Рекомендации: обработка элементов раствором 'Каламин', "
+                             "карантин 5 дней с момента появления последнего элемента, "
+                             "домашний режим, Парацетамол, питьевой режим."
     },
     'Здоров': {
         "complaints": {'нет': True},
+        "examination_text": "нет",
         "examination": {'Общее состояние': ['удовлетворительное'],
                         "Температура": ['36.6'],
                         'Кожные покровы': ['влажные', 'чистые'],
@@ -397,7 +445,19 @@ all_diagnosis = {
                                   "Печень у края реберной дуги", "селезенка не пальпируется"],
                         'Мочеиспускание': ['регулярное', 'безболезненное'],
                         'Стул': ['оформленный', 'коричневый', 'без патологических примесей']},
-        "prescription": {"Рекомендации": []}
+        "examination_text": "Температура: 36.6. Общее состояние: удовлетворительное. "
+                            "Кожные покровы: влажные, чистые. Сыпь: нет. "
+                            "Слизистая глотки: без изменений. Нёбные миндалины: увеличены, 1ст.. "
+                            "Носовое дыхание: свободное. "
+                            "Периферические лимфоузлы: не увеличены, эластичные, безболезненные, при пальпации. "
+                            "Легкие: ЧД 20/мин., дыхание - везикулярное, проводится во все отделы, хрипов нет. "
+                            "Сердце: ЧСС 86/мин., ясные, ритмичные, границы в пределах возрастной нормы. "
+                            "Живот: мягкий, безболезненный, доступен глубокой пальпации, "
+                            "Печень у края реберной дуги, селезенка не пальпируется. "
+                            "Мочеиспускание: регулярное, безболезненное. "
+                            "Стул: оформленный, коричневый, без патологических примесей.",
+        "prescription": {"Рекомендации": []},
+        "prescription_text": ""
     },
 
 }
@@ -416,12 +476,13 @@ all_data_diagnosis = {
 
     "diagnosis": ("Предварительный диагноз", 'ОРИ', 'ФРК', "Ветряная оспа", "Здоров"),
     "place": ("Место осмотра", 'на дому', 'в поликлинике'),
-    'complaints': ("Жалобы", "нет", "рвота", "сыпь", "гнойное отделяемое из глаз", "зуд",
+    'complaints': ("Жалобы", "нет", "сыпь", "гнойное отделяемое из глаз", "зуд",
                    ("температура до", '37', '37.5', '38', '38.5', '39', '39.5', '40', '40.5'),
                    ("кашель", "сухой", "влажный", "приступообразный", "лающий"),
-                   ("боль", "головная", "в ушах", "в горле", "в глазах", "в груди", "в мышцах", "в животе"),
+                   ("боль в", "голове", "ушах", "горле", "глазах", "груди", "мышцах", "животе"),
                    ("насморк", "сопли зеленые", "сопли прозрачные"),
-                   ("диарея: стул", "зеленый", "коричневый", "обесцвеченный", "желтый", "с кровью", "с слизью")),
+                   ("рвота", "однократная", "многократная", "едой", "жидкостью", "желчью", "приносящая облегчение"),
+                   ("диарея", "стул", "зеленый", "коричневый", "обесцвеченный", "желтый", "с кровью", "с слизью", "пенистый")),
     "examination": ("Осмотр",
                     ("Температура", "36.6", '37.0', '37.5', '38.0', '38.5', '39.0', '39.5', '40.0', '40.5'),
                     ("Общее состояние", "удовлетворительное", "средней тяжести", "тяжелое"),
@@ -1195,8 +1256,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     if complaints_but in data['examination'].get('complaints_but'):
                         data['examination']['complaints_but'][complaints_but].set(1)
 
-            select_complaints()
-
             for examination_but in all_diagnosis.get(selected_diagnosis.get()).get("examination"):
                 examination_list = all_diagnosis.get(selected_diagnosis.get()).get("examination").get(
                     examination_but)
@@ -1208,10 +1267,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     if examination_but in data['examination'].get('examination_but'):
                         data['examination']['examination_but'][examination_but].set(1)
 
-            select_examination()
-
-            txt_prescription.delete(1.0, 'end')
-            text = 'Рекомендации: '
             for prescription_but in all_diagnosis.get(selected_diagnosis.get()).get("prescription"):
                 prescription_list = all_diagnosis.get(selected_diagnosis.get()).get("prescription").get(
                     prescription_but)
@@ -1219,19 +1274,27 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     for prescription in prescription_list:
                         if f"{prescription_but}_{prescription}" in data['examination'].get('prescription_but'):
                             data['examination']['prescription_but'][f"{prescription_but}_{prescription}"].set(1)
-                        else:
-                            text += f"{prescription}, "
                 else:
                     if prescription_but in data['examination'].get('prescription_but'):
                         data['examination']['prescription_but'][prescription_but].set(1)
 
-            if text != 'Рекомендации: ':
-                txt_prescription.insert(1.0, text)
+            txt_complaints.delete(1.0, 'end')
+            if all_diagnosis.get(selected_diagnosis.get()).get("complaints_text"):
+                txt_complaints.insert(1.0, all_diagnosis.get(selected_diagnosis.get()).get("complaints_text"))
+
+            txt_examination.delete(1.0, 'end')
+            if all_diagnosis.get(selected_diagnosis.get()).get("examination_text"):
+                txt_examination.insert(1.0, all_diagnosis.get(selected_diagnosis.get()).get("examination_text"))
+
+            txt_prescription.delete(1.0, 'end')
+            if all_diagnosis.get(selected_diagnosis.get()).get("prescription_text"):
+                txt_prescription.insert(1.0, all_diagnosis.get(selected_diagnosis.get()).get("prescription_text"))
+
+
 
             txt_diagnosis.delete(1.0, 'end')
             txt_diagnosis.insert(1.0, f'Диагноз: {selected_diagnosis.get()} ')
 
-            select_prescription()
             edit_examination_kb_text()
             if not data['examination'].get('all_kb_status'):
                 change_all_kb_status()
@@ -1714,66 +1777,26 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         frame_complaints.pack(fill='both', expand=True, padx=2, pady=2)
 
     def select_complaints():
-        text = txt_complaints.get(1.0, 'end').replace('. ', ', ').strip()
-        for i in ('кашель:', 'боль:', 'насморк:', 'диарея: стул'):
-            text = text.replace(i, f"\n{i}")
+        local_complaints = dict()
+        text = txt_complaints.get(1.0, 'end').strip()
+        if text and text[-1] == '.':
+            text = text[:-1] + ', '
+        for mark in all_data_diagnosis.get('complaints')[1:]:
+            if isinstance(mark, tuple):
+                text = text.replace(mark[0], f"\n__!__{mark[0]}")
+                local_complaints[mark[0]] = ""
+        for string in text.split('\n__!__'):
+            for i in local_complaints.keys():
+                if i in string:
+                    local_complaints[i] = string
+                    if data['examination']['complaints_but'].get(f"{i}_main"):
+                        data['examination']['complaints_but'].get(f"{i}_main").set(1)
 
-        text = text.replace('кашель:', )
-        complaints_button = selected_complaints_button.get()
-        selected_complaints_button.set('')
-        if complaints_button:
-            if complaints_button == 'нет':
-                for mark_ in data['examination'].get('complaints_but'):
-                    data['examination']['complaints_but'].get(mark_).set(0)
-                text = 'нет'
-
+                    break
             else:
-                if data['examination']['complaints_but'].get(complaints_button):
-                    if data['examination']['complaints_but'].get(complaints_button).get() == 1:
-                        data['examination']['complaints_but'].get(complaints_button).set(0)
-                    else:
-                        data['examination']['complaints_but'].get(complaints_button).set(1)
-        if complaints_button != 'нет':
-            if '_' in complaints_button:
-                for string in text.split('\n'):
-                    if complaints_button.split('__')[0] in string:
-                        if complaints_button.split('__')[0] == 'температура до':
-                            if data['examination']['complaints_but'].get(complaints_button).get() == 1:
-                                text = text.replace(string, f"{string[:-2]} - {complaints_button.split('__')[-1]}, ")
-                            else:
-                                for mark_ in data['examination'].get('complaints_but'):
-                                    if data['examination']['complaints_but'].get(mark_).get() == 1 \
-                                            and complaints_button.split('__')[0] in mark_:
-
-                                        if f" - {complaints_button.split('__')[-1]}" in text:
-                                            text = text.replace(f" - {complaints_button.split('__')[-1]}", '')
-                                        elif f"{complaints_button.split('__')[-1]} - " in text:
-                                            text = text.replace(f"{complaints_button.split('__')[-1]} - ", '')
-                                        elif f"{complaints_button.split('__')[-1]}" in text:
-                                            text = text.replace(f"{complaints_button.split('__')[-1]}", '')
-
-                                        break
-                                else:
-                                    text = text.replace(string, '')
-
-                        else:
-                            if data['examination']['complaints_but'].get(complaints_button).get() == 1:
-                                text = text.replace(string, f"{string}{complaints_button.split('__')[-1]}, ")
-                            else:
-                                for mark_ in data['examination'].get('complaints_but'):
-                                    if data['examination']['complaints_but'].get(mark_).get() == 1 \
-                                             and complaints_button.split('__')[0] in mark_:
-                                        if f"{complaints_button.split('__')[-1]}, " in text:
-                                            text = text.replace(f"{complaints_button.split('__')[-1]}, ", '')
-                                        elif f"{complaints_button.split('__')[-1]}" in text:
-                                            text = text.replace(f"{complaints_button.split('__')[-1]}", '')
-                                        break
-                                else:
-                                    text = text.replace(string, '')
-
-
-
-
+                if not local_complaints.get("add"):
+                    local_complaints["add"] = ""
+                local_complaints["add"] += string
 
 
         # for mark in data['examination'].get('complaints_but'):
@@ -1785,6 +1808,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         #             break
         #         else:
         #             if '_' not in mark:
+        #                 for i in ('кашель:', 'боль:', 'насморк:', 'диарея: стул'):
+        #
         #                 text += f"{mark}, "
         #             else:
         #                 mark_1, mark_2 = mark.split('_')
@@ -1804,9 +1829,132 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         #                     else:
         #                         text += f"{mark_2}, "
 
+        complaints_button = selected_complaints_button.get()
+        if text == 'нет, ':
+            text = ''
+
+        print("complaints_button", complaints_button)
+        print("local_complaints", local_complaints)
+
+        selected_complaints_button.set('')
+        if complaints_button:
+            if complaints_button == 'нет':
+                for mark_ in data['examination'].get('complaints_but'):
+                    data['examination']['complaints_but'].get(mark_).set(0)
+                text = 'нет, '
+
+            else:
+                if data['examination']['complaints_but'].get(complaints_button):
+                    if data['examination']['complaints_but'].get(complaints_button).get() == 1:
+                        data['examination']['complaints_but'].get(complaints_button).set(0)
+
+                    else:
+                        data['examination']['complaints_but'].get(complaints_button).set(1)
+
+        if complaints_button != 'нет':
+            if '_' in complaints_button:
+                mark_1, mark_2 = complaints_button.split('_')
+                if data['examination']['complaints_but'].get(complaints_button).get() == 1:
+                    if not data['examination']['complaints_but'].get(f"{mark_1}_main").get() == 1:
+                        data['examination']['complaints_but'].get(f"{mark_1}_main").set(1)
+                    if mark_2 == 'main':
+                        text += f"{mark_1}, "
+                    elif not local_complaints.get(mark_1):
+                        text += f"{mark_1} {mark_2}, "
+                    else:
+                        if local_complaints.get(mark_1) == f"{mark_1}, ":
+                            local_complaints[mark_1] = f"{mark_1} "
+                        print(f"local_complaints.get(mark_1): '{local_complaints.get(mark_1)}'")
+                        if mark_1 == 'температура до':
+                            if local_complaints.get(mark_1)[-2:] == ", " and local_complaints.get(mark_1)[-3].isdigit():
+                                text = text.replace(local_complaints.get(mark_1),
+                                                    local_complaints.get(mark_1)[:-2] + f" - {mark_2}, ")
+                            else:
+                                text = text.replace(local_complaints.get(mark_1),
+                                                    local_complaints.get(mark_1, f"{mark_1} ") + f"{mark_2}, ")
+                        else:
+
+                            text = text.replace(local_complaints.get(mark_1),
+                                                local_complaints.get(mark_1, f"{mark_1} ") + f"{mark_2}, ")
+
+                else:
+                    if mark_2 == 'main':
+                        text = text.replace(local_complaints.get(mark_1, ''), "")
+                        for but in data['examination'].get('complaints_but'):
+                            if mark_1 in but:
+                                data['examination']['complaints_but'].get(but).set(0)
+                    elif mark_1 == 'температура до':
+                        for i in (f" - {mark_2}", f"{mark_2} - ", f"{mark_2}, ", f", {mark_2}", f"{mark_2}"):
+                            if i in text:
+                                text = text.replace(i, '')
+                                break
+
+                    else:
+                        for i in (f"{mark_2}, ", f"{mark_2},", f", {mark_2}", f"{mark_2}"):
+                            if i in text:
+                                text = text.replace(i, '')
+                                break
+            else:
+                if data['examination']['complaints_but'].get(complaints_button).get() == 1:
+                    if local_complaints.get("add"):
+                        text = text.replace(local_complaints.get("add"),
+                                            local_complaints.get("add") + f"{complaints_button}, ")
+                    else:
+                        text = f"{complaints_button}, " + text
+
+                else:
+                    if local_complaints.get("add"):
+                        for i in (f"{mark_2}, ", f"{mark_2},", f", {mark_2}", f"{mark_2}"):
+                            if i in local_complaints.get("add"):
+                                text = text.replace(local_complaints.get("add"),
+                                                    local_complaints.get("add").replace(i, ''))
+                                break
+                    else:
+                        for i in (f"{mark_2}, ", f"{mark_2},", f", {mark_2}", f"{mark_2}"):
+                            if i in text:
+                                text = text.replace(i, '')
+                                break
+
+                # for string in text.split('\n'):
+                #     if complaints_button.split('__')[0] in string:
+                #         if complaints_button.split('__')[0] == 'температура до':
+                #             if data['examination']['complaints_but'].get(complaints_button).get() == 1:
+                #                 text = text.replace(string, f"{string[:-2]} - {complaints_button.split('__')[-1]}, ")
+                #             else:
+                #                 for mark_ in data['examination'].get('complaints_but'):
+                #                     if data['examination']['complaints_but'].get(mark_).get() == 1 \
+                #                             and complaints_button.split('__')[0] in mark_:
+                #
+                #                         if f" - {complaints_button.split('__')[-1]}" in text:
+                #                             text = text.replace(f" - {complaints_button.split('__')[-1]}", '')
+                #                         elif f"{complaints_button.split('__')[-1]} - " in text:
+                #                             text = text.replace(f"{complaints_button.split('__')[-1]} - ", '')
+                #                         elif f"{complaints_button.split('__')[-1]}" in text:
+                #                             text = text.replace(f"{complaints_button.split('__')[-1]}", '')
+                #
+                #                         break
+                #                 else:
+                #                     text = text.replace(string, '')
+                #
+                #         else:
+                #             if data['examination']['complaints_but'].get(complaints_button).get() == 1:
+                #                 text = text.replace(string, f"{string}{complaints_button.split('__')[-1]}, ")
+                #             else:
+                #                 for mark_ in data['examination'].get('complaints_but'):
+                #                     if data['examination']['complaints_but'].get(mark_).get() == 1 \
+                #                              and complaints_button.split('__')[0] in mark_:
+                #                         if f"{complaints_button.split('__')[-1]}, " in text:
+                #                             text = text.replace(f"{complaints_button.split('__')[-1]}, ", '')
+                #                         elif f"{complaints_button.split('__')[-1]}" in text:
+                #                             text = text.replace(f"{complaints_button.split('__')[-1]}", '')
+                #                         break
+                #                 else:
+                #                     text = text.replace(string, '')
+
+        text = text.replace('\n__!__', '')
         txt_complaints.delete(1.0, 'end')
-        if text != 'нет':
-            text = text[:-2] + '.'
+        if text != 'нет' and text[-2:] == ', ':
+            text = text[:-2] + '. '
         txt_complaints.insert(1.0, text)
 
         if data['examination'].get('open_complaints_kb'):
@@ -1842,15 +1990,19 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         row, col = 0, 0
         for mark in all_data_diagnosis.get('complaints')[1:]:
-            if isinstance(mark, tuple):
-                pass
-            else:
-                btn = Checkbutton(frame_loc, text=mark,
+            if not isinstance(mark, tuple):
+                btn = Radiobutton(frame_loc, text=f"{mark}",
                                   font=('Comic Sans MS', user.get('text_size')),
-                                  onvalue=1, offvalue=0,
-                                  variable=data['examination']['complaints_but'].get(mark),
+                                  value=f"{mark}", variable=selected_complaints_button,
                                   command=select_complaints,
-                                  indicatoron=False, selectcolor='#77f1ff')
+                                  indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+
+                # btn = Checkbutton(frame_loc, text=mark,
+                #                   font=('Comic Sans MS', user.get('text_size')),
+                #                   onvalue=1, offvalue=0,
+                #                   variable=data['examination']['complaints_but'].get(mark),
+                #                   command=select_complaints,
+                #                   indicatoron=False, selectcolor='#77f1ff')
                 btn.grid(row=1, column=col, sticky='ew')
                 data['examination']['complaints_buttons'][mark] = btn
 
@@ -1865,17 +2017,33 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 frame_loc = Frame(frame_complaints_buttons)
                 destroy_elements['complaints'].append(frame_loc)
 
-                label_complaints_loc = Label(master=frame_loc, text=f"{mark[0]}",
-                                             font=('Comic Sans MS', user.get('text_size')), bg='white')
-                label_complaints_loc.grid(row=row, column=col, sticky='ew')
+                btn = Radiobutton(frame_loc, text=f"{mark[0]}",
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  value=f"{mark[0]}_main", variable=selected_complaints_button,
+                                  command=select_complaints,
+                                  indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+                btn.grid(row=row, column=col, sticky='ew')
+                data['examination']['complaints_buttons'][f"{mark[0]}_main"] = btn
+                data['examination']['complaints_but'][f"{mark[0]}_main"] = IntVar()
+
+
+                # label_complaints_loc = Label(master=frame_loc, text=f"{mark[0]}",
+                #                              font=('Comic Sans MS', user.get('text_size')), bg='white')
+                # label_complaints_loc.grid(row=row, column=col, sticky='ew')
                 col += 1
                 for mark_2 in mark[1:]:
-                    btn = Checkbutton(frame_loc, text=mark_2,
+                    btn = Radiobutton(frame_loc, text=f"{mark_2}",
                                       font=('Comic Sans MS', user.get('text_size')),
-                                      onvalue=1, offvalue=0,
-                                      variable=data['examination']['complaints_but'].get(f"{mark[0]}_{mark_2}"),
+                                      value=f"{mark[0]}_{mark_2}", variable=selected_complaints_button,
                                       command=select_complaints,
-                                      indicatoron=False, selectcolor='#77f1ff')
+                                      indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+
+                    # btn = Checkbutton(frame_loc, text=mark_2,
+                    #                   font=('Comic Sans MS', user.get('text_size')),
+                    #                   onvalue=1, offvalue=0,
+                    #                   variable=data['examination']['complaints_but'].get(f"{mark[0]}_{mark_2}"),
+                    #                   command=select_complaints,
+                    #                   indicatoron=False, selectcolor='#77f1ff')
                     btn.grid(row=row, column=col, sticky='ew')
                     data['examination']['complaints_buttons'][f"{mark[0]}_{mark_2}"] = btn
 
