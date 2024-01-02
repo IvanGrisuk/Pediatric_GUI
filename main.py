@@ -525,34 +525,34 @@ all_data_diagnosis = {
 
     "drugs": {
         "Антибиотики": (
-            ("Антибиотик Амоксициллин",
+            ("Амоксициллин",
              "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 250", "таб. 500", "таб. 1000",
              "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
-            ("Антибиотик Амоксициллин + клавулановая кислота",
+            ("Амоксициллин + клавулановая кислота",
              "Форма", "сусп. 125/31.25/5", "сусп. 200/28.5/5",
              "сусп. 250/62.5/5", "сусп. 400/57/5", "сусп. 600/42.9/5",
              "таб. 250/125", "таб. 500/125", "таб. 875/125",
              "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
-            ("Антибиотик Цефуроксим",
+            ("Цефуроксим",
              "Форма", "сусп. 125/5", "таб. 125", "таб. 250", "таб. 500",
              "Дозировка", "20 мг/кг/сут", "30 мг/кг/сут",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
-            ("Антибиотик Кларитромицин",
+            ("Кларитромицин",
              "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 250", "таб. 500",
              "Дозировка", "15 мг/кг/сут",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
-            ("Антибиотик Азитромицин",
+            ("Азитромицин",
              "Форма", "сусп. 200/5", "таб. 125", "таб. 250", "таб. 500",
              "Дозировка", "10 мг/кг/сут",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
-            ("Антибиотик Цефдинир",
+            ("Цефдинир",
              "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 300",
              "Дозировка", "14 мг/кг/сут",
              "Кратность", "1 р/сут", "2 р/сут")),
@@ -2858,8 +2858,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             def resize(event):
                 region = canvas.bbox(tk.ALL)
                 canvas.configure(scrollregion=region)
-                # master_frame.minsize(width=int(self.canvas_frame.winfo_width()),
-                #                      height=self.canvas.winfo_screenheight() - 100)
+                # master_frame.minsize(width=int(canvas_frame.winfo_width()),
+                #                      height=canvas.winfo_screenheight() - 100)
                 #
                 # self.canvas['width'] = int(self.canvas_frame.winfo_width())
 
@@ -2870,6 +2870,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 canvas.unbind_all("<MouseWheel>")
 
             def on_mousewheel(event):
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+
                 if os.name == 'posix':
                     canvas.yview_scroll(int(-1 * event.delta), "units")
                 else:
@@ -2915,15 +2918,36 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         def create_drugs_frame(frame):
             def select_drugs_category():
                 for drug_category in data['examination'].get("all_drug_frame"):
-                    print(drug_category)
-                    data['examination']['all_drug_frame'][drug_category].pack_forget()
+                    if '__' not in drug_category:
+                        data['examination']['all_drug_frame'][drug_category].pack_forget()
                 data['examination']['all_drug_frame'][selected_button.get()].pack(fill='both', expand=True)
 
 
             def select_drugs_name():
-                pass
+                if data['examination']['all_drug_frame'].get(selected_button.get()):
+                    edit_frame, marker = data['examination']['all_drug_frame'].get(selected_button.get())
+                    if marker:
+                        edit_frame.pack_forget()
+                        data['examination']['all_drug_frame'][selected_button.get()][1] = False
+                        edit_frame = data['examination']['all_drug_frame'][selected_button.get().split("__")[0]]
+                        edit_frame.columnconfigure(index='all', minsize=40, weight=1)
+                        edit_frame.rowconfigure(index='all', minsize=20)
+
+                    else:
+                        data['examination']['all_drug_frame'][selected_button.get()][1] = True
+                        edit_frame.columnconfigure(index='all', minsize=40, weight=1)
+                        edit_frame.rowconfigure(index='all', minsize=20)
+
+                        edit_frame.pack(fill='both', expand=True)
+
+
             drug_category_frame = Frame(frame, bg="#36566d")
+
             data['examination']['all_drug_frame'] = dict()
+            Label(drug_category_frame, text="      Перечень лекарственных препаратов      ",
+                  font=('Comic Sans MS', user.get('text_size')),
+                  bg="#36566d", fg='white').pack(fill='both', expand=True, pady=3, padx=3)
+            min_width = 0
             for drug_category in all_data_diagnosis.get("drugs"):
                 btn = Radiobutton(drug_category_frame, text=f'{drug_category}',
                                   font=('Comic Sans MS', user.get('text_size')),
@@ -2934,18 +2958,41 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                 btn.pack(fill='both', expand=True)
 
-                all_drug_frame = Frame(drug_category_frame, bg="#36566d")
+                all_drug_frame = Frame(frame, bg="#36566d")
 
 
                 data['examination']['all_drug_frame'][drug_category] = all_drug_frame
                 for drugs in all_data_diagnosis["drugs"].get(drug_category):
-                    btn = Radiobutton(all_drug_frame, text=f'{drugs[0]}',
+                    drug_name = drugs[0]
+                    drug_frame = Frame(all_drug_frame, padx=3, pady=3)
+
+                    btn = Radiobutton(all_drug_frame, text=f'{drug_name}',
                                       font=('Comic Sans MS', user.get('text_size')),
-                                      value=drugs[0], variable=selected_button,
+                                      value=f"{drug_category}__{drug_name}", variable=selected_button,
                                       command=select_drugs_name,
                                       indicatoron=False, selectcolor='#77f1ff')
                     btn.pack(fill='both', expand=True)
-                all_drug_frame.pack(fill='both', expand=True)
+
+                    drug_frame_add = Frame(drug_frame)
+                    for mark in drugs[1:]:
+                        Label(drug_frame_add, text=f"{mark}",
+                              font=('Comic Sans MS', user.get('text_size')),
+                              bg="#36566d", fg='white').pack(fill='both', expand=True)
+
+                    data['examination']['all_drug_frame'][f"{drug_category}__{drug_name}"] = [drug_frame_add, False]
+                    drug_frame.columnconfigure(index='all', minsize=40, weight=1)
+                    drug_frame.rowconfigure(index='all', minsize=20)
+
+                    drug_frame.pack(fill='both', expand=True)
+                    # if len(drugs[0]) > min_width:
+                    #     min_width = len(drugs[0])
+                # all_drug_frame.pack(fill='both', expand=True)
+            drug_category_frame.columnconfigure(index='all', minsize=40, weight=1)
+            drug_category_frame.rowconfigure(index='all', minsize=20)
+
+            drugs_root_main.columnconfigure(index='all', minsize=40, weight=1)
+            drugs_root_main.rowconfigure(index='all', minsize=20)
+
 
             drug_category_frame.pack()
 
