@@ -732,7 +732,7 @@ class ScrolledRoot(tk.Toplevel):
     def __init__(self, marker=None, func=None):
         super().__init__()
         self.scroll_x = tk.Scrollbar(self, orient=tk.HORIZONTAL)
-        self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, width=user.get('text_size', 10) * 3)
+        self.scroll_y = tk.Scrollbar(self, orient=tk.VERTICAL, width=user.get('text_size', 10) * 2)
 
         self.canvas = tk.Canvas(self, height=self.winfo_screenheight() - 200,
                                 xscrollcommand=self.scroll_x.set,
@@ -2853,117 +2853,121 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 else:
                     data['examination']['prescription_buttons_2_color'][button_name]['bg'] = '#cdcdcd'
 
+    def create_drugs_root():
+        def create_scroller_frame(master_frame, func):
+            def resize(event):
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+                # master_frame.minsize(width=int(self.canvas_frame.winfo_width()),
+                #                      height=self.canvas.winfo_screenheight() - 100)
+                #
+                # self.canvas['width'] = int(self.canvas_frame.winfo_width())
+
+            def on_binds(event):
+                canvas.idbind = canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+            def off_binds(event=None):
+                canvas.unbind_all("<MouseWheel>")
+
+            def on_mousewheel(event):
+                if os.name == 'posix':
+                    canvas.yview_scroll(int(-1 * event.delta), "units")
+                else:
+                    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+            scroll_x = tk.Scrollbar(master_frame, orient=tk.HORIZONTAL)
+            scroll_y = tk.Scrollbar(master_frame, orient=tk.VERTICAL)
+
+            canvas = tk.Canvas(master_frame,
+                               # scrollregion=(0, 0, 10, 10000),
+                               xscrollcommand=scroll_x.set,
+                               yscrollcommand=scroll_y.set)
+            scroll_x.config(command=canvas.xview)
+            scroll_y.config(command=canvas.yview)
+
+            canvas_frame = Frame(canvas, borderwidth=1, bg="#36566d")
+
+            func(canvas_frame)
+
+            canvas_frame.columnconfigure(index='all', minsize=40, weight=1)
+            canvas_frame.rowconfigure(index='all', minsize=20)
+            canvas_frame.grid(row=0, column=0, sticky="nswe")
+
+            canvas.create_window((0, 0), window=canvas_frame, anchor="nw")
+
+            canvas.grid(row=0, column=0, sticky="nswe")
+            scroll_x.grid(row=1, column=0, sticky="we")
+            scroll_y.grid(row=0, column=1, sticky="ns")
+
+            master_frame.rowconfigure(0, weight=1)
+            master_frame.columnconfigure(0, weight=1)
+
+            master_frame.bind("<Configure>", resize)
+            master_frame.update_idletasks()
+            # minsize(winfo_width(), winfo_height())
+
+            canvas['width'] = int(canvas_frame.winfo_geometry().split('x')[0])
+            canvas.bind("<Enter>", on_binds)
+            canvas.bind("<Leave>", off_binds)
+
+
+
+        def create_drugs_frame(frame):
+            def select_drugs_category():
+                for drug_category in data['examination'].get("all_drug_frame"):
+                    print(drug_category)
+                    data['examination']['all_drug_frame'][drug_category].pack_forget()
+                data['examination']['all_drug_frame'][selected_button.get()].pack(fill='both', expand=True)
+
+
+            def select_drugs_name():
+                pass
+            drug_category_frame = Frame(frame, bg="#36566d")
+            data['examination']['all_drug_frame'] = dict()
+            for drug_category in all_data_diagnosis.get("drugs"):
+                btn = Radiobutton(drug_category_frame, text=f'{drug_category}',
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  value=drug_category, variable=selected_button,
+                                  command=select_drugs_category,
+                                  indicatoron=False, selectcolor='#77f1ff',
+                                  bg="#36566d", fg='white')
+
+                btn.pack(fill='both', expand=True)
+
+                all_drug_frame = Frame(drug_category_frame, bg="#36566d")
+
+
+                data['examination']['all_drug_frame'][drug_category] = all_drug_frame
+                for drugs in all_data_diagnosis["drugs"].get(drug_category):
+                    btn = Radiobutton(all_drug_frame, text=f'{drugs[0]}',
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      value=drugs[0], variable=selected_button,
+                                      command=select_drugs_name,
+                                      indicatoron=False, selectcolor='#77f1ff')
+                    btn.pack(fill='both', expand=True)
+                all_drug_frame.pack(fill='both', expand=True)
+
+            drug_category_frame.pack()
+
+
+        create_scroller_frame(master_frame=drugs_root_main, func=create_drugs_frame)
+        data['examination']['is_drugs_root_open'] = False
+        drugs_root_main.grid(row=0, column=3, sticky="nwse")
+        drugs_root_main.grid_remove()
+
+    drugs_root_main = Frame(master=root_examination, borderwidth=1, relief="solid", padx=3, pady=3)
+
+    create_drugs_root()
+
     def open_drugs_root():
-        drugs_root = Frame(root_examination, borderwidth=1, relief="solid", padx=3, pady=3)
-        lbl = Label(master=drugs_root, text='asbfdbadfbadfbadb')
-        lbl.pack()
-        drugs_root.grid(row=0, column=3)
-        # def drugs_root_main(past_examination_frame: Frame):
-        #
-        #     past_examination_data = dict()
-        #     past_examination_data['buttons'] = dict()
-        #     past_examination_data['found_info'] = dict()
-        #     past_examination_data['destroy_elements'] = dict()
-        #     past_examination_data['frame_info'] = dict()
-        #
-        #     past_examination_connect_status = StringVar()
-        #     Label(master=past_examination_frame, textvariable=past_examination_connect_status,
-        #           font=('Comic Sans MS', user.get('text_size')), bg="#36566d", fg='white').pack(fill='both',
-        #                                                                                         expand=True)
-        #
-        #     past_examination_connect_status.set("Подключение к базе данных")
-        #     past_examination_frame.update()
-        #     answer_connect, found_info = data_base(command='select_past_examination_srv')
-        #     past_examination_data['answer_connect'] = answer_connect
-        #     if answer_connect == 'srv':
-        #         past_examination_connect_status.set("Подключение к базе данных сервера: успешно")
-        #     else:
-        #         past_examination_connect_status.set("Подключение к базе данных сервера: ошибка\n"
-        #                                             "Загрузка локальных данных...")
-        #     past_examination_frame.update()
-        #
-        #     if not found_info:
-        #         past_examination_connect_status.set("История о прошлых осмотрах пациента пуста")
-        #     else:
-        #         found_info = sorted(found_info,
-        #                             key=lambda i: (datetime.now() -
-        #                                            datetime.strptime(f"{i[1]}", "%d.%m.%Y %H:%M")).seconds)
-        #
-        #         for info in found_info:
-        #             local_frame = Frame(past_examination_frame, borderwidth=1, relief="solid", padx=3, pady=3)
-        #             rowid, date_time, doctor_name, ln_type, patient_info_, examination_text, examination_key = info
-        #
-        #             past_examination_data['destroy_elements'][f"{rowid}"] = local_frame
-        #
-        #             past_examination_data['found_info'][f"{rowid}"] = {
-        #                 "date_time": date_time,
-        #                 "doctor_name": doctor_name,
-        #                 "ln_type": ln_type,
-        #                 "patient_info_": patient_info_,
-        #                 "examination_text": examination_text,
-        #                 "examination_key": examination_key
-        #             }
-        #             past_exam_text = StringVar()
-        #             past_examination_data['found_info'][f"{rowid}"]['past_exam_text'] = past_exam_text
-        #             past_exam_text.set(f"Время редактирования: {date_time}    Пользователь: {doctor_name}")
-        #             Label(master=local_frame, width=100,
-        #                   textvariable=past_exam_text,
-        #                   justify='left',
-        #                   font=('Comic Sans MS', user.get('text_size')),
-        #                   bg='white').pack(fill='both', expand=True, side="top")
-        #
-        #             txt_examination_past = ScrolledText(local_frame, width=100, height=20,
-        #                                                 font=('Comic Sans MS', user.get('text_size')),
-        #                                                 wrap="word")
-        #
-        #             txt_examination_past.insert(1.0, f"{examination_text}\n")
-        #             txt_examination_past.pack(fill='both', expand=True, side="top")
-        #             past_examination_data['found_info'][f"{rowid}"]['txt_examination_past'] = txt_examination_past
-        #             # counter = 0
-        #             # for text in examination_text.split(" "):
-        #             #     counter += len(text)
-        #             #     if '\n' in text:
-        #             #         counter = 0
-        #             #     if counter >= 90:
-        #             #         past_exam_text += '\n'
-        #             #         counter = 0
-        #             #
-        #             #     past_exam_text += text + ' '
-        #             # past_exam_text += f"\nЛН: {ln_type}\nВрач: {doctor_name}".replace('_', ' ')
-        #             # Label(master=local_frame, width=100,
-        #             #       text=past_exam_text,
-        #             #       justify='left',
-        #             #       font=('Comic Sans MS', user.get('text_size')),
-        #             #       bg='white').pack(fill='both', expand=True, side="top")
-        #
-        #             for mark in ('Удалить осмотр',
-        #                          'Загрузить в текущий',
-        #                          "Печать А5",
-        #                          "Печать А6",
-        #                          "Сохранить изменения"):
-        #                 past_examination_data['buttons'][f"{rowid}__{mark}"] = IntVar()
-        #                 if mark not in ("Сохранить изменения", 'Удалить осмотр') \
-        #                         or doctor_name == user.get('doctor_name'):
-        #                     Checkbutton(local_frame, text=mark,
-        #                                 font=('Comic Sans MS', user.get('text_size')),
-        #                                 onvalue=1, offvalue=0,
-        #                                 variable=past_examination_data['buttons'].get(f"{rowid}__{mark}"),
-        #                                 command=selected_past_but,
-        #                                 indicatoron=False,
-        #                                 selectcolor='#77f1ff').pack(fill='both', expand=True, side="left")
-        #
-        #             local_frame.columnconfigure(index='all', minsize=40, weight=1)
-        #             local_frame.rowconfigure(index='all', minsize=20)
-        #             local_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
-        #
-        # drugs_root = ScrolledRoot(marker='drugs_root', func=drugs_root_main)
-        # drugs_root.title(f"Осмотры пациента "
-        #                             f"{patient.get('name').split()[0]} "
-        #                             f"{patient.get('name').split()[1]} "
-        #                             f"{patient.get('birth_date')}")
-        # drugs_root.geometry('+0+0')
-        #
-        # drugs_root.mainloop()
+        if not data['examination'].get('is_drugs_root_open'):
+            data['examination']['is_drugs_root_open'] = True
+            drugs_root_main.grid()
+        else:
+            data['examination']['is_drugs_root_open'] = False
+            drugs_root_main.grid_remove()
+
+
 
 
     def paste_prescription_kb():
