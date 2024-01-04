@@ -462,16 +462,14 @@ all_diagnosis = {
 }
 
 all_data_diagnosis = {
-    'diagnosis_ori': ('ринит', "синусит", "отит", "конъюнктивит",
-                      "вирусная экзантема", 'фарингит', 'ринофaрингит', "ларингит",
+    'diagnosis_ori': ('ринит', "синусит", "отит", "конъюнктивит", "катарольный", "гнойный", "экссудативный",
+                      "справа", "слева", "двусторонний",
+                      "вирусная экзантема", "вирусная энантема", 'фарингит', 'ринофaрингит', "ларингит",
                       "тонзиллит", 'трахеит', "обструктивный", 'бронхит',
                       'пневмония', "кишечный с-м", "абдоминальный с-м",
                       "продолжает болеть", "улучшение", "соматически здоров",
                       'реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы",
                       ),
-    'diagnosis_ФРК': ("продолжает болеть", "улучшение", 'реконвалесцент'),
-    'diagnosis_Ветрянка': ("продолжает болеть", "улучшение", 'реконвалесцент'),
-    'diagnosis_Здоров': ("соматически здоров", 'реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы"),
 
     "diagnosis": ("Предварительный диагноз", 'ОРИ', 'ФРК', "Ветряная оспа", "Здоров"),
     "place": ("Место осмотра", 'на дому', 'в поликлинике'),
@@ -491,7 +489,7 @@ all_data_diagnosis = {
                      "в паховой области", "в складках кожи", "по всему телу"),
                     ("Глаза", "без изменений", "конъюнктива гиперемирована", "глазная щель сужена",
                      "гнойное отделяемое", "отек век"),
-                    ("Слизистая глотки", "без изменений", "гиперемирована", "зернистая"),
+                    ("Слизистая глотки", "без изменений", "гиперемирована", "зернистая", "энантема"),
                     ("Нёбные миндалины", "без изменений", "увеличены", "1ст.", "2ст.", "3ст.",
                      "налетов нет", "обложены налетом", "белого цвета", "серого цвета"),
                     ("Носовое дыхание", "свободное", "затруднено", "из носа -",
@@ -2854,7 +2852,38 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['prescription_buttons_2_color'][button_name]['bg'] = '#cdcdcd'
 
     def create_drugs_root():
-        def create_scroller_frame(master_frame, func):
+        def select_drugs_category():
+            for drug_category in data['examination'].get("all_drug_frame"):
+                if '__' not in drug_category:
+                    data['examination']['all_drug_frame'][drug_category].pack_forget()
+            data['examination']['all_drug_frame'][selected_button.get()].pack(fill='both', expand=True)
+
+        def select_drugs_name():
+            if data['examination']['all_drug_frame'].get(selected_button.get()):
+                edit_frame, marker = data['examination']['all_drug_frame'].get(selected_button.get())
+                if marker:
+                    edit_frame.pack_forget()
+                    data['examination']['all_drug_frame'][selected_button.get()][1] = False
+                    edit_frame = data['examination']['all_drug_frame'][selected_button.get().split("__")[0]]
+                    edit_frame.columnconfigure(index='all', minsize=40, weight=1)
+                    edit_frame.rowconfigure(index='all', minsize=20)
+                    for drug_category in data['examination'].get("all_drug_frame"):
+                        if '__' not in drug_category:
+                            data['examination']['all_drug_frame'][drug_category].rowconfigure(index='all', minsize=20)
+                        else:
+                            data['examination']['all_drug_frame'][drug_category][0].rowconfigure(index='all',
+                                                                                                 minsize=20)
+
+
+
+                else:
+                    data['examination']['all_drug_frame'][selected_button.get()][1] = True
+                    edit_frame.columnconfigure(index='all', minsize=40, weight=1)
+                    edit_frame.rowconfigure(index='all', minsize=20)
+
+                    edit_frame.pack(fill='both', expand=True)
+
+        def create_scroller_frame(master_frame, func, drug_category):
             def resize(event):
                 region = canvas.bbox(tk.ALL)
                 canvas.configure(scrollregion=region)
@@ -2882,110 +2911,89 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             scroll_y = tk.Scrollbar(master_frame, orient=tk.VERTICAL)
 
             canvas = tk.Canvas(master_frame,
-                               # scrollregion=(0, 0, 10, 10000),
                                xscrollcommand=scroll_x.set,
                                yscrollcommand=scroll_y.set)
             scroll_x.config(command=canvas.xview)
             scroll_y.config(command=canvas.yview)
 
-            canvas_frame = Frame(canvas, borderwidth=1, bg="#36566d")
+            canvas_frame = Frame(canvas)
 
-            func(canvas_frame)
+
+
+            func(canvas_frame, drug_category)
+
+            canvas['width'] = int(canvas.winfo_geometry().split('x')[0])
+            canvas_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
+
+
+            canvas.grid(row=0, column=0, sticky="nsew")
+            scroll_x.grid(row=1, column=0, sticky="we")
+            scroll_y.grid(row=0, column=1, sticky="ns")
+
+            canvas_frame.grid(row=0, column=0, sticky="nsew")
+
+            canvas_frame.configure(width=canvas.winfo_width())
 
             canvas_frame.columnconfigure(index='all', minsize=40, weight=1)
             canvas_frame.rowconfigure(index='all', minsize=20)
-            canvas_frame.grid(row=0, column=0, sticky="nswe")
-
-            canvas.create_window((0, 0), window=canvas_frame, anchor="nw")
-
-            canvas.grid(row=0, column=0, sticky="nswe")
-            scroll_x.grid(row=1, column=0, sticky="we")
-            scroll_y.grid(row=0, column=1, sticky="ns")
 
             master_frame.rowconfigure(0, weight=1)
             master_frame.columnconfigure(0, weight=1)
 
             master_frame.bind("<Configure>", resize)
             master_frame.update_idletasks()
+
             # minsize(winfo_width(), winfo_height())
 
-            canvas['width'] = int(canvas_frame.winfo_geometry().split('x')[0])
+
             canvas.bind("<Enter>", on_binds)
             canvas.bind("<Leave>", off_binds)
+            # canvas.create_window((0, 0), window=canvas_frame, anchor="nw")
 
+        def create_drugs_frame(all_drug_frame, drug_category):
 
+            # for drug_category in all_data_diagnosis.get("drugs"):
 
-        def create_drugs_frame(frame):
-            def select_drugs_category():
-                for drug_category in data['examination'].get("all_drug_frame"):
-                    if '__' not in drug_category:
-                        data['examination']['all_drug_frame'][drug_category].pack_forget()
-                data['examination']['all_drug_frame'][selected_button.get()].pack(fill='both', expand=True)
+            # all_drug_frame = Frame(frame, bg="#36566d")
 
+            for drugs in all_data_diagnosis["drugs"].get(drug_category):
+                drug_name = drugs[0]
+                drug_frame = Frame(all_drug_frame, pady=3)
 
-            def select_drugs_name():
-                if data['examination']['all_drug_frame'].get(selected_button.get()):
-                    edit_frame, marker = data['examination']['all_drug_frame'].get(selected_button.get())
-                    if marker:
-                        edit_frame.pack_forget()
-                        data['examination']['all_drug_frame'][selected_button.get()][1] = False
-                        edit_frame = data['examination']['all_drug_frame'][selected_button.get().split("__")[0]]
-                        edit_frame.columnconfigure(index='all', minsize=40, weight=1)
-                        edit_frame.rowconfigure(index='all', minsize=20)
-
-                    else:
-                        data['examination']['all_drug_frame'][selected_button.get()][1] = True
-                        edit_frame.columnconfigure(index='all', minsize=40, weight=1)
-                        edit_frame.rowconfigure(index='all', minsize=20)
-
-                        edit_frame.pack(fill='both', expand=True)
-
-
-            drug_category_frame = Frame(frame, bg="#36566d")
-
-            data['examination']['all_drug_frame'] = dict()
-            Label(drug_category_frame, text="      Перечень лекарственных препаратов      ",
-                  font=('Comic Sans MS', user.get('text_size')),
-                  bg="#36566d", fg='white').pack(fill='both', expand=True, pady=3, padx=3)
-            min_width = 0
-            for drug_category in all_data_diagnosis.get("drugs"):
-                btn = Radiobutton(drug_category_frame, text=f'{drug_category}',
+                btn = Radiobutton(drug_frame, text=f'{drug_name}',
                                   font=('Comic Sans MS', user.get('text_size')),
-                                  value=drug_category, variable=selected_button,
-                                  command=select_drugs_category,
-                                  indicatoron=False, selectcolor='#77f1ff',
-                                  bg="#36566d", fg='white')
-
+                                  value=f"{drug_category}__{drug_name}", variable=selected_button,
+                                  command=select_drugs_name,
+                                  indicatoron=False, selectcolor='#77f1ff')
                 btn.pack(fill='both', expand=True)
 
-                all_drug_frame = Frame(frame, bg="#36566d")
-
-
-                data['examination']['all_drug_frame'][drug_category] = all_drug_frame
-                for drugs in all_data_diagnosis["drugs"].get(drug_category):
-                    drug_name = drugs[0]
-                    drug_frame = Frame(all_drug_frame, padx=3, pady=3)
-
-                    btn = Radiobutton(all_drug_frame, text=f'{drug_name}',
+                drug_frame_add = Frame(drug_frame)
+                for mark in drugs[1:]:
+                    btn = Radiobutton(drug_frame_add, text=f'{mark}',
                                       font=('Comic Sans MS', user.get('text_size')),
                                       value=f"{drug_category}__{drug_name}", variable=selected_button,
                                       command=select_drugs_name,
                                       indicatoron=False, selectcolor='#77f1ff')
                     btn.pack(fill='both', expand=True)
 
-                    drug_frame_add = Frame(drug_frame)
-                    for mark in drugs[1:]:
-                        Label(drug_frame_add, text=f"{mark}",
-                              font=('Comic Sans MS', user.get('text_size')),
-                              bg="#36566d", fg='white').pack(fill='both', expand=True)
+                    # Label(drug_frame_add, text=f"{mark}",
+                    #       font=('Comic Sans MS', user.get('text_size')),
+                    #       bg="#36566d", fg='white').pack(fill='both', expand=True)
 
-                    data['examination']['all_drug_frame'][f"{drug_category}__{drug_name}"] = [drug_frame_add, False]
-                    drug_frame.columnconfigure(index='all', minsize=40, weight=1)
-                    drug_frame.rowconfigure(index='all', minsize=20)
+                data['examination']['all_drug_frame'][f"{drug_category}__{drug_name}"] = [drug_frame_add, False]
 
-                    drug_frame.pack(fill='both', expand=True)
-                    # if len(drugs[0]) > min_width:
-                    #     min_width = len(drugs[0])
+                drug_frame_add.columnconfigure(index='all', minsize=40, weight=1)
+                drug_frame_add.rowconfigure(index='all', minsize=20)
+
+                drug_frame.columnconfigure(index='all', minsize=40, weight=1)
+                drug_frame.rowconfigure(index='all', minsize=20)
+
+                drug_frame.pack(fill='x', expand=True, pady=2, padx=2)
+                # if len(drugs[0]) > min_width:
+                #     min_width = len(drugs[0])
+
+
+
                 # all_drug_frame.pack(fill='both', expand=True)
             drug_category_frame.columnconfigure(index='all', minsize=40, weight=1)
             drug_category_frame.rowconfigure(index='all', minsize=20)
@@ -2994,15 +3002,35 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             drugs_root_main.rowconfigure(index='all', minsize=20)
 
 
-            drug_category_frame.pack()
 
 
-        create_scroller_frame(master_frame=drugs_root_main, func=create_drugs_frame)
+        data['examination']['all_drug_frame'] = dict()
+        Label(drug_category_frame, text="        Перечень лекарственных препаратов        ",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3)
+        for drug_category in all_data_diagnosis.get("drugs"):
+            btn = Radiobutton(drug_category_frame, text=f'{drug_category}',
+                              font=('Comic Sans MS', user.get('text_size')),
+                              value=drug_category, variable=selected_button,
+                              command=select_drugs_category,
+                              indicatoron=False, selectcolor='#77f1ff',
+                              bg="#36566d", fg='white')
+
+            btn.pack(fill='x', expand=True)
+        drug_category_frame.pack(fill='x', anchor='nw')
+        # all_drugs_frame_scrolled.pack(fill='both', expand=True)
+        for drug_category in all_data_diagnosis.get("drugs"):
+            all_drugs_frame_scrolled = Frame(drugs_root_main, bg="#36566d")
+            create_scroller_frame(master_frame=all_drugs_frame_scrolled, func=create_drugs_frame, drug_category=drug_category)
+            data['examination']['all_drug_frame'][drug_category] = all_drugs_frame_scrolled
         data['examination']['is_drugs_root_open'] = False
+
         drugs_root_main.grid(row=0, column=3, sticky="nwse")
         drugs_root_main.grid_remove()
 
     drugs_root_main = Frame(master=root_examination, borderwidth=1, relief="solid", padx=3, pady=3)
+    drug_category_frame = Frame(drugs_root_main, bg="#36566d")
+
 
     create_drugs_root()
 
