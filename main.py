@@ -462,13 +462,15 @@ all_diagnosis = {
 }
 
 all_data_diagnosis = {
-    'diagnosis_ori': ('ринит', "синусит", "отит", "конъюнктивит", "катарольный", "гнойный", "экссудативный",
-                      "справа", "слева", "двусторонний",
-                      "вирусная экзантема", "вирусная энантема", 'фарингит', 'ринофaрингит', "ларингит",
-                      "тонзиллит", 'трахеит', "обструктивный", 'бронхит',
-                      'пневмония', "кишечный с-м", "абдоминальный с-м",
-                      "продолжает болеть", "улучшение", "соматически здоров",
-                      'реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы",
+    'diagnosis_ori': (('ринит', "синусит", 'фарингит', 'ринофaрингит', "тонзиллит", "ларингит"),
+                      ("отит", "конъюнктивит", "катаральный", "гнойный", "экссудативный"),
+                      ("справа", "слева", "двусторонний"),
+                      ("вирусная экзантема", "вирусная энантема"),
+                      ("обструктивный", 'бронхит', 'пневмония', 'плеврит', 'трахеит', "ДН 0", "ДН 1", "ДН 2"),
+                      ("кишечный с-м", "абдоминальный с-м", "ИМВП"),
+                      ("легкой", "средней", "средне-тяжелой", "тяжелой", "степени"),
+                      ("продолжает болеть", "улучшение", "соматически здоров", "на момент осмотра"),
+                      ('реконвалесцент', "ОРИ", "ФРК", "Ветряной оспы")
                       ),
 
     "diagnosis": ("Предварительный диагноз", 'ОРИ', 'ФРК', "Ветряная оспа", "Здоров"),
@@ -517,66 +519,109 @@ all_data_diagnosis = {
                      "отрицательные", "положительные", "сомнительные")),
     "prescription": ("Назначения", ("Анализы", "ОАК", "ОАМ", "Глюкоза", "Копрограмма", "я/глист", "БАК"),
                      ("Консультация", "офтальмолога", "хирурга", "оториноларинголога", "гастроэнтеролога", "пульмонолога"),
-                     ("Рекомендации", "домашний режим", "питьевой режим",
+                     ("Рекомендации", "домашний режим", "питьевой режим", "дренажный массаж",
                       "полоскать горло", "орошать горло", "промывать нос", "ингалляции с физраствором",
-                      "диета", "Пробиотик")),
+                      "диета", "Пробиотик"),
+                     ("Разрешена вакцинация", "V", "V1", "V2", "V3", "V4", "R", "R1", "R2", "R3", "R4", "\n",
+                      "БЦЖ-М",
+                      "ВГВ",
+                      "ВГА",
+                      "ХИБ",
+                      "ИПВ",
+                      "КПК", "\n",
+
+                      "А(а)КДС",
+                      "АДС",
+                      "АДС-М",
+                      "АДМ", "\n",
+                      "от Гриппа",
+                      "от ротавируса",
+                      "от Ветряной оспы", "\n",
+
+                      "от Пневмококковой инфекции",
+                      "от Менингококковой инфекции", "\n",
+                      "ВГВ + А(а)КДС + ХИБ + ИПВ",
+                      "А(а)КДС + ВГА", "\n",
+                      "\nИнформирован(а) о проводимой прививке. "
+                      "\nС особенностями течения периода после иммунизации ОЗНАКОМЛЕН(А) ", "\n"
+                      )),
 
     "drugs": {
         "Антибиотики": (
             ("Амоксициллин",
-             "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 250", "таб. 500", "таб. 1000",
-             "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут",
-             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+             "Форма", "суспензия 125/5", "суспензия 250/5", "таб. 250 мг", "таб. 500 мг", "таб. 1000 мг",
+             "Дозировка", "40 мг/кг/сут", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут",
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней"),
 
             ("Амоксициллин + клавулановая кислота",
-             "Форма", "сусп. 125/31.25/5", "сусп. 200/28.5/5",
-             "сусп. 250/62.5/5", "сусп. 400/57/5", "сусп. 600/42.9/5",
-             "таб. 250/125", "таб. 500/125", "таб. 875/125",
-             "Дозировка", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут",
-             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+             "Форма", "суспензия 125/31.25/5", "суспензия 200/28.5/5",
+             "суспензия 250/62.5/5", "суспензия 400/57/5", "суспензия 600/42.9/5",
+             "таб. 250/125 мг", "таб. 500/125 мг", "таб. 875/125 мг",
+             "Дозировка", "40 мг/кг/сут", "50 мг/кг/сут", "75 мг/кг/сут", "90 мг/кг/сут",
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней"),
 
             ("Цефуроксим",
-             "Форма", "сусп. 125/5", "таб. 125", "таб. 250", "таб. 500",
+             "Форма", "суспензия 125/5", "таб. 125", "таб. 250", "таб. 500",
              "Дозировка", "20 мг/кг/сут", "30 мг/кг/сут",
-             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней"),
 
             ("Кларитромицин",
-             "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 250", "таб. 500",
+             "Форма", "суспензия 125/5", "суспензия 250/5", "таб. 250", "таб. 500",
              "Дозировка", "15 мг/кг/сут",
-             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней"),
 
             ("Азитромицин",
-             "Форма", "сусп. 200/5", "таб. 125", "таб. 250", "таб. 500",
+             "Форма", "суспензия 200/5", "таб. 125", "таб. 250", "таб. 500",
              "Дозировка", "10 мг/кг/сут",
-             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут", "1-й день - 2 р/сут, далее - 1 р/сут",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней"),
 
             ("Цефдинир",
-             "Форма", "сусп. 125/5", "сусп. 250/5", "таб. 300",
+             "Форма", "суспензия 125/5", "суспензия 250/5", "таб. 300",
              "Дозировка", "14 мг/кг/сут",
-             "Кратность", "1 р/сут", "2 р/сут")),
+             "Кратность", "1 р/сут", "2 р/сут",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней")),
 
         "ОРИ": (
             ("Парацетамол",
-             "Форма", "суппозитории", "сусп. 30 мг/мл", "сусп. 120 мг/5мл", "таблетки", "все формы",
+             "Форма", "суппозитории", "суспензия 30 мг/мл", "суспензия 120 мг/5мл",
+             "таб. 200 мг", "таб. 500 мг", "все формы",
+             "Способ применения", "принимать при темпераатуре 38.5 и выше",
+             "принимать при темпераатуре болевом синдроме",
+             "с интервалом не меньше 6 часов",
              "Дозировка", "10 мг/кг", "15 мг/кг"),
 
             ("Ибупрофен",
-             "Форма", "суппозитории", "сусп. 100 мг/5мл", "сусп. 200 мг/5мл", "таблетки", "все формы",
+             "Форма", "суппозитории", "суспензия 100 мг/5мл", "суспензия 200 мг/5мл",
+             "таб. 200 мг", "таб. 400 мг", "все формы",
+             "Способ применения", "принимать при темпераатуре 38.5 и выше",
+             "принимать при темпераатуре болевом синдроме",
+             "с интервалом не меньше 6 часов",
              "Дозировка", "5 мг/кг", "10 мг/кг"),
 
             ("Оксиметазолин",
              "Форма", "0.01%", "0.025%", "0.05%",
-             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
+             "Способ применения", "закапывать по 1-2 капли в каждый носовой ход после туалета физраствором",
+             "Длительность", "3 дня", "не дольше 5 дней"),
 
             ("Ксилометазолин",
              "Форма", "0.05%", "0.1%",
-             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
+             "Способ применения", "закапывать по 1-2 капли в каждый носовой ход после туалета физраствором",
+             "Длительность", "3 дня", "не дольше 5 дней"),
 
             ("Беродуал (Фенотерол+Ипратропия бромид)",
              "Форма", "раствор 0.5мг+0.25мг", "аэрозоль 50мкг+20мкг/доза - 200 доз",
              "Дозировка", "5 капель", "10 капель", "15 капель", "20 капель", "25 капель",
              "1 доза", "2 дозы", "3 дозы",
-             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
+             "Способ применения", "развести в 3 мл физраствора - для ингалляций", "вдыхать через спейсер",
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"
+             ),
 
             ("Монтелукаст",
              "Форма", "таб. 4мг", "таб. 5мг", "таб. 10мг",
@@ -589,23 +634,29 @@ all_data_diagnosis = {
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
             ("Будесонид",
-             "Форма", "сусп 0.25мг/мл - 2мл", "сусп 0.5мг/мл - 2мл",
+             "Форма", "суспензия 0.25мг/мл - 2мл", "суспензия 0.5мг/мл - 2мл",
              "аэрозоль 100мкг/доза - 200 доз", "аэрозоль 200мкг/доза - 200 доз",
              "Дозировка", "5 капель", "10 капель", "15 капель", "20 капель", "25 капель",
              "1 доза", "2 дозы", "3 дозы",
+             "Способ применения", "развести в 3 мл физраствора - для ингалляций", "вдыхать через спейсер",
+
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут", "при приступе"),
 
             ("Амброксол",
-             "Форма", "сусп 7.5мг/мл", "сусп 15мг/5мл", "сусп 30мг/мл", "таб 30 мг"),
+             "Форма", "суспензия 7.5мг/мл", "суспензия 15мг/5мл", "суспензия 30мг/мл", "таб 30 мг",
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
             ("Ацетилцистеин",
-             "Форма", "сусп 20мг/мл", "пор. 100мг", "пор. 200мг", "пор. 600мг"),
+             "Форма", "суспензия 20мг/мл", "пор. 100мг", "пор. 200мг", "пор. 600мг",
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
             ("Карбоцистеин",
-             "Форма", "сусп 20мг/мл", "сусп 50мг/мл"),
+             "Форма", "суспензия 20мг/мл", "суспензия 50мг/мл",
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
             ("Бутамират",
-             "Форма", "сусп 7.5мг/мл", "сусп 15мг/5мл", "сусп 30мг/мл", "таб 30 мг"),
+             "Форма", "суспензия 7.5мг/мл", "суспензия 15мг/5мл", "суспензия 30мг/мл", "таб 30 мг",
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут"),
 
             ("Мометазон",
              "Форма", "спрей назальный 50мкг/доза 140доз",
@@ -677,20 +728,20 @@ all_data_diagnosis = {
 
         "ЖКТ": (
             ("Нифуроксазид",
-             "Форма", "сусп. 220/5", "капс. 100мг", "капс. 200мг"),
+             "Форма", "суспензия 220/5", "капс. 100мг", "капс. 200мг"),
 
             ("Альбендазол",
-             "Форма", "сусп 100мг/5мл - 20мл", "таб. 400мг"),
+             "Форма", "суспензия 100мг/5мл - 20мл", "таб. 400мг"),
 
             ("Мебендазол",
-             "Форма", "сусп 100мг/5мл - 20мл", "таб. 100мг"),
+             "Форма", "суспензия 100мг/5мл - 20мл", "таб. 100мг"),
 
             ("Симетикон",
              "Форма", "Комфортик/Эспумизан 40мг/мл", "Комфортик 100мг/мл",
              "Куплатон 300 мг/мл", "Боботик 66.66 мг/мл"),
 
             ("Смектит диоктаэдрический (Смекта)",
-             "Форма", "сусп 3г/15мл", "пор 3г"),
+             "Форма", "суспензия 3г/15мл", "пор 3г"),
 
             ("Активированный уголь таб. 250мг",
              "Дозировка", "1 таб", "2 таб", "3 таб", "4 таб", "5 таб", "6 таб",
@@ -1807,7 +1858,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 err_msd_weight.set('вес ребенка больше 100 кг!')
             else:
                 err_msd_weight.set('')
-            select_prescription(float(weight))
+            # select_prescription(float(weight))
 
             write_anthro()
             return True
@@ -2542,7 +2593,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             else:
                 data['examination']['diagnosis_add_kb'].get(diagnosis_button).set(1)
-                txt_diagnosis_info += f" {diagnosis_buttonn} "
+                txt_diagnosis_info += f" {diagnosis_button} "
 
             # for but in data['examination'].get('diagnosis_add_kb'):
             #     if data['examination']['diagnosis_add_kb'].get(but).get() == 1:
@@ -2561,26 +2612,26 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
 
         row, col = 0, 0
-        for mark in all_data_diagnosis.get('diagnosis_ori'):
-            data['examination']['diagnosis_add_kb'][mark] = IntVar()
-            btn = Radiobutton(frame_diagnosis_kb, text=mark,
-                              font=('Comic Sans MS', user.get('text_size')),
-                              value=f"{mark}",
-                              variable=selected_button,
-                              command=select_diagnosis_kb,
-                              indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+        for mark_group in all_data_diagnosis.get('diagnosis_ori'):
+            mark_group_frame = Frame(frame_diagnosis_kb)
+            for mark in mark_group:
+                data['examination']['diagnosis_add_kb'][mark] = IntVar()
+                btn = Radiobutton(mark_group_frame, text=mark,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  value=f"{mark}",
+                                  variable=selected_button,
+                                  command=select_diagnosis_kb,
+                                  indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
 
-            # btn = Checkbutton(frame_diagnosis_kb, text=mark,
-            #                   font=('Comic Sans MS', user.get('text_size')),
-            #                   onvalue=1, offvalue=0,
-            #                   variable=data['examination']['diagnosis_add_kb'].get(mark),
-            #                   command=select_diagnosis_kb,
-            #                   indicatoron=False, selectcolor='#77f1ff')
-            btn.grid(row=row, column=col, sticky='ew')
-            col += 1
-            if col == 4:
-                col = 0
-                row += 1
+                btn.grid(row=row, column=col, sticky='ew')
+                col += 1
+                # if col == 4:
+                #     col = 0
+                #     row += 1
+            mark_group_frame.columnconfigure(index='all', minsize=40, weight=1)
+            mark_group_frame.rowconfigure(index='all', minsize=20)
+
+            mark_group_frame.pack(fill='both', expand=True)
 
         frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
         frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
@@ -2625,18 +2676,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         if data['examination']['prescription_frame'].get('last_open_frame', '') == selected_prescription_frame.get():
             data['examination']['prescription_frame'].get('open_frame').pack_forget()
             data['examination']['prescription_frame']['last_open_frame'] = ''
-            if 'Антибиотик ' in selected_prescription_frame.get():
-                ab_name = selected_prescription_frame.get()
-                for ab_mark in data['examination']['prescription_but_ab_value'].get(ab_name):
-                    data['examination']['prescription_but_ab_value'][ab_name][ab_mark].set('')
         else:
-            if 'Антибиотик' in selected_prescription_frame.get():
-                txt_prescription['height'] = 16
-            else:
-                txt_prescription['height'] = 8
 
-            if data['examination']['prescription_frame'].get('open_frame') and \
-                    'Антибиотик ' not in selected_prescription_frame.get():
+            if data['examination']['prescription_frame'].get('open_frame'):
                 data['examination']['prescription_frame'].get('open_frame').pack_forget()
 
             frame_loc = data['examination']['prescription_frame'].get(selected_prescription_frame.get())
@@ -2645,185 +2687,58 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             data['examination']['prescription_frame']['last_open_frame'] = selected_prescription_frame.get()
 
     def select_prescription(weight=None):
-        edit_prescription_text()
+        prescription_text = txt_prescription.get(1.0, 'end').strip()
+        mark_1, mark_2 = selected_button.get().split('_')
 
-        text_paracetamol = ""
-        text_ibuprofen = ""
-        text_antibiotic = ""
-        text_analyzes = ""
-        text_prescription = ""
+        edited_string = ''
 
-        for ab_name in data['examination'].get('prescription_but_ab_value'):
-            ab_key_dosa = data['examination']['prescription_but_ab_value'][ab_name].get('Дозировка').get()
-            ab_key_form = data['examination']['prescription_but_ab_value'][ab_name].get('Форма').get()
-            ab_key_count = data['examination']['prescription_but_ab_value'][ab_name].get('Кратность').get()
+        if data['examination']['prescription_but'].get(selected_button.get()):
+            if data['examination']['prescription_but'][selected_button.get()].get():
+                data['examination']['prescription_but'][selected_button.get()].set(0)
 
-            if ab_key_dosa and ab_key_form:
-                text_antibiotic_loc = f"{ab_name}: {ab_key_form}"
+                for string in prescription_text.split('\n'):
+                    if string.startswith(mark_1):
+                        edited_string = string
+                        if mark_2 in edited_string:
+                            for i in (f"{mark_2}, ", f"{mark_2},", f", {mark_2}",
+                                      f"{mark_2} ", f"{mark_2}"):
+                                if i in edited_string:
+                                    edited_string = edited_string.replace(i, '')
+                                    prescription_text = prescription_text.replace(string, edited_string)
 
-                if txt_weight.get():
-                    if not weight:
-                        weight = float(txt_weight.get().replace(',', '.'))
-                    if weight > 40:
-                        weight = 40
-                    ab_weight = ''
-                    if 'сусп. ' in ab_key_form:
-                        ab_weight = ab_key_form.split('/')[0].replace('сусп. ', '').strip()
-                    if 'таб. ' in ab_key_form:
-                        ab_weight = ab_key_form.replace('таб. ', '').split('/')[0].strip()
-
-                    ab_dosage = int(ab_key_dosa.split()[0])
-                    ab_dosage_day = weight * ab_dosage
-                    ab_volume_day = ab_dosage_day / int(ab_weight)
-                    if ab_key_count:
-                        ab_key_count = ab_key_count.replace(' р/сут', '')
-                    if not ab_key_count.isdigit():
-                        ab_key_count = '2'
-                    ab_key_count = int(ab_key_count)
-                    ab_volume_single = ab_volume_day / ab_key_count
-                    if 'сусп. ' in ab_key_form:
-                        ab_volume_single = ab_volume_single * 5
-                        text_antibiotic_loc += f" по {round(ab_volume_single, 1)}мл. {ab_key_count} р/сут " \
-                                               f"({round(ab_dosage_day / weight)}мг/кг/сут)"
-
-                    else:
-                        if str(ab_volume_single).split('.')[-1][0] in ('4', '5', '6'):
-                            ab_volume_single = float(f"{str(ab_volume_single).split('.')[0]}.5")
-                        else:
-                            ab_volume_single = round(ab_volume_single)
-                        text_antibiotic_loc += f" по {round(ab_volume_single, 1)}таб. {ab_key_count} р/сут " \
-                                               f"({round((ab_volume_single * ab_key_count * int(ab_weight)) / weight)}мг/кг/сут)"
-
-                else:
-                    text_antibiotic_loc += f" - {ab_key_dosa} {ab_key_count}"
-
-                if text_antibiotic:
-                    text_antibiotic += '\n'
-                text_antibiotic += text_antibiotic_loc
-
-        for i in txt_prescription.get(1.0, 'end')[:-1].strip().split('\n'):
-            if 'Рекомендации' in i:
-                text_prescription = i.strip()
-                if len(text_prescription.replace('Рекомендации', '')) < 5:
-                    text_prescription = ''
-        if text_prescription and text_prescription[-1] in ('.', ','):
-            text_prescription = text_prescription[:-1] + ', '
-
-        for mark in data['examination'].get('prescription_but'):
-            mark_1, mark_2 = mark.split('_')
-
-            if data['examination']['prescription_but'].get(mark).get() == 1:
-                if mark_2 in ('Парацетамол', 'Ибупрофен'):
-                    if txt_weight_variable.get():
-                        if not weight:
-                            weight = float(txt_weight_variable.get().replace(',', '.'))
-                        if weight > 40:
-                            weight = 40
-                        paracetamol_min, paracetamol_max = (weight * 10, weight * 15)
-                        ibuprofen_min, ibuprofen_max = (weight * 5, weight * 10)
-
-                        if mark_2 == 'Парацетамол':
-                            if age < 6:
-                                supp = []
-                                for i in (50, 80, 100, 125, 150, 170, 250, 300, 330):
-                                    if paracetamol_min < i < paracetamol_max:
-                                        supp.append(i)
-                                if supp:
-                                    supp_text = 'Супп. '
-                                    for i in supp:
-                                        supp_text += str(i) + 'мг. '
-                                    text_paracetamol += supp_text
-                            text_paracetamol += f'Cусп. 30мг/мл - {round(weight * 0.5, 1)}мл; '
-
-                            if age > 5:
-                                if paracetamol_max < 100:
-                                    text_paracetamol += ""
-                                elif paracetamol_max < 200:
-                                    text_paracetamol += "Таб. 200 мг: 1/2 т.; "
-                                elif paracetamol_max < 300:
-                                    text_paracetamol += "Таб. 200 мг: 1 т.; "
-                                elif paracetamol_max < 400:
-                                    text_paracetamol += "Таб. 200 мг: 1.5 т.; "
-                                elif 400 <= paracetamol_max:
-                                    text_paracetamol += "Таб. 200 мг: 2 т.; "
-
-                                if paracetamol_min < 250 <= paracetamol_max:
-                                    text_paracetamol += "Таб. 500 мг: 1/2 т.; "
-                                elif 500 <= paracetamol_max:
-                                    text_paracetamol += "Таб. 500 мг: 1 т.; "
-                            text_paracetamol = f"Парацетамол 15 мг/кг при темп. выше 38.5 ({text_paracetamol}) " \
-                                               f"не 4 > р/сут"
-
-                        elif mark_2 == 'Ибупрофен':
-
-                            if ibuprofen_min < 60 <= ibuprofen_max:
-                                text_ibuprofen += f'Супп. 60 мг.; '
-                            if age < 4:
-                                text_ibuprofen += f"Cусп. 100мг/5мл - {round(ibuprofen_max / 20, 1)}мл; "
-
-
-                            text_ibuprofen += f"Cусп. 200мг/5мл - {round(ibuprofen_max / 40, 1)}мл; "
-                            if age > 5:
-                                if ibuprofen_max < 100:
-                                    pass
-                                elif ibuprofen_max < 200:
-                                    text_ibuprofen += "Таб. 200 мг: 1/2 таб;"
-                                elif ibuprofen_max < 300:
-                                    text_ibuprofen += "Таб. 200 мг: 1 таб;"
-                                elif ibuprofen_max < 400:
-                                    text_ibuprofen += "Таб. 200 мг: 1.5 таб;"
-                                elif 400 <= ibuprofen_max:
-                                    text_ibuprofen += "Таб. 200 мг: 2 таб;"
-
-                            text_ibuprofen = f"Ибупрофен 10 мг/кг при темп. выше 38.5 ({text_ibuprofen}) не 4 > р/сут"
-
-                        if mark_2 in text_prescription:
-                            if f"{mark_2}, " in text_prescription:
-                                text_prescription = text_prescription.replace(f"{mark_2}, ", '')
-                            elif f"{mark_2}." in text_prescription:
-                                text_prescription = text_prescription.replace(f"{mark_2}.", '')
+                            for btn in data['examination'].get('prescription_but'):
+                                if btn.startswith(mark_1) and data['examination']['prescription_but'][btn].get():
+                                    break
                             else:
-                                text_prescription = text_prescription.replace(mark_2, '')
-
-                    else:
-                        if mark_2 not in text_prescription:
-                            text_prescription += f"{mark_2}, "
-
-                elif mark_1 == 'Анализы':
-                    text_analyzes += f"{mark_2}, "
-
-                elif mark_1 == 'Рекомендации':
-                    if not text_prescription:
-                        text_prescription = 'Рекомендации: '
-
-                    if mark_2 not in text_prescription:
-                        text_prescription += f"{mark_2}, "
+                                prescription_text = prescription_text.replace(edited_string, '')
 
             else:
-                if mark_1 == 'Рекомендации':
-                    if mark_2 in text_prescription:
-                        if f"{mark_2}, " in text_prescription:
-                            text_prescription = text_prescription.replace(f"{mark_2}, ", '')
-                        elif f"{mark_2}." in text_prescription:
-                            text_prescription = text_prescription.replace(f"{mark_2}.", '')
-                        else:
-                            text_prescription = text_prescription.replace(mark_2, '')
+                data['examination']['prescription_but'][selected_button.get()].set(1)
+
+                for string in prescription_text.split('\n'):
+                    if string.startswith(mark_1):
+                        edited_string = string
+                        if edited_string[-1] == ',':
+                            edited_string += ' '
+                        edited_string += f"{mark_2}, "
+                        prescription_text = prescription_text.replace(string, edited_string)
+
+                        break
+                else:
+                    prescription_text = f"{mark_1}: {mark_2}, \n" + prescription_text
+
+        for button_name in data['examination'].get('prescription_buttons_color'):
+            if data['examination']['prescription_but'].get(button_name):
+                if data['examination']['prescription_but'].get(button_name).get() == 1:
+                    data['examination']['prescription_buttons_color'][button_name]['bg'] = '#77f1ff'
+                else:
+                    data['examination']['prescription_buttons_color'][button_name]['bg'] = '#cdcdcd'
+
+
+
 
         txt_prescription.delete(1.0, 'end')
-        text = ''
-
-        if text_analyzes:
-            text = f"Анализы: {text_analyzes[:-2]};\n"
-        if text_prescription:
-            text = f"{text}{text_prescription[:-2]}.\n"
-        if text_paracetamol:
-            text = f"{text}{text_paracetamol}\n"
-        if text_ibuprofen:
-            text = f"{text}{text_ibuprofen}\n"
-        if text_antibiotic:
-            text = f"{text}{text_antibiotic}"
-        text = text.strip()
-        txt_prescription.insert(1.0, text)
+        txt_prescription.insert(1.0, prescription_text.strip().replace('\n\n', '\n'))
 
         frame_prescription_main.columnconfigure(index='all', minsize=40, weight=1)
         frame_prescription_main.rowconfigure(index='all', minsize=20)
@@ -2831,32 +2746,48 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         frame_prescription.columnconfigure(index='all', minsize=40, weight=1)
         frame_prescription.rowconfigure(index='all', minsize=20)
 
-    def edit_prescription_text():
-        for button_name in data['examination'].get('prescription_buttons'):
-            text = f"{button_name}: "
-            for mark_ in data['examination'].get('prescription_but'):
-                if mark_.startswith(button_name):
-                    if data['examination']['prescription_but'].get(mark_).get() == 1:
-                        text += f"{mark_.split('_')[-1]}, "
-                        if len(text.split('\n')[-1]) > 80:
-                            text += "\n"
-            text = text[:-2]
-            btn = data['examination']['prescription_buttons'].get(button_name)
-            btn['text'] = text
-
-        for button_name in data['examination'].get('prescription_buttons_2_color'):
-            if data['examination']['prescription_but'].get(button_name):
-                if data['examination']['prescription_but'].get(button_name).get() == 1:
-                    data['examination']['prescription_buttons_2_color'][button_name]['bg'] = '#77f1ff'
-                else:
-                    data['examination']['prescription_buttons_2_color'][button_name]['bg'] = '#cdcdcd'
-
     def create_drugs_root():
+        def select_drugs_item():
+            data['examination']['all_drug_buttons'][f"{drug_category}__{drug_name}__{mark_flag}__{mark}"] = btn
+
+            drug_category, drug_name, mark_flag, mark = selected_button.get().split('__')
+            for button_name in data['examination'].get('all_drug_buttons'):
+                if button_name.startswith(f"{drug_category}__{drug_name}__{mark_flag}__"):
+                    data['examination']['all_drug_buttons'][button_name]['bg'] = '#cdcdcd'
+            data['examination']['all_drug_buttons'][selected_button.get()]['bg'] = '#77f1ff'
+
+
+
+            if not data['examination'].get('selected_drugs'):
+                data['examination']['selected_drugs'] = dict()
+            if not data['examination']['selected_drugs'].get(drug_category):
+                data['examination']['selected_drugs'][drug_category] = dict()
+            if not data['examination']['selected_drugs'][drug_category].get(drug_name):
+                data['examination']['selected_drugs'][drug_category][drug_name] = dict()
+
+            data['examination']['selected_drugs'][drug_category][drug_name][mark_flag] = mark
+
+            prescription_text = txt_prescription.get(1.0, 'end').strip()
+            edited_string = ''
+            for string in prescription_text.split('\n'):
+                if string.startswith(drug_name):
+                    edited_string = string
+                    break
+            if not edited_string:
+                edited_string = f"{drug_name} "
+
+            for marker in data['examination']['selected_drugs'][drug_category].get(drug_name):
+
+
+
+
         def select_drugs_category():
             for drug_category in data['examination'].get("all_drug_frame"):
                 if '__' not in drug_category:
                     data['examination']['all_drug_frame'][drug_category].pack_forget()
-            data['examination']['all_drug_frame'][selected_button.get()].pack(fill='both', expand=True)
+            all_drug_frame = data['examination']['all_drug_frame'].get(selected_button.get())
+            all_drug_frame.pack(fill='both', expand=True)
+
 
         def select_drugs_name():
             if data['examination']['all_drug_frame'].get(selected_button.get()):
@@ -2883,14 +2814,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                     edit_frame.pack(fill='both', expand=True)
 
-        def create_scroller_frame(master_frame, func, drug_category):
+        def create_scroller_frame(master_frame, func):
             def resize(event):
                 region = canvas.bbox(tk.ALL)
                 canvas.configure(scrollregion=region)
-                # master_frame.minsize(width=int(canvas_frame.winfo_width()),
-                #                      height=canvas.winfo_screenheight() - 100)
-                #
-                # self.canvas['width'] = int(self.canvas_frame.winfo_width())
 
             def on_binds(event):
                 canvas.idbind = canvas.bind_all("<MouseWheel>", on_mousewheel)
@@ -2899,6 +2826,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 canvas.unbind_all("<MouseWheel>")
 
             def on_mousewheel(event):
+
                 region = canvas.bbox(tk.ALL)
                 canvas.configure(scrollregion=region)
 
@@ -2918,24 +2846,17 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             canvas_frame = Frame(canvas)
 
+            data['examination']['canvas_frame_scrolled'] = canvas
+            data['examination']['canvas_frame_scrolled_canvas_frame'] = canvas_frame
 
-
-            func(canvas_frame, drug_category)
-
-            canvas['width'] = int(canvas.winfo_geometry().split('x')[0])
-            canvas_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
-
+            func(canvas_frame)
+            #
+            # canvas['width'] = int(canvas.winfo_geometry().split('x')[0])
+            # canvas_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
 
             canvas.grid(row=0, column=0, sticky="nsew")
             scroll_x.grid(row=1, column=0, sticky="we")
             scroll_y.grid(row=0, column=1, sticky="ns")
-
-            canvas_frame.grid(row=0, column=0, sticky="nsew")
-
-            canvas_frame.configure(width=canvas.winfo_width())
-
-            canvas_frame.columnconfigure(index='all', minsize=40, weight=1)
-            canvas_frame.rowconfigure(index='all', minsize=20)
 
             master_frame.rowconfigure(0, weight=1)
             master_frame.columnconfigure(0, weight=1)
@@ -2943,56 +2864,67 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             master_frame.bind("<Configure>", resize)
             master_frame.update_idletasks()
 
-            # minsize(winfo_width(), winfo_height())
-
-
             canvas.bind("<Enter>", on_binds)
             canvas.bind("<Leave>", off_binds)
-            # canvas.create_window((0, 0), window=canvas_frame, anchor="nw")
 
-        def create_drugs_frame(all_drug_frame, drug_category):
+            canvas.create_window((0, 0), window=canvas_frame, anchor="nw",
+                                 width=canvas.winfo_width())
 
-            # for drug_category in all_data_diagnosis.get("drugs"):
+        def create_drugs_frame(frame):
 
-            # all_drug_frame = Frame(frame, bg="#36566d")
+            for drug_category in all_data_diagnosis.get("drugs"):
+                all_drug_frame = Frame(frame, bg="#36566d")
 
-            for drugs in all_data_diagnosis["drugs"].get(drug_category):
-                drug_name = drugs[0]
-                drug_frame = Frame(all_drug_frame, pady=3)
+                for drugs in all_data_diagnosis["drugs"].get(drug_category):
+                    drug_name = drugs[0]
+                    drug_frame = Frame(all_drug_frame)
 
-                btn = Radiobutton(drug_frame, text=f'{drug_name}',
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  value=f"{drug_category}__{drug_name}", variable=selected_button,
-                                  command=select_drugs_name,
-                                  indicatoron=False, selectcolor='#77f1ff')
-                btn.pack(fill='both', expand=True)
-
-                drug_frame_add = Frame(drug_frame)
-                for mark in drugs[1:]:
-                    btn = Radiobutton(drug_frame_add, text=f'{mark}',
+                    btn = Radiobutton(drug_frame, text=f'{drug_name}',
                                       font=('Comic Sans MS', user.get('text_size')),
                                       value=f"{drug_category}__{drug_name}", variable=selected_button,
                                       command=select_drugs_name,
                                       indicatoron=False, selectcolor='#77f1ff')
                     btn.pack(fill='both', expand=True)
 
-                    # Label(drug_frame_add, text=f"{mark}",
-                    #       font=('Comic Sans MS', user.get('text_size')),
-                    #       bg="#36566d", fg='white').pack(fill='both', expand=True)
+                    drug_frame_add = Frame(drug_frame)
+                    mark_flag = ''
+                    for mark in drugs[1:]:
+                        if mark in ("Форма", "Дозировка", "Кратность", "Длительность", "Способ применения"):
+                            mark_flag = mark
+                            Label(drug_frame_add, text=f"{mark}",
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  bg="#36566d", fg='white').pack(fill='both', expand=True)
+                        else:
+                            btn_text = ''
+                            for i in mark.split():
+                                if len(btn_text.split('\n')[-1]) > 30:
+                                    btn_text += '\n'
+                                btn_text += f"{i} "
+                            btn = Radiobutton(drug_frame_add, text=f'{btn_text}',
+                                              font=('Comic Sans MS', user.get('text_size')),
+                                              value=f"{drug_category}__{drug_name}__{mark_flag}__{mark}",
+                                              variable=selected_button,
+                                              command=select_drugs_item,
+                                              indicatoron=False, selectcolor='#77f1ff',
+                                              bg='#cdcdcd')
+                            btn.pack(fill='both', expand=True)
+                            data['examination']['all_drug_buttons'][f"{drug_category}__{drug_name}__{mark_flag}__" \
+                                                                    f"{mark}"] = btn
 
-                data['examination']['all_drug_frame'][f"{drug_category}__{drug_name}"] = [drug_frame_add, False]
+                    data['examination']['all_drug_frame'][f"{drug_category}__{drug_name}"] = [drug_frame_add, False]
 
-                drug_frame_add.columnconfigure(index='all', minsize=40, weight=1)
-                drug_frame_add.rowconfigure(index='all', minsize=20)
+                    drug_frame_add.columnconfigure(index='all', minsize=40, weight=1)
+                    drug_frame_add.rowconfigure(index='all', minsize=20)
 
-                drug_frame.columnconfigure(index='all', minsize=40, weight=1)
-                drug_frame.rowconfigure(index='all', minsize=20)
+                    drug_frame.columnconfigure(index='all', minsize=40, weight=1)
+                    drug_frame.rowconfigure(index='all', minsize=20)
 
-                drug_frame.pack(fill='x', expand=True, pady=2, padx=2)
+                    drug_frame.pack(fill='both', expand=True, pady=5)
+
+                data['examination']['all_drug_frame'][drug_category] = all_drug_frame
+
                 # if len(drugs[0]) > min_width:
                 #     min_width = len(drugs[0])
-
-
 
                 # all_drug_frame.pack(fill='both', expand=True)
             drug_category_frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -3001,10 +2933,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             drugs_root_main.columnconfigure(index='all', minsize=40, weight=1)
             drugs_root_main.rowconfigure(index='all', minsize=20)
 
-
-
-
         data['examination']['all_drug_frame'] = dict()
+
+        drug_category_frame = Frame(drugs_root_main, bg="#36566d")
+        all_drugs_frame_scrolled = Frame(drugs_root_main, bg="#36566d")
+
         Label(drug_category_frame, text="        Перечень лекарственных препаратов        ",
               font=('Comic Sans MS', user.get('text_size')),
               bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3)
@@ -3019,18 +2952,18 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             btn.pack(fill='x', expand=True)
         drug_category_frame.pack(fill='x', anchor='nw')
         # all_drugs_frame_scrolled.pack(fill='both', expand=True)
-        for drug_category in all_data_diagnosis.get("drugs"):
-            all_drugs_frame_scrolled = Frame(drugs_root_main, bg="#36566d")
-            create_scroller_frame(master_frame=all_drugs_frame_scrolled, func=create_drugs_frame, drug_category=drug_category)
-            data['examination']['all_drug_frame'][drug_category] = all_drugs_frame_scrolled
         data['examination']['is_drugs_root_open'] = False
+        data['examination']['all_drug_buttons'] = dict()
+
+        all_drugs_frame_scrolled.pack(fill='both', expand=True)
+
 
         drugs_root_main.grid(row=0, column=3, sticky="nwse")
+        create_scroller_frame(master_frame=all_drugs_frame_scrolled, func=create_drugs_frame)
+
         drugs_root_main.grid_remove()
 
-    drugs_root_main = Frame(master=root_examination, borderwidth=1, relief="solid", padx=3, pady=3)
-    drug_category_frame = Frame(drugs_root_main, bg="#36566d")
-
+    drugs_root_main = Frame(master=root_examination, padx=3, pady=3)
 
     create_drugs_root()
 
@@ -3049,8 +2982,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         data['examination']['open_prescription_kb'] = 'open'
         data['examination']['prescription_frame'] = dict()
-        data['examination']['prescription_buttons'] = dict()
-        data['examination']['prescription_buttons_2_color'] = dict()
+        data['examination']['prescription_buttons_color'] = dict()
 
         data['examination']['prescription_but_ab_value'] = dict()
 
@@ -3062,25 +2994,47 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                               command=select_prescription_frame,
                               indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
             btn.pack(fill='both', expand=True)
-            data['examination']['prescription_buttons'][mark[0]] = btn
             row, col = 0, 0
             frame_loc_but = Frame(frame_loc, borderwidth=1)
             data['examination']['prescription_frame'][mark[0]] = frame_loc_but
-            for mark_2 in mark[1:]:
-                btn = Radiobutton(frame_loc_but, text=f"{mark_2}",
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  value=f"{mark[0]}_{mark_2}",
-                                  variable=selected_button,
-                                  command=select_prescription,
-                                  indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
+            if mark[0] == 'Разрешена вакцинация':
+                loc_vac_data_main = list()
+                loc_vac_data = list()
+                for mark_2 in mark[1:]:
+                    if mark_2 == '\n':
+                        loc_vac_data_main.append(loc_vac_data.copy())
+                        loc_vac_data.clear()
+                    else:
+                        loc_vac_data.append(mark_2)
+                for mark_group in loc_vac_data_main:
+                    loc_vac_frame = Frame(frame_loc_but)
+                    for mark_2 in mark_group:
+                        btn = Radiobutton(loc_vac_frame, text=f"{mark_2}",
+                                          font=('Comic Sans MS', user.get('text_size')),
+                                          value=f"{mark[0]}_{mark_2}",
+                                          variable=selected_button,
+                                          command=select_prescription,
+                                          indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
 
-                btn.grid(row=row, column=col, sticky='ew')
-                data['examination']['prescription_buttons_2_color'][f"{mark[0]}_{mark_2}"] = btn
+                        btn.pack(fill='both', expand=True, side='left')
+                        data['examination']['prescription_buttons_color'][f"{mark[0]}_{mark_2}"] = btn
+                    loc_vac_frame.pack(fill='both', expand=True)
+            else:
+                for mark_2 in mark[1:]:
+                    btn = Radiobutton(frame_loc_but, text=f"{mark_2}",
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      value=f"{mark[0]}_{mark_2}",
+                                      variable=selected_button,
+                                      command=select_prescription,
+                                      indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
 
-                col += 1
-                if col == 6:
-                    col = 0
-                    row += 1
+                    btn.grid(row=row, column=col, sticky='ew')
+                    data['examination']['prescription_buttons_color'][f"{mark[0]}_{mark_2}"] = btn
+
+                    col += 1
+                    if col == 6:
+                        col = 0
+                        row += 1
 
             frame_loc_but.columnconfigure(index='all', minsize=40, weight=1)
             frame_loc_but.rowconfigure(index='all', minsize=20)
@@ -3092,78 +3046,17 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                font=('Comic Sans MS', user.get('text_size')),
                command=open_drugs_root,
                bg='#f0fffe').pack(fill='both', expand=True)
-        # btn = Radiobutton(frame_prescription_buttons_drugs_main, text=f"Препараты",
-        #                   font=('Comic Sans MS', user.get('text_size')),
-        #                   value=f"Препараты", variable=selected_prescription_frame,
-        #                   command=select_prescription_frame,
-        #                   indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
-        # btn.pack(fill='both', expand=True)
-        data['examination']['prescription_frame']['Препараты'] = frame_prescription_buttons_drugs_buttons
 
-        # for drugs_category in all_data_diagnosis.get('drugs'):
-        #     frame_drugs_category = Frame(frame_prescription_buttons_drugs_buttons, borderwidth=1)
-        #
-        #         frame_loc = Frame(frame_prescription_buttons_drugs_buttons, borderwidth=1)
-        #         btn = Radiobutton(frame_loc, text=f"{mark[0]}",
-        #                           font=('Comic Sans MS', user.get('text_size')),
-        #                           value=f"{mark[0]}", variable=selected_prescription_frame,
-        #                           command=select_prescription_frame,
-        #                           indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
-        #
-        #         btn.pack(fill='both', expand=True)
-        #         row, col = 0, 0
-        #         frame_loc_but = Frame(frame_loc, borderwidth=1)
-        #         data['examination']['prescription_frame'][mark[0]] = frame_loc_but
-        #         for mark_2 in mark[1:]:
-        #             if mark_2 in ('Форма', 'Дозировка', "Кратность"):
-        #                 if not data['examination']['prescription_but_ab_value'].get(mark[0]):
-        #                     data['examination']['prescription_but_ab_value'][mark[0]] = dict()
-        #                 data['examination']['prescription_but_ab_value'][mark[0]][mark_2] = StringVar()
-        #
-        #                 if mark_2 in ('Дозировка', "Кратность"):
-        #                     row += 1
-        #                     col = 0
-        #                 Label(master=frame_loc_but, text=f"{mark_2}",
-        #                       font=('Comic Sans MS', user.get('text_size')),
-        #                       bg='white').grid(row=row, column=col, sticky='ew')
-        #                 col += 1
-        #             else:
-        #                 btn = Radiobutton(frame_loc_but, text=mark_2,
-        #                                   font=('Comic Sans MS', user.get('text_size')),
-        #                                   value=mark_2,
-        #                                   command=select_prescription,
-        #                                   indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff')
-        #
-        #                 if 'сусп.' in mark_2 or 'таб.' in mark_2:
-        #                     btn['variable'] = \
-        #                         data['examination']['prescription_but_ab_value'][mark[0]].get('Форма')
-        #                 if 'мг/кг/сут' in mark_2:
-        #                     btn['variable'] = \
-        #                         data['examination']['prescription_but_ab_value'][mark[0]].get('Дозировка')
-        #                 if 'р/сут' in mark_2:
-        #                     btn['variable'] = \
-        #                         data['examination']['prescription_but_ab_value'][mark[0]].get('Кратность')
-        #                 btn.grid(row=row, column=col, sticky='ew')
-        #
-        #                 col += 1
-        #                 if col == 6:
-        #                     col = 0
-        #                     row += 1
-        #
-        #         frame_loc_but.columnconfigure(index='all', minsize=40, weight=1)
-        #         frame_loc_but.rowconfigure(index='all', minsize=20)
-        #
-        #         frame_loc.columnconfigure(index='all', minsize=40, weight=1)
-        #         frame_loc.rowconfigure(index='all', minsize=20)
-        #         frame_loc.pack(fill='both', expand=True)
+
+        # data['examination']['prescription_frame']['Препараты'] = frame_prescription_buttons_drugs_buttons
 
         frame_prescription_buttons.columnconfigure(index='all', minsize=40, weight=1)
         frame_prescription_buttons.rowconfigure(index='all', minsize=20)
         frame_prescription_buttons.pack(fill='both', expand=True, padx=2, pady=2)
 
-        frame_prescription_buttons_drugs_main.columnconfigure(index='all', minsize=40, weight=1)
-        frame_prescription_buttons_drugs_main.rowconfigure(index='all', minsize=20)
-        frame_prescription_buttons_drugs_main.pack(fill='both', expand=True, padx=2, pady=2)
+        # frame_prescription_buttons_drugs_main.columnconfigure(index='all', minsize=40, weight=1)
+        # frame_prescription_buttons_drugs_main.rowconfigure(index='all', minsize=20)
+        # frame_prescription_buttons_drugs_main.pack(fill='both', expand=True, padx=2, pady=2)
 
     def change_prescription_kb_status():
         if data['examination'].get('open_prescription_kb') == 'open':
@@ -3185,10 +3078,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     frame_prescription = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
     frame_prescription_main = Frame(frame_prescription, padx=1, pady=1)
     frame_prescription_buttons = Frame(frame_prescription, padx=1, pady=1)
-    frame_prescription_buttons_drugs_main = Frame(frame_prescription_buttons, padx=1, pady=1)
-    frame_prescription_buttons_drugs_buttons = Frame(frame_prescription_buttons_drugs_main, padx=1, pady=1)
+    # frame_prescription_buttons_drugs_main = Frame(frame_prescription_buttons, padx=1, pady=1)
+    # frame_prescription_buttons_drugs_buttons = Frame(frame_prescription_buttons_drugs_main, padx=1, pady=1)
 
-    txt_prescription = ScrolledText(frame_prescription_main, width=15, height=8,
+    txt_prescription = ScrolledText(frame_prescription_main, width=15, height=16,
                                     font=('Comic Sans MS', user.get('text_size')),
                                     wrap="word")
     change_prescription_kb_button = Button(frame_prescription_main, text='скрыть клавиатуру рекомендаций',
