@@ -2777,6 +2777,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 edited_string = f"{drug_name} "
 
             for marker in data['examination']['selected_drugs'][drug_category].get(drug_name):
+                print(marker)
 
 
 
