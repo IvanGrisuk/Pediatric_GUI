@@ -1057,49 +1057,45 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         for selected_marker in all_markers:
                             if 'selected_diagnosis_get:____' in selected_marker:
                                 selected_diagnosis.set(selected_marker.split(':____')[-1])
+
+                            elif "drugs:____" in selected_marker:
+                                if not data['examination'].get('selected_drugs'):
+                                    data['examination']['selected_drugs'] = dict()
+
+                                all_buttons = selected_marker.split("____")
+                                for button in all_buttons:
+                                    if button.split('__') == 4:
+                                        drug_category, drug_name, mark_flag, mark = button.split('__')
+                                        if not data['examination']['selected_drugs'].get(drug_category):
+                                            data['examination']['selected_drugs'][drug_category] = dict()
+                                        if not data['examination']['selected_drugs'][drug_category].get(
+                                                drug_name):
+                                            data['examination']['selected_drugs'][drug_category][
+                                                drug_name] = dict()
+
+                                        if mark_flag == "Способ применения":
+                                            if not data['examination']['selected_drugs'][drug_category][
+                                                drug_name].get(mark_flag):
+                                                data['examination']['selected_drugs'][drug_category][
+                                                    drug_name][mark_flag] = list()
+                                            data['examination']['selected_drugs'][drug_category][
+                                                drug_name][mark_flag].append(mark)
+
+                                        else:
+                                            data['examination']['selected_drugs'][drug_category][drug_name][
+                                                mark_flag] = mark
+
                             else:
                                 for but_marker in ('complaints', 'examination', 'prescription',
-                                                   'diagnosis', 'weight', 'drugs'):
+                                                   'diagnosis', 'weight'):
 
                                     if f"{but_marker}:____" in selected_marker:
 
-                                        if but_marker == 'drugs':
-                                            if not data['examination'].get('selected_drugs'):
-                                                data['examination']['selected_drugs'] = dict()
 
-
-                                            all_buttons = selected_marker.replace(f"{but_marker}:____", '').split("____")
-                                            for button in all_buttons:
-                                                if button.split('__') == 4:
-                                                    drug_category, drug_name, mark_flag, mark = button.split('__')
-                                                    if not data['examination']['selected_drugs'].get(drug_category):
-                                                        data['examination']['selected_drugs'][drug_category] = dict()
-                                                    if not data['examination']['selected_drugs'][drug_category].get(
-                                                            drug_name):
-                                                        data['examination']['selected_drugs'][drug_category][
-                                                            drug_name] = dict()
-
-                                                    if mark_flag == "Способ применения":
-                                                        if not data['examination']['selected_drugs'][drug_category][
-                                                            drug_name].get(mark_flag):
-                                                            data['examination']['selected_drugs'][drug_category][
-                                                                drug_name][mark_flag] = list()
-                                                        data['examination']['selected_drugs'][drug_category][
-                                                                drug_name][mark_flag].append(mark)
-
-                                                    else:
-                                                        data['examination']['selected_drugs'][drug_category][drug_name][
-                                                            mark_flag] = mark
-
-
-
-
-                                        else:
-
-                                            all_buttons = selected_marker.replace(f"{but_marker}:____", '').split("__")
-                                            for button in all_buttons:
-                                                if button in data['examination'].get(f'{but_marker}_but'):
-                                                    data['examination'][f'{but_marker}_but'].get(button).set(1)
+                                        all_buttons = selected_marker.replace(f"{but_marker}:____", '').split("__")
+                                        for button in all_buttons:
+                                            if button in data['examination'].get(f'{but_marker}_but'):
+                                                data['examination'][f'{but_marker}_but'].get(button).set(1)
 
                                     elif f"{but_marker}_text:____" in selected_marker:
                                         text_inserted = selected_marker.replace(f"{but_marker}_text:____", '')
@@ -1696,12 +1692,41 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             for but_marker in ('complaints', 'examination', 'prescription'):
                 for mark_ in data['examination'].get(f'{but_marker}_but'):
                     data['examination'][f'{but_marker}_but'].get(mark_).set(0)
+            if data['examination'].get('selected_drugs'):
+                data['examination']['selected_drugs'].clear()
 
             for selected_marker in my_selected_diagnosis.split('__<end!>__\n'):
                 if 'selected_diagnosis_get:____' in selected_marker:
                     selected_diagnosis.set(selected_marker.split(':____')[-1])
                 elif "selected_place:____" in selected_marker:
                     selected_place.set(selected_marker.replace('selected_place:____', ''))
+
+                elif "drugs:____" in selected_marker:
+                    if not data['examination'].get('selected_drugs'):
+                        data['examination']['selected_drugs'] = dict()
+
+                    all_buttons = selected_marker.split("____")
+                    for button in all_buttons:
+                        if button.split('__') == 4:
+                            drug_category, drug_name, mark_flag, mark = button.split('__')
+                            if not data['examination']['selected_drugs'].get(drug_category):
+                                data['examination']['selected_drugs'][drug_category] = dict()
+                            if not data['examination']['selected_drugs'][drug_category].get(
+                                    drug_name):
+                                data['examination']['selected_drugs'][drug_category][
+                                    drug_name] = dict()
+
+                            if mark_flag == "Способ применения":
+                                if not data['examination']['selected_drugs'][drug_category][
+                                    drug_name].get(mark_flag):
+                                    data['examination']['selected_drugs'][drug_category][
+                                        drug_name][mark_flag] = list()
+                                data['examination']['selected_drugs'][drug_category][
+                                    drug_name][mark_flag].append(mark)
+
+                            else:
+                                data['examination']['selected_drugs'][drug_category][drug_name][
+                                    mark_flag] = mark
 
                 else:
                     for but_marker in ('complaints', 'examination', 'prescription', 'diagnosis'):
@@ -1728,6 +1753,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 txt_prescription.delete(1.0, 'end')
                                 txt_prescription.insert(1.0, text_inserted)
                 edit_examination_kb_text()
+                edit_complaints_kb_color()
 
         def saved_new_diagnosis():
             def final_save_new_diagnosis():
@@ -1768,6 +1794,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                     # text += '\n'
                     render_text += '__<end!>__\n'
+
+                for drug_category in data['examination'].get('selected_drugs', []):
+                    for drug_name in data['examination']['selected_drugs'].get(drug_category, []):
+                        for mark_flag in data['examination']['selected_drugs'][drug_category].get(drug_name, []):
+                            for mark in data['examination']['selected_drugs'][drug_category][drug_name].get(mark_flag, []):
+
 
                 render_text += f"complaints_text:____{txt_complaints.get(1.0, 'end').strip()}__<end!>__\n" \
                                f"examination_text:____{txt_examination.get(1.0, 'end').strip()}__<end!>__\n" \
