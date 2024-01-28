@@ -1085,23 +1085,16 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     selected_examination_button = StringVar()
     selected_diagnosis_button = StringVar()
     selected_recommendation_button = StringVar()
+
     data['examination']['age_month'] = get_age_d_m_y(patient.get('birth_date'))
     age = data['examination']['age_month'].get('year')
-    age_txt = f"Возраст: {data['examination']['age_month'].get('year')} "
-    if data['examination']['age_month'].get('year') in (2, 3, 4):
-        age_txt += 'года'
-    elif data['examination']['age_month'].get('year') == 1:
-        age_txt += 'год'
-    else:
-        age_txt += 'лет'
-    age_txt += f" {data['examination']['age_month'].get('month')} мес. " \
-               f"{data['examination']['age_month'].get('day')} д."
 
-    Label(examination_root, text=f"ФИО: {patient.get('name')}    Дата рождения: {patient.get('birth_date')}    "
-                                 f"{age_txt}\n"
-                                 f"Адрес: {patient.get('address')}",
+    patient_banner = StringVar()
+    patient_banner.set('Загрузка данных пациента...')
+    Label(examination_root, textvariable=patient_banner,
           font=('Comic Sans MS', user.get('text_size')),
           bg="#36566d", fg='white').pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
 
     def paste_past_examination():
         def past_examination(past_examination_frame: Frame):
@@ -4173,7 +4166,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         drugs_root_main.grid_remove()
 
     drugs_root_main = Frame(master=root_examination, padx=3, pady=3)
-
+    drugs_root_main.update_idletasks()
     create_drugs_root()
 
     def open_drugs_root():
@@ -4807,6 +4800,19 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             loc_calendar_frame.pack(fill='both', expand=True, side='left')
 
         create_calendar()
+
+    age_txt = f"Возраст: {data['examination']['age_month'].get('year')} "
+    if data['examination']['age_month'].get('year') in (2, 3, 4):
+        age_txt += 'года'
+    elif data['examination']['age_month'].get('year') == 1:
+        age_txt += 'год'
+    else:
+        age_txt += 'лет'
+    age_txt += f" {data['examination']['age_month'].get('month')} мес. " \
+               f"{data['examination']['age_month'].get('day')} д."
+
+    patient_banner.set(value=f"ФИО: {patient.get('name')}    Дата рождения: {patient.get('birth_date')}    "
+                             f"{age_txt}\n Адрес: {patient.get('address')}")
 
 
 def save_document(doc: Document, doc_name: str):
