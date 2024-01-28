@@ -3978,7 +3978,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['all_drug_frame'][drug_category].pack_forget()
             all_drug_frame = data['examination']['all_drug_frame'].get(selected_button.get())
             all_drug_frame.pack(fill='both', expand=True)
+            print(all_drug_frame.winfo_width())
 
+            all_drug_frame.update_idletasks()
+            print(all_drug_frame.winfo_width())
 
         def select_drugs_name():
             if data['examination']['all_drug_frame'].get(selected_button.get()):
@@ -4158,11 +4161,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             btn.pack(fill='x', expand=True)
         drug_category_frame.pack(fill='x', anchor='nw')
-        # all_drugs_frame_scrolled.pack(fill='both', expand=True)
+        all_drugs_frame_scrolled.pack(fill='both', expand=True)
         data['examination']['is_drugs_root_open'] = False
         data['examination']['all_drug_buttons'] = dict()
 
-        all_drugs_frame_scrolled.pack(fill='both', expand=True)
 
 
         drugs_root_main.grid(row=0, column=3, sticky="nwse")
