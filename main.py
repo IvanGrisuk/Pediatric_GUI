@@ -1020,6 +1020,8 @@ class ScrolledRoot(tk.Toplevel):
         self.bind("<Control-KeyPress>", keypress)
 
         self.canvas_frame = Frame(self.canvas, borderwidth=1, bg="#36566d")
+        self.canvas.create_window((0, 0), window=self.canvas_frame, anchor="nw")
+
         if marker == 'paste_examination_cmd_main':
             func(self, self.canvas_frame)
         elif marker == 'paste_examination_cmd_main_child':
@@ -1030,7 +1032,6 @@ class ScrolledRoot(tk.Toplevel):
         self.canvas_frame.columnconfigure(index='all', minsize=40, weight=1)
         self.canvas_frame.rowconfigure(index='all', minsize=20)
 
-        self.canvas.create_window((0, 0), window=self.canvas_frame, anchor="nw")
 
         self.canvas.grid(row=0, column=0, sticky="nswe")
         self.scroll_x.grid(row=1, column=0, sticky="we")
