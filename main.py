@@ -1581,6 +1581,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     ln_data = f"{type_ln}__{num_ln}__closed"
                 else:
                     ln_data = f"{type_ln}__{num_ln}__{txt_ln_from.get().strip()}__{txt_ln_until.get().strip()}"
+
+                if not user.get('get_last_doc_LN'):
+                    user['get_last_doc_LN'] = dict()
+                if not user['get_last_doc_LN'].get(type_ln):
+                    user['get_last_doc_LN'][type_ln] = list()
+                user['get_last_doc_LN'][type_ln].append(ln_data)
+
             else:
                 ln_data = type_ln
 
@@ -4387,23 +4394,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         txt_ln_from.delete(0, 'end')
                         txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
 
-                    # found_info = list()
-                    # found_info.clear()
-                    # with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                    #     cur = conn.cursor()
-                    #     cur.execute(f"SELECT LN_type FROM examination "
-                    #                 f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                    #                 f"AND LN_type LIKE '{type_ln}%'")
-                    #     for num in cur.fetchall():
-                    #         if num[0]:
-                    #             found_info.append(num[0])
-                    # if found_info:
-                    #     last_ln_num = max(found_info, key=lambda i: int(i.split('__')[1].split('_')[-1]))
-                    #     ln_num_digit = last_ln_num.split('__')[1].split('_')[-1]
-                    #     ln_num = f"{last_ln_num.split('__')[1].split('_')[0]}" \
-                    #              f"{int(ln_num_digit) + 1}".replace('_', '')
-                    #     txt_ln_from.delete(0, 'end')
-                    #     txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
 
             if type_ln in ("Справка ВН", "Лист ВН"):
                 lbl_type_ln['text'] = f"{type_ln} номер:"
@@ -4412,6 +4402,21 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             else:
                 frame_ln_add.grid_remove()
                 but_ln_my_blanks.grid_remove()
+
+
+        if user.get('my_LN'):
+            if not user.get('get_last_doc_LN'):
+                user['get_last_doc_LN'] = dict()
+
+            for ln_data in user.get('my_LN'):
+                if not user['get_last_doc_LN'].get(ln_data[0]):
+                    user['get_last_doc_LN'][ln_data[0]] = list()
+                    found_info_past = data_base(command='examination__get_last_doc_LN',
+                                                insert_data=f"{type_ln}%{str(ln_data[1])[:-1]}")
+                    print(found_info_past)
+                    if found_info_past:
+                        for i in found_info_past:
+                            user['get_last_doc_LN'][ln_data[0]].append(i)
 
         col = 0
         for but in ("Справка ВН", "Лист ВН", "Уход обеспечен"):
@@ -4528,22 +4533,15 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
 
             found_info = None
+
             if user.get('my_LN'):
-                if not data['examination'].get('get_last_doc_LN'):
-                    data['examination']['get_last_doc_LN'] = dict()
-
                 for ln_data in user.get('my_LN'):
-                    if not data['examination']['get_last_doc_LN'].get(ln_data[0]):
-                        found_info_past = data_base(command='examination__get_last_doc_LN',
-                                                    insert_data=f"{type_ln}%{str(ln_data[1])[:-1]}")
-                        data['examination']['get_last_doc_LN'][ln_data[0]] = found_info_past
-
                     if type_ln == ln_data[0]:
                         found_info = ln_data[1]
 
             row, col = 0, 0
             if found_info:
-                found_info_past = data['examination']['get_last_doc_LN'].get(type_ln)
+                found_info_past = user['get_last_doc_LN'].get(type_ln)
 
                 frame_ln_my_blanks_local_1 = Frame(frame_ln_my_blanks_local, padx=1, pady=1)
                 first_ln_num = int(found_info.split('__')[-1])
@@ -5365,6 +5363,8 @@ def data_base(command,
                     user['my_LN'].append(insert_data)
 
 
+
+
                 elif command == 'examination__get_last_doc_LN':
                     with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
                         cur = conn.cursor()
@@ -5439,6 +5439,7 @@ def data_base(command,
                             if insert_data[0] == i[0]:
                                 user['my_LN'].remove(i)
                         user['my_LN'].append(insert_data)
+
 
 
 
