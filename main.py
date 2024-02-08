@@ -3447,9 +3447,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 value=but_name,
                                 variable=data['examination']['diagnosis_add_but'].get(but_category),
                                 command=select_button,
-                                indicatoron=False, selectcolor='#36566d',
-                                activeforeground = '#36566d',
-                                activebackground='#36566d'
+                                indicatoron=False, selectcolor='#77f1ff'
                                 ).grid(row=row, column=col, sticky='ew')
                     col += 1
 
