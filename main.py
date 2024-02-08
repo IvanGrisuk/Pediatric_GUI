@@ -506,9 +506,9 @@ all_diagnosis = {
                             "НПР: 1-я группа.",
         "prescription": {"Рекомендации": []},
         "drugs": ["Льготные__Холекальциферол__Кратность__1 р/сут"],
-        "prescription_text": "Воспитательные действия по возрасту. Массаж, гимнастика. Режим дня № _ \n"
+        "prescription_text": "Воспитательные действия, массаж, гимнастика по возрасту. Режим дня № _ \n"
                              "С целью профилактики рахита: \n"
-                             "Холекальциферол: масляный раствор для приема внутрь 0.5мг/мл 10мл -- по 1 капле -- 1 р/сут",
+                             "Холекальциферол: масляный раствор для приема внутрь 0.5мг/мл 10мл -- по 1 капле -- 1 р/сут -- имеется дома",
         "diagnosis_text": "Заключение: соматически здоров на момент осмотра \nГруппа здоровья 2"
 
     }
@@ -537,11 +537,12 @@ all_data_diagnosis = {
                       ("анемия", "нормохромная", "гипохромная", "гиперхромная",
                        "нормоцитарная", "микроцитарная", "макроцитарная"),
                       ("легкой", "средней", "средне-тяжелой", "тяжелой", "степени"),
-                      ('реконвалесцент', "продолжает болеть", "улучшение", "ремиссия", "соматически здоров", "на момент осмотра"),
-                      ("период адаптации","СДН", "атопический дерматит", "детская форма",
+                      ('реконвалесцент', "продолжает болеть", "улучшение", "ремиссия"),
+                      ("период адаптации", "соматически здоров", "на момент осмотра"),
+                      ("СДН", "атопический дерматит", "детская форма",
                        "ОРИ", "ФРК", "Ветряная оспа", "ИМВП"),
                       ('\nГруппа здоровья', "1", "2", "3", "4"),
-                      ('\nГруппа риска', "реализации ВУИ,", "патологии ЦНС,", "Анемии,", "Внезапной смерти,")
+                      ('\nГруппа риска', "реализации ВУИ", "патологии ЦНС", "Анемии", "Внезапной смерти", "- риск не реализовался")
                       ),
 
     "diagnosis_child": ("Вид осмотра", 'Врачебно-сестринский патронаж', 'другие патронажи', "на приеме здоров"),
@@ -560,7 +561,8 @@ all_data_diagnosis = {
     "examination_child":
             ("Осмотр",
             ("Вскармливание", "грудное", "по требованию", '\n',
-             "смесь", "Беллакт", "НаН", "Фрисо", '\n', "премиум", "тройной комфорт", "гипоаллергенный", "безлактозный",
+             "смесь", "+ докорм", "Беллакт", "НаН", "Нестожен", "Нутрилак", "Семпер", "Кабрита" "Фрисо", '\n',
+             "премиум", "тройной комфорт", "гипоаллергенный", "безлактозный", "иммунис",
               '\n', "+ прикорм"),
             ("Общее состояние", "удовлетворительное", "средней тяжести", "тяжелое", '\n',
              "компенсированное", "декомпенсированное"),
@@ -628,7 +630,7 @@ all_data_diagnosis = {
                      "в паховой области", "в складках кожи", "по всему телу"),
                     ("Глаза", "без изменений", "конъюнктива гиперемирована", "глазная щель сужена",
                      "гнойное отделяемое", "отек век"),
-                    ("Слизистая глотки", "зев спокоен", "гиперемирована", "зернистая", "энантема"),
+                    ("Слизистая глотки", "зев спокоен", "неярко гиперемирована", "гиперемирована", "зернистая", "энантема"),
                     ("Нёбные миндалины", "без изменений", '\n',
                      "увеличены", "1ст.", "2ст.", "3ст.", '\n',
                      "налетов нет", "обложены налетом", "белого цвета", "серого цвета"),
@@ -1087,6 +1089,12 @@ class ScrolledRoot(tk.Toplevel):
         self.bind("<Control-KeyPress>", keypress)
 
         self.canvas_frame = Frame(self.canvas, borderwidth=1, bg="#36566d")
+        self.canvas_frame.columnconfigure(index='all', minsize=40, weight=1)
+        self.canvas_frame.rowconfigure(index='all', minsize=20)
+
+
+        self.canvas.grid(row=0, column=0, sticky="nswe")
+
         self.canvas.create_window((0, 0), window=self.canvas_frame, anchor="nw")
 
         if marker == 'paste_examination_cmd_main':
@@ -1095,14 +1103,11 @@ class ScrolledRoot(tk.Toplevel):
             func(self, self.canvas_frame, child_marker=True)
         else:
             func(self.canvas_frame)
-
         self.canvas_frame.columnconfigure(index='all', minsize=40, weight=1)
         self.canvas_frame.rowconfigure(index='all', minsize=20)
 
         # self.canvas.create_window((0, 0), window=self.canvas_frame, anchor="nw")
 
-
-        self.canvas.grid(row=0, column=0, sticky="nswe")
         self.scroll_x.grid(row=1, column=0, sticky="we")
         self.scroll_y.grid(row=0, column=1, sticky="ns")
 
@@ -1478,7 +1483,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 render_data['date_time'] = ""
 
             render_data['patient_info'] = f"ФИО: {patient.get('name')}\t" \
-                                          f"дата рождения: {patient.get('birth_date')}\t" \
+                                          f"Дата рождения: {patient.get('birth_date')}\t{age_txt}\t" \
                                           f"{patient.get('patient_district')}-й уч\n" \
                                           f"Место осмотра: {selected_place.get()}"
             if selected_place.get() == 'в поликлинике':
@@ -2612,7 +2617,245 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     paste_frame_complaints()
 
     def paste_patient_anthro_data():
+        def paste_npr_root():
+            def selected_age_month(event=None):
+                for age_month in data['examination'].get('npr_frame'):
+                    frame = data['examination']['npr_frame'].get(age_month)
+                    frame.pack_forget()
 
+                frame = data['examination']['npr_frame'].get(int(combo_age_month.get()))
+                frame.pack(fill='both', expand=True)
+
+            local_data_npr = {
+                1: {
+                    "Аз": "Плавное прослеживание движущегося предмета",
+                    "Ас": "Длительное слуховое сосредоточение (прислушивается к голосу взрослого, звуку игрушки и .т д.)",
+                    "Э": "Первая улыбка в ответ на речь взрослого",
+                    "ДР": "Ручки чаще слегка раскрыты",
+                    "ДО": "Лежа на животе, пытается поднимать и удерживать голову",
+                    "ПР": "Не оценивается",
+                    "PA": "Издает отдельные звуки в ответ на разговор с ним",
+                    "Н": "Не оценивается"
+                },
+                2: {
+                    "Аз": "Длительное сосредоточение, смотрит на лицо взрослого или неподвижный предмет. \n"
+                          "Длительно следит за движущейся игрушкой или взрослым",
+                    "Ас": "Ищущие повороты головы при длительном звуке. Поворачивает голову в сторону взрослого",
+                    "Э": "Быстро отвечает улыбкой на речь взрослого",
+                    "ДР": "Ручки чаще слегка раскрыты",
+                    "ДО": "Лежа на животе,поднимает и некоторое время удерживает голову",
+                    "ПР": "Не оценивается",
+                    "PA": "Произносит отдельные звуки",
+                    "Н": "Не оценивается"},
+                3: {
+                    "Аз": "Зрительное сосредоточение в вертикальном положении на руках взрослого \n"
+                          "(на лице говорящего, на игрушке), длительно рассматривает свои ручки",
+                    "Ас": "Ищущие повороты головы при длительном звуке. Поворачивает голову в сторону взрослого",
+                    "Э": "Отвечает «комплексом оживления» в ответ на эмоциональное общение со взрослым (разговор). \n"
+                         "Ищет глазами ребенка, издающего звуки",
+                    "ДР": "Случайно наталкивается ручками на игрушки, низко висящие над грудью",
+                    "ДО": "Лежит на животе несколько минут, опираясь на предплечья и высоко подняв голову. \n"
+                          "Удерживает голову в вертикальном положении",
+                    "ПР": "Не оценивается",
+                    "PA": "Произносит отдельные звуки",
+                    "Н": "Не оценивается"},
+                4: {
+                    "Аз": "Узнает мать или близкого человека (радуется)",
+                    "Ас": "Поворачивает голову в сторону невидимого источника звука инаходит его глазами. \n"
+                          "Адекватно реагирует на спокойную и плясовую мелодию",
+                    "Э": "Комплекс «оживления» во время бодрствования. Громко смеется в ответ на эмоциональное речевое общение. \n"
+                         "Ищет взглядом другого ребенка, рассматривает, радуется, тянется к нему",
+                    "ДР": "Рассматривает, ощупывает и захватывает низко висящие над грудью игрушки",
+                    "ДО": "При поддержке под мышки крепко упирается о твердую опору ногами, согнутыми в тазобедренном суставе",
+                    "ПР": "Не оценивается",
+                    "PA": "Гулит",
+                    "Н": "Во время кормления придерживает ручками грудь матери или бутылочку"
+                },
+                5: {
+                    "Аз": "Отличает близких людей от чужих по внешнему виду \n"
+                          "(по разному реагирует на лицо знакомого и незнакомого)",
+                    "Ас": "Узнает голос матери или близкого человека. \n"
+                          "Различает строгую и ласковую интонацию обращенной к нему речи, по-разному реагирует",
+                    "Э": "Радуется ребенку, берет унего из рук игрушку, гулит",
+                    "ДР": "Берет игрушку из рук взрослого иудерживает ее в ручке",
+                    "ДО": "Долго лежит на животе, подняв корпус и опираясь на ладони выпрямленных рук. \n"
+                          "Переворачивается со спины на живот. Ровно, устойчиво стоит при поддержке под мышки",
+                    "ПР": "Не оценивается",
+                    "PA": "Подолгу певуче гулит",
+                    "Н": "Ест с ложки полугустую и густую пищу"
+                },
+                6: {
+                    "Аз": "Не оценивается",
+                    "Ас": "По-разному реагирует на свое и чужое имя",
+                    "Э": "Не оценивается",
+                    "ДР": "Уверенно берет игрушки, находясь в любом положении, и подолгу занимается ими, \n"
+                          "перекладывает из одной ручки вдругую",
+                    "ДО": "Переворачивается с живота на спину. \n"
+                          "Передвигается, переставляя ручки или немного подползая",
+                    "ПР": "Не оценивается",
+                    "PA": "Произносит отдельные слоги (начало лепета)",
+                    "Н": "Хорошо ест с ложки, снимая пищу губами. \n"
+                         "Небольшое количество жидкой пищи пьет из блюдца или из чашки"},
+                7: {
+                    "Аз": "Не оценивается",
+                    "Ас": "Не оценивается",
+                    "Э": "Не оценивается",
+                    "ДР": "Игрушкой стучит, размахивает, перекладывает, бросает ее и пр.",
+                    "ДО": "Хорошо ползает (много, быстро, в различном направлении)",
+                    "ПР": "На вопрос «где?» находит взглядом предмет на постоянном определенном месте \n"
+                          "(например, часы, куклу и пр.)",
+                    "PA": "Подолгу лепечет, произнося одни и те же слоги (2-3)",
+                    "Н": "Пьет из чашки, которую держит взрослый"},
+                8: {
+                    "Аз": "Не оценивается",
+                    "Ас": "Не оценивается",
+                    "Э": "Смотрит на действия другого ребенка и смеется или лепечет",
+                    "ДР": "Игрушками занимается долго и разнообразно действует ими в зависимости от их свойств. \n"
+                          "Подражает действиям взрослого с игрушками (толкает мяч, стучит и тд.)",
+                    "ДО": "Сам садится, сидит, ложится. Держась за барьер, сам встает, стоит и опускается. \n"
+                          "Переступает, держась за барьер",
+                    "ПР": "На вопрос «где?» находит несколько предметов (2-3) на постоянных местах. \n"
+                          "По вербальной просьбе взрослого выполняет разученные ранее действия (без показа), \n"
+                          "например «ладушки», «дай ручку» и пр.",
+                    "PA": "Громко, четко, выразительно произносит различные слоги и повторяет их",
+                    "Н": "Ест корочку хлеба, которую сам держит в ручке. Пьет из чашки, которую держит взрослый"},
+                9: {
+                    "Аз": "Не оценивается",
+                    "Ас": "Выполняет плясовые движения под музыку",
+                    "Э": "Подражает действиям другого ребенка. Догоняет ребенка или ползет ему навстречу",
+                    "ДР": "Выполняет различные действия с предметами в зависимости от их свойств "
+                          "(катает, открывает, гремит и т. д.)",
+                    "ДО": "Не оценивается",
+                    "ПР": "На вопрос «где?» находит несколько знакомых предметов независимо от их местоположения. "
+                          "Знает свое имя",
+                    "PA": "Подражает взрослому, повторяя за ним слоги, которые уже есть в лепете",
+                    "Н": "Пьет из чашки, слегка придерживая е руками, спокойно относится к высаживанию на горшок"},
+                10: {
+                    "Аз": "Не оценивается",
+                    "Ас": "Не оценивается",
+                    "Э": "Действует рядом с ребенком или одной игрушкой с ним",
+                    "ДР": "По просьбе выполняет разученные действия с игрушками, \n"
+                          "действия с предметами принимают устойчивый характер",
+                    "ДО": "Всходит на невысокую наклонную поверхность или горку, держась за перила, и сходит с нее. \n"
+                          "Идет вперед с поддержкой за оберуки",
+                    "ПР": "По просьбе «дай» находит и дает знакомые предметы. \n"
+                          "При игре с ним выполняет разученные движения (догоню-догоню, игра в прятки и т.д.)",
+                    "PA": "Подражая взрослому, повторяет за ним новые слоги, которых нет в его лепете",
+                    "Н": "Закрепляет навыки иумения, приобретенные в 9 месяцев \n"
+                         "(Пьет из чашки, слегка придерживая е руками, спокойно относится к высаживанию на горшок)"},
+                11: {
+                    "Аз": "Не оценивается",
+                    "Ас": "Не оценивается",
+                    "Э": "Радуется приходу детей, относится к ним избирательно",
+                    "ДР": "Овладевает новыми движениями и начинает выполнять их по команде взрослого \n"
+                          "(снимает и надевает кольца на стержень, ставит кубик на кубик)",
+                    "ДО": "Стоит самостоятельно, делает первые самостоятельные шаги",
+                    "ПР": "Понимает речь и общается (по просьбе взрослого находит любую куклу, \n"
+                          "которую видит среди игрушек, любой мяч, все машины и пр.)",
+                    "PA": "Произносит первые слова-обозначения (например: «дай», «мама», «на» и др.)",
+                    "Н": "Закрепляет навыки и умения, приобретенные в 9 месяцев \n"
+                         "(Пьет из чашки, слегка придерживая ее руками, спокойно относится к высаживанию на горшок)"},
+                12: {
+                    "Аз": "Различает предметы по форме (отличает кирпичик от кубика по просьбе взрослого). \n"
+                          "Узнает на фотографии знакомого взрослого",
+                    "Ас": "Не оценивается",
+                    "Э": "Ищет игрушку, спрятанную другим ребенком. \n"
+                         "Протягивает другому ребенку игрушку, сопровождая свои действия смехом и лепетом",
+                    "ДР": "Выполняет самостоятельно разученные действия с игрушками (катает, кормит, возит и пр.). \n"
+                          "Переносит действия, разученные с одним предметом, на другой (всех кормит, всех баюкает и пр.)",
+                    "ДО": "Ходит самостоятельно, без опоры",
+                    "ПР": "Знает имена взрослых, названия нескольких предметов, выполняет отдельные поручения (принеси, найди и пр.). \n"
+                          "Понимает слово «нельзя». Некоторые слова в речи взрослых принимают обобщенный характер. \n"
+                          "По просьбе взрослого выполняет ранее разученные действия с игрушками",
+                    "PA": "Легко подражает новым слогам. Произносит 5-10 облегченных слов",
+                    "Н": "Самостоятельно пьет из чашки"}
+            }
+            npr_name = {
+                "Аз": "анализатор зрительный",
+                "Ас": "анализатор слуховой",
+                "Э": "эмоции",
+                "ДР": "движения руки",
+                "ДО": "движения общие",
+                "ПР": "понимаемая речь",
+                "PA": "речь активная",
+                "Н": "навыки"
+            }
+
+            local_data_npr_anthro = {
+                "Аз": ("Аз: _ ", "txt_anal_1_variable"),
+                "Ас": ("Ас: _ ", "txt_anal_2_variable"),
+                "Э": ("Э: _ ", "txt_anal_3_variable"),
+                "ДР": ("ДР: _ ", "txt_anal_4_variable"),
+                "ДО": ("ДО: _ ", "txt_anal_5_variable"),
+                "ПР": ("ПР: _ ", "txt_anal_6_variable"),
+                "PA": ("PA: _ ", "txt_anal_7_variable"),
+                "Н": ("Н: _ ", "txt_anal_8_variable")
+            }
+
+            patient_age_month = data['examination']['age_month'].get('month')
+            if data['examination']['age_month'].get('year') > 0:
+                patient_age_month = 12
+
+            frame_npr = Frame(examination_root, borderwidth=0.5, relief="solid", padx=1, pady=1, bg="#36566d")
+
+            data['examination']['npr_frame'] = dict()
+            for age_month in local_data_npr:
+                frame = Frame(frame_npr)
+                row = 0
+                for npr_marker in local_data_npr.get(age_month):
+                    name, variable = local_data_npr_anthro.get(npr_marker)
+
+                    check = (root_examination.register(is_valid__anthro), "%P",
+                             f"anal__{name}__{variable}")
+
+                    Label(master=frame, text=name.replace(' _', ''),
+                          font=('Comic Sans MS', user.get('text_size')),
+                          bg='white'
+                          ).grid(column=0, row=row, sticky='nwse', pady=2)
+
+                    Entry(frame, width=10,
+                          font=('Comic Sans MS', user.get('text_size')),
+                          justify="center",
+                          validate="all",
+                          textvariable=data['examination']['anthro'][variable],
+                          validatecommand=check
+                          ).grid(column=1, row=row, sticky='nwse')
+
+                    data['examination']['anthro'][variable].set(f"{patient_age_month} мес.")
+
+
+                    Label(master=frame, text=f"{npr_name.get(npr_marker)}",
+                          font=('Comic Sans MS', user.get('text_size')), bg='white'
+                          ).grid(row=row, column=2, sticky='nwse', pady=2)
+
+                    Label(master=frame, text=f"{local_data_npr[age_month].get(npr_marker)}",
+                          font=('Comic Sans MS', user.get('text_size')),
+                          bg='white').grid(row=row, column=3, sticky='nwse', columnspan=2, pady=2)
+                    row += 1
+
+                frame.columnconfigure(index='all', minsize=40, weight=1)
+                frame.rowconfigure(index='all', minsize=20)
+                data['examination']['npr_frame'][age_month] = frame
+
+            frame = Frame(frame_npr)
+            Label(master=frame, text="Показатели НПР для возраста (месяцев): ",
+                  font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=0, sticky='ew')
+
+            combo_age_month = Combobox(frame, state="readonly", width=10)
+            combo_age_month['values'] = [i for i in range(1, 13)]
+            combo_age_month.set(patient_age_month)
+            combo_age_month.grid(row=0, column=1, sticky='ew')
+            combo_age_month.bind("<<ComboboxSelected>>", selected_age_month)
+
+            frame.columnconfigure(index='all', minsize=40, weight=1)
+            frame.rowconfigure(index='all', minsize=20)
+            frame.pack(fill='both', expand=True)
+
+            data['examination']['npr_frame'][patient_age_month].pack(fill='both', expand=True)
+
+            frame_npr.pack(fill='both', expand=True, padx=2, pady=2)
+
+        frame_patient_anthro = Frame(examination_root, borderwidth=0.5, relief="solid", padx=1, pady=1, bg="#36566d")
 
         if not render_data.get('hr'):
             paste_hr_br()
@@ -2624,6 +2867,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 data['examination']['anthro'][variable] = StringVar()
 
         for mark in local_data_anthro:
+            if mark == 'anal':
+                continue
             frame = Frame(frame_patient_anthro, padx=3, pady=3)
             row = 0
             for name, variable in local_data_anthro.get(mark):
@@ -2695,110 +2940,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                     data['examination']['anthro'][name].set(variable)
 
 
-        # else:
-        #     check_weight = (root_examination.register(is_valid__weight), "%P")
-        #     check_height = (root_examination.register(is_valid__anthro), "%P", 'height')
-        #     check_hr = (root_examination.register(is_valid__anthro), "%P", "hr")
-        #     check_br = (root_examination.register(is_valid__anthro), "%P", "br")
-        #     check_temp = (root_examination.register(is_valid__anthro), "%P", "temp")
-        #     check_sp02 = (root_examination.register(is_valid__anthro), "%P", "sp02")
-        #     check_bp = (root_examination.register(is_valid__anthro), "%P", "bp")
-        #
-        #     txt_weight = Entry(frame_patient_anthro, width=10,
-        #                        font=('Comic Sans MS', user.get('text_size')),
-        #                        justify="center",
-        #                        validate="all",
-        #                        textvariable=data['examination']['anthro']['txt_weight_variable'],
-        #                        validatecommand=check_weight)
-        #
-        #     txt_height = Entry(frame_patient_anthro, width=10,
-        #                        font=('Comic Sans MS', user.get('text_size')),
-        #                        justify="center",
-        #                        validate="all",
-        #                        textvariable=data['examination']['anthro']['txt_height_variable'],
-        #                        validatecommand=check_height)
-        #
-        #     txt_hr = Entry(frame_patient_anthro, width=10,
-        #                    font=('Comic Sans MS', user.get('text_size')),
-        #                    justify="center",
-        #                    validate="all",
-        #                    textvariable=data['examination']['anthro']['txt_hr_variable'],
-        #                    validatecommand=check_hr)
-        #
-        #     txt_br = Entry(frame_patient_anthro, width=10,
-        #                    font=('Comic Sans MS', user.get('text_size')),
-        #                    justify="center",
-        #                    validate="all",
-        #                    textvariable=data['examination']['anthro']['txt_br_variable'],
-        #                    validatecommand=check_br)
-        #
-        #     txt_tenmp = Entry(frame_patient_anthro, width=10,
-        #                       font=('Comic Sans MS', user.get('text_size')),
-        #                       justify="center",
-        #                       validate="all",
-        #                       textvariable=data['examination']['anthro']['txt_temp_variable'],
-        #                       validatecommand=check_temp)
-        #
-        #     txt_sp02 = Entry(frame_patient_anthro, width=10,
-        #                      font=('Comic Sans MS', user.get('text_size')),
-        #                      justify="center",
-        #                      validate="all",
-        #                      textvariable=data['examination']['anthro']['txt_sp02_variable'],
-        #                      validatecommand=check_sp02)
-        #
-        #     txt_bp = Entry(frame_patient_anthro, width=10,
-        #                    font=('Comic Sans MS', user.get('text_size')),
-        #                    justify="center",
-        #                    validate="all",
-        #                    textvariable=data['examination']['anthro']['txt_bp_variable'],
-        #                    validatecommand=check_bp)
-        #
-        #
-        #     Label(master=frame_patient_anthro, text=f"Вес кг",
-        #           font=('Comic Sans MS', user.get('text_size')),
-        #           bg='white').pack(fill='both', expand=True, side="left")
-        #     txt_weight.pack(fill='both', expand=True, side="left")
-        #
-        #     Label(master=frame_patient_anthro, text=f"    Рост см",
-        #           font=('Comic Sans MS', user.get('text_size')),
-        #           bg='white').pack(fill='both', expand=True, side="left")
-        #     txt_height.pack(fill='both', expand=True, side="left")
-        #
-        #     Label(master=frame_patient_anthro, text=f"    ЧД",
-        #           font=('Comic Sans MS', user.get('text_size')),
-        #           bg='white').pack(fill='both', expand=True, side="left")
-        #     txt_br.pack(fill='both', expand=True, side="left")
-        #     txt_br.insert(0, render_data.get('br'))
-        #
-        #     Label(master=frame_patient_anthro, text=f"    ЧСС",
-        #           font=('Comic Sans MS', user.get('text_size')),
-        #           bg='white').pack(fill='both', expand=True, side="left")
-        #     txt_hr.pack(fill='both', expand=True, side="left")
-        #     txt_hr.insert(0, render_data.get('hr'))
-
-
-        #     Label(master=frame_patient_anthro, text=f"    Температура",
-        #           font=('Comic Sans MS', user.get('text_size')),
-        #           bg='white').pack(fill='both', expand=True, side="left")
-        #     txt_tenmp.pack(fill='both', expand=True, side="left")
-        #     txt_tenmp.insert(0, random.choice(['36,6', '36,7', '36,5']))
-        #
-        #     Label(master=frame_patient_anthro, text=f"    sp O₂",
-        #           font=('Comic Sans MS', user.get('text_size')),
-        #           bg='white').pack(fill='both', expand=True, side="left")
-        #     txt_sp02.pack(fill='both', expand=True, side="left")
-        #
-        #     Label(master=frame_patient_anthro, text=f"    АД",
-        #           font=('Comic Sans MS', user.get('text_size')),
-        #           bg='white').pack(fill='both', expand=True, side="left")
-        #     txt_bp.pack(fill='both', expand=True, side="left")
-
         frame_patient_anthro.columnconfigure(index='all', minsize=40, weight=1)
         frame_patient_anthro.rowconfigure(index='all', minsize=20)
         frame_patient_anthro.pack(fill='both', expand=True)
 
+        if child_marker:
+            paste_npr_root()
 
-    frame_patient_anthro = Frame(examination_root, borderwidth=0.5, relief="solid", padx=1, pady=1, bg="#36566d")
+
 
     local_data_anthro = {
         "weight":
@@ -2826,20 +2975,27 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         "height":
             (("Длинна тела: _ см.", "txt_height_variable"),
              ("Окр. головы: _ см.", "txt_head_variable"),
-             ("Окр. груди: _  см.", "txt_chest_variable"),
-             ("Родничок: _ ", "txt_hole_head_variable")),
+             ("Окр. груди: _  см.", "txt_chest_variable")),
+        "other":
+            (("Родничок: _ ", "txt_hole_head_variable"),
+             ("Зубы: _ ", "txt_teeth_variable"),
+             ("БЦЖ _ ", "txt_tubic_variable")),
         "hr_br":
             (("ЧД: _ /мин.", "txt_br_variable"),
              ("ЧСС: _ /мин.", "txt_hr_variable"),
-             ("Температура: _ ℃.", "txt_temp_variable"),
-             ("БЦЖ _ ", "txt_tubic_variable")),
+             ("Температура: _ ℃.", "txt_temp_variable")),
         "anal":
             (("Аз: _ ", "txt_anal_1_variable"),
              ("Ас: _ ", "txt_anal_2_variable"),
              ("Э: _ ", "txt_anal_3_variable"),
-             ("До: _ ", "txt_anal_4_variable")),
+             ("ДР: _ ", "txt_anal_4_variable"),
+             ("ДО: _ ", "txt_anal_5_variable"),
+             ("ПР: _ ", "txt_anal_6_variable"),
+             ("PA: _ ", "txt_anal_7_variable"),
+             ("Н: _ ", "txt_anal_8_variable")),
 
-    }
+        }
+
 
     def edit_drugs_weight(weight):
 
@@ -3244,6 +3400,78 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     frame_diagnosis_txt.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
 
     paste_diagnosis_kb()
+
+    def paste_diagnosis_add_but():
+        def select_button_risk():
+            pass
+        def select_button():
+            pass
+
+        frame = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+        data['examination']['diagnosis_add_but'] = dict()
+        local_but_name = {
+            'Группа здоровья': ("1", "2", "3", "4"),
+            'Группа риска': ("реализации ВУИ", "патологии ЦНС", "Анемии", "Внезапной смерти"),
+            'НПР': ("1-я группа", "2-я группа", "3-я группа", "4-я группа"),
+            'Режим дня №': ("1", "2", "3", "4"),
+        }
+
+        col, row = 0, 0
+        for but_category in local_but_name:
+            # frame = Frame(frame_diagnosis_add_but)
+
+            Label(master=frame,
+                  text=but_category,
+                  font=('Comic Sans MS', user.get('text_size')), bg='white'
+                  ).grid(row=row, column=col, sticky='ew')
+            col += 1
+
+            if but_category == 'Группа риска':
+
+                for but_name in local_but_name.get(but_category):
+                    data['examination']['diagnosis_add_but'][f"{but_category}__{but_name}"] = IntVar()
+
+                    Checkbutton(frame, text=but_name,
+                                font=('Comic Sans MS', user.get('text_size')),
+                                variable=data['examination']['diagnosis_add_but'].get(f"{but_category}__{but_name}"),
+                                command=select_button_risk,
+                                onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff'
+                                ).grid(row=row, column=col, sticky='ew')
+                    col += 1
+
+            else:
+                data['examination']['diagnosis_add_but'][but_category] = StringVar()
+                for but_name in local_but_name.get(but_category):
+                    Radiobutton(frame, text=but_name,
+                                font=('Comic Sans MS', user.get('text_size')),
+                                value=but_name,
+                                variable=data['examination']['diagnosis_add_but'].get(but_category),
+                                command=select_button,
+                                indicatoron=False, selectcolor='#36566d',
+                                activeforeground = '#36566d',
+                                activebackground='#36566d'
+                                ).grid(row=row, column=col, sticky='ew')
+                    col += 1
+
+            row += 1
+            col = 0
+
+        data['examination']['diagnosis_add_but']['Группа здоровья'].set('2')
+        data['examination']['diagnosis_add_but']['НПР'].set('1-я группа')
+
+
+        frame.columnconfigure(index='all', minsize=40, weight=1)
+        frame.rowconfigure(index='all', minsize=20)
+        frame.pack(fill='both', expand=True)
+
+        # frame_diagnosis_add_but.columnconfigure(index='all', minsize=40, weight=1)
+        # frame_diagnosis_add_but.rowconfigure(index='all', minsize=20)
+        # frame_diagnosis_add_but.pack(fill='both', expand=True)
+
+
+
+    if child_marker:
+        paste_diagnosis_add_but()
 
     def paste_frame_prescription():
         label_prescription = Label(master=frame_prescription_main,
@@ -4030,6 +4258,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['all_drug_frame'][drug_category].pack_forget()
             all_drug_frame = data['examination']['all_drug_frame'].get(selected_button.get())
             all_drug_frame.pack(fill='both', expand=True)
+            data['examination']['canvas_frame_scrolled'].yview_moveto(0.001)
 
         def select_drugs_name():
             if data['examination']['all_drug_frame'].get(selected_button.get()):
@@ -4055,6 +4284,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     edit_frame.rowconfigure(index='all', minsize=20)
 
                     edit_frame.pack(fill='both', expand=True)
+
 
         def create_scroller_frame(master_frame, func):
             def resize(event):
@@ -4412,7 +4642,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 if not user['get_last_doc_LN'].get(ln_data[0]):
                     user['get_last_doc_LN'][ln_data[0]] = list()
                     found_info_past = data_base(command='examination__get_last_doc_LN',
-                                                insert_data=f"{type_ln}%{str(ln_data[1])[:-1]}")
+                                                insert_data=f"{ln_data[0]}%{str(ln_data[1])[:-1]}")
                     print(found_info_past)
                     if found_info_past:
                         for i in found_info_past:
@@ -4555,7 +4785,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     btn.grid(row=row, column=col, sticky='ew')
                     if found_info_past:
                         for i in found_info_past:
-                            if str(first_ln_num) in i[0]:
+                            if isinstance(i, tuple):
+                                i = i[0]
+                            if str(first_ln_num) in i:
                                 btn['bg'] = '#cdcdcd'
                                 break
                         else:
@@ -4856,6 +5088,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         age_txt += 'лет'
     age_txt += f" {data['examination']['age_month'].get('month')} мес. " \
                f"{data['examination']['age_month'].get('day')} д."
+
 
     patient_banner.set(value=f"ФИО: {patient.get('name')}    Дата рождения: {patient.get('birth_date')}    "
                              f"{age_txt}\n Адрес: {patient.get('address')}")
@@ -7776,13 +8009,13 @@ def examination_cmd():
     else:
         # app_examination = ScrolledRoot(marker='paste_examination_cmd_main')
         app_examination = ScrolledRoot(marker='paste_examination_cmd_main', func=paste_examination_cmd_main)
-
         app_examination.title(f"Осмотр "
                               f"{patient.get('name').split()[0]} "
                               f"{patient.get('name').split()[1]} "
                               f"{patient.get('birth_date')}")
         app_examination.geometry('+0+0')
         app_examination.mainloop()
+
 
 def examination_cmd_child():
     if not patient.get('name'):
@@ -8058,19 +8291,25 @@ def decoding_name(patient_data):
                                 user_decoded['patient_district'] += q
 
                         user_decoded['address'] = 'г. '
-                        for i_ in info[info.index('Минск'):]:
-                            if i_.isdigit():
-                                user_decoded['address'] += f'{i_} - '
+                        if 'Минск' in info:
+                            for i_ in info[info.index('Минск'):]:
+                                if i_.isdigit():
+                                    user_decoded['address'] += f'{i_} - '
+                                else:
+                                    user_decoded['address'] += f'{i_} '
                             else:
-                                user_decoded['address'] += f'{i_} '
+                                user_decoded['address'] = user_decoded['address'][:-2]
                         else:
-                            user_decoded['address'] = user_decoded['address'][:-2]
+                            user_decoded['address'] = 'None'
 
                         break
 
             if not user_decoded.get('gender'):
                 user_decoded['gender'] = 'мужской/женский'
+
+
             for key, value in user_decoded.items():
+
                 if not value:
                     if key != 'gender':
                         print(f'1) Exception! decoding_name: \ntext:{text}\n', user_decoded.get('amb_cart'),
@@ -8080,8 +8319,21 @@ def decoding_name(patient_data):
 
                         raise ValueError
 
+            if user_decoded.get('address') == 'None':
+                with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
+                    cur = conn.cursor()
+                    cur.execute(f"SELECT Домашний_адрес FROM patient_data "
+                                f"WHERE amb_cart LIKE '%{user_decoded.get('amb_cart')}%' "
+                                f"AND Дата_рождения LIKE '{user_decoded.get('birth_date')}'")
+                    found_data = cur.fetchall()
+
+                if len(found_data) == 1:
+                    user_decoded['address'] = found_data[0][0]
+
+
         except (IndexError, ValueError):
-            print(f'2) Exception! decoding_name: \ntext:{text}\n', user_decoded.get('amb_cart'),
+            print(f'2) Exception! decoding_name: \ntext:{text}\n',
+                  user_decoded.get('amb_cart'),
                   user_decoded.get('district'),
                   user_decoded.get('name'), user_decoded.get('birth_date'), user_decoded.get('gender'),
                   user_decoded.get('address'))
