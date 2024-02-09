@@ -1390,7 +1390,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
           bg="#36566d", fg='white').pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
     examination_root.update()
 
+    def upload_last_data():
+        pass
 
+    upload_last_data()
     def paste_past_examination():
         def past_examination(past_examination_frame: Frame):
             def selected_past_but():
@@ -1770,10 +1773,17 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 patient_anthro_data_loc = ''
                 patient_anthro_data_but_loc = 'patient_anthro_data:____'
 
+                npr_flag = False
                 for mark in local_data_anthro:
+
+
                     for name, variable in local_data_anthro.get(mark):
                         select_name = data['examination']['anthro'][variable].get()
                         if select_name:
+                            if mark == 'anal' and not npr_flag:
+                                patient_anthro_data_loc += 'НПР: \n'
+                                npr_flag = True
+
                             patient_anthro_data_loc += f"{name}".replace('_', select_name)
                             patient_anthro_data_but_loc += f"{variable}__{select_name}____".replace(',', '.')
                             if child_marker:
@@ -2042,14 +2052,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     def paste_frame_button_create():
         def create_examination_doc_a5():
-            if child_marker:
-                create_examination_doc('а5_child')
-            else:
-                create_examination_doc('а5')
-
+            create_examination_doc('а5')
 
         def create_examination_doc_a5_rec():
             create_examination_doc('а5_рек')
+
+        def create_examination_doc_a5_disp():
+            create_examination_doc('а5_child_disp')
 
         def create_examination_doc_a6():
             create_examination_doc('а6')
@@ -2057,31 +2066,34 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         def create_examination_doc_none():
             create_examination_doc()
 
-        button_change_all_kb_status.grid(column=0, row=0, rowspan=3)
+        button_change_all_kb_status.grid(column=0, row=0, rowspan=2, sticky='nwse')
 
         Button(frame_button, text='Загрузить\nпрошлые\nосмотры',
                command=paste_past_examination,
-               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, rowspan=3)
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, rowspan=2, sticky='nswe')
 
         Button(frame_button, text='Печать А5',
                command=create_examination_doc_a5,
-               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=0, columnspan=2, sticky='ew')
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=0, columnspan=2, sticky='nswe')
+
+        Button(frame_button, text='Печать А6',
+               command=create_examination_doc_a6,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1, columnspan=2, sticky='nswe')
+
+        Button(frame_button, text='Печать А5 + рекомендации',
+               command=create_examination_doc_a5_rec,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=0, columnspan=2, sticky='nswe')
+
         Button(frame_button, text='Сохранить без печати',
                command=create_examination_doc_none,
-               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1, columnspan=2, sticky='ew')
-
-        if not child_marker:
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=1, columnspan=2, sticky='nswe')
 
 
-            Button(frame_button, text='Печать А6',
-                   command=create_examination_doc_a6,
-                   font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=1, columnspan=2, sticky='ew')
 
-            Button(frame_button, text='Печать А5 + рекомендации',
-                   command=create_examination_doc_a5_rec,
-                   font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=0, columnspan=2, sticky='ew')
-
-
+        if child_marker:
+            Button(frame_button, text='Печать А5 \nежемесячный',
+                   command=create_examination_doc_a5_disp,
+                   font=('Comic Sans MS', user.get('text_size'))).grid(column=6, row=0, rowspan=2, sticky='nswe')
 
 
 
@@ -2532,16 +2544,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 if variable == "txt_weight_variable" and data['examination']['anthro']["txt_height_variable"].get():
                     height = float(data['examination']['anthro']["txt_height_variable"].get().replace(',', '.'))
                     txt_imt_variable = round(num / float(height/100)**2, 1)
-                    print('txt_imt_variable', txt_imt_variable)
 
 
                 elif variable == "txt_height_variable" and data['examination']['anthro']["txt_weight_variable"].get():
                     weight = float(data['examination']['anthro']["txt_weight_variable"].get().replace(',', '.'))
                     txt_imt_variable = round(weight / (num/100) ** 2, 1)
-                    print('txt_imt_variable', txt_imt_variable)
 
                 if txt_imt_variable:
-                    print('txt_imt_variable', txt_imt_variable)
                     data['examination']['anthro']["txt_imt_variable"].set(txt_imt_variable)
             else:
                 data['examination']['anthro']["txt_imt_variable"].set('')
@@ -5000,8 +5009,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             ln_num = ''
 
             if type_ln in ("Справка ВН", "Лист ВН"):
-                found_info = data_base(command='examination__get_last_patient_ln',
-                                       insert_data=type_ln)
+                found_info = data['examination']['get_last_patient_ln'].get(type_ln)
+
                 if found_info:
                     last_visit = min(found_info,
                                      key=lambda i: (datetime.now() -
@@ -5017,7 +5026,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 txt_ln_from.insert(0, date_from_cont)
 
                             except Exception:
-                                pass
+                                txt_ln_from.delete(0, 'end')
+                                txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
 
                 if not ln_num:
                     open_frame_ln_my_blanks()
@@ -5025,8 +5035,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     txt_ln_num.delete(0, 'end')
                     if ln_num:
                         txt_ln_num.insert(0, ln_num)
-                        txt_ln_from.delete(0, 'end')
-                        txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
 
 
             if type_ln in ("Справка ВН", "Лист ВН"):
@@ -5047,10 +5055,15 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     user['get_last_doc_LN'][ln_data[0]] = list()
                     found_info_past = data_base(command='examination__get_last_doc_LN',
                                                 insert_data=f"{ln_data[0]}%{str(ln_data[1])[:-1]}")
-                    print(found_info_past)
                     if found_info_past:
                         for i in found_info_past:
                             user['get_last_doc_LN'][ln_data[0]].append(i)
+
+        data['examination']['get_last_patient_ln'] = dict()
+        data['examination']['get_last_patient_ln'] = data_base(command='examination__get_last_patient_ln')
+
+
+
 
         col = 0
         for but in ("Справка ВН", "Лист ВН", "Уход обеспечен"):
@@ -5973,17 +5986,18 @@ def data_base(command,
                                        f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
 
                 elif command == 'examination__get_last_patient_ln':
+                    answer = dict()
                     with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
                         cur = conn.cursor()
+                        for type_ln in ("Справка ВН", "Лист ВН"):
+                            cur.execute(f"SELECT date_time, LN_type FROM examination "
+                                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                        f"AND patient_info LIKE "
+                                        f"'{patient.get('name')}%{patient.get('birth_date')}' "
+                                        f"AND LN_type LIKE '{type_ln}%'")
 
-                        cur.execute(f"SELECT date_time, LN_type FROM examination "
-                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                    f"AND patient_info LIKE "
-                                    f"'{patient.get('name')}%{patient.get('birth_date')}' "
-                                    f"AND LN_type LIKE '{insert_data}%'")
-
-                        found_info = cur.fetchall()
-                    return found_info
+                            answer[type_ln] = cur.fetchall()
+                    return answer
 
                 elif command == 'examination__edit_doctor_LN':
                     with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
@@ -6049,18 +6063,20 @@ def data_base(command,
                         cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE doctor_name LIKE "
                                        f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
 
+
                 elif command == 'examination__get_last_patient_ln':
+                    answer = dict()
                     with sq.connect(r"\\192.168.19.1\database\examination_data_base.db") as conn:
                         cur = conn.cursor()
+                        for type_ln in ("Справка ВН", "Лист ВН"):
+                            cur.execute(f"SELECT date_time, LN_type FROM examination "
+                                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                        f"AND patient_info LIKE "
+                                        f"'{patient.get('name')}%{patient.get('birth_date')}' "
+                                        f"AND LN_type LIKE '{type_ln}%'")
 
-                        cur.execute(f"SELECT date_time, LN_type FROM examination "
-                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                    f"AND patient_info LIKE "
-                                    f"'{patient.get('name')}%{patient.get('birth_date')}' "
-                                    f"AND LN_type LIKE '{insert_data}%'")
-
-                        found_info = cur.fetchall()
-                    return found_info
+                            answer[type_ln] = cur.fetchall()
+                    return answer
 
                 elif command == 'examination__edit_doctor_LN':
                     with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as connect:
