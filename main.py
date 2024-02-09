@@ -3812,7 +3812,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             'Группа здоровья': ("1", "2", "3", "4"),
             'Группа риска': ("нет", "реализации ВУИ", "патологии ЦНС", "Анемии", "Внезапной смерти"),
             'НПР': ("1-я группа", "2-я группа", "3-я группа", "4-я группа"),
-            'Режим дня №': ("1", "2", "3", "4"),
+            'Режим дня №': ("1", "2", "3", "4", "5"),
         }
 
         for but_category in local_but_name:
@@ -3860,9 +3860,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             data['examination']['diagnosis_add_but']['Режим дня №'].set('2')
         elif data['examination']['age_month'].get('month') < 9:
             data['examination']['diagnosis_add_but']['Режим дня №'].set('3')
+        elif data['examination']['age_month'].get('year') == 0:
+            data['examination']['diagnosis_add_but']['Режим дня №'].set('4')
         else:
             data['examination']['diagnosis_add_but']['Режим дня №'].set('4')
-
         select_button()
 
 
