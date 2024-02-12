@@ -1577,17 +1577,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             past_examination_connect_status.set("Подключение к базе данных")
             past_examination_frame.update()
-            answer_connect, found_info = data_base(command='select_past_examination_srv')
-            past_examination_data['answer_connect'] = answer_connect
-            if answer_connect == 'srv':
-                past_examination_connect_status.set("Подключение к базе данных сервера: успешно")
-            else:
-                past_examination_connect_status.set("Подключение к базе данных сервера: ошибка\n"
-                                                    "Загрузка локальных данных...")
+            found_info = data_base(command='examination__select_past_examination')
+            if found_info:
+                past_examination_connect_status.set("Подключение к базе данных: успешно")
             past_examination_frame.update()
 
             if not found_info:
-                past_examination_connect_status.set("История о прошлых осмотрах пациента пуста")
+                past_examination_connect_status.set(f"{past_examination_connect_status.get()}\n"
+                                                    f"История о прошлых осмотрах пациента пуста")
             else:
                 found_info = sorted(found_info,
                                     key=lambda i: (datetime.now() -
@@ -1840,7 +1837,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             save_info_examination = [
                 f"{datetime.now().strftime('%d.%m.%Y %H:%M')}",
                 f"{user.get('doctor_name')}",
-                None,
+                'loc',
                 ln_data,
                 f"{patient.get('name').strip()}__{patient.get('birth_date').strip()}",
                 active_examination,
@@ -2087,7 +2084,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         Button(frame_button, text='Сохранить без печати',
                command=create_examination_doc_none,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=1, columnspan=2, sticky='nswe')
-
 
 
         if child_marker:
@@ -3234,7 +3230,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         if child_marker:
             paste_npr_root()
-
 
 
     local_data_anthro = {
@@ -5556,7 +5551,19 @@ def data_base(command,
                         "(doctor_name text, ln_type text, ln_num text)")
             cur.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
                         "(doctor_name text, sport_section text)")
+            cur.execute("CREATE TABLE IF NOT EXISTS app_data "
+                        "(path_examination_data_base text, path_srv_data_base text, "
+                        "app_password text, last_reg_password text)")
 
+            user['app_data'] = dict()
+            for mark in ('path_examination_data_base', 'path_srv_data_base', 'app_password', 'last_reg_password'):
+                cur.execute(f"SELECT {mark} FROM app_data")
+                app_data = cur.fetchone()
+                print('app_data', mark, app_data)
+                if isinstance(app_data, tuple):
+                    user['app_data'][mark] = app_data[0]
+                else:
+                    user['app_data'][mark] = None
             cur.execute(f"SELECT doctor_name FROM врачи")
             doctor_data = list()
             for i in cur.fetchall():
@@ -5576,16 +5583,28 @@ def data_base(command,
                 cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
                             ['Иванов И.И.', 1, 1, 'Петров П.П.', True, 20])
 
+    elif command == 'activate_app':
+        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE from app_data")
+            cur.execute("INSERT INTO app_data VALUES (?, ?, ?, ?)",
+                        [user['app_data'].get('path_examination_data_base'),
+                         user['app_data'].get('path_srv_data_base'),
+                         user['app_data'].get('app_password'),
+                         datetime.now().strftime("%d.%m.%Y")])
+
+
+
     elif command == 'create_SRV_db':
         try:
-            with sq.connect(r"\\192.168.19.1\database\examination_data_base.db") as conn:
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute("CREATE TABLE IF NOT EXISTS examination "
                             "(date_time text, doctor_name text, status text, "
                             "LN_type text, patient_info text, examination_text text, "
                             "examination_key text, add_info text)")
 
-            with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as conn:
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute("CREATE TABLE IF NOT EXISTS врачи "
                             "(doctor_name text, password text, district text, ped_div text, "
@@ -5599,6 +5618,7 @@ def data_base(command,
         except Exception:
             pass
 
+
     elif command == 'edit_examination_loc':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
@@ -5609,7 +5629,7 @@ def data_base(command,
             examination_loc = cur.fetchall()
         if examination_loc:
             try:
-                with sq.connect(database=r"\\192.168.19.1\database\examination_data_base.db", timeout=10.0) as conn:
+                with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db", timeout=10.0) as conn:
                     cur = conn.cursor()
                     if examination_loc:
                         for ex_info in examination_loc:
@@ -5654,7 +5674,7 @@ def data_base(command,
 
         try:
 
-            with sq.connect(database=r"\\192.168.19.1\database\application_data_base.db", timeout=10.0) as conn:
+            with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
                 cur = conn.cursor()
                 for marker in edit_local_data:
                     cur.execute(f"SELECT * FROM {marker} "
@@ -5687,19 +5707,20 @@ def data_base(command,
                         cur.execute(f"INSERT INTO my_LN VALUES({'?, ' * (len(marker_0) - 1) + '?'})", marker_0)
 
             answer = f"Синхронизация локальных данных - ОК"
-
+        print('for marker in edit_local_data')
         for marker in edit_local_data:
             marker_0 = '_loc'
             if edit_local_data[f"{marker}"].get(f"{marker}_global"):
                 marker_0 = '_global'
             for info in edit_local_data[f"{marker}"].get(f"{marker}{marker_0}"):
                 user[f"{marker}"].append(info[1:])
+                print(marker, user.get(marker))
 
         return answer
 
     elif command == 'last_edit_patient_db_srv':
         try:
-            with sq.connect(r"\\192.168.19.1\database\patient_data_base.db") as conn:
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute(f"SELECT last_edit FROM last_edit")
                 last_edit_srv = cur.fetchall()[0]
@@ -5718,7 +5739,7 @@ def data_base(command,
 
     elif command == 'get_all_doctor_info':
         try:
-            with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as conn:
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
                 cur = conn.cursor()
 
                 cur.execute("SELECT * FROM врачи")
@@ -5730,18 +5751,20 @@ def data_base(command,
     elif command.startswith('get_certificate_for_district'):
         _, type_table, marker = command.split('__')
         try:
-            with sq.connect(r"\\192.168.19.1\database\data_base.db") as conn:
-                cur = conn.cursor()
-            if type_table == 'certificate_ped_div':
-                cur.execute(f"SELECT *"
-                            f" FROM {type_table} WHERE ped_div LIKE '{marker}';")
-            elif type_table == 'certificate_camp':
-                cur.execute(f"SELECT *"
-                            f" FROM {type_table} WHERE district LIKE '{marker}';")
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
 
-            found_data = list()
-            for info in cur.fetchall():
-                found_data.append(info)
+                cur = conn.cursor()
+                found_data = list()
+                for year in range(2023, datetime.now().year + 1):
+                    if type_table == f"certificate_ped_div":
+                        cur.execute(f"SELECT *"
+                                    f" FROM {type_table}__{year} WHERE ped_div LIKE '{marker}';")
+                    elif type_table == 'certificate_camp':
+                        cur.execute(f"SELECT *"
+                                    f" FROM {type_table}__{year} WHERE district LIKE '{marker}';")
+
+                    for info in cur.fetchall():
+                        found_data.append(info)
             return found_data
         except Exception:
             return False
@@ -5749,7 +5772,7 @@ def data_base(command,
     elif command == 'save_new_diagnosis':
         try:
             try:
-                with sq.connect(r"\\192.168.19.1\database\application_data_base.db", timeout=10.0) as connect:
+                with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db", timeout=10.0) as connect:
                     cursor = connect.cursor()
                     cursor.execute(f"INSERT INTO my_saved_diagnosis "
                                    f"VALUES(?, ?, ?)", insert_data)
@@ -5770,7 +5793,7 @@ def data_base(command,
     elif command == 'save_new_hobby':
         try:
             try:
-                with sq.connect(database=r"\\192.168.19.1\database\application_data_base.db", timeout=10.0) as connect:
+                with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}application_data_base.db", timeout=10.0) as connect:
                     cursor = connect.cursor()
                     cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
                                    insert_data)
@@ -5790,7 +5813,7 @@ def data_base(command,
     elif command == 'delete_sport_section':
         try:
             try:
-                with sq.connect(database=r"\\192.168.19.1\database\application_data_base.db", timeout=10.0) as connect:
+                with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}application_data_base.db", timeout=10.0) as connect:
                     cursor = connect.cursor()
                     cursor.execute(f"DELETE FROM my_sport_section "
                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
@@ -5844,8 +5867,10 @@ def data_base(command,
                 cur.execute(f"SELECT * FROM {marker} "
                             f"WHERE doctor_name LIKE '{doctor_name}'")
                 user[marker] = list()
-                for i in cur.fetchall():
-                    user[marker].append(i[1:])
+                found_data = cur.fetchall()
+                if found_data:
+                    for i in found_data:
+                        user[marker].append(i[1:])
 
     elif command == 'save_certificate_ped_div':
         try:
@@ -5853,13 +5878,21 @@ def data_base(command,
             data_cert = insert_data[1]
             type_table = insert_data[2]
 
-            with sq.connect(r"\\192.168.19.1\database\data_base.db") as conn:
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
+
+                cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__{datetime.now().year} ("
+                            "district TEXT, num TEXT, date TEXT, "
+                            "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
+                cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_ped_div__{datetime.now().year} ("
+                            "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
+                            "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
+
                 cur = conn.cursor()
                 if type_table == 'certificate_ped_div':
                     cur.execute(f"SELECT num"
-                                f" FROM {type_table} WHERE ped_div LIKE '{district_pd}';")
+                                f" FROM {type_table}__{datetime.now().year} WHERE ped_div LIKE '{district_pd}';")
                 elif type_table == 'certificate_camp':
-                    cur.execute(f"SELECT num FROM {type_table} WHERE district LIKE '{district_pd}';")
+                    cur.execute(f"SELECT num FROM {type_table}__{datetime.now().year} WHERE district LIKE '{district_pd}';")
 
                 numbers = list()
                 for num in cur.fetchall():
@@ -5873,11 +5906,11 @@ def data_base(command,
                 number = max(numbers) + 1
                 if type_table == 'certificate_ped_div':
                     data_cert[2] = number
-                    cur.execute(f"INSERT INTO certificate_ped_div VALUES({'?, ' * 8}?)", data_cert)
+                    cur.execute(f"INSERT INTO certificate_ped_div__{datetime.now().year} VALUES({'?, ' * 8}?)", data_cert)
 
                 elif type_table == 'certificate_camp':
                     data_cert[1] = number
-                    cur.execute(f"INSERT INTO certificate_camp VALUES({'?, ' * 6}?)", data_cert)
+                    cur.execute(f"INSERT INTO certificate_camp__{datetime.now().year} VALUES({'?, ' * 6}?)", data_cert)
         except Exception as ex:
             print(ex)
             return '__________'
@@ -5886,36 +5919,12 @@ def data_base(command,
     elif command == 'statistic_write':
         date_now, time_now = datetime.now().strftime("%d.%m.%Y %H:%M:%S").split()
         try:
-            with sq.connect(r"\\192.168.19.1\database\data_base.db") as conn:
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', 'приложение', "
                             f"'{insert_data}', '{user.get('doctor_name')}')")
         except Exception:
             pass
-
-    elif command == 'select_past_examination_srv':
-        try:
-            with sq.connect(database=r"\\192.168.19.1\database\examination_data_base.db", timeout=10.0) as conn:
-                cur = conn.cursor()
-
-                cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
-                            f"examination_text, examination_key "
-                            f"FROM examination "
-                            f"WHERE patient_info LIKE "
-                            f"'{patient.get('name')}%{patient.get('birth_date')}'")
-
-                return 'srv', cur.fetchall()
-        except Exception:
-            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                cur = conn.cursor()
-
-                cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
-                            f"examination_text, examination_key "
-                            f"FROM examination "
-                            f"WHERE patient_info LIKE "
-                            f"'{patient.get('name')}%{patient.get('birth_date')}'")
-
-                return 'loc', cur.fetchall()
 
     elif command == 'get_doc_names_local':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
@@ -5956,7 +5965,7 @@ def data_base(command,
 
                     cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)", insert_data)
             else:
-                with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as conn:
+                with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
                     cur = conn.cursor()
                     cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{insert_data[0]}'")
                     cur.execute(f"INSERT INTO врачи VALUES({'?, ' * (len(insert_data) - 1)}?)", insert_data)
@@ -5968,118 +5977,58 @@ def data_base(command,
 
     elif command.startswith('examination'):
         try:
-            if user.get('error_connection'):
-                if command == 'examination__delete':
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
-                        cursor = connect.cursor()
-                        cursor.execute(f"DELETE FROM examination WHERE rowid LIKE '{insert_data}'")
-
-                elif command == 'examination__save':
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                        cur = conn.cursor()
-                        cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", insert_data)
-
-                elif command == 'examination__delete_my_diagnosis':
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
-                        cursor = connect.cursor()
-                        cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE doctor_name LIKE "
-                                       f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
-
-                elif command == 'examination__get_last_patient_ln':
-                    answer = dict()
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                        cur = conn.cursor()
-                        for type_ln in ("Справка ВН", "Лист ВН"):
-                            cur.execute(f"SELECT date_time, LN_type FROM examination "
-                                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                        f"AND patient_info LIKE "
-                                        f"'{patient.get('name')}%{patient.get('birth_date')}' "
-                                        f"AND LN_type LIKE '{type_ln}%'")
-
-                            answer[type_ln] = cur.fetchall()
-                    return answer
-
-                elif command == 'examination__edit_doctor_LN':
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as connect:
-                        cursor = connect.cursor()
-                        cursor.execute(f"DELETE FROM my_LN "
-                                       f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                       f"AND ln_type LIKE '{insert_data[0]}'")
-
-                        cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
-                                       [user.get('doctor_name'), insert_data[0], insert_data[1]])
-                    if not user.get('my_LN'):
-                        user['my_LN'] = list()
-                    for i in user.get('my_LN'):
-                        if insert_data[0] == i[0]:
-                            user['my_LN'].remove(i)
-                    user['my_LN'].append(insert_data)
-
-
-
-
-                elif command == 'examination__get_last_doc_LN':
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                        cur = conn.cursor()
-                        cur.execute(f"SELECT LN_type FROM examination "
-                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                    f"AND LN_type LIKE '{insert_data}%'")
-                        found_info_past = cur.fetchall()
-                    return found_info_past
-
-
-                elif command == 'examination__get_last_anthro_data':
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                        cur = conn.cursor()
-
-                        cur.execute(f"SELECT date_time, examination_key FROM examination "
-                                    f"WHERE examination_key LIKE "
-                                    f"'{insert_data}' "
-                                    f"AND patient_info LIKE "
-                                    f"'{patient.get('name')}%{patient.get('birth_date')}'")
-
-                        found_info = cur.fetchall()
-                    return found_info
-
-
-
-
-
+            if user.get('path_examination_data_base'):
+                path = user.get('path_examination_data_base')
             else:
-
-                if command == 'examination__delete':
-                    with sq.connect(r"\\192.168.19.1\database\examination_data_base.db") as connect:
-                        cursor = connect.cursor()
-                        cursor.execute(f"DELETE FROM examination WHERE rowid LIKE '{insert_data}'")
-
-                elif command == 'examination__save':
-                    with sq.connect(r"\\192.168.19.1\database\examination_data_base.db") as conn:
-                        cur = conn.cursor()
-                        cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", insert_data)
-
-                elif command == 'examination__delete_my_diagnosis':
-                    with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as connect:
-                        cursor = connect.cursor()
-                        cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE doctor_name LIKE "
-                                       f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
+                path = f".{os.sep}data_base{os.sep}"
 
 
-                elif command == 'examination__get_last_patient_ln':
-                    answer = dict()
-                    with sq.connect(r"\\192.168.19.1\database\examination_data_base.db") as conn:
-                        cur = conn.cursor()
-                        for type_ln in ("Справка ВН", "Лист ВН"):
-                            cur.execute(f"SELECT date_time, LN_type FROM examination "
-                                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                        f"AND patient_info LIKE "
-                                        f"'{patient.get('name')}%{patient.get('birth_date')}' "
-                                        f"AND LN_type LIKE '{type_ln}%'")
+            if command == 'examination__delete':
+                with sq.connect(f"{path}data_base.db") as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"DELETE FROM examination WHERE rowid LIKE '{insert_data}'")
 
-                            answer[type_ln] = cur.fetchall()
-                    return answer
+            elif command == 'examination__select_past_examination':
+                with sq.connect(f"{path}data_base.db") as conn:
+                    cur = conn.cursor()
 
-                elif command == 'examination__edit_doctor_LN':
-                    with sq.connect(r"\\192.168.19.1\database\application_data_base.db") as connect:
+                    cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
+                                f"examination_text, examination_key "
+                                f"FROM examination "
+                                f"WHERE patient_info LIKE "
+                                f"'{patient.get('name')}%{patient.get('birth_date')}'")
+
+                    return cur.fetchall()
+
+
+            elif command == 'examination__save':
+                with sq.connect(f"{path}data_base.db") as conn:
+                    cur = conn.cursor()
+                    cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", insert_data)
+
+            elif command == 'examination__delete_my_diagnosis':
+                with sq.connect(f"{path}data_base.db") as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE doctor_name LIKE "
+                                   f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
+
+            elif command == 'examination__get_last_patient_ln':
+                answer = dict()
+                with sq.connect(f"{path}data_base.db") as conn:
+                    cur = conn.cursor()
+                    for type_ln in ("Справка ВН", "Лист ВН"):
+                        cur.execute(f"SELECT date_time, LN_type FROM examination "
+                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                    f"AND patient_info LIKE "
+                                    f"'{patient.get('name')}%{patient.get('birth_date')}' "
+                                    f"AND LN_type LIKE '{type_ln}%'")
+
+                        answer[type_ln] = cur.fetchall()
+                return answer
+
+            elif command == 'examination__edit_doctor_LN':
+                if user.get('error_connection'):
+                    with sq.connect(f"{path}data_base.db") as connect:
                         cursor = connect.cursor()
                         cursor.execute(f"DELETE FROM my_LN "
                                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
@@ -6087,38 +6036,153 @@ def data_base(command,
 
                         cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
                                        [user.get('doctor_name'), insert_data[0], insert_data[1]])
+                else:
+                    with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as connect:
+                                cursor = connect.cursor()
+                                cursor.execute(f"DELETE FROM my_LN "
+                                               f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                               f"AND ln_type LIKE '{insert_data[0]}'")
 
-                        if not user.get('my_LN'):
-                            user['my_LN'] = list()
-                        for i in user.get('my_LN'):
-                            if insert_data[0] == i[0]:
-                                user['my_LN'].remove(i)
-                        user['my_LN'].append(insert_data)
+                                cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
+                                               [user.get('doctor_name'), insert_data[0], insert_data[1]])
+                print("user.get('my_LN')", user)
+                if not user.get('my_LN'):
+                    user['my_LN'] = list()
+                for i in user.get('my_LN'):
+                    if insert_data[0] == i[0]:
+                        user['my_LN'].remove(i)
+                user['my_LN'].append(insert_data)
 
 
 
 
-                elif command == 'examination__get_last_doc_LN':
-                    with sq.connect(r"\\192.168.19.1\database\examination_data_base.db") as conn:
-                        cur = conn.cursor()
-                        cur.execute(f"SELECT LN_type FROM examination "
-                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                    f"AND LN_type LIKE '{insert_data}%'")
-                        found_info_past = cur.fetchall()
-                    return found_info_past
+            elif command == 'examination__get_last_doc_LN':
+                with sq.connect(f"{path}data_base.db") as conn:
+                    cur = conn.cursor()
+                    cur.execute(f"SELECT LN_type FROM examination "
+                                f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                f"AND LN_type LIKE '{insert_data}%'")
+                    found_info_past = cur.fetchall()
+                return found_info_past
 
-                elif command == 'examination__get_last_anthro_data':
-                    with sq.connect(r"\\192.168.19.1\database\examination_data_base.db") as conn:
-                        cur = conn.cursor()
 
-                        cur.execute(f"SELECT date_time, examination_key FROM examination "
-                                    f"WHERE examination_key LIKE "
-                                    f"'{insert_data}' "
-                                    f"AND patient_info LIKE "
-                                    f"'{patient.get('name')}%{patient.get('birth_date')}'")
+            elif command == 'examination__get_last_anthro_data':
+                with sq.connect(f"{path}data_base.db") as conn:
+                    cur = conn.cursor()
 
-                        found_info = cur.fetchall()
-                    return found_info
+                    cur.execute(f"SELECT date_time, examination_key FROM examination "
+                                f"WHERE examination_key LIKE "
+                                f"'{insert_data}' "
+                                f"AND patient_info LIKE "
+                                f"'{patient.get('name')}%{patient.get('birth_date')}'")
+
+                    found_info = cur.fetchall()
+                return found_info
+
+
+
+
+
+            # else:
+            #
+            #     if command == 'examination__delete':
+            #         with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as connect:
+            #             cursor = connect.cursor()
+            #             cursor.execute(f"DELETE FROM examination WHERE rowid LIKE '{insert_data}'")
+            #
+                # elif command == 'examination__select_past_examination':
+                #     try:
+                #         with sq.connect(
+                #                 database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db",
+                #                 timeout=10.0) as conn:
+                #             cur = conn.cursor()
+                #
+                #             cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
+                #                         f"examination_text, examination_key "
+                #                         f"FROM examination "
+                #                         f"WHERE patient_info LIKE "
+                #                         f"'{patient.get('name')}%{patient.get('birth_date')}'")
+                #
+                #             return 'srv', cur.fetchall()
+                #     except Exception:
+                #         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                #             cur = conn.cursor()
+                #
+                #             cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
+                #                         f"examination_text, examination_key "
+                #                         f"FROM examination "
+                #                         f"WHERE patient_info LIKE "
+                #                         f"'{patient.get('name')}%{patient.get('birth_date')}'")
+                #
+                #             return 'loc', cur.fetchall()
+
+            #     elif command == 'examination__save':
+            #         with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+            #             cur = conn.cursor()
+            #             cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", insert_data)
+            #
+            #     elif command == 'examination__delete_my_diagnosis':
+            #         with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as connect:
+            #             cursor = connect.cursor()
+            #             cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE doctor_name LIKE "
+            #                            f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
+            #
+            #
+            #     elif command == 'examination__get_last_patient_ln':
+            #         answer = dict()
+            #         with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+            #             cur = conn.cursor()
+            #             for type_ln in ("Справка ВН", "Лист ВН"):
+            #                 cur.execute(f"SELECT date_time, LN_type FROM examination "
+            #                             f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+            #                             f"AND patient_info LIKE "
+            #                             f"'{patient.get('name')}%{patient.get('birth_date')}' "
+            #                             f"AND LN_type LIKE '{type_ln}%'")
+            #
+            #                 answer[type_ln] = cur.fetchall()
+            #         return answer
+            #
+            #     elif command == 'examination__edit_doctor_LN':
+            #         with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as connect:
+            #             cursor = connect.cursor()
+            #             cursor.execute(f"DELETE FROM my_LN "
+            #                            f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+            #                            f"AND ln_type LIKE '{insert_data[0]}'")
+            #
+            #             cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
+            #                            [user.get('doctor_name'), insert_data[0], insert_data[1]])
+            #
+            #             if not user.get('my_LN'):
+            #                 user['my_LN'] = list()
+            #             for i in user.get('my_LN'):
+            #                 if insert_data[0] == i[0]:
+            #                     user['my_LN'].remove(i)
+            #             user['my_LN'].append(insert_data)
+            #
+            #
+            #
+            #
+            #     elif command == 'examination__get_last_doc_LN':
+            #         with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+            #             cur = conn.cursor()
+            #             cur.execute(f"SELECT LN_type FROM examination "
+            #                         f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+            #                         f"AND LN_type LIKE '{insert_data}%'")
+            #             found_info_past = cur.fetchall()
+            #         return found_info_past
+            #
+            #     elif command == 'examination__get_last_anthro_data':
+            #         with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+            #             cur = conn.cursor()
+            #
+            #             cur.execute(f"SELECT date_time, examination_key FROM examination "
+            #                         f"WHERE examination_key LIKE "
+            #                         f"'{insert_data}' "
+            #                         f"AND patient_info LIKE "
+            #                         f"'{patient.get('name')}%{patient.get('birth_date')}'")
+            #
+            #             found_info = cur.fetchall()
+            #         return found_info
 
 
 
@@ -6132,14 +6196,14 @@ def data_base(command,
 
 def updating_patient_data_base():
     try:
-        shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
+        shutil.copy2(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
     except Exception as ex:
         messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nLOGGING FAILED')
         # messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nПопытка логирования')
         # try:
         #     import subprocess
         #     subprocess.call(r'cmd /c "net use n: \\192.168.19.1\database /Иван/profkiller97"')
-        #     shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
+        #     shutil.copy2(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db", f".{os.sep}data_base{os.sep}patient_data_base.db")
         #
         # except Exception as ex:
         #     messagebox.showinfo('Ошибка', f'Ошибка обновления базы данных!\n{ex}\nLOGGING FAILED')
@@ -6313,20 +6377,22 @@ def certificate__editing_certificate():
             place = all_data_certificate.get('place')
 
         Label(frame_place, text=text,
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, sticky='ew')
 
         frame_place.columnconfigure(index='all', minsize=40, weight=1)
         frame_place.rowconfigure(index='all', minsize=20)
         frame_place.pack(fill='both', expand=True, padx=2, pady=2)
 
         destroy_elements['place_of_requirement'] = list()
+        label_place_text = StringVar()
+        Label(frame_place, textvariable=label_place_text,
+              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=1, row=0, sticky='ew')
 
         def select_place():
             data['certificate']['place_of_requirement'] = selected_place.get()
-            for el in destroy_elements.get('place_of_requirement'):
-                el.destroy()
-            Label(frame_place, text=f" {selected_place.get()}",
-                  font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=1, row=0, sticky='e')
+            # for el in destroy_elements.get('place_of_requirement'):
+            #     el.destroy()
+            label_place_text.set(selected_place.get())
 
             if type_certificate == "Оформление в ДДУ / СШ / ВУЗ" and selected_place.get() == 'ВУЗ (колледж)':
                 Label(frame_specialties, text="Специальности для поступления:",
@@ -6341,11 +6407,6 @@ def certificate__editing_certificate():
 
             frame_place.update()
 
-            # el.quit()
-
-            # frame_place.columnconfigure(index='all', minsize=1, weight=1)
-            # frame_place.rowconfigure(index='all', minsize=1)
-            # frame_place.config(width=1)
 
         frame_specialties = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
         specialties_txt = ScrolledText(frame_specialties, width=80, height=2,
@@ -6665,41 +6726,54 @@ def certificate__editing_certificate():
                               indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(chickenpox.index(mark) + 1), sticky='ew')
 
-        Label(frame_chickenpox, text="Аллергия:", font=('Comic Sans MS', data.get('text_size')),
-              bg='white').grid(row=1, column=0)
+        frame_chickenpox.columnconfigure(index='all', minsize=40, weight=1)
+        frame_chickenpox.rowconfigure(index='all', minsize=20)
+        frame_chickenpox.pack(fill='both', expand=True, padx=2, pady=2)
+
+        frame_allergy = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
+
+        Label(frame_allergy, text="Аллергия:", font=('Comic Sans MS', data.get('text_size')),
+              bg='white').grid(row=0, column=0)
         allergy = ["-", "+"]
         selected_allergy = StringVar()
 
-        allergy_txt = Entry(frame_chickenpox, width=60,
+        allergy_txt = Entry(frame_allergy, width=60,
                             font=('Comic Sans MS', data.get('text_size')))
 
         def select_allergy():
             data['certificate']['allergy'] = selected_allergy.get()
             for el in destroy_elements.get('allergy'):
-                el.destroy()
-                if selected_allergy.get() == '+':
-                    Label(frame_chickenpox, text="Аллергия на:",
-                          font=('Comic Sans MS', data.get('text_size')), bg='white').grid(row=1, column=0)
-                    allergy_txt.grid(column=1, row=1, columnspan=3)
-                else:
-                    Label(frame_chickenpox, text="Аллергоанамнез не отягощен",
-                          font=('Comic Sans MS', data.get('text_size')),
-                          bg='white').grid(row=1, column=1, columnspan=3)
+                el.grid_remove()
+            destroy_elements['allergy'].clear()
+            if selected_allergy.get() == '+':
+                lbl = Label(frame_allergy, text="Аллергия на:",
+                      font=('Comic Sans MS', data.get('text_size')), bg='white')
+                lbl.grid(row=0, column=3)
+                allergy_txt.grid(column=4, row=0, columnspan=3)
+                destroy_elements['allergy'].append(allergy_txt)
+                destroy_elements['allergy'].append(lbl)
 
-                frame_chickenpox.update()
+            else:
+                lbl = Label(frame_allergy, text="Аллергоанамнез не отягощен",
+                      font=('Comic Sans MS', data.get('text_size')),
+                      bg='white')
+                lbl.grid(row=0, column=3)
+                destroy_elements['allergy'].append(lbl)
+
+
+            frame_allergy.update()
 
         destroy_elements['allergy'] = list()
         for mark in allergy:
-            btn = Radiobutton(frame_chickenpox, text=mark,
+            btn = Radiobutton(frame_allergy, text=mark,
                               font=('Comic Sans MS', data.get('text_size')),
                               value=mark, variable=selected_allergy, command=select_allergy,
                               indicatoron=False, selectcolor='#77f1ff')
-            btn.grid(column=(allergy.index(mark) + 1), row=1, sticky='ew')
-            destroy_elements['allergy'].append(btn)
+            btn.grid(column=(allergy.index(mark) + 1), row=0, sticky='ew')
 
-        frame_chickenpox.columnconfigure(index='all', minsize=40, weight=1)
-        frame_chickenpox.rowconfigure(index='all', minsize=20)
-        frame_chickenpox.pack(fill='both', expand=True, padx=2, pady=2)
+        frame_allergy.columnconfigure(index='all', minsize=40, weight=1)
+        frame_allergy.rowconfigure(index='all', minsize=20)
+        frame_allergy.pack(fill='both', expand=True, padx=2, pady=2)
 
     def diagnosis_kb():
         local_frame_diagnosis = dict()
@@ -7437,15 +7511,12 @@ def certificate__editing_certificate():
 
         def select_day():
             day = selected_day.get()
-            if day.isdigit():
-                year = actual_data.get('year')
-                month = actual_data.get('month')
-                if len(day) == 1:
-                    day = f"0{day}"
-                answer = f"{day}.{month}.{year}"
-            else:
-                answer = datetime.now().strftime("%d.%m.%Y")
-
+            edit_day = list()
+            for i in day.split('.'):
+                if len(i) == 1:
+                    i = f"0{i}"
+                edit_day.append(i)
+            answer = '.'.join(edit_day)
             if command == 'ori_from':
                 ori_from.delete(0, 'end')
                 ori_from.insert(0, answer)
@@ -7466,91 +7537,137 @@ def certificate__editing_certificate():
 
         frame_month_year = Frame(calendar_root, relief="solid", padx=1, pady=1)
 
-        but_prev_month = Button(frame_month_year, text='<', command=prev_month,
-                                font=('Comic Sans MS', user.get('text_size')))
-        but_prev_month.grid(column=0, row=0, sticky='ew')
-
-        lbl_month_year = Label(frame_month_year, text="", font=('Comic Sans MS', user.get('text_size')),
-                               bg='white')
-        lbl_month_year.grid(column=1, row=0, sticky='ew')
-
-        but_next_month = Button(frame_month_year, text='>', command=next_month,
-                                font=('Comic Sans MS', user.get('text_size')))
-        but_next_month.grid(column=2, row=0, sticky='ew')
 
         frame_month_year.columnconfigure(index='all', minsize=40, weight=1)
         frame_month_year.rowconfigure(index='all', minsize=20)
         frame_month_year.pack(fill='both', expand=True)
 
         def create_calendar():
-            year = actual_data.get('year')
-            month = actual_data.get('month')
+            if destroy_elements.get('loc_calendar_frame'):
+                loc_calendar_frame = destroy_elements.get('loc_calendar_frame')
+                loc_calendar_frame.destroy()
 
-            if destroy_elements.get('calendar_frame_days'):
-                frame_days = destroy_elements.get('calendar_frame_days')
-                if frame_days:
-                    frame_days.destroy()
+            loc_calendar_frame = Frame(calendar_root, relief="solid", padx=1, pady=1)
+            destroy_elements['loc_calendar_frame'] = loc_calendar_frame
 
-            frame_days = Frame(calendar_root, relief="solid", padx=1, pady=1)
-            destroy_elements['calendar_frame_days'] = frame_days
+            for calendar_mark in ('prev', 'curr', 'next'):
+                row, col = 0, 0
 
-            month_name = {
-                'January': 'Январь',
-                'February': 'Февраль',
-                'March': 'Март',
-                'April': 'Апрель',
-                'May': 'Май',
-                'June': 'Июнь',
-                'July': 'Июль',
-                'August': 'Август',
-                'September': 'Сентябрь',
-                'October': 'Октябрь',
-                'November': 'Ноябрь',
-                'December': 'Декабрь'
-            }
 
-            lbl_month_year['text'] = f"{month_name.get(calendar.month_name[month])} {str(year)}"
+                frame_days = Frame(loc_calendar_frame, relief="ridge", borderwidth=0.5, padx=1, pady=1)
+                if calendar_mark == 'prev':
+                    but_prev_month = Button(frame_days, text='<', command=prev_month,
+                                            font=('Comic Sans MS', user.get('text_size')))
+                    but_prev_month.grid(row=row, column=0, sticky='ew', columnspan=7)
 
-            # Second row - Week Days
-            column = 0
-            for day in ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]:
-                lbl = Label(frame_days, text=day, font=('Comic Sans MS', user.get('text_size')), bg='white')
-                lbl.grid(column=column, row=0, sticky='ew')
-                column += 1
 
-            row_, col_ = 0, 0
+                elif calendar_mark == 'next':
+                    but_next_month = Button(frame_days, text='>', command=next_month,
+                                            font=('Comic Sans MS', user.get('text_size')))
+                    but_next_month.grid(row=row, column=0, sticky='ew', columnspan=7)
 
-            my_calendar = calendar.monthcalendar(year, month)
-            for week in my_calendar:
-                row_ += 1
-                col_ = 0
-                for day in week:
-                    if day == 0:
-                        col_ += 1
-                    else:
-                        day = str(day)
-                        btn_ = Radiobutton(frame_days, text=day,
-                                           font=('Comic Sans MS', user.get('text_size')),
-                                           value=day, variable=selected_day, command=select_day,
-                                           indicatoron=False, selectcolor='#77f1ff')
-                        btn_.grid(row=row_, column=col_, sticky='ew')
-                        col_ += 1
 
-                        if datetime.strptime(f"{day}.{month}.{year}", "%d.%m.%Y").weekday() in (5, 6):
-                            btn_['bg'] = '#b4ffff'
-                        if datetime.now().year == year and datetime.now().month == month and datetime.now().day == int(
-                                day):
-                            btn_['bg'] = '#ff7b81'
+                else:
+                    btn = Radiobutton(frame_days, text="Сегодня",
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      value=datetime.now().strftime("%d.%m.%Y"),
+                                      variable=selected_day, command=select_day,
+                                      indicatoron=False, selectcolor='#77f1ff')
+                    btn.grid(row=row, column=0, sticky='ew', columnspan=7)
 
-            Radiobutton(frame_days, text="Сегодня",
-                        font=('Comic Sans MS', user.get('text_size')),
-                        value="Сегодня", variable=selected_day, command=select_day,
-                        indicatoron=False,
-                        selectcolor='#77f1ff').grid(row=row_ + 1, column=0, sticky='ew', columnspan=7)
 
-            frame_days.columnconfigure(index='all', minsize=40, weight=1)
-            frame_days.rowconfigure(index='all', minsize=20)
-            frame_days.pack(fill='both', expand=True)
+                if calendar_mark == 'prev':
+                    curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+                    new = curr - timedelta(days=1)
+                    year = int(new.year)
+                    month = int(new.month)
+
+                elif calendar_mark == 'next':
+                    curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+                    new = curr + timedelta(days=31)
+                    year = int(new.year)
+                    month = int(new.month)
+
+                else:
+                    year = actual_data.get('year')
+                    month = actual_data.get('month')
+
+                month_name = {
+                    'January': 'Январь',
+                    'February': 'Февраль',
+                    'March': 'Март',
+                    'April': 'Апрель',
+                    'May': 'Май',
+                    'June': 'Июнь',
+                    'July': 'Июль',
+                    'August': 'Август',
+                    'September': 'Сентябрь',
+                    'October': 'Октябрь',
+                    'November': 'Ноябрь',
+                    'December': 'Декабрь'
+                }
+
+                row += 1
+                lbl_month_year = Label(frame_days,
+                                       text=f"{month_name.get(calendar.month_name[month])}",
+                                       font=('Comic Sans MS', user.get('text_size')),
+                                       bg='white')
+                lbl_month_year.grid(column=0, row=row, sticky='ew', columnspan=7)
+
+                if calendar_mark == 'curr':
+                    lbl_month_year['text'] = f"{month_name.get(calendar.month_name[month])} {str(year)}"
+
+                # Second row - Week Days
+                column = 0
+                row += 1
+                for day in ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]:
+                    lbl = Label(frame_days, text=day,
+                                relief="solid", borderwidth=0.5,
+                                font=('Comic Sans MS', user.get('text_size')), bg='white')
+                    lbl.grid(column=column, row=row, sticky='ew', padx=2, pady=2)
+                    column += 1
+
+                row += 1
+                column = 0
+
+
+                my_calendar = calendar.monthcalendar(year, month)
+                for week in my_calendar:
+                    row += 1
+                    col = 0
+                    for day in week:
+                        if day == 0:
+                            col += 1
+                        else:
+                            # day = str(day)
+                            # day = str(day)
+                            # if len(day) == 1:
+                            #     day = f"0{day}"
+                            # if len(str(month)) == 1:
+                            #     month = f"0{month}"
+                            btn_value = ''
+
+                            btn = Radiobutton(frame_days, text=day,
+                                              font=('Comic Sans MS', user.get('text_size')),
+                                              value=f"{day}.{month}.{year}", variable=selected_day, command=select_day,
+                                              indicatoron=False, selectcolor='#77f1ff')
+                            btn.grid(row=row, column=col, sticky='ew')
+                            col += 1
+
+                            if datetime.strptime(f"{day}.{month}.{year}", "%d.%m.%Y").weekday() in (5, 6):
+                                btn['bg'] = '#b4ffff'
+                            if datetime.now().year == year and datetime.now().month == month and datetime.now().day == int(
+                                    day):
+                                btn['bg'] = '#ff7b81'
+
+
+                frame_days.columnconfigure(index='all', minsize=40, weight=1)
+                frame_days.rowconfigure(index='all', minsize=20)
+                frame_days.pack(fill='both', expand=True, side='left')
+
+            loc_calendar_frame.columnconfigure(index='all', minsize=40, weight=1)
+            loc_calendar_frame.rowconfigure(index='all', minsize=20)
+            loc_calendar_frame.pack(fill='both', expand=True, side='left')
 
         create_calendar()
 
@@ -8779,16 +8896,16 @@ def keypress(event):
 
 def paste_log_in_root(root):
     def edit_local_db():
-        load_info_text.set(f"{load_info_text.get()}\n"
-                           f"Синхронизация осмотров...")
-
-        log_in_root.update()
-
-        answer = data_base('edit_examination_loc')
-        load_info_text.set(f"{load_info_text.get()}\n"
-                           f"{answer}")
-
-        log_in_root.update()
+        # load_info_text.set(f"{load_info_text.get()}\n"
+        #                    f"Синхронизация осмотров...")
+        #
+        # log_in_root.update()
+        #
+        # answer = data_base('edit_examination_loc')
+        # load_info_text.set(f"{load_info_text.get()}\n"
+        #                    f"{answer}")
+        #
+        # log_in_root.update()
 
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"Синхронизация шаблонов...")
@@ -8849,6 +8966,18 @@ def paste_log_in_root(root):
 
         return True
 
+    def is_valid__password_app(password):
+        if password == "profkiller_10539008":
+            text_is_correct_password.set('Пароль принят')
+            label_password['foreground'] = "green"
+            log_in_root.update()
+            open_main_root()
+            data_base('activate_app')
+        else:
+            text_is_correct_password.set('Пароль не верен!')
+
+        return True
+
     def connect_to_srv_data_base():
 
         load_info_text.set(f"{load_info_text.get()}\n"
@@ -8867,29 +8996,14 @@ def paste_log_in_root(root):
                                f"Соединение с сервером установлено")
         else:
             load_info_text.set(f"{load_info_text.get()}\n"
-                               f"Ошибка подключения к базе данных!\nПопытка логирования")
+                               f"Ошибка подключения к базе данных!")
 
         log_in_root.update()
 
-        # if not last_edit_srv:
-        #     try:
-        #         import subprocess
-        #         subprocess.call(r'cmd /c "net use n: \\SRV2\patient_data_base /Иван/profkiller97"')
-        #
-        #         last_edit_srv = data_base('last_edit_patient_db_srv')
-        #
-        #     except Exception as ex:
-        #         load_info_text.set(f"{load_info_text.get()}\n"
-        #                            f"LOGGING FAILED!\n{ex}\nЗагрузка сохраненных данных")
-        #         user['error_connection'] = True
-        #     else:
-        #         load_info_text.set(f"{load_info_text.get()}\n"
-        #                            f"Логирование завершено успешно")
-        #
-        # log_in_root.update()
 
         if not last_edit_srv:
             user['error_connection'] = True
+
         else:
             last_edit_loc = data_base('last_edit_patient_db_loc')
 
@@ -8899,7 +9013,7 @@ def paste_log_in_root(root):
                                    f"Начинаю обновление...")
                 log_in_root.update()
 
-                shutil.copy2(r"\\192.168.19.1\database\patient_data_base.db",
+                shutil.copy2(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db",
                              f".{os.sep}data_base{os.sep}patient_data_base.db")
                 load_info_text.set(f"{load_info_text.get()}\n"
                                    f"База данных пациентов обновлена")
@@ -8963,10 +9077,30 @@ def paste_log_in_root(root):
                 user['error_connection'] = True
 
         if user.get('error_connection'):
-            open_main_root()
+            if user['app_data'].get('last_reg_password'):
+                print((datetime.now() - datetime.strptime(user['app_data'].get('last_reg_password'), "%d.%m.%Y")).days)
+                if (datetime.now() - datetime.strptime(user['app_data'].get('last_reg_password'), "%d.%m.%Y")).days > 60:
+
+                    Label(frame_pass, text='Срок активации истек! \nВведите пароль для продления 60-дневной подписки',
+                          font=('Comic Sans MS', 12), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
+
+                    check_pass_app = (log_in_root.register(is_valid__password_app), "%P")
+                    Entry(frame_pass, width=20, font=('Comic Sans MS', user.get('text_size')),
+                          justify="center",
+                          validate="all",
+                          textvariable=txt_password_variable,
+                          validatecommand=check_pass_app, show="*").pack(fill='both', expand=True, padx=2, pady=2)
+                    label_password.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
+                else:
+                    open_main_root()
+            else:
+                open_main_root()
 
     if user.get('frame_main'):
         user['frame_main'].destroy()
+        user['frame_main'] = None
 
     log_in_root = Frame(master=root, bg="#36566d")
     user['log_in_root'] = log_in_root
@@ -8993,7 +9127,8 @@ def paste_log_in_root(root):
                          justify="center",
                          validate="all",
                          textvariable=txt_password_variable,
-                         validatecommand=check_pass)
+                         validatecommand=check_pass,
+                         show="*")
 
     label_password = Label(frame_pass, textvariable=text_is_correct_password,
                            font=('Comic Sans MS', 12), bg='white', foreground="red")
@@ -9330,9 +9465,9 @@ def paste_frame_main(root):
                 messagebox.showinfo('Ошибка', 'Ошибка имени доктора!')
             elif not manager:
                 messagebox.showinfo('Ошибка', 'Ошибка имени заведующего!')
-            elif not district or not district.isdigit():
+            elif not district:
                 messagebox.showinfo('Ошибка', 'Ошибка участка!\nУкажите участок числом')
-            elif not ped_div or not ped_div.isdigit():
+            elif not ped_div or ped_div not in ('1', '2', '3', 'ПРОЧЕЕ'):
                 messagebox.showinfo('Ошибка', 'Ошибка ПО\nУкажите номер ПО числом')
             elif not text_size or not text_size.isdigit() or (4 > int(text_size) or int(text_size) > 30):
                 messagebox.showinfo('Ошибка', 'Ошибка размера текста\n'
@@ -9403,7 +9538,8 @@ def paste_frame_main(root):
         Label(new_root, text='ФИО заведующего: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0,
                                                                                                       row=1)
         Label(new_root, text='Номер участка: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=2)
-        Label(new_root, text='Номер ПО: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=3)
+        Label(new_root, text='Номер ПО (1, 2, 3, ПРОЧЕЕ): ',
+              font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=3)
         Label(new_root, text='Размер текста: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=4)
 
         txt_manager = Entry(new_root, width=30, font=('Comic Sans MS', user.get('text_size')))
