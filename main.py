@@ -6005,13 +6005,17 @@ def data_base(command,
 
     elif command.startswith('examination'):
         try:
+            path = f".{os.sep}data_base{os.sep}"
             if user.get('path_examination_data_base'):
                 path = user.get('path_examination_data_base')
-            else:
-                path = f".{os.sep}data_base{os.sep}"
+
+            path_examination = f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
+            if user.get('error_connection'):
+                path_examination = f"{path}data_base.db"
+
 
             if command == 'examination__delete':
-                with sq.connect(f"{path}data_base.db") as connect:
+                with sq.connect(f"{path_examination}") as connect:
                     cursor = connect.cursor()
                     cursor.execute(f"DELETE FROM examination WHERE rowid LIKE '{insert_data}'")
 
@@ -6020,7 +6024,7 @@ def data_base(command,
                     'select_past_examination': None,
                     'get_last_doc_LN': None}
 
-                with sq.connect(f"{path}data_base.db") as conn:
+                with sq.connect(f"{path_examination}") as conn:
                     cur = conn.cursor()
 
                     cur.execute(f"SELECT rowid, date_time, doctor_name, LN_type, patient_info, "
@@ -6038,14 +6042,8 @@ def data_base(command,
                 return found_info
 
 
-
-
-
-
-
-
             elif command == 'examination__save':
-                with sq.connect(f"{path}data_base.db") as conn:
+                with sq.connect(f"{path_examination}") as conn:
                     cur = conn.cursor()
                     cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", insert_data)
 
@@ -6068,8 +6066,8 @@ def data_base(command,
 
 
             elif command == 'examination__edit_doctor_LN':
-                if user.get('error_connection'):
-                    with sq.connect(f"{path}data_base.db") as connect:
+                try:
+                    with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as connect:
                         cursor = connect.cursor()
                         cursor.execute(f"DELETE FROM my_LN "
                                        f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
@@ -6077,15 +6075,17 @@ def data_base(command,
 
                         cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
                                        [user.get('doctor_name'), insert_data[0], insert_data[1]])
-                else:
-                    with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as connect:
-                                cursor = connect.cursor()
-                                cursor.execute(f"DELETE FROM my_LN "
-                                               f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                               f"AND ln_type LIKE '{insert_data[0]}'")
+                except Exception:
+                    pass
 
-                                cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
-                                               [user.get('doctor_name'), insert_data[0], insert_data[1]])
+                with sq.connect(f"{path}data_base.db") as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"DELETE FROM my_LN "
+                                   f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
+                                   f"AND ln_type LIKE '{insert_data[0]}'")
+
+                    cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
+                                   [user.get('doctor_name'), insert_data[0], insert_data[1]])
                 print("user.get('my_LN')", user)
                 if not user.get('my_LN'):
                     user['my_LN'] = list()
