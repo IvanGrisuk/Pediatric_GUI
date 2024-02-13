@@ -675,17 +675,17 @@ all_diagnosis = {
                               "Биологический анамнез - не отягощен, Генеологический анамнез - не отягощен, "
                               "Аллергический анамнез - не отягощен, Социальный анамнез - не отягощен\n"
                               "Ребенок от ___ беременности, ___ родов. \n"
-                              "При рождении: Масса тела  _____, Рост _____, Группа здоровья ___, "
+                              "При рождении: Масса тела  _____, Рост _____, Группа здоровья 2, "
                               "Группа риска _________________________ \n"
                               "Диагноз: __________________________________________________\n"
                               "Заболевания, перенесенные до года: ________________________\n"
                               "Находился на грудном вскармливании до _____. Профилактика рахита: Холекальциферол 500МЕ/сут\n"
-                              "Профилактические прививки: по возрасту\n"
+                              "Профилактические прививки: привит по возрасту\n"
                               "Сведения о проведенных профилактических осмотрах и обследованиях:\n"
-                              "осмотра невролога _______________; осмотра ортопеда ______________\n"
-                              "общий анализ крови ______________; общий анализ мочи _____________.\n"
-                              "Ползает с ____ месяцев. Сидит с ____ месяцев. Стоит с ____ месяцев. Ходит с ____ месяцев. "
-                              "Первый зуб в ___ месяцев",
+                              "осмотра невролога - без патологии; осмотра ортопеда - без патологии;\n"
+                              "общий анализ крови - без патологии; общий анализ мочи - без патологии.\n"
+                              "Держит голову с ____ месяцев. Ползает с ____ месяцев. Сидит с ____ месяцев. "
+                              "Стоит с ____ месяцев. Ходит с ____ месяцев. Первый зуб в ___ месяцев.",
         "complaints": {'нет': True},
         "complaints_text": "нет",
         "examination": {'Вскармливание': ['по требованию'],
@@ -1391,7 +1391,84 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     examination_root.update()
 
     def upload_last_data():
-        pass
+
+        found_info = data_base(command='examination__upload_last_data')
+        local_info = {
+            'select_past_examination': list(),
+            'get_last_doc_LN': {
+                "Справка ВН": list(),
+                "Лист ВН": list()},
+            'get_last_patient_ln': {
+                "Справка ВН": list(),
+                "Лист ВН": list()},
+            'get_last_anthro_data': dict()}
+
+
+        if found_info.get('get_last_doc_LN'):
+            for ln_info in found_info.get('get_last_doc_LN'):
+                for ln_data in ("Справка ВН", "Лист ВН"):
+                    if ln_info[0].startswith(ln_data):
+                        local_info['get_last_doc_LN'][ln_data].append(ln_info[0])
+
+        if found_info.get('select_past_examination'):
+            for rowid, date_time, doctor_name, LN_type, patient_info, examination_text, examination_key \
+                    in sorted(found_info.get('select_past_examination'),
+                              key=lambda i: (datetime.now() -
+                                             datetime.strptime(f"{i[1]}", "%d.%m.%Y %H:%M")).total_seconds()):
+
+                local_info['select_past_examination'].append((rowid, date_time, doctor_name, LN_type,
+                                                              patient_info, examination_text, examination_key))
+                for ln_data in ("Справка ВН", "Лист ВН"):
+                    if LN_type.startswith(ln_data):
+                        local_info['get_last_patient_ln'][ln_data].append((date_time, LN_type))
+
+                if child_marker:
+                    if not local_info.get('get_last_anthro_data'):
+                        if ('type_examination:____child__' in examination_key
+                                and 'txt_weight_variable' in examination_key):
+                            for string in examination_key.split('__<end!>__\n'):
+                                if string.startswith('patient_anthro_data:____'):
+                                    for marker in string.replace('patient_anthro_data:____', '').split("____"):
+                                        if len(marker.split('__')) == 2:
+                                            name, variable = marker.split('__')
+                                            if name in ('txt_weight_bir_variable', 'txt_weight_variable'):
+                                                local_info['get_last_anthro_data'][name] = variable
+                    if not local_info.get('get_last_diagnosis_text'):
+                        for string in examination_key.split('__<end!>__\n'):
+                            if string.startswith('diagnosis_text:____'):
+                                local_info['get_last_diagnosis_text'] = string.replace('diagnosis_text:____', '')
+
+                else:
+                    if not local_info.get('get_last_anthro_data'):
+                        if ('type_examination:____adult__' in examination_key
+                                and 'txt_weight_variable' in examination_key):
+
+                            for string in examination_key.split('__<end!>__\n'):
+                                if string.startswith('patient_anthro_data:____'):
+                                    for marker in string.replace('patient_anthro_data:____', '').split("____"):
+                                        if len(marker.split('__')) == 2:
+                                            name, variable = marker.split('__')
+                                            if name == 'txt_weight_variable':
+                                                local_info['get_last_anthro_data'][name] = variable
+
+
+        for ln_data in ("Справка ВН", "Лист ВН"):
+            if local_info['get_last_patient_ln'].get(ln_data):
+                last_visit = min(local_info['get_last_patient_ln'].get(ln_data),
+                                 key=lambda i: (datetime.now() -
+                                                datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).total_seconds())
+
+                local_info['get_last_patient_ln'][ln_data] = None
+                if ((datetime.now() - datetime.strptime(f"{last_visit[0]}", "%d.%m.%Y %H:%M")).total_seconds() / (
+                        60 * 60 * 24) < 14 and last_visit[1].split('__')[-1] != 'closed'):
+
+                    local_info['get_last_patient_ln'][ln_data] = last_visit[1]
+
+
+        for marker in local_info:
+            data['examination'][marker] = local_info.get(marker)
+            print(marker, local_info.get(marker))
+
 
     upload_last_data()
     def paste_past_examination():
@@ -1577,7 +1654,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             past_examination_connect_status.set("Подключение к базе данных")
             past_examination_frame.update()
-            found_info = data_base(command='examination__select_past_examination')
+            found_info = data['examination'].get('select_past_examination')
             if found_info:
                 past_examination_connect_status.set("Подключение к базе данных: успешно")
             past_examination_frame.update()
@@ -1586,10 +1663,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 past_examination_connect_status.set(f"{past_examination_connect_status.get()}\n"
                                                     f"История о прошлых осмотрах пациента пуста")
             else:
-                found_info = sorted(found_info,
-                                    key=lambda i: (datetime.now() -
-                                                   datetime.strptime(f"{i[1]}", "%d.%m.%Y %H:%M")).seconds)
-
                 for info in found_info:
                     local_frame = Frame(past_examination_frame, borderwidth=1, relief="solid", padx=3, pady=3)
                     rowid, date_time, doctor_name, ln_type, patient_info_, examination_text, examination_key = info
@@ -1778,12 +1851,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         select_name = data['examination']['anthro'][variable].get()
                         if select_name:
                             if mark == 'anal' and not npr_flag:
-                                patient_anthro_data_loc += 'НПР: \n'
+                                patient_anthro_data_loc += '\nНПР: \n'
                                 npr_flag = True
 
                             patient_anthro_data_loc += f"{name}".replace('_', select_name)
                             patient_anthro_data_but_loc += f"{variable}__{select_name}____".replace(',', '.')
-                            if child_marker:
+                            if child_marker and doc_size == 'а5_child_disp':
                                 patient_anthro_data_loc += '\n'
                             else:
                                 patient_anthro_data_loc += '  '
@@ -1824,12 +1897,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     ln_data = f"{type_ln}__{num_ln}__closed"
                 else:
                     ln_data = f"{type_ln}__{num_ln}__{txt_ln_from.get().strip()}__{txt_ln_until.get().strip()}"
-
-                if not user.get('get_last_doc_LN'):
-                    user['get_last_doc_LN'] = dict()
-                if not user['get_last_doc_LN'].get(type_ln):
-                    user['get_last_doc_LN'][type_ln] = list()
-                user['get_last_doc_LN'][type_ln].append(ln_data)
 
             else:
                 ln_data = type_ln
@@ -1998,7 +2065,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 selected_place.set(all_diagnosis.get(selected_diagnosis.get()).get("selected_place"))
 
             txt_diagnosis.delete(1.0, 'end')
-            if all_diagnosis.get(selected_diagnosis.get()).get("diagnosis_text"):
+            if child_marker and data['examination'].get('get_last_diagnosis_text'):
+                txt_diagnosis.insert(1.0, data['examination'].get('get_last_diagnosis_text'))
+
+            elif all_diagnosis.get(selected_diagnosis.get()).get("diagnosis_text"):
                 txt_diagnosis.insert(1.0, all_diagnosis.get(selected_diagnosis.get()).get("diagnosis_text"))
             else:
                 txt_diagnosis.insert(1.0, f'Диагноз: {selected_diagnosis.get()} ')
@@ -2054,6 +2124,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         def create_examination_doc_a5_rec():
             create_examination_doc('а5_рек')
 
+        def create_examination_doc_a6_rec():
+            create_examination_doc('а6_рек')
+
+
         def create_examination_doc_a5_disp():
             create_examination_doc('а5_child_disp')
 
@@ -2063,11 +2137,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         def create_examination_doc_none():
             create_examination_doc()
 
-        button_change_all_kb_status.grid(column=0, row=0, rowspan=2, sticky='nwse')
+        button_change_all_kb_status.grid(column=0, row=0, rowspan=3, sticky='nwse')
 
         Button(frame_button, text='Загрузить\nпрошлые\nосмотры',
                command=paste_past_examination,
-               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, rowspan=2, sticky='nswe')
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0, rowspan=3, sticky='nswe')
 
         Button(frame_button, text='Печать А5',
                command=create_examination_doc_a5,
@@ -2081,15 +2155,20 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                command=create_examination_doc_a5_rec,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=0, columnspan=2, sticky='nswe')
 
+        Button(frame_button, text='Печать А6 + рекомендации',
+               command=create_examination_doc_a6_rec,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=1, columnspan=2, sticky='nswe')
+
+
         Button(frame_button, text='Сохранить без печати',
                command=create_examination_doc_none,
-               font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=1, columnspan=2, sticky='nswe')
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=2, columnspan=4, sticky='nswe')
 
 
         if child_marker:
             Button(frame_button, text='Печать А5 \nежемесячный',
                    command=create_examination_doc_a5_disp,
-                   font=('Comic Sans MS', user.get('text_size'))).grid(column=6, row=0, rowspan=2, sticky='nswe')
+                   font=('Comic Sans MS', user.get('text_size'))).grid(column=6, row=0, rowspan=3, sticky='nswe')
 
 
 
@@ -2116,6 +2195,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             delete_my_diagnosis_root_main.focus()
 
                             destroy_elements['delete_my_diagnosis'][f"{selected_delete_diagnosis.get()}"].destroy()
+
+
 
                     selected_delete_diagnosis = StringVar()
                     destroy_elements['delete_my_diagnosis'] = dict()
@@ -2275,7 +2356,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 if selected_place.get():
                     text += f"Место осмотра: {selected_place.get()}\n"
                     render_text += f"selected_place:____{selected_place.get()}__<end!>__\n"
-
+                text += f"Дополнительная информация: {txt_epicrisis_add.get(1.0, 'end').strip()}\n"
                 for mark in ('complaints', 'examination', 'prescription'):
                     render_text += f'{mark}:__'
                     # text += f"{mark}: ".replace('complaints', 'Жалобы (кнопки)') \
@@ -2284,12 +2365,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     for but in data['examination'].get(f'{mark}_but'):
 
                         if data['examination'][f'{mark}_but'].get(but).get() == 1:
-                            if len(text.split('\n')[-1]) > 100:
-                                text += '\n'
                             render_text += f'__{but}'
-                            # text += f"{but} "
 
-                    # text += '\n'
                     render_text += '__<end!>__\n'
                 local_drugs_text = ''
                 for drug_category in data['examination'].get('selected_drugs', []):
@@ -2303,7 +2380,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 else:
                                     local_drugs_text += f"____{drug_category}__{drug_name}__{mark_flag}__{mark}"
                 if local_drugs_text:
-                    active_but += f"drugs:{local_drugs_text}__<end!>__\n"
+                    render_text += f"drugs:{local_drugs_text}__<end!>__\n"
                 examination_text = txt_examination.get(1.0, 'end').replace('\n', ' ').replace('  ', ' ').strip()
                 render_text += f"complaints_text:____{txt_complaints.get(1.0, 'end').strip()}__<end!>__\n" \
                                f"examination_text:____{examination_text}__<end!>__\n" \
@@ -2374,6 +2451,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             lbl_my_saved_diagnosis['text'] = "Мои осмотры:"
             lbl_my_saved_diagnosis.grid(column=col, row=row, sticky='ew')
             col += 1
+            print(user.get('my_saved_diagnosis'))
             for diagnosis, examination_key in user.get('my_saved_diagnosis'):
                 data['examination']['my_saved_diagnosis'][f"{diagnosis}"] = examination_key
                 btn = Radiobutton(master=frame_my_saved_diagnosis, text=diagnosis,
@@ -2437,13 +2515,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         paste_frame_button_create()
         my_saved_diagnosis()
 
-        # with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-        #     cur = conn.cursor()
-        #     cur.execute(f"SELECT diagnosis, examination_key "
-        #                 f"FROM my_saved_diagnosis "
-        #                 f"WHERE doctor_name LIKE '{user.get('doctor_name')}' ")
-        #
-        #     found_info = cur.fetchall()
         if user.get('my_saved_diagnosis'):
             my_saved_diagnosis_change_status()
 
@@ -3188,40 +3259,20 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             frame.pack(fill='both', expand=True, side="left")
 
         if child_marker:
-            found_info = data_base(command='examination__get_last_anthro_data',
-                                   insert_data='%type_examination:____child__<end!>__%'
-                                               'patient_anthro_data:____%txt_weight_variable%')
-            if found_info:
+            if data['examination']['get_last_anthro_data'].get('txt_weight_bir_variable'):
+                data['examination']['anthro']['txt_weight_bir_variable'].set(
+                    data['examination']['get_last_anthro_data'].get('txt_weight_bir_variable'))
 
-                last_visit = min(found_info,
-                                 key=lambda i: (datetime.now() -
-                                                datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).seconds)
-                for string in last_visit[1].split('__<end!>__\n'):
-                    if "patient_anthro_data:____" in string:
-                        for marker in string.replace('patient_anthro_data:____', '').split("____"):
-                            if len(marker.split('__')) == 2:
-                                name, variable = marker.split('__')
-                                if name == 'txt_weight_bir_variable':
-                                    data['examination']['anthro'][name].set(variable)
-                                elif name == 'txt_weight_variable':
-                                    data['examination']['last_txt_weight_variable'] = variable
+            if data['examination']['get_last_anthro_data'].get('txt_weight_variable'):
+
+                data['examination']['last_txt_weight_variable'] = data['examination']['get_last_anthro_data'].get('txt_weight_variable')
+
 
         else:
-            found_info = data_base(command='examination__get_last_anthro_data',
-                                   insert_data='%type_examination:____adult__<end!>__%'
-                                               'patient_anthro_data:____%txt_weight_variable%')
-            if found_info:
+            if data['examination']['get_last_anthro_data'].get('txt_weight_variable'):
+                data['examination']['anthro']['txt_weight_variable'].set(
+                    data['examination']['get_last_anthro_data'].get('txt_weight_variable'))
 
-                last_visit = min(found_info,
-                                 key=lambda i: (datetime.now() -
-                                                datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).seconds)
-                for string in last_visit[1].split('__<end!>__\n'):
-                    if "patient_anthro_data:____" in string:
-                        for marker in string.replace('patient_anthro_data:____', '').split("____"):
-                            if len(marker.split('__')) == 2:
-                                name, variable = marker.split('__')
-                                if name == 'txt_weight_variable':
-                                    data['examination']['anthro'][name].set(variable)
 
 
         frame_patient_anthro.columnconfigure(index='all', minsize=40, weight=1)
@@ -5004,25 +5055,19 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             ln_num = ''
 
             if type_ln in ("Справка ВН", "Лист ВН"):
-                found_info = data['examination']['get_last_patient_ln'].get(type_ln)
+                last_visit = data['examination']['get_last_patient_ln'].get(type_ln)
 
-                if found_info:
-                    last_visit = min(found_info,
-                                     key=lambda i: (datetime.now() -
-                                                    datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).seconds)
-                    if (datetime.now() - datetime.strptime(f"{last_visit[0]}", "%d.%m.%Y %H:%M")).days < 14:
-                        if last_visit[1].split('__')[-1] != 'closed':
-                            ln_num = last_visit[1].split('__')[1].replace('_', '')
-                            try:
-                                date_from_cont = datetime.strptime(f"{last_visit[1].split('__')[3]}",
-                                                                   "%d.%m.%Y") + timedelta(days=1)
-                                date_from_cont = date_from_cont.strftime("%d.%m.%Y")
-                                txt_ln_from.delete(0, 'end')
-                                txt_ln_from.insert(0, date_from_cont)
+                if last_visit:
+                    ln_num = last_visit.split('__')[1].replace('_', '')
+                    try:
+                        date_from_cont = datetime.strptime(f"{last_visit.split('__')[3]}",
+                                                           "%d.%m.%Y") + timedelta(days=1)
+                        txt_ln_from.delete(0, 'end')
+                        txt_ln_from.insert(0, date_from_cont.strftime("%d.%m.%Y"))
 
-                            except Exception:
-                                txt_ln_from.delete(0, 'end')
-                                txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
+                    except Exception:
+                        txt_ln_from.delete(0, 'end')
+                        txt_ln_from.insert(0, datetime.now().strftime("%d.%m.%Y"))
 
                 if not ln_num:
                     open_frame_ln_my_blanks()
@@ -5039,23 +5084,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             else:
                 frame_ln_add.grid_remove()
                 but_ln_my_blanks.grid_remove()
-
-
-        if user.get('my_LN'):
-            if not user.get('get_last_doc_LN'):
-                user['get_last_doc_LN'] = dict()
-
-            for ln_data in user.get('my_LN'):
-                if not user['get_last_doc_LN'].get(ln_data[0]):
-                    user['get_last_doc_LN'][ln_data[0]] = list()
-                    found_info_past = data_base(command='examination__get_last_doc_LN',
-                                                insert_data=f"{ln_data[0]}%{str(ln_data[1])[:-1]}")
-                    if found_info_past:
-                        for i in found_info_past:
-                            user['get_last_doc_LN'][ln_data[0]].append(i)
-
-        data['examination']['get_last_patient_ln'] = dict()
-        data['examination']['get_last_patient_ln'] = data_base(command='examination__get_last_patient_ln')
 
 
 
@@ -5183,7 +5211,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             row, col = 0, 0
             if found_info:
-                found_info_past = user['get_last_doc_LN'].get(type_ln)
+                found_info_past = data['examination']['get_last_doc_LN'].get(type_ln)
 
                 frame_ln_my_blanks_local_1 = Frame(frame_ln_my_blanks_local, padx=1, pady=1)
                 first_ln_num = int(found_info.split('__')[-1])
@@ -5783,7 +5811,7 @@ def data_base(command,
                 cursor.execute(f"INSERT INTO my_saved_diagnosis "
                                f"VALUES(?, ?, ?)", insert_data)
 
-            user['my_saved_diagnosis'].append(insert_data)
+            user['my_saved_diagnosis'].append(insert_data[1:])
 
         except Exception:
             return False
@@ -5982,13 +6010,16 @@ def data_base(command,
             else:
                 path = f".{os.sep}data_base{os.sep}"
 
-
             if command == 'examination__delete':
                 with sq.connect(f"{path}data_base.db") as connect:
                     cursor = connect.cursor()
                     cursor.execute(f"DELETE FROM examination WHERE rowid LIKE '{insert_data}'")
 
-            elif command == 'examination__select_past_examination':
+            elif command == 'examination__upload_last_data':
+                found_info = {
+                    'select_past_examination': None,
+                    'get_last_doc_LN': None}
+
                 with sq.connect(f"{path}data_base.db") as conn:
                     cur = conn.cursor()
 
@@ -5998,7 +6029,19 @@ def data_base(command,
                                 f"WHERE patient_info LIKE "
                                 f"'{patient.get('name')}%{patient.get('birth_date')}'")
 
-                    return cur.fetchall()
+                    found_info['select_past_examination'] = cur.fetchall()
+
+                    cur.execute(f"SELECT LN_type FROM examination "
+                                f"WHERE doctor_name LIKE '{user.get('doctor_name')}'")
+                    found_info['get_last_doc_LN'] = cur.fetchall()
+
+                return found_info
+
+
+
+
+
+
 
 
             elif command == 'examination__save':
@@ -6007,24 +6050,22 @@ def data_base(command,
                     cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", insert_data)
 
             elif command == 'examination__delete_my_diagnosis':
+                try:
+                    with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as connect:
+                        cursor = connect.cursor()
+                        cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE doctor_name LIKE "
+                                       f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
+                except Exception:
+                    pass
+
                 with sq.connect(f"{path}data_base.db") as connect:
                     cursor = connect.cursor()
                     cursor.execute(f"DELETE FROM my_saved_diagnosis WHERE doctor_name LIKE "
                                    f"'{user.get('doctor_name')}' AND diagnosis LIKE '{delete_data}'")
+                for diagnosis_data in user.get('my_saved_diagnosis'):
+                    if diagnosis_data[0] == delete_data:
+                        user['my_saved_diagnosis'].remove(diagnosis_data)
 
-            elif command == 'examination__get_last_patient_ln':
-                answer = dict()
-                with sq.connect(f"{path}data_base.db") as conn:
-                    cur = conn.cursor()
-                    for type_ln in ("Справка ВН", "Лист ВН"):
-                        cur.execute(f"SELECT date_time, LN_type FROM examination "
-                                    f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                    f"AND patient_info LIKE "
-                                    f"'{patient.get('name')}%{patient.get('birth_date')}' "
-                                    f"AND LN_type LIKE '{type_ln}%'")
-
-                        answer[type_ln] = cur.fetchall()
-                return answer
 
             elif command == 'examination__edit_doctor_LN':
                 if user.get('error_connection'):
@@ -6055,29 +6096,6 @@ def data_base(command,
 
 
 
-
-            elif command == 'examination__get_last_doc_LN':
-                with sq.connect(f"{path}data_base.db") as conn:
-                    cur = conn.cursor()
-                    cur.execute(f"SELECT LN_type FROM examination "
-                                f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
-                                f"AND LN_type LIKE '{insert_data}%'")
-                    found_info_past = cur.fetchall()
-                return found_info_past
-
-
-            elif command == 'examination__get_last_anthro_data':
-                with sq.connect(f"{path}data_base.db") as conn:
-                    cur = conn.cursor()
-
-                    cur.execute(f"SELECT date_time, examination_key FROM examination "
-                                f"WHERE examination_key LIKE "
-                                f"'{insert_data}' "
-                                f"AND patient_info LIKE "
-                                f"'{patient.get('name')}%{patient.get('birth_date')}'")
-
-                    found_info = cur.fetchall()
-                return found_info
 
 
 
