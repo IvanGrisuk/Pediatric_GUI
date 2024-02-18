@@ -1474,7 +1474,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         for marker in local_info:
             data['examination'][marker] = local_info.get(marker)
-            print(marker, local_info.get(marker))
 
 
     upload_last_data()
@@ -2458,7 +2457,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             lbl_my_saved_diagnosis['text'] = "Мои осмотры:"
             lbl_my_saved_diagnosis.grid(column=col, row=row, sticky='ew')
             col += 1
-            print(user.get('my_saved_diagnosis'))
             for diagnosis, examination_key in user.get('my_saved_diagnosis'):
                 data['examination']['my_saved_diagnosis'][f"{diagnosis}"] = examination_key
                 btn = Radiobutton(master=frame_my_saved_diagnosis, text=diagnosis,
@@ -3153,7 +3151,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 "PA": ("PA: _ ", "txt_anal_7_variable"),
                 "Н": ("Н: _ ", "txt_anal_8_variable")
             }
-            print(data['examination']['age_month'].get('month'))
             patient_age_month = data['examination']['age_month'].get('month')
             if data['examination']['age_month'].get('year') > 0:
                 patient_age_month = 12
@@ -3212,7 +3209,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             frame.columnconfigure(index='all', minsize=40, weight=1)
             frame.rowconfigure(index='all', minsize=20)
             frame.pack(fill='both', expand=True)
-            print(patient_age_month)
             data['examination']['npr_frame'][patient_age_month].pack(fill='both', expand=True)
 
             frame_npr.pack(fill='both', expand=True, padx=2, pady=2)
@@ -5594,7 +5590,6 @@ def data_base(command,
             for mark in ('path_examination_data_base', 'path_srv_data_base', 'app_password', 'last_reg_password'):
                 cur.execute(f"SELECT {mark} FROM app_data")
                 app_data = cur.fetchone()
-                print('app_data', mark, app_data)
                 if isinstance(app_data, tuple):
                     user['app_data'][mark] = app_data[0]
                 else:
@@ -5741,14 +5736,12 @@ def data_base(command,
                         cur.execute(f"INSERT INTO my_LN VALUES({'?, ' * (len(marker_0) - 1) + '?'})", marker_0)
 
             answer = f"Синхронизация локальных данных - ОК"
-        print('for marker in edit_local_data')
         for marker in edit_local_data:
             marker_0 = '_loc'
             if edit_local_data[f"{marker}"].get(f"{marker}_global"):
                 marker_0 = '_global'
             for info in edit_local_data[f"{marker}"].get(f"{marker}{marker_0}"):
                 user[f"{marker}"].append(info[1:])
-                print(marker, user.get(marker))
 
         return answer
 
@@ -6019,8 +6012,6 @@ def data_base(command,
             path_examination = f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
             if user.get('error_connection') or 'examination_db_place:____loc' in user.get('add_info'):
                 path_examination = f"{path}data_base.db"
-
-
             if command == 'examination__delete':
                 with sq.connect(f"{path_examination}") as connect:
                     cursor = connect.cursor()
@@ -6094,7 +6085,6 @@ def data_base(command,
 
                     cursor.execute("INSERT INTO my_LN VALUES(?, ?, ?)",
                                    [user.get('doctor_name'), insert_data[0], insert_data[1]])
-                print("user.get('my_LN')", user)
                 if not user.get('my_LN'):
                     user['my_LN'] = list()
                 for i in user.get('my_LN'):
@@ -6130,7 +6120,6 @@ def data_base(command,
                                         new_examination.append(examination)
 
                                 if new_examination:
-                                    print('new_examination', new_examination)
                                     cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", new_examination)
 
                         except Exception as ex:
@@ -6154,12 +6143,12 @@ def data_base(command,
                         for examination in examination_srv:
                             if examination not in examination_loc:
                                 new_examination.append(examination)
-                        print('new_examination', new_examination)
 
                     except Exception as ex:
                         return f"Exception edit_local_db\n{ex}"
                     else:
                         with sq.connect(f"{path}data_base.db") as conn:
+                            cur = conn.cursor()
                             cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", new_examination)
 
                         return "Данные синхронизированы"
@@ -9014,8 +9003,6 @@ def paste_log_in_root(root):
             frame_pass.pack_forget()
 
     def open_main_root():
-        print("user.get('app_data')", user.get('app_data'))
-
 
         if not user.get('error_connection'):
             user['doctor_name'] = all_users_info.get(selected_doctor_name.get())[0]
@@ -9034,7 +9021,7 @@ def paste_log_in_root(root):
 
             log_in_root.update()
 
-        time.sleep(1)
+        time.sleep(3)
         paste_frame_main(root)
         # log_in_root.quit()
 
@@ -9160,7 +9147,6 @@ def paste_log_in_root(root):
 
         if user.get('error_connection'):
             if user['app_data'].get('last_reg_password'):
-                print((datetime.now() - datetime.strptime(user['app_data'].get('last_reg_password'), "%d.%m.%Y")).days)
                 if (datetime.now() - datetime.strptime(user['app_data'].get('last_reg_password'), "%d.%m.%Y")).days > 60:
 
                     Label(frame_pass, text='Срок активации истек! \nВведите пароль для продления 60-дневной подписки',
@@ -9257,7 +9243,6 @@ def paste_frame_main(root):
                         insert_data.append(local_data.get(marker).get().strip())
                     else:
                         insert_data.append("")
-                print(insert_data)
                 if data_base(command='save_new_patient', insert_data=insert_data):
                     messagebox.showinfo('Инфо', "Данные успешно сохранены!")
                     patient['name'] = f"{local_data.get('Фамилия').get().strip()} " \
@@ -9275,7 +9260,6 @@ def paste_frame_main(root):
                                            f"№ амб: {patient.get('amb_cart')}\t" \
                                            f"Участок: {patient.get('patient_district')}"
 
-                    print(patient)
                     new_root.destroy()
                 else:
                     messagebox.showerror('Ошибка', f"Ошибка!\nОшибка сохранения двнных")
@@ -9654,6 +9638,11 @@ def paste_frame_main(root):
                                               'Укажите размер текста числом от 5 до 30')
 
             else:
+                if user.get('doctor_name', "") == "Грисюк И.А.":
+                    user['app_data']['path_examination_data_base'] = txt_path_db_loc.get().strip()
+                    user['app_data']['path_srv_data_base'] = txt_path_db_srv.get().strip()
+                    data_base(command='edit_path_db')
+
                 if user.get('error_connection'):
                     new_doc = [doctor_name, district, ped_div, manager, True, text_size]
                     answer, mess = data_base(command='save_new_doc',
@@ -9677,18 +9666,12 @@ def paste_frame_main(root):
                         messagebox.showinfo('Ошибка', f'Ошибка записи в базу данных:\n{mess}')
 
                 else:
-                    if user.get('doctor_name', "") == "Грисюк И.А.":
-
-                        user['app_data']['path_examination_data_base'] = txt_path_db_loc.get().strip()
-                        user['app_data']['path_srv_data_base'] = txt_path_db_srv.get().strip()
-                        data_base(command='edit_path_db')
-
                     for string in user.get('add_info').split('__<end!>__\n'):
                         if 'examination_db_place:____' in string:
                             user['add_info'] = user.get('add_info', '').replace(string, f"examination_db_place:____{db_type}")
                             break
                     else:
-                        user['add_info'] = f"examination_db_place:____{db_type}"
+                        user['add_info'] = f"examination_db_place:____{db_type}__<end!>__\n"
                     new_doc = [doctor_name, password, district, ped_div, manager, True, text_size, user.get('add_info')]
                     answer, mess = data_base(command='save_new_doc',
                                              insert_data=new_doc)
@@ -9798,8 +9781,6 @@ def paste_frame_main(root):
         new_root.mainloop()
 
     def paste_txt_patient_data(event=None):
-        if event:
-            print(event.widget)
         text_patient_data = pyperclip.paste()
         txt_patient_data.delete(0, last=END)
         txt_patient_data.insert(index=0,
