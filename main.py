@@ -5678,59 +5678,6 @@ def data_base(command,
         except Exception:
             pass
 
-    elif command == 'edit_examination_loc':
-        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-            cur = conn.cursor()
-
-            cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
-                        f"examination_text, examination_key, add_info "
-                        f"FROM examination")
-            examination_loc = cur.fetchall()
-
-        if 'examination_db_place:____srv' in user.get('add_info'):
-
-            if examination_loc:
-                try:
-                    with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db", timeout=10.0) as conn:
-                        cur = conn.cursor()
-                        if examination_loc:
-                            for ex_info in examination_loc:
-                                cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", ex_info)
-                except Exception as ex:
-                    return f"Exception edit_local_db\n{ex}"
-                else:
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                        cur = conn.cursor()
-                        cur.execute(f"DELETE FROM examination")
-                    return f"Данные синхронизированы"
-            else:
-                return f"Нет осмотров"
-        elif 'examination_db_place:____loc' in user.get('add_info'):
-            try:
-                with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db",
-                                timeout=10.0) as conn:
-                    cur = conn.cursor()
-                    cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
-                                f"examination_text, examination_key, add_info "
-                                f"FROM examination")
-                    examination_srv = cur.fetchall()
-                new_examination = list()
-                for examination in examination_loc:
-                    if examination not in examination_srv:
-                        new_examination.append(examination)
-                print('new_examination', new_examination)
-
-
-            except Exception as ex:
-                return f"Exception edit_local_db\n{ex}"
-            else:
-                return "Данные синхронизированы"
-
-
-
-
-
-
     elif command == 'edit_local_db':
         user['my_saved_diagnosis'] = list()
         user['my_LN'] = list()
@@ -6079,6 +6026,7 @@ def data_base(command,
                     cursor = connect.cursor()
                     cursor.execute(f"DELETE FROM examination WHERE rowid LIKE '{insert_data}'")
 
+
             elif command == 'examination__upload_last_data':
                 found_info = {
                     'select_past_examination': None,
@@ -6155,11 +6103,66 @@ def data_base(command,
                 user['my_LN'].append(insert_data)
 
 
+            elif command == 'examination__edit_examination_loc':
+                new_examination = list()
+                with sq.connect(f"{path}data_base.db") as conn:
+                    cur = conn.cursor()
 
+                    cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
+                                f"examination_text, examination_key, add_info "
+                                f"FROM examination")
+                    examination_loc = cur.fetchall()
 
+                if 'examination_db_place:____srv' in user.get('add_info'):
 
+                    if examination_loc:
+                        try:
+                            with sq.connect(
+                                    database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+                                cur = conn.cursor()
+                                cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
+                                            f"examination_text, examination_key, add_info "
+                                            f"FROM examination")
+                                examination_srv = cur.fetchall()
 
+                                for examination in examination_loc:
+                                    if examination not in examination_srv:
+                                        new_examination.append(examination)
 
+                                if new_examination:
+                                    print('new_examination', new_examination)
+                                    cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", new_examination)
+
+                        except Exception as ex:
+                            return f"Exception edit_local_db\n{ex}"
+                        else:
+                            with sq.connect(f"{path}data_base.db") as conn:
+                                cur = conn.cursor()
+                                cur.execute(f"DELETE FROM examination")
+                            return f"Данные синхронизированы"
+                    else:
+                        return f"Нет осмотров"
+                elif 'examination_db_place:____loc' in user.get('add_info'):
+                    try:
+                        with sq.connect(
+                                database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+                            cur = conn.cursor()
+                            cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
+                                        f"examination_text, examination_key, add_info "
+                                        f"FROM examination")
+                            examination_srv = cur.fetchall()
+                        for examination in examination_srv:
+                            if examination not in examination_loc:
+                                new_examination.append(examination)
+                        print('new_examination', new_examination)
+
+                    except Exception as ex:
+                        return f"Exception edit_local_db\n{ex}"
+                    else:
+                        with sq.connect(f"{path}data_base.db") as conn:
+                            cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", new_examination)
+
+                        return "Данные синхронизированы"
 
             # else:
             #
@@ -8976,7 +8979,7 @@ def paste_log_in_root(root):
 
         log_in_root.update()
 
-        answer = data_base(command='edit_examination_loc',
+        answer = data_base(command='examination__edit_examination_loc',
                            insert_data=user.get('add_info'))
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"{answer}")
@@ -9011,6 +9014,8 @@ def paste_log_in_root(root):
             frame_pass.pack_forget()
 
     def open_main_root():
+        print("user.get('app_data')", user.get('app_data'))
+
 
         if not user.get('error_connection'):
             user['doctor_name'] = all_users_info.get(selected_doctor_name.get())[0]
