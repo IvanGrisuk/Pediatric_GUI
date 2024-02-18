@@ -286,10 +286,12 @@ all_blanks_direction = {
                'Оториноларинголога',
                'Офтальмолога',
                'Педиатра',
-               'Реабилитолога'
+               'Реабилитолога',
+               "Стоматолога",
                'Травматолога',
                'Уролога',
-               'Хирурга'
+               'Хирурга',
+               "Челюстно-лицевого хирурга"
                )
 
 }
@@ -1354,10 +1356,15 @@ class ScrolledRoot(tk.Toplevel):
         self.unbind_all("<MouseWheel>")
 
     def on_mousewheel(self, event):
-        if os.name == 'posix':
-            self.canvas.yview_scroll(int(-1 * event.delta), "units")
-        else:
-            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        try:
+            if os.name == 'posix':
+                self.canvas.yview_scroll(int(-1 * event.delta), "units")
+            else:
+                self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        except Exception as ex:
+            print(f"Exception on_mousewheel: {ex}\nos.name: {os.name}\n"
+                  f"-1 * (event.delta / 120: {int(-1 * (event.delta / 120))}\n")
 
 
 def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Frame, child_marker=False):
@@ -2137,7 +2144,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         def create_examination_doc_none():
             create_examination_doc()
 
-        button_change_all_kb_status.grid(column=0, row=0, rowspan=3, sticky='nwse')
+        button_change_all_kb_status.grid(column=0, row=0, rowspan=3, sticky='nswe')
 
         Button(frame_button, text='Загрузить\nпрошлые\nосмотры',
                command=paste_past_examination,
@@ -5611,6 +5618,33 @@ def data_base(command,
                 cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
                             ['Иванов И.И.', 1, 1, 'Петров П.П.', True, 20])
 
+    elif command == 'edit_path_db':
+        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE from app_data")
+            cur.execute("INSERT INTO app_data VALUES (?, ?, ?, ?)",
+                        [user['app_data'].get('path_examination_data_base'),
+                         user['app_data'].get('path_srv_data_base'),
+                         user['app_data'].get('app_password'),
+                         user['app_data'].get('last_reg_password')])
+
+    elif command == 'save_new_patient':
+        try:
+            path = f".{os.sep}data_base{os.sep}patient_data_base.db"
+
+            with sq.connect(f"{path}") as conn:
+                cur = conn.cursor()
+                cur.execute(f"INSERT INTO patient_data VALUES({'?, ' * (len(insert_data) - 1)}?)", insert_data)
+
+            if user['app_data'].get('path_srv_data_base') and not user.get('error_connection'):
+                path = f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db"
+                with sq.connect(f"{path}") as conn:
+                    cur = conn.cursor()
+                    cur.execute(f"INSERT INTO patient_data VALUES({'?, ' * (len(insert_data) - 1)}?)", insert_data)
+            return True
+        except Exception:
+            return False
+
     elif command == 'activate_app':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
@@ -5620,8 +5654,6 @@ def data_base(command,
                          user['app_data'].get('path_srv_data_base'),
                          user['app_data'].get('app_password'),
                          datetime.now().strftime("%d.%m.%Y")])
-
-
 
     elif command == 'create_SRV_db':
         try:
@@ -5646,7 +5678,6 @@ def data_base(command,
         except Exception:
             pass
 
-
     elif command == 'edit_examination_loc':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
@@ -5655,22 +5686,50 @@ def data_base(command,
                         f"examination_text, examination_key, add_info "
                         f"FROM examination")
             examination_loc = cur.fetchall()
-        if examination_loc:
+
+        if 'examination_db_place:____srv' in user.get('add_info'):
+
+            if examination_loc:
+                try:
+                    with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db", timeout=10.0) as conn:
+                        cur = conn.cursor()
+                        if examination_loc:
+                            for ex_info in examination_loc:
+                                cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", ex_info)
+                except Exception as ex:
+                    return f"Exception edit_local_db\n{ex}"
+                else:
+                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                        cur = conn.cursor()
+                        cur.execute(f"DELETE FROM examination")
+                    return f"Данные синхронизированы"
+            else:
+                return f"Нет осмотров"
+        elif 'examination_db_place:____loc' in user.get('add_info'):
             try:
-                with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db", timeout=10.0) as conn:
+                with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db",
+                                timeout=10.0) as conn:
                     cur = conn.cursor()
-                    if examination_loc:
-                        for ex_info in examination_loc:
-                            cur.execute("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", ex_info)
+                    cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
+                                f"examination_text, examination_key, add_info "
+                                f"FROM examination")
+                    examination_srv = cur.fetchall()
+                new_examination = list()
+                for examination in examination_loc:
+                    if examination not in examination_srv:
+                        new_examination.append(examination)
+                print('new_examination', new_examination)
+
+
             except Exception as ex:
                 return f"Exception edit_local_db\n{ex}"
             else:
-                with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                    cur = conn.cursor()
-                    cur.execute(f"DELETE FROM examination")
-                return f"Данные синхронизированы"
-        else:
-            return f"Нет осмотров"
+                return "Данные синхронизированы"
+
+
+
+
+
 
     elif command == 'edit_local_db':
         user['my_saved_diagnosis'] = list()
@@ -6006,11 +6065,12 @@ def data_base(command,
     elif command.startswith('examination'):
         try:
             path = f".{os.sep}data_base{os.sep}"
-            if user.get('path_examination_data_base'):
-                path = user.get('path_examination_data_base')
+            if user['app_data'].get('path_examination_data_base'):
+                path = user['app_data'].get('path_examination_data_base')
+
 
             path_examination = f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
-            if user.get('error_connection'):
+            if user.get('error_connection') or 'examination_db_place:____loc' in user.get('add_info'):
                 path_examination = f"{path}data_base.db"
 
 
@@ -6203,9 +6263,6 @@ def data_base(command,
             #         return found_info
 
 
-
-
-
         except Exception as ex:
             return False, ex
         else:
@@ -6349,10 +6406,10 @@ def certificate__ask_type_certificate():
     type_cert_root.config(bg='white')
 
     Label(type_cert_root, text='Какую справку создать?\n',
-          font=('Comic Sans MS', data.get('text_size')), bg='white').grid()
+          font=('Comic Sans MS', user.get('text_size')), bg='white').grid()
     for text in all_data_certificate.get('type'):
         lbl_0 = Label(type_cert_root, text=text,
-                      font=('Comic Sans MS', data.get('text_size')), border=1, compound='left',
+                      font=('Comic Sans MS', user.get('text_size')), border=1, compound='left',
                       bg='#f0fffe', relief='ridge')
         lbl_0.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew')
         lbl_0.bind('<Button-1>', select_type_certificate)
@@ -6380,7 +6437,7 @@ def certificate__editing_certificate():
                                f"пол: {data['patient'].get('gender')};\n"
                                f"Адрес: {data['patient'].get('address')};",
 
-          font=('Comic Sans MS', data.get('text_size')), bg='white').pack(fill='both', expand=True,
+          font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True,
                                                                           padx=2, pady=2)
     if not all_data_certificate['all_info'].get(type_certificate).get('place_of_requirement'):
         frame_place = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
@@ -6395,7 +6452,7 @@ def certificate__editing_certificate():
             place = all_data_certificate.get('place')
 
         Label(frame_place, text=text,
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, sticky='ew')
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, sticky='ew')
 
         frame_place.columnconfigure(index='all', minsize=40, weight=1)
         frame_place.rowconfigure(index='all', minsize=20)
@@ -6404,7 +6461,7 @@ def certificate__editing_certificate():
         destroy_elements['place_of_requirement'] = list()
         label_place_text = StringVar()
         Label(frame_place, textvariable=label_place_text,
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=1, row=0, sticky='ew')
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=1, row=0, sticky='ew')
 
         def select_place():
             data['certificate']['place_of_requirement'] = selected_place.get()
@@ -6414,7 +6471,7 @@ def certificate__editing_certificate():
 
             if type_certificate == "Оформление в ДДУ / СШ / ВУЗ" and selected_place.get() == 'ВУЗ (колледж)':
                 Label(frame_specialties, text="Специальности для поступления:",
-                      font=('Comic Sans MS', data.get('text_size')), bg='white').pack(fill='both', expand=True,
+                      font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True,
                                                                                       padx=2, pady=2)
                 specialties_txt.pack(fill='both', expand=True, padx=2, pady=2)
 
@@ -6428,7 +6485,7 @@ def certificate__editing_certificate():
 
         frame_specialties = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
         specialties_txt = ScrolledText(frame_specialties, width=80, height=2,
-                                       font=('Comic Sans MS', data.get('text_size')), wrap="word")
+                                       font=('Comic Sans MS', user.get('text_size')), wrap="word")
 
         selected_place = StringVar()
         frame_place_1 = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
@@ -6437,7 +6494,7 @@ def certificate__editing_certificate():
         row, col = 0, 0
         for mark in place:
             btn = Radiobutton(frame_place_1, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_place, command=select_place,
                               indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=row, column=col, sticky='ew')
@@ -6508,14 +6565,14 @@ def certificate__editing_certificate():
                 selected_delete_sport_section = StringVar()
 
                 Label(delete_new_hobby_root, text="Выберите секцию для удаления",
-                      font=('Comic Sans MS', data.get('text_size')),
+                      font=('Comic Sans MS', user.get('text_size')),
                       bg='white').pack(fill='both', expand=True, padx=2, pady=2)
                 frame_delete_new_hobby = Frame(delete_new_hobby_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
                 col_, row_ = 0, 0
                 for sport_section in user.get('my_sport_section'):
                     Radiobutton(frame_delete_new_hobby, text=sport_section,
-                                font=('Comic Sans MS', data.get('text_size')),
+                                font=('Comic Sans MS', user.get('text_size')),
                                 value=f"{sport_section}", variable=selected_delete_sport_section,
                                 command=delete_sport_section, indicatoron=False,
                                 selectcolor='#77f1ff').grid(row=row_, column=col_, sticky='ew')
@@ -6533,8 +6590,8 @@ def certificate__editing_certificate():
         else:
             txt = 'Может работать по специальности:'
 
-        Label(frame, text=txt, font=('Comic Sans MS', data.get('text_size')), bg='white').grid(row=0, column=0)
-        hobby_txt = Entry(frame, width=70, font=('Comic Sans MS', data.get('text_size')))
+        Label(frame, text=txt, font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=0)
+        hobby_txt = Entry(frame, width=70, font=('Comic Sans MS', user.get('text_size')))
         hobby_txt.grid(column=2, row=0, columnspan=3)
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -6552,14 +6609,14 @@ def certificate__editing_certificate():
                 frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
                 Label(frame, text='Мои кружки и секции',
-                      font=('Comic Sans MS', data.get('text_size')), bg='white').grid(row=0, column=0, sticky='ew')
+                      font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=0, sticky='ew')
 
                 col += 1
                 for mark in user.get('my_sport_section'):
                     mark = mark[0]
                     data['certificate']['regime_but'][mark] = IntVar()
                     btn = Checkbutton(frame, text=mark,
-                                      font=('Comic Sans MS', data.get('text_size')),
+                                      font=('Comic Sans MS', user.get('text_size')),
                                       variable=data['certificate']['regime_but'].get(mark), command=append_hobby,
                                       onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
                     btn.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew', row=row, column=col)
@@ -6570,7 +6627,7 @@ def certificate__editing_certificate():
                         row += 1
 
                     Button(frame, text='Редактировать мой список', command=delete_new_hobby,
-                           font=('Comic Sans MS', data.get('text_size'))).grid(ipadx=2, ipady=2, padx=2, pady=2,
+                           font=('Comic Sans MS', user.get('text_size'))).grid(ipadx=2, ipady=2, padx=2, pady=2,
                                                                                sticky='ew', row=row, column=col)
 
                 frame.columnconfigure(index='all', minsize=40, weight=1)
@@ -6580,13 +6637,13 @@ def certificate__editing_certificate():
             frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
             Label(frame, text="Добавить кружок или секцию в избранное: ",
-                  font=('Comic Sans MS', data.get('text_size')),
+                  font=('Comic Sans MS', user.get('text_size')),
                   bg='white').pack(fill='both', expand=True, side='left')
 
-            new_hobby_txt = Entry(frame, width=70, font=('Comic Sans MS', data.get('text_size')))
+            new_hobby_txt = Entry(frame, width=70, font=('Comic Sans MS', user.get('text_size')))
             new_hobby_txt.pack(fill='both', expand=True, side='left')
             Button(frame, text='Сохранить', command=save_new_hobby,
-                   font=('Comic Sans MS', data.get('text_size'))).pack(fill='both', expand=True, side='left')
+                   font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True, side='left')
 
             frame.columnconfigure(index='all', minsize=40, weight=1)
             frame.rowconfigure(index='all', minsize=20)
@@ -6598,7 +6655,7 @@ def certificate__editing_certificate():
                 data['certificate']['regime_but'][mark] = IntVar()
 
                 btn = Checkbutton(frame_hobby, text=mark,
-                                  font=('Comic Sans MS', data.get('text_size')),
+                                  font=('Comic Sans MS', user.get('text_size')),
                                   variable=data['certificate']['regime_but'].get(mark), command=append_hobby,
                                   onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
                 btn.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew', row=row, column=col)
@@ -6609,7 +6666,7 @@ def certificate__editing_certificate():
                     row += 1
 
             Button(frame_hobby, text='Скрыть', command=close_frame_hobby,
-                   font=('Comic Sans MS', data.get('text_size'))).grid(column=col, row=row, sticky="ew")
+                   font=('Comic Sans MS', user.get('text_size'))).grid(column=col, row=row, sticky="ew")
 
             frame_hobby.columnconfigure(index='all', minsize=40, weight=1)
             frame_hobby.rowconfigure(index='all', minsize=20)
@@ -6618,7 +6675,7 @@ def certificate__editing_certificate():
             frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
             Label(frame, text="Группа здоровья:",
-                  font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+                  font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
             selected_health_group = StringVar()
 
@@ -6627,7 +6684,7 @@ def certificate__editing_certificate():
 
             for mark in all_data_certificate.get('health').get('group'):
                 btn = Radiobutton(frame, text=mark,
-                                  font=('Comic Sans MS', data.get('text_size')),
+                                  font=('Comic Sans MS', user.get('text_size')),
                                   value=mark, variable=selected_health_group,
                                   command=select_health_group, indicatoron=False, selectcolor='#77f1ff')
                 btn.grid(row=0, column=(all_data_certificate.get('health').get('group').index(mark) + 1), sticky='ew')
@@ -6639,7 +6696,7 @@ def certificate__editing_certificate():
             frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
             Label(frame, text="Группа по физ-ре:",
-                  font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+                  font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
             selected_fiz_group = StringVar()
 
@@ -6648,7 +6705,7 @@ def certificate__editing_certificate():
 
             for mark in all_data_certificate.get('health').get('physical'):
                 btn = Radiobutton(frame, text=mark,
-                                  font=('Comic Sans MS', data.get('text_size')),
+                                  font=('Comic Sans MS', user.get('text_size')),
                                   value=mark, variable=selected_fiz_group, command=select_fiz_group,
                                   indicatoron=False, selectcolor='#77f1ff')
                 btn.grid(row=0, column=(all_data_certificate.get('health').get('physical').index(mark) + 1),
@@ -6674,44 +6731,44 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Диагноз:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
-        combo_diagnosis = Combobox(frame, font=('Comic Sans MS', data.get('text_size')), state="readonly")
-        combo_diagnosis['values'] = ['ОРИ', "ФРК", "Ветряная оспа"]
+        combo_diagnosis = Combobox(frame, font=('Comic Sans MS', user.get('text_size')), state="readonly")
+        combo_diagnosis['values'] = ['ОРИ', "ФРК", "Ветряная оспа", "был в поликлинике на приеме у педиатра"]
         combo_diagnosis.current(0)
         combo_diagnosis.grid(column=1, row=0)
 
         Label(frame, text="c",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=2, row=0, sticky='ew')
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=2, row=0, sticky='ew')
         ori_from = Entry(frame, width=15,
-                         font=('Comic Sans MS', data.get('text_size')))
+                         font=('Comic Sans MS', user.get('text_size')))
         ori_from.grid(column=3, row=0)
 
         Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
                command=calendar_ori_from).grid(row=1, column=3, sticky='ew')
 
         Label(frame, text="по",
-              font=('Comic Sans MS', data.get('text_size')), bg='white',
+              font=('Comic Sans MS', user.get('text_size')), bg='white',
               compound="center").grid(column=4, row=0, sticky='ew')
         ori_until = Entry(frame, width=15,
-                          font=('Comic Sans MS', data.get('text_size')))
+                          font=('Comic Sans MS', user.get('text_size')))
         ori_until.grid(column=5, row=0)
         ori_until.insert(0, datetime.now().strftime("%d.%m.%Y"))
         Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
                command=calendar_ori_until).grid(row=1, column=5, sticky='ew')
 
         Label(frame, text="Домашний режим до:",
-              font=('Comic Sans MS', data.get('text_size')),
+              font=('Comic Sans MS', user.get('text_size')),
               bg='white', compound="center").grid(column=0, row=3, columnspan=2, sticky='ew')
-        ori_home_regime = Entry(frame, width=15, font=('Comic Sans MS', data.get('text_size')))
+        ori_home_regime = Entry(frame, width=15, font=('Comic Sans MS', user.get('text_size')))
         ori_home_regime.grid(column=2, row=3)
         Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
                command=calendar_ori_home_regime).grid(row=3, column=3, sticky='ew', columnspan=3)
 
         Label(frame, text="Допуск в детский коллектив с",
-              font=('Comic Sans MS', data.get('text_size')),
+              font=('Comic Sans MS', user.get('text_size')),
               bg='white', compound="center").grid(column=0, row=4, columnspan=2, sticky='ew')
-        ori_add_to_childhood = Entry(frame, width=15, font=('Comic Sans MS', data.get('text_size')))
+        ori_add_to_childhood = Entry(frame, width=15, font=('Comic Sans MS', user.get('text_size')))
         ori_add_to_childhood.grid(column=2, row=4)
         Button(frame, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
                command=calendar_ori_add_to_childhood).grid(row=4, column=3, sticky='ew', columnspan=3)
@@ -6730,7 +6787,7 @@ def certificate__editing_certificate():
 
         frame_chickenpox = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
         Label(frame_chickenpox, text="Ветрянка:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
         chickenpox = ["+", "-", "привит"]
         selected_chickenpox = StringVar()
 
@@ -6739,7 +6796,7 @@ def certificate__editing_certificate():
 
         for mark in chickenpox:
             btn = Radiobutton(frame_chickenpox, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_chickenpox, command=select_chickenpox,
                               indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(chickenpox.index(mark) + 1), sticky='ew')
@@ -6750,13 +6807,13 @@ def certificate__editing_certificate():
 
         frame_allergy = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
-        Label(frame_allergy, text="Аллергия:", font=('Comic Sans MS', data.get('text_size')),
+        Label(frame_allergy, text="Аллергия:", font=('Comic Sans MS', user.get('text_size')),
               bg='white').grid(row=0, column=0)
         allergy = ["-", "+"]
         selected_allergy = StringVar()
 
         allergy_txt = Entry(frame_allergy, width=60,
-                            font=('Comic Sans MS', data.get('text_size')))
+                            font=('Comic Sans MS', user.get('text_size')))
 
         def select_allergy():
             data['certificate']['allergy'] = selected_allergy.get()
@@ -6765,7 +6822,7 @@ def certificate__editing_certificate():
             destroy_elements['allergy'].clear()
             if selected_allergy.get() == '+':
                 lbl = Label(frame_allergy, text="Аллергия на:",
-                      font=('Comic Sans MS', data.get('text_size')), bg='white')
+                      font=('Comic Sans MS', user.get('text_size')), bg='white')
                 lbl.grid(row=0, column=3)
                 allergy_txt.grid(column=4, row=0, columnspan=3)
                 destroy_elements['allergy'].append(allergy_txt)
@@ -6773,7 +6830,7 @@ def certificate__editing_certificate():
 
             else:
                 lbl = Label(frame_allergy, text="Аллергоанамнез не отягощен",
-                      font=('Comic Sans MS', data.get('text_size')),
+                      font=('Comic Sans MS', user.get('text_size')),
                       bg='white')
                 lbl.grid(row=0, column=3)
                 destroy_elements['allergy'].append(lbl)
@@ -6784,7 +6841,7 @@ def certificate__editing_certificate():
         destroy_elements['allergy'] = list()
         for mark in allergy:
             btn = Radiobutton(frame_allergy, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_allergy, command=select_allergy,
                               indicatoron=False, selectcolor='#77f1ff')
             btn.grid(column=(allergy.index(mark) + 1), row=0, sticky='ew')
@@ -6820,7 +6877,7 @@ def certificate__editing_certificate():
             for key_diagnosis in local_frame_diagnosis:
                 if key_diagnosis != open_button:
                     lbl_dig = Label(master=local_frame_diagnosis.get(key_diagnosis), text=f"{key_diagnosis}",
-                                    font=('Comic Sans MS', data.get('text_size')), bg='white')
+                                    font=('Comic Sans MS', user.get('text_size')), bg='white')
                     lbl_dig.grid(column=0, row=0, sticky='ew')
                     lbl_dig.bind('<Button-1>', select_category_diagnosis)
                     local_destroy_elements.append(lbl_dig)
@@ -6830,7 +6887,7 @@ def certificate__editing_certificate():
             local_destroy_elements.append(frame_diagnosis_in)
 
             lbl_dig = Label(frame_diagnosis_in, text=f"{all_data_certificate.get('diagnosis')[int(widget) - 2][0]}",
-                            font=('Comic Sans MS', data.get('text_size')), bg='white')
+                            font=('Comic Sans MS', user.get('text_size')), bg='white')
             lbl_dig.grid(column=0, row=0, columnspan=5)
             lbl_dig.bind('<Button-1>', select_category_diagnosis)
 
@@ -6840,7 +6897,7 @@ def certificate__editing_certificate():
                     row_ += 1
                     col_ = 0
                 lbl_01 = Label(frame_diagnosis_in, text=lbl_dig,
-                               font=('Comic Sans MS', data.get('text_size')), border=1,
+                               font=('Comic Sans MS', user.get('text_size')), border=1,
                                compound='left',
                                bg='#f0fffe', relief='ridge')
                 lbl_01.grid(ipadx=2, ipady=2, padx=2, pady=2, column=col_, row=row_, sticky='ew')
@@ -6885,7 +6942,7 @@ def certificate__editing_certificate():
         diagnosis_text.grid(column=0, row=1, rowspan=6)
         Button(frame_diagnosis, text='Закрыть\nклавиатуру',
                command=close_diagnosis_kb,
-               font=('Comic Sans MS', data.get('text_size'))).grid(column=1, row=3)
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=3)
         frame_diagnosis.columnconfigure(index='all', minsize=40, weight=1)
         frame_diagnosis.rowconfigure(index='all', minsize=20)
         frame_diagnosis.pack(fill='both', expand=True, padx=2, pady=2)
@@ -6899,7 +6956,7 @@ def certificate__editing_certificate():
             local_frame_diagnosis[tuple_diagnosis[0]] = frame_diagnosis
 
             lbl_d = Label(frame_diagnosis, text=f"{tuple_diagnosis[0]}",
-                          font=('Comic Sans MS', data.get('text_size')), bg='white')
+                          font=('Comic Sans MS', user.get('text_size')), bg='white')
             local_destroy_elements.append(lbl_d)
             lbl_d.grid(column=0, row=0, sticky="ew")
             lbl_d.bind('<Button-1>', select_category_diagnosis)
@@ -6911,12 +6968,12 @@ def certificate__editing_certificate():
     if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
         frame_injury_operation = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
-        Label(frame_injury_operation, text="Травмы и операции:", font=('Comic Sans MS', data.get('text_size')),
+        Label(frame_injury_operation, text="Травмы и операции:", font=('Comic Sans MS', user.get('text_size')),
               bg='white').grid(row=0, column=0)
         injury_operation = ("-", "+")
         selected_injury_operation = StringVar()
         injury_operation_txt = Entry(frame_injury_operation, width=60,
-                                     font=('Comic Sans MS', data.get('text_size')))
+                                     font=('Comic Sans MS', user.get('text_size')))
 
         def select_injury_operation():
             injury_operation_val = selected_injury_operation.get()
@@ -6926,14 +6983,14 @@ def certificate__editing_certificate():
 
             if injury_operation_val == '-':
                 Label(frame_injury_operation, text="не было",
-                      font=('Comic Sans MS', data.get('text_size')), bg='white').grid(row=0, column=1)
+                      font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=1)
             else:
                 injury_operation_txt.grid(column=1, row=0)
 
         destroy_elements['injury_operation'] = list()
         for mark in injury_operation:
             btn = Radiobutton(frame_injury_operation, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_injury_operation,
                               command=select_injury_operation, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(column=(injury_operation.index(mark) + 1), row=0, sticky='ew')
@@ -6951,22 +7008,22 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Рост (см):",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
         height = Entry(frame, width=15,
-                       font=('Comic Sans MS', data.get('text_size')))
+                       font=('Comic Sans MS', user.get('text_size')))
         height.grid(column=1, row=0)
 
         Label(frame, text="    Вес (кг):",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=2, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=2, row=0)
         weight = Entry(frame, width=15,
-                       font=('Comic Sans MS', data.get('text_size')))
+                       font=('Comic Sans MS', user.get('text_size')))
         weight.grid(column=3, row=0)
 
         vision = Entry(frame, width=15,
-                       font=('Comic Sans MS', data.get('text_size')))
+                       font=('Comic Sans MS', user.get('text_size')))
         if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ'):
             Label(frame, text="    Зрение:",
-                  font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=4, row=0)
+                  font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=4, row=0)
             vision.grid(column=5, row=0)
             age = get_age(data['patient'].get('birth_date'))
             if age >= 4:
@@ -6981,9 +7038,9 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Диагноз:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
         diagnosis = ScrolledText(frame, width=80, height=4,
-                                 font=('Comic Sans MS', data.get('text_size')), wrap="word")
+                                 font=('Comic Sans MS', user.get('text_size')), wrap="word")
         diagnosis.grid(column=0, row=1, rowspan=4, columnspan=4)
 
         selected_health_group = StringVar()
@@ -7014,10 +7071,10 @@ def certificate__editing_certificate():
             data['certificate']['desk'] = ["по росту"]
 
         Button(frame, text='Здоров', command=diagnosis_healthy,
-               font=('Comic Sans MS', data.get('text_size'))).grid(column=1, row=0)
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0)
 
         Button(frame, text='Клавиатура диагнозов', command=diagnosis_kb,
-               font=('Comic Sans MS', data.get('text_size'))).grid(column=2, row=0)
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=0)
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
         frame.rowconfigure(index='all', minsize=20)
@@ -7026,14 +7083,14 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Группа здоровья:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
         def select_health_group():
             data['certificate']['health_group'] = selected_health_group.get()
 
         for mark in all_data_certificate.get('health').get('group'):
             btn = Radiobutton(frame, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_health_group,
                               command=select_health_group, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('group').index(mark) + 1), sticky='ew')
@@ -7045,14 +7102,14 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Группа по физ-ре:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
         def select_fiz_group():
             data['certificate']['physical'] = selected_health_group.get()
 
         for mark in all_data_certificate.get('health').get('physical'):
             btn = Radiobutton(frame, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_fiz_group,
                               command=select_fiz_group, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('physical').index(mark) + 1), sticky='ew')
@@ -7064,7 +7121,7 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Режим:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
         def select_regime():
             result = list()
@@ -7075,7 +7132,7 @@ def certificate__editing_certificate():
 
         for mark in all_data_certificate.get('health').get('regime'):
             btn = Checkbutton(frame, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               variable=regime_vars.get(mark), command=select_regime,
                               onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('regime').index(mark) + 1), sticky='ew')
@@ -7087,14 +7144,14 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Стол:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
         def select_diet():
             data['certificate']['diet'] = selected_health_group.get()
 
         for mark in all_data_certificate.get('health').get('diet'):
             btn = Radiobutton(frame, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_diet, command=select_diet,
                               indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('diet').index(mark) + 1), sticky='ew')
@@ -7106,7 +7163,7 @@ def certificate__editing_certificate():
         frame_select_desk = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame_select_desk, text="Парта:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
         def select_desk():
             result = list()
@@ -7117,7 +7174,7 @@ def certificate__editing_certificate():
 
         for mark in all_data_certificate.get('health').get('desk'):
             btn = Checkbutton(frame_select_desk, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               variable=desk_vars.get(mark), command=select_desk,
                               onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=0, column=(all_data_certificate.get('health').get('desk').index(mark) + 1), sticky='ew')
@@ -7130,9 +7187,9 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Диагноз:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
         diagnosis = ScrolledText(frame, width=80, height=4,
-                                 font=('Comic Sans MS', data.get('text_size')), wrap="word")
+                                 font=('Comic Sans MS', user.get('text_size')), wrap="word")
         diagnosis.grid(column=0, row=1, rowspan=4, columnspan=4)
 
         def diagnosis_healthy():
@@ -7143,10 +7200,10 @@ def certificate__editing_certificate():
                 diagnosis.insert(INSERT, 'Соматически здоров. ')
 
         Button(frame, text='Здоров', command=diagnosis_healthy,
-               font=('Comic Sans MS', data.get('text_size'))).grid(column=1, row=0)
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=0)
 
         Button(frame, text='Клавиатура диагнозов', command=diagnosis_kb,
-               font=('Comic Sans MS', data.get('text_size'))).grid(column=2, row=0)
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=0)
 
         frame.columnconfigure(index='all', minsize=40, weight=1)
         frame.rowconfigure(index='all', minsize=20)
@@ -7155,7 +7212,7 @@ def certificate__editing_certificate():
         frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
 
         Label(frame, text="Профиль санатория:",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, columnspan=3)
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, columnspan=3)
 
         def select_profile():
             result = list()
@@ -7173,7 +7230,7 @@ def certificate__editing_certificate():
         row, col = 1, 0
         for mark in sanatorium_profile:
             btn = Checkbutton(frame, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               variable=sanatorium_profile.get(mark), command=select_profile,
                               onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=row, column=col, sticky='ew')
@@ -7494,7 +7551,7 @@ def certificate__editing_certificate():
             certificate__create_doc()
 
     Button(edit_cert_root, text='Создать справку', command=create_certificate,
-           font=('Comic Sans MS', data.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
+           font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
 
     if type_certificate in ('Об обслуживании в поликлинике', 'ЦКРОиР'):
         create_certificate()
@@ -8107,7 +8164,7 @@ def analyzes__ask_analyzes():
     analyzes_root.geometry('+0+0')
 
     Label(analyzes_root, text='Выберите анализы',
-          font=('Comic Sans MS', data.get('text_size')), bg='white').pack(fill='both', expand=True,
+          font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True,
                                                                           padx=2, pady=2)
 
     def create_analyzes():
@@ -8163,13 +8220,13 @@ def analyzes__ask_analyzes():
 
         row, col = 1, 0
         Label(frame, text=f"{all_blanks_anal.get(category)[0]}",
-              font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, columnspan=3,
+              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, columnspan=3,
                                                                               sticky='ew')
         if category == 'add':
 
             for analyzes in all_blanks_anal.get(category)[1:]:
                 btn = Checkbutton(frame, text=analyzes,
-                                  font=('Comic Sans MS', data.get('text_size')),
+                                  font=('Comic Sans MS', user.get('text_size')),
                                   variable=analyzes_category_vars.get(analyzes), command=select_category_analyzes,
                                   onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff', bg='#cdcdcd')
                 btn.grid(row=row, column=col, sticky='ew')
@@ -8183,7 +8240,7 @@ def analyzes__ask_analyzes():
             for analyzes in all_blanks_anal.get(category)[1:]:
 
                 btn = Checkbutton(frame, text=analyzes,
-                                  font=('Comic Sans MS', data.get('text_size')),
+                                  font=('Comic Sans MS', user.get('text_size')),
                                   variable=analyzes_vars[category].get(analyzes), command=select_analyzes,
                                   onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff', bg='#cdcdcd')
                 btn.grid(row=row, column=col, sticky='ew')
@@ -8198,7 +8255,7 @@ def analyzes__ask_analyzes():
         frame.pack(fill='both', expand=True, padx=2, pady=2)
 
     Button(analyzes_root, text='Создать документ', command=create_analyzes,
-           font=('Comic Sans MS', data.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
+           font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
 
     analyzes_root.mainloop()
 
@@ -8341,16 +8398,16 @@ def create_blanks__ask_type_blanks():
     type_blanks_root.geometry('+0+0')
 
     Label(type_blanks_root, text='Какие бланки создать?\n',
-          font=('Comic Sans MS', data.get('text_size')), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
+          font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
     for text in blanks:
         lbl_0 = Label(type_blanks_root, text=text,
-                      font=('Comic Sans MS', data.get('text_size')), border=1, compound='left',
+                      font=('Comic Sans MS', user.get('text_size')), border=1, compound='left',
                       bg='#f0fffe', relief='ridge')
         lbl_0.pack(fill='both', expand=True, padx=2, pady=2)
         lbl_0.bind('<Button-1>', select_type_blanks)
 
     Button(type_blanks_root, text='Закрыть окно', command=close_window,
-           font=('Comic Sans MS', data.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
+           font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
 
     render_data['ped_div'] = data.get('ped_div')
     render_data['district'] = data.get('patient_district')
@@ -8394,7 +8451,7 @@ def direction__ask_type_blanks():
 
     frame_where = Frame(type_blanks_root, borderwidth=1, relief="solid", padx=4, pady=4)
     Label(frame_where, text="Тип направления:",
-          font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0)
+          font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
 
     selected_where = StringVar()
 
@@ -8417,7 +8474,7 @@ def direction__ask_type_blanks():
 
     for mark in type_direct:
         btn = Radiobutton(frame_where, text=mark,
-                          font=('Comic Sans MS', data.get('text_size')),
+                          font=('Comic Sans MS', user.get('text_size')),
                           value=mark, variable=selected_where,
                           command=select_where, indicatoron=False, selectcolor='#77f1ff')
         btn.grid(row=0, column=(type_direct.index(mark) + 1), sticky='ew')
@@ -8428,7 +8485,7 @@ def direction__ask_type_blanks():
 
     frame_hospital = Frame(type_blanks_root, borderwidth=1, relief="solid", padx=4, pady=4)
     Label(frame_hospital, text="Куда направить:",
-          font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, columnspan=5)
+          font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, columnspan=5)
 
     selected_hospital = StringVar()
 
@@ -8441,11 +8498,11 @@ def direction__ask_type_blanks():
             col = 0
             row += 2
             Label(frame_hospital, text=mark,
-                  font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=col, row=row - 1, columnspan=5)
+                  font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=col, row=row - 1, columnspan=5)
         else:
 
             btn = Radiobutton(frame_hospital, text=mark,
-                              font=('Comic Sans MS', data.get('text_size')),
+                              font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_hospital,
                               command=select_hospital, indicatoron=False, selectcolor='#77f1ff')
             btn.grid(row=row, column=col, sticky='ew')
@@ -8459,7 +8516,7 @@ def direction__ask_type_blanks():
 
     frame_doctor = Frame(type_blanks_root, borderwidth=1, relief="solid", padx=4, pady=4)
     Label(frame_doctor, text="На консультацию:",
-          font=('Comic Sans MS', data.get('text_size')), bg='white').grid(column=0, row=0, columnspan=5)
+          font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, columnspan=5)
 
     selected_doctor = StringVar()
 
@@ -8470,7 +8527,7 @@ def direction__ask_type_blanks():
     for mark in all_blanks_direction.get('doctor'):
 
         btn = Radiobutton(frame_doctor, text=mark,
-                          font=('Comic Sans MS', data.get('text_size')),
+                          font=('Comic Sans MS', user.get('text_size')),
                           value=mark, variable=selected_doctor,
                           command=select_doctor, indicatoron=False, selectcolor='#77f1ff')
         btn.grid(row=row, column=col, sticky='ew')
@@ -8491,7 +8548,7 @@ def direction__ask_type_blanks():
             direction__create_direction()
 
     but_create_doc = Button(type_blanks_root, text='Создать направление', command=create_doc,
-                            font=('Comic Sans MS', data.get('text_size')))
+                            font=('Comic Sans MS', user.get('text_size')))
 
     type_blanks_root.mainloop()
 
@@ -8914,16 +8971,17 @@ def keypress(event):
 
 def paste_log_in_root(root):
     def edit_local_db():
-        # load_info_text.set(f"{load_info_text.get()}\n"
-        #                    f"Синхронизация осмотров...")
-        #
-        # log_in_root.update()
-        #
-        # answer = data_base('edit_examination_loc')
-        # load_info_text.set(f"{load_info_text.get()}\n"
-        #                    f"{answer}")
-        #
-        # log_in_root.update()
+        load_info_text.set(f"{load_info_text.get()}\n"
+                           f"Синхронизация осмотров...")
+
+        log_in_root.update()
+
+        answer = data_base(command='edit_examination_loc',
+                           insert_data=user.get('add_info'))
+        load_info_text.set(f"{load_info_text.get()}\n"
+                           f"{answer}")
+
+        log_in_root.update()
 
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"Синхронизация шаблонов...")
@@ -8955,6 +9013,14 @@ def paste_log_in_root(root):
     def open_main_root():
 
         if not user.get('error_connection'):
+            user['doctor_name'] = all_users_info.get(selected_doctor_name.get())[0]
+            user['password'] = all_users_info.get(selected_doctor_name.get())[1]
+            user['doctor_district'] = all_users_info.get(selected_doctor_name.get())[2]
+            user['ped_div'] = all_users_info.get(selected_doctor_name.get())[3]
+            user['manager'] = all_users_info.get(selected_doctor_name.get())[4]
+            user['text_size'] = int(all_users_info.get(selected_doctor_name.get())[5])
+            user['add_info'] = all_users_info.get(selected_doctor_name.get())[6]
+
             try:
                 edit_local_db()
             except Exception as ex:
@@ -8963,13 +9029,6 @@ def paste_log_in_root(root):
 
             log_in_root.update()
 
-            user['doctor_name'] = all_users_info.get(selected_doctor_name.get())[0]
-            user['password'] = all_users_info.get(selected_doctor_name.get())[1]
-            user['doctor_district'] = all_users_info.get(selected_doctor_name.get())[2]
-            user['ped_div'] = all_users_info.get(selected_doctor_name.get())[3]
-            user['manager'] = all_users_info.get(selected_doctor_name.get())[4]
-            user['text_size'] = int(all_users_info.get(selected_doctor_name.get())[5])
-            user['add_info'] = all_users_info.get(selected_doctor_name.get())[6]
         time.sleep(1)
         paste_frame_main(root)
         # log_in_root.quit()
@@ -9160,6 +9219,100 @@ def paste_log_in_root(root):
 
 
 def paste_frame_main(root):
+    def add_new_patient():
+        def save():
+            def check_input():
+                error_flag = False
+                for marker in local_data:
+                    if marker in ("№ участка", "Фамилия", "Имя", "Отчество", "Пол", "Дата рождения", "Адрес") and not local_data.get(marker).get():
+                        messagebox.showerror('Ошибка', f"Ошибка!\nНе указан пункт\n'{marker}'")
+                        break
+                    elif marker in ("№ амбулаторной карты", "№ участка") and local_data.get(marker).get() and not local_data.get(marker).get().isdigit():
+                        messagebox.showerror('Ошибка', f"Ошибка!\nУкажите пункт\n'{marker}'\nчислом")
+                        break
+                    elif marker == "Дата рождения":
+                        try:
+                            if (datetime.now() - datetime.strptime(local_data.get(marker).get(), "%d.%m.%Y")).days < 0:
+                                messagebox.showerror('Ошибка', f"Дата рождения не может быть больше текущей даты!")
+                                break
+                        except Exception:
+                            messagebox.showerror('Ошибка', f"Дата рождения должна быть в формате 'ДД.ММ.ГГГГ'")
+                            break
+                else:
+                    return True
+                return False
+
+            if check_input():
+                insert_data = list()
+                for marker in ("№ участка", "№ амбулаторной карты",
+                               "Фамилия", "Имя", "Отчество", "Пол",
+                               "Дата рождения", "Адрес",
+                               "None", "None", "None"):
+                    if local_data.get(marker) and local_data.get(marker).get().strip():
+                        insert_data.append(local_data.get(marker).get().strip())
+                    else:
+                        insert_data.append("")
+                print(insert_data)
+                if data_base(command='save_new_patient', insert_data=insert_data):
+                    messagebox.showinfo('Инфо', "Данные успешно сохранены!")
+                    patient['name'] = f"{local_data.get('Фамилия').get().strip()} " \
+                                      f"{local_data.get('Имя').get().strip()} " \
+                                      f"{local_data.get('Отчество').get().strip()}"
+                    patient['birth_date'] = f"{local_data.get('Дата рождения').get().strip()}"
+                    patient['gender'] = f"{local_data.get('Пол').get().strip()}"
+                    patient['amb_cart'] = f"{local_data.get('№ амбулаторной карты').get().strip()}"
+                    patient['patient_district'] = f"{local_data.get('№ участка').get().strip()}"
+                    patient['address'] = f"{local_data.get('Адрес').get().strip()}"
+
+                    patient_info['text'] = f"ФИО: {patient.get('name')}\t" \
+                                           f"Дата рождения: {patient.get('birth_date')}\n" \
+                                           f"Адрес: {patient.get('address')}\n" \
+                                           f"№ амб: {patient.get('amb_cart')}\t" \
+                                           f"Участок: {patient.get('patient_district')}"
+
+                    print(patient)
+                    new_root.destroy()
+                else:
+                    messagebox.showerror('Ошибка', f"Ошибка!\nОшибка сохранения двнных")
+
+
+        new_root = Toplevel()
+        new_root.title('Добавление нового пациента')
+        local_data = {
+            "№ амбулаторной карты": StringVar(),
+            "№ участка": StringVar(),
+            "Фамилия": StringVar(),
+            "Имя": StringVar(),
+            "Отчество": StringVar(),
+            "Пол": StringVar(),
+            "Дата рождения": StringVar(),
+            "Адрес": StringVar(),
+        }
+
+        row = 0
+        for marker in local_data:
+
+            Label(new_root, text=marker,
+                  font=('Comic Sans MS', user.get('text_size')),
+                  bg="#36566d", fg='white').grid(column=0, row=row, sticky='nwse', padx=2, pady=2)
+            if marker == 'Пол':
+                combo_sex = Combobox(new_root, font=('Comic Sans MS', user.get('text_size')), state="readonly",
+                                     textvariable=local_data.get(marker))
+                combo_sex['values'] = ["", "мужской", "женский"]
+                combo_sex.current(0)
+                combo_sex.grid(column=1, row=row, sticky='nwse')
+            else:
+
+                Entry(new_root, width=30, font=('Comic Sans MS', user.get('text_size')),
+                      textvariable=local_data.get(marker)
+                      ).grid(column=1, row=row, sticky='nwse', ipadx=2, ipady=2)
+            row += 1
+
+        Button(new_root, text='Сохранить', command=save, font=('Comic Sans MS', user.get('text_size'))).grid(
+            columnspan=2, sticky='ew')
+
+        new_root.mainloop()
+
     def download_ped_div():
         pediatric_division = user.get('ped_div')
         info = data_base(f"get_certificate_for_district__certificate_ped_div__{pediatric_division}")
@@ -9472,12 +9625,16 @@ def paste_frame_main(root):
 
     def change_doctor(command):
         def save():
-            doctor_name = txt_doctor_name.get()
-            manager = txt_manager.get()
-            district = txt_district.get()
-            ped_div = txt_ped_div.get()
-            text_size = txt_text_size.get()
+            doctor_name = txt_doctor_name.get().strip()
+            manager = txt_manager.get().strip()
+            district = txt_district.get().strip()
+            ped_div = txt_ped_div.get().strip()
+            text_size = txt_text_size.get().strip()
             password = txt_password.get()
+
+            db_type = 'loc'
+            if combo_db.get() == 'Сервер':
+                db_type = 'srv'
 
             if not doctor_name:
                 messagebox.showinfo('Ошибка', 'Ошибка имени доктора!')
@@ -9486,7 +9643,7 @@ def paste_frame_main(root):
             elif not district:
                 messagebox.showinfo('Ошибка', 'Ошибка участка!\nУкажите участок числом')
             elif not ped_div or ped_div not in ('1', '2', '3', 'ПРОЧЕЕ'):
-                messagebox.showinfo('Ошибка', 'Ошибка ПО\nУкажите номер ПО числом')
+                messagebox.showinfo('Ошибка', "Ошибка ПО\nУкажите номер ПО числом или 'ПРОЧЕЕ'")
             elif not text_size or not text_size.isdigit() or (4 > int(text_size) or int(text_size) > 30):
                 messagebox.showinfo('Ошибка', 'Ошибка размера текста\n'
                                               'Укажите размер текста числом от 5 до 30')
@@ -9515,6 +9672,18 @@ def paste_frame_main(root):
                         messagebox.showinfo('Ошибка', f'Ошибка записи в базу данных:\n{mess}')
 
                 else:
+                    if user.get('doctor_name', "") == "Грисюк И.А.":
+
+                        user['app_data']['path_examination_data_base'] = txt_path_db_loc.get().strip()
+                        user['app_data']['path_srv_data_base'] = txt_path_db_srv.get().strip()
+                        data_base(command='edit_path_db')
+
+                    for string in user.get('add_info').split('__<end!>__\n'):
+                        if 'examination_db_place:____' in string:
+                            user['add_info'] = user.get('add_info', '').replace(string, f"examination_db_place:____{db_type}")
+                            break
+                    else:
+                        user['add_info'] = f"examination_db_place:____{db_type}"
                     new_doc = [doctor_name, password, district, ped_div, manager, True, text_size, user.get('add_info')]
                     answer, mess = data_base(command='save_new_doc',
                                              insert_data=new_doc)
@@ -9576,6 +9745,34 @@ def paste_frame_main(root):
             Label(new_root, text='Пароль: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=5)
             txt_password.grid(column=1, row=5, sticky='ew')
 
+        txt_path_db_loc = Entry(new_root, width=30, font=('Comic Sans MS', user.get('text_size')))
+
+        txt_path_db_srv = Entry(new_root, width=30, font=('Comic Sans MS', user.get('text_size')))
+
+        if user.get('doctor_name', "") == "Грисюк И.А.":
+
+            Label(new_root, text='path loc DB: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=6)
+            txt_path_db_loc.grid(column=1, row=6, sticky='ew')
+            if user['app_data'].get('path_examination_data_base'):
+                txt_path_db_loc.insert(0, user['app_data'].get('path_examination_data_base', ''))
+
+            Label(new_root, text='path srv DB: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=7)
+            txt_path_db_srv.grid(column=1, row=7, sticky='ew')
+            if user['app_data'].get('path_srv_data_base'):
+                txt_path_db_srv.insert(0, user['app_data'].get('path_srv_data_base', ''))
+
+
+
+        Label(new_root, text='Место хранения осмотров: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=8)
+
+        combo_db = Combobox(new_root, font=('Comic Sans MS', user.get('text_size')), state="readonly")
+        combo_db['values'] = ["Сервер", "Мой компьютер"]
+        combo_db.current(0)
+        combo_db.grid(column=1, row=8)
+
+
+
+
         Button(new_root, text='Сохранить', command=save, font=('Comic Sans MS', user.get('text_size'))).grid(
             columnspan=2, sticky='ew')
 
@@ -9586,6 +9783,8 @@ def paste_frame_main(root):
             txt_ped_div.insert(0, user.get('ped_div'))
             txt_text_size.insert(0, user.get('text_size'))
             txt_password.insert(0, user.get('password', ''))
+
+
 
         new_root.mainloop()
 
@@ -9662,10 +9861,10 @@ def paste_frame_main(root):
         lbl_patient_main['font'] = ('Comic Sans MS', user.get('text_size'))
         txt_patient_data['font'] = ('Comic Sans MS', user.get('text_size'))
         patient_info['font'] = ('Comic Sans MS', user.get('text_size'))
-        button_search_patient['font'] = ('Comic Sans MS', user.get('text_size'))
-        button_updating_patient_data_base['font'] = ('Comic Sans MS', user.get('text_size'))
-        button_delete_txt_patient_data['font'] = ('Comic Sans MS', user.get('text_size'))
-        button_paste_txt_patient_data['font'] = ('Comic Sans MS', user.get('text_size'))
+        button_add_new_patient['font'] = ('Comic Sans MS', user.get('text_size'))
+        # button_updating_patient_data_base['font'] = ('Comic Sans MS', user.get('text_size'))
+        # button_delete_txt_patient_data['font'] = ('Comic Sans MS', user.get('text_size'))
+        # button_paste_txt_patient_data['font'] = ('Comic Sans MS', user.get('text_size'))
         lbl_to_do_main['font'] = ('Comic Sans MS', user.get('text_size'))
         button_certificate_cmd['font'] = ('Comic Sans MS', user.get('text_size'))
         button_analyzes_cmd['font'] = ('Comic Sans MS', user.get('text_size'))
@@ -9763,18 +9962,18 @@ def paste_frame_main(root):
     patient_info = Label(frame_main_loc, text='')
     patient_info.grid(column=0, row=4, sticky='ew')
 
-    button_search_patient = Button(frame_main_loc, text='Поиск', command=search_patient)
-    button_search_patient.grid(column=1, row=3, sticky='ew')
+    button_add_new_patient = Button(frame_main_loc, text='Добавить\nнового\nпациента', command=add_new_patient)
+    button_add_new_patient.grid(column=1, row=3, rowspan=2, sticky='nswe')
 
-    button_updating_patient_data_base = Button(frame_main_loc, text='Обновить БД',
-                                               command=updating_patient_data_base)
-    button_updating_patient_data_base.grid(column=1, row=4, sticky='ew')
-
-    button_delete_txt_patient_data = Button(frame_main_loc, text='Удалить', command=delete_txt_patient_data)
-    button_delete_txt_patient_data.grid(column=2, row=3, sticky='ew')
-
-    button_paste_txt_patient_data = Button(frame_main_loc, text='Вставить', command=paste_txt_patient_data)
-    button_paste_txt_patient_data.grid(column=2, row=4, sticky='ew')
+    # button_updating_patient_data_base = Button(frame_main_loc, text='Обновить БД',
+    #                                            command=updating_patient_data_base)
+    # button_updating_patient_data_base.grid(column=1, row=4, sticky='ew')
+    #
+    # button_delete_txt_patient_data = Button(frame_main_loc, text='Удалить', command=delete_txt_patient_data)
+    # button_delete_txt_patient_data.grid(column=2, row=3, sticky='ew')
+    #
+    # button_paste_txt_patient_data = Button(frame_main_loc, text='Вставить', command=paste_txt_patient_data)
+    # button_paste_txt_patient_data.grid(column=2, row=4, sticky='ew')
 
     frame_main_loc.columnconfigure(index='all', minsize=40, weight=1)
     frame_main_loc.rowconfigure(index='all', minsize=20)
