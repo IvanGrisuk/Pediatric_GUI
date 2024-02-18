@@ -9746,9 +9746,19 @@ def paste_frame_main(root):
         txt_text_size = Entry(new_root, width=5, font=('Comic Sans MS', user.get('text_size')))
         txt_text_size.grid(column=1, row=4, sticky='ew')
 
+        combo_db = Combobox(new_root, font=('Comic Sans MS', user.get('text_size')), state="readonly")
+        combo_db['values'] = ["Сервер", "Мой компьютер"]
+        combo_db.current(0)
+
         if not user.get('error_connection'):
             Label(new_root, text='Пароль: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=5)
             txt_password.grid(column=1, row=5, sticky='ew')
+
+            Label(new_root, text='Место хранения осмотров: ', font=('Comic Sans MS', user.get('text_size'))).grid(
+                column=0, row=8)
+            if 'examination_db_place:____loc' in user.get('add_info'):
+                combo_db.current(1)
+            combo_db.grid(column=1, row=8)
 
         txt_path_db_loc = Entry(new_root, width=30, font=('Comic Sans MS', user.get('text_size')))
 
@@ -9768,12 +9778,6 @@ def paste_frame_main(root):
 
 
 
-        Label(new_root, text='Место хранения осмотров: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=8)
-
-        combo_db = Combobox(new_root, font=('Comic Sans MS', user.get('text_size')), state="readonly")
-        combo_db['values'] = ["Сервер", "Мой компьютер"]
-        combo_db.current(0)
-        combo_db.grid(column=1, row=8)
 
 
 
