@@ -5791,7 +5791,8 @@ def data_base(command,
                                     f" FROM {type_table}__{year} WHERE district LIKE '{marker}';")
 
                     for info in cur.fetchall():
-                        found_data.append(info)
+                        if info:
+                            found_data.append(info)
             return found_data
         except Exception:
             return False
@@ -5906,7 +5907,7 @@ def data_base(command,
             type_table = insert_data[2]
 
             with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
-
+                cur = conn.cursor()
                 cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__{datetime.now().year} ("
                             "district TEXT, num TEXT, date TEXT, "
                             "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
@@ -5914,7 +5915,14 @@ def data_base(command,
                             "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
                             "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
 
-                cur = conn.cursor()
+                cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__2023 ("
+                            "district TEXT, num TEXT, date TEXT, "
+                            "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
+                cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_ped_div__2023 ("
+                            "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
+                            "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
+
+
                 if type_table == 'certificate_ped_div':
                     cur.execute(f"SELECT num"
                                 f" FROM {type_table}__{datetime.now().year} WHERE ped_div LIKE '{district_pd}';")
