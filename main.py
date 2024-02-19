@@ -10023,7 +10023,7 @@ def paste_frame_main(root):
 
 def main_root():
     root = Tk()
-    root.title('Генератор справок v_0.1.1')
+    root.title('Генератор справок v_2.0')
     root.config(bg="#36566d")
     root.geometry('+0+0')
     root.bind("<Control-KeyPress>", keypress)
