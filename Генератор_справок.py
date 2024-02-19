@@ -1341,6 +1341,7 @@ class ScrolledRoot(tk.Toplevel):
         self.canvas['width'] = int(self.canvas_frame.winfo_geometry().split('x')[0])
         self.canvas.bind("<Enter>", self.on_binds)
         self.canvas.bind("<Leave>", self.off_binds)
+        self.geometry('+0+0')
 
     def resize(self, event):
         region = self.canvas.bbox(tk.ALL)
