@@ -1476,7 +1476,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             data['examination'][marker] = local_info.get(marker)
 
 
-    upload_last_data()
+
     def paste_past_examination():
         def past_examination(past_examination_frame: Frame):
             def selected_past_but():
@@ -5522,6 +5522,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         create_calendar()
 
+
     age_txt = f"Возраст:"
     if data['examination']['age_month'].get('year') in (2, 3, 4):
         age_txt += f" {data['examination']['age_month'].get('year')} года"
@@ -5534,7 +5535,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     if data['examination']['age_month'].get('year') == 0:
         age_txt += f"{data['examination']['age_month'].get('day')} д."
 
-
+    upload_last_data()
     patient_banner.set(value=f"ФИО: {patient.get('name')}    Дата рождения: {patient.get('birth_date')}    "
                              f"{age_txt}\n Адрес: {patient.get('address')}")
 
