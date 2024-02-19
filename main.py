@@ -5779,6 +5779,7 @@ def data_base(command,
         _, type_table, marker = command.split('__')
         try:
             with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
+                cur = conn.cursor()
                 cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__{datetime.now().year} ("
                             "district TEXT, num TEXT, date TEXT, "
                             "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
@@ -5786,7 +5787,7 @@ def data_base(command,
                             "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
                             "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
 
-                cur = conn.cursor()
+
                 found_data = list()
                 for year in range(2023, datetime.now().year + 1):
                     if type_table == f"certificate_ped_div":
@@ -9026,6 +9027,7 @@ def paste_log_in_root(root):
             load_info_text.set(f"{load_info_text.get()}\n\nLOADING {selected_doctor_name.get()}")
 
             log_in_root.update()
+            data_base('activate_app')
 
         time.sleep(1)
         paste_frame_main(root)
