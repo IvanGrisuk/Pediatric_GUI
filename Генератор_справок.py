@@ -1475,6 +1475,22 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         for marker in local_info:
             data['examination'][marker] = local_info.get(marker)
 
+        if child_marker:
+            if data['examination']['get_last_anthro_data'].get('txt_weight_bir_variable'):
+                data['examination']['anthro']['txt_weight_bir_variable'].set(
+                    data['examination']['get_last_anthro_data'].get('txt_weight_bir_variable'))
+
+            if data['examination']['get_last_anthro_data'].get('txt_weight_variable'):
+
+                data['examination']['last_txt_weight_variable'] = data['examination']['get_last_anthro_data'].get('txt_weight_variable')
+
+
+        else:
+            if data['examination']['get_last_anthro_data'].get('txt_weight_variable'):
+                data['examination']['anthro']['txt_weight_variable'].set(
+                    data['examination']['get_last_anthro_data'].get('txt_weight_variable'))
+
+
 
 
     def paste_past_examination():
@@ -3261,20 +3277,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             frame.rowconfigure(index='all', minsize=20)
             frame.pack(fill='both', expand=True, side="left")
 
-        if child_marker:
-            if data['examination']['get_last_anthro_data'].get('txt_weight_bir_variable'):
-                data['examination']['anthro']['txt_weight_bir_variable'].set(
-                    data['examination']['get_last_anthro_data'].get('txt_weight_bir_variable'))
-
-            if data['examination']['get_last_anthro_data'].get('txt_weight_variable'):
-
-                data['examination']['last_txt_weight_variable'] = data['examination']['get_last_anthro_data'].get('txt_weight_variable')
-
-
-        else:
-            if data['examination']['get_last_anthro_data'].get('txt_weight_variable'):
-                data['examination']['anthro']['txt_weight_variable'].set(
-                    data['examination']['get_last_anthro_data'].get('txt_weight_variable'))
 
 
 
