@@ -777,7 +777,7 @@ all_data_diagnosis = {
     "examination_child":
             ("Осмотр",
             ("Вскармливание", "грудное", "по требованию", '\n',
-             "смесь", "+ докорм", "Беллакт", "НаН", "Нестожен", "Нутрилак", "Семпер", "Кабрита" "Фрисо", '\n',
+             "смесь", "+ докорм", "Беллакт", "НаН", "Нестожен", "Нутрилак", "Семпер", "Кабрита", "Фрисо", '\n',
              "премиум", "тройной комфорт", "гипоаллергенный", "безлактозный", "иммунис",
               '\n', "+ прикорм"),
             ("Общее состояние", "удовлетворительное", "средней тяжести", "тяжелое", '\n',
@@ -5776,6 +5776,82 @@ def data_base(command,
             return False
 
     elif command.startswith('get_certificate_for_district'):
+        with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
+            cur = conn.cursor()
+            cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__{datetime.now().year} ("
+                        "district TEXT, num TEXT, date TEXT, "
+                        "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
+            cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_ped_div__{datetime.now().year} ("
+                        "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
+                        "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
+
+            cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__2023 ("
+                        "district TEXT, num TEXT, date TEXT, "
+                        "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
+            cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_ped_div__2023 ("
+                        "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
+                        "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
+
+            certificate_data = {
+                'certificate_camp': {
+                    '2023': list(),
+                    '2024': list()},
+                'certificate_ped_div': {
+                    '2023': list(),
+                    '2024': list()},
+                'certificate_camp_district': dict(),
+                'certificate_ped_div_district': dict()
+            }
+
+            cur.execute(f"SELECT district, num, date, name, birth_date, gender, address"
+                        f" FROM certificate_camp")
+
+            found_data = cur.fetchall()
+            if found_data:
+                counter = 1
+                for info in found_data:
+                    district, num, date, name, birth_date, gender, address = info
+                    year = '2023'
+                    if '2024' in date:
+                        year = '2024'
+                        if not certificate_data['certificate_camp_district'].get(district):
+                            certificate_data['certificate_camp_district'][district] = list()
+                        certificate_data['certificate_camp_district'][district].append(name)
+                        num = len(certificate_data['certificate_camp_district'].get(district))
+
+                    certificate_data['certificate_camp'][year].append(
+                        [district, num, date, name, birth_date, gender, address])
+
+                for year in certificate_data.get('certificate_camp'):
+                    cur.executemany(f"INSERT INTO certificate_camp__{year} VALUES({'?, ' * 6}?)",
+                                    certificate_data['certificate_camp'].get(year))
+
+            cur.execute(f"SELECT ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name"
+                        f" FROM certificate_ped_div")
+
+            found_data = cur.fetchall()
+            if found_data:
+                counter = 1
+                for info in found_data:
+                    ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info
+                    year = '2023'
+                    if '2024' in date:
+                        year = '2024'
+                        if not certificate_data['certificate_ped_div_district'].get(ped_div):
+                            certificate_data['certificate_ped_div_district'][ped_div] = list()
+                        certificate_data['certificate_ped_div_district'][ped_div].append(name)
+                        num = len(certificate_data['certificate_ped_div_district'].get(ped_div))
+
+                    certificate_data['certificate_ped_div'][year].append(
+                        [ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name])
+
+                for year in certificate_data.get('certificate_ped_div'):
+                    cur.executemany(f"INSERT INTO certificate_ped_div__{year} VALUES({'?, ' * 8}?)",
+                                    certificate_data['certificate_ped_div'].get(year))
+
+            cur.execute(f"DELETE FROM certificate_camp")
+            cur.execute(f"DELETE FROM certificate_ped_div")
+
         _, type_table, marker = command.split('__')
         try:
             with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
@@ -5915,12 +5991,6 @@ def data_base(command,
                             "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
                             "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
 
-                cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__2023 ("
-                            "district TEXT, num TEXT, date TEXT, "
-                            "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
-                cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_ped_div__2023 ("
-                            "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
-                            "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
 
 
                 if type_table == 'certificate_ped_div':
@@ -7778,27 +7848,25 @@ def certificate__create_doc():
         doctor_name, district, pediatric_division = (data['doctor'].get('doctor_name'),
                                                      data['doctor'].get('doctor_district'),
                                                      data['doctor'].get('ped_div'))
-        if pediatric_division in ('1', '2'):
-            if data['certificate'].get('type_certificate') in ('ЦКРОиР', 'Бесплатное питание'):
-                type_cert = '7.9'
-            else:
-                type_cert = '7.6'
-            info = [pediatric_division,
-                    district,
-                    None,
-                    datetime.now().strftime("%d.%m.%Y"),
-                    render_data.get('name'),
-                    render_data.get('birth_date'),
-                    render_data.get('address'),
-                    type_cert,
-                    doctor_name]
 
-            number = data_base(command='save_certificate_ped_div',
-                               insert_data=[pediatric_division, info, 'certificate_ped_div'])
-
-            render_data['number_cert'] = f"№ {number}"
+        if data['certificate'].get('type_certificate') in ('ЦКРОиР', 'Бесплатное питание'):
+            type_cert = '7.9'
         else:
-            render_data['number_cert'] = f"№ _________"
+            type_cert = '7.6'
+        info = [pediatric_division,
+                district,
+                None,
+                datetime.now().strftime("%d.%m.%Y"),
+                render_data.get('name'),
+                render_data.get('birth_date'),
+                render_data.get('address'),
+                type_cert,
+                doctor_name]
+
+        number = data_base(command='save_certificate_ped_div',
+                           insert_data=[pediatric_division, info, 'certificate_ped_div'])
+
+        render_data['number_cert'] = f"№ {number}"
 
     if data['certificate'].get('type_certificate') in ('Годовой медосмотр',
                                                        'Оформление в ДДУ / СШ / ВУЗ',
@@ -9029,7 +9097,7 @@ def paste_log_in_root(root):
 
             log_in_root.update()
 
-        time.sleep(3)
+        time.sleep(1)
         paste_frame_main(root)
         # log_in_root.quit()
 
