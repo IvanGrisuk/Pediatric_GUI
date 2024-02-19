@@ -5776,85 +5776,15 @@ def data_base(command,
             return False
 
     elif command.startswith('get_certificate_for_district'):
-        with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
-            cur = conn.cursor()
-            cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__{datetime.now().year} ("
-                        "district TEXT, num TEXT, date TEXT, "
-                        "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
-            cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_ped_div__{datetime.now().year} ("
-                        "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
-                        "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
-
-            cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__2023 ("
-                        "district TEXT, num TEXT, date TEXT, "
-                        "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
-            cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_ped_div__2023 ("
-                        "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
-                        "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
-
-            certificate_data = {
-                'certificate_camp': {
-                    '2023': list(),
-                    '2024': list()},
-                'certificate_ped_div': {
-                    '2023': list(),
-                    '2024': list()},
-                'certificate_camp_district': dict(),
-                'certificate_ped_div_district': dict()
-            }
-
-            cur.execute(f"SELECT district, num, date, name, birth_date, gender, address"
-                        f" FROM certificate_camp")
-
-            found_data = cur.fetchall()
-            if found_data:
-                counter = 1
-                for info in found_data:
-                    district, num, date, name, birth_date, gender, address = info
-                    year = '2023'
-                    if '2024' in date:
-                        year = '2024'
-                        if not certificate_data['certificate_camp_district'].get(district):
-                            certificate_data['certificate_camp_district'][district] = list()
-                        certificate_data['certificate_camp_district'][district].append(name)
-                        num = len(certificate_data['certificate_camp_district'].get(district))
-
-                    certificate_data['certificate_camp'][year].append(
-                        [district, num, date, name, birth_date, gender, address])
-
-                for year in certificate_data.get('certificate_camp'):
-                    cur.executemany(f"INSERT INTO certificate_camp__{year} VALUES({'?, ' * 6}?)",
-                                    certificate_data['certificate_camp'].get(year))
-
-            cur.execute(f"SELECT ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name"
-                        f" FROM certificate_ped_div")
-
-            found_data = cur.fetchall()
-            if found_data:
-                counter = 1
-                for info in found_data:
-                    ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info
-                    year = '2023'
-                    if '2024' in date:
-                        year = '2024'
-                        if not certificate_data['certificate_ped_div_district'].get(ped_div):
-                            certificate_data['certificate_ped_div_district'][ped_div] = list()
-                        certificate_data['certificate_ped_div_district'][ped_div].append(name)
-                        num = len(certificate_data['certificate_ped_div_district'].get(ped_div))
-
-                    certificate_data['certificate_ped_div'][year].append(
-                        [ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name])
-
-                for year in certificate_data.get('certificate_ped_div'):
-                    cur.executemany(f"INSERT INTO certificate_ped_div__{year} VALUES({'?, ' * 8}?)",
-                                    certificate_data['certificate_ped_div'].get(year))
-
-            cur.execute(f"DELETE FROM certificate_camp")
-            cur.execute(f"DELETE FROM certificate_ped_div")
-
         _, type_table, marker = command.split('__')
         try:
             with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
+                cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_camp__{datetime.now().year} ("
+                            "district TEXT, num TEXT, date TEXT, "
+                            "name TEXT, birth_date TEXT, gender TEXT, address TEXT)")
+                cur.execute(f"CREATE TABLE IF NOT EXISTS certificate_ped_div__{datetime.now().year} ("
+                            "ped_div TEXT, district TEXT, num TEXT, date TEXT, "
+                            "name TEXT, birth_date TEXT, address TEXT, type_cert TEXT, doctor_name TEXT)")
 
                 cur = conn.cursor()
                 found_data = list()
