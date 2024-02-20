@@ -9622,7 +9622,7 @@ def paste_frame_main(root):
 
         Label(search_root, text='Окно данных пациента',
               font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, columnspan=3)
-        text_patient_data = Entry(search_root, width=30, font=('Comic Sans MS', user.get('text_size')))
+        text_patient_data = Entry(search_root, width=50, font=('Comic Sans MS', user.get('text_size')))
         text_patient_data.grid(column=0, row=1, columnspan=2)
         text_patient_data.insert(0, txt_patient_data.get())
         text_patient_data.focus()
