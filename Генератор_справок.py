@@ -9223,6 +9223,20 @@ def paste_log_in_root(root):
 
 
 def paste_frame_main(root):
+    def keypress_main_root(event):
+        if event.keycode == 86 or event.keycode == 150994966:
+            text_patient_data = pyperclip.paste()
+            txt_patient_data.delete(0, last=END)
+            txt_patient_data.insert(index=0,
+                                    string=text_patient_data)
+            search_patient()
+
+
+        elif event.keycode == 67 or event.keycode == 134217731:
+            event.widget.event_generate('<<Copy>>')
+        elif event.keycode == 88 or event.keycode == 117440536:
+            event.widget.event_generate('<<Cut>>')
+
     def add_new_patient():
         def save():
             def check_input():
@@ -9793,12 +9807,20 @@ def paste_frame_main(root):
 
         new_root.mainloop()
 
-    def paste_txt_patient_data(event=None):
-        text_patient_data = pyperclip.paste()
-        txt_patient_data.delete(0, last=END)
-        txt_patient_data.insert(index=0,
-                                string=text_patient_data)
-        search_patient()
+    def paste_txt_patient_data(event):
+        if event.keycode == 86 or event.keycode == 150994966:
+            text_patient_data = pyperclip.paste()
+            txt_patient_data.delete(0, last=END)
+            txt_patient_data.insert(index=0,
+                                    string=text_patient_data)
+            search_patient()
+
+        #
+        # elif event.keycode == 67 or event.keycode == 134217731:
+        #     event.widget.event_generate('<<Copy>>')
+        # elif event.keycode == 88 or event.keycode == 117440536:
+        #     event.widget.event_generate('<<Cut>>')
+
 
     def save_doctor(new_doctor_name):
         data_base(command='append_local_doctor_data', insert_data=new_doctor_name)
@@ -9959,7 +9981,7 @@ def paste_frame_main(root):
 
     txt_patient_data = Entry(frame_main_loc, width=40)
     txt_patient_data.grid(column=0, row=3)
-    txt_patient_data.bind('<Control-v>', paste_txt_patient_data)
+    txt_patient_data.bind('<Control-KeyPress>', paste_txt_patient_data)
     txt_patient_data.bind('<Return>', search_patient)
 
     patient_info = Label(frame_main_loc, text='')
