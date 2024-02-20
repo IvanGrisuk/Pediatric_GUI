@@ -912,9 +912,8 @@ all_data_diagnosis = {
                       "от Пневмококковой инфекции",
                       "от Менингококковой инфекции", "\n",
                       "ВГВ + А(а)КДС + ХИБ + ИПВ",
-                      "А(а)КДС + ВГА", "\n",
-                      "\nИнформирован(а) о проводимой прививке. "
-                      "\nС особенностями течения периода после иммунизации ОЗНАКОМЛЕН(А) ", "\n"
+                      "А(а)КДС + ВГА", "\n"
+
                       )),
 
     "drugs": {
@@ -969,13 +968,19 @@ all_data_diagnosis = {
              "Способ применения", "принимать внутрь не зависимо от приема пищи", "подключить пробиотик",
              "выписан рецепт", "выписан льготный рецепт", "имеется дома"),
 
-            ("фурамаг фурагин фосфомицин",
-             "Форма", "суспензия 125/5", "суспензия 250/5", "таб. 300",
-             "Дозировка", "14 мг/кг/сут",
-             "Кратность", "1 р/сут", "2 р/сут",
-             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "продолжить",
-             "Способ применения", "принимать внутрь не зависимо от приема пищи", "подключить пробиотик",
-             "выписан рецепт", "выписан льготный рецепт", "имеется дома")
+            ("Фосфомицин",
+             "Форма", "порошок для приг. раствора внутрь 3г N1",
+             "Кратность", "однократно", "1 р/сут", "2 р/сут",
+             "Длительность", "3 дня", "5 дней", "7 дней", "продолжить",
+             "Способ применения", "принимать внутрь перед приемом пищи", "подключить пробиотик",
+             "выписан рецепт", "имеется дома"),
+
+            ("Фуразидин (Фурагин)",
+             "Форма", "таблетки 50мг",
+             "Дозировка", "1 таб", "2 таб", "3 таб.",
+             "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
+             "Длительность", "3 дня", "5 дней", "7 дней", "продолжить",
+             "Способ применения", "принимать внутрь после приема пищи", "подключить пробиотик")
 
         ),
 
@@ -3987,6 +3992,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         edited_string = ''
         if mark_1 == 'Разрешена вакцинация':
             if 'Информирован(а)' in mark_2 and mark_2 in prescription_text:
+                print(f"'{mark_2}'\n")
+                print(f"'{prescription_text}'")
+                prescription_text = prescription_text.replace(mark_2, '')
+            if 'Медотвод от проф' in mark_2 and mark_2 in prescription_text:
                 prescription_text = prescription_text.replace(mark_2, '')
 
             else:
@@ -4002,7 +4011,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                         break
                 else:
-                    prescription_text = f"{mark_1}: {mark_2} \n" + prescription_text
+                    prescription_text = f"{mark_1}: {mark_2} " \
+                                        f"\nИнформирован(а) о проводимой прививке. " \
+                                        f"\nС особенностями течения периода после иммунизации ОЗНАКОМЛЕН(А) _________" \
+                                        f"\n{prescription_text}"
+
+
+
 
         elif data['examination']['prescription_but'].get(prescription_button):
             if data['examination']['prescription_but'][prescription_button].get():
@@ -4476,7 +4491,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         if drug_category == 'Антибиотики':
             ab_weight = []
 
-            if weight:
+            if weight and drug_name not in ('Фосфомицин', 'Фуразидин (Фурагин)'):
 
                 ab_key_dosa = data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка')
                 ab_key_form = data['examination']['selected_drugs'][drug_category][drug_name].get('Форма')
@@ -8959,6 +8974,7 @@ def decoding_name(patient_data):
                   user_decoded.get('name'), user_decoded.get('birth_date'), user_decoded.get('gender'),
                   user_decoded.get('address'))
             messagebox.showinfo('Ошибка', 'Ошибка имени! \nВведите шапку полностью!')
+            return None
 
         else:
             return user_decoded
@@ -9223,19 +9239,6 @@ def paste_log_in_root(root):
 
 
 def paste_frame_main(root):
-    def keypress_main_root(event):
-        if event.keycode == 86 or event.keycode == 150994966:
-            text_patient_data = pyperclip.paste()
-            txt_patient_data.delete(0, last=END)
-            txt_patient_data.insert(index=0,
-                                    string=text_patient_data)
-            search_patient()
-
-
-        elif event.keycode == 67 or event.keycode == 134217731:
-            event.widget.event_generate('<<Copy>>')
-        elif event.keycode == 88 or event.keycode == 117440536:
-            event.widget.event_generate('<<Cut>>')
 
     def add_new_patient():
         def save():
@@ -9294,6 +9297,7 @@ def paste_frame_main(root):
 
         new_root = Toplevel()
         new_root.title('Добавление нового пациента')
+        root.bind("<Control-KeyPress>", keypress)
         local_data = {
             "№ амбулаторной карты": StringVar(),
             "№ участка": StringVar(),
@@ -9622,7 +9626,7 @@ def paste_frame_main(root):
 
         Label(search_root, text='Окно данных пациента',
               font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, columnspan=3)
-        text_patient_data = Entry(search_root, width=50, font=('Comic Sans MS', user.get('text_size')))
+        text_patient_data = Entry(search_root, width=100, font=('Comic Sans MS', user.get('text_size')))
         text_patient_data.grid(column=0, row=1, columnspan=2)
         text_patient_data.insert(0, txt_patient_data.get())
         text_patient_data.focus()
@@ -9809,17 +9813,25 @@ def paste_frame_main(root):
 
     def paste_txt_patient_data(event):
         if event.keycode == 86 or event.keycode == 150994966:
-            text_patient_data = pyperclip.paste()
-            txt_patient_data.delete(0, last=END)
-            txt_patient_data.insert(index=0,
-                                    string=text_patient_data)
+            # text_patient_data = pyperclip.paste()
+            txt_patient_data.delete(0, 'end')
+            # txt_patient_data.insert(index=0,
+            #                         string=text_patient_data)
+            event.widget.event_generate('<<Paste>>')
             search_patient()
 
-        #
-        # elif event.keycode == 67 or event.keycode == 134217731:
-        #     event.widget.event_generate('<<Copy>>')
-        # elif event.keycode == 88 or event.keycode == 117440536:
-        #     event.widget.event_generate('<<Cut>>')
+        # if event.keycode == 86 or event.keycode == 150994966:
+        #     text_patient_data = pyperclip.paste()
+        #     txt_patient_data.delete(0, last=END)
+        #     txt_patient_data.insert(index=0,
+        #                             string=text_patient_data)
+        #     search_patient()
+
+
+        elif event.keycode == 67 or event.keycode == 134217731:
+            event.widget.event_generate('<<Copy>>')
+        elif event.keycode == 88 or event.keycode == 117440536:
+            event.widget.event_generate('<<Cut>>')
 
 
     def save_doctor(new_doctor_name):
@@ -9836,16 +9848,19 @@ def paste_frame_main(root):
                 '№ амб. карты' in patient_data or
                 '№ амбулаторной карты' in patient_data):
             patient_data = decoding_name(patient_data)
-            for key in patient:
-                if patient_data.get(key):
-                    patient[key] = patient_data.get(key)
-            patient_info['text'] = f"ФИО: {patient_data.get('name')}\t" \
-                                   f"Дата рождения: {patient_data.get('birth_date')}\n" \
-                                   f"Адрес: {patient_data.get('address')}\n" \
-                                   f"№ амб: {patient_data.get('amb_cart')}\t" \
-                                   f"Участок: {patient_data.get('patient_district')}"
-            delete_txt_patient_data()
-            return True
+            if patient_data:
+                for key in patient:
+                    if patient_data.get(key):
+                        patient[key] = patient_data.get(key)
+                patient_info['text'] = f"ФИО: {patient_data.get('name')}\t" \
+                                       f"Дата рождения: {patient_data.get('birth_date')}\n" \
+                                       f"Адрес: {patient_data.get('address')}\n" \
+                                       f"№ амб: {patient_data.get('amb_cart')}\t" \
+                                       f"Участок: {patient_data.get('patient_district')}"
+                delete_txt_patient_data()
+                return True
+            else:
+                delete_txt_patient_data()
         else:
             search_loop()
 
@@ -9875,7 +9890,7 @@ def paste_frame_main(root):
         update_font_main()
 
     def delete_txt_patient_data():
-        txt_patient_data.delete(0, last=END)
+        txt_patient_data.delete(0, 'end')
 
     def update_font_main():
 
@@ -9888,7 +9903,7 @@ def paste_frame_main(root):
         patient_info['font'] = ('Comic Sans MS', user.get('text_size'))
         button_add_new_patient['font'] = ('Comic Sans MS', user.get('text_size'))
         # button_updating_patient_data_base['font'] = ('Comic Sans MS', user.get('text_size'))
-        # button_delete_txt_patient_data['font'] = ('Comic Sans MS', user.get('text_size'))
+        button_delete_txt_patient_data['font'] = ('Comic Sans MS', user.get('text_size'))
         # button_paste_txt_patient_data['font'] = ('Comic Sans MS', user.get('text_size'))
         lbl_to_do_main['font'] = ('Comic Sans MS', user.get('text_size'))
         button_certificate_cmd['font'] = ('Comic Sans MS', user.get('text_size'))
@@ -9985,17 +10000,17 @@ def paste_frame_main(root):
     txt_patient_data.bind('<Return>', search_patient)
 
     patient_info = Label(frame_main_loc, text='')
-    patient_info.grid(column=0, row=4, sticky='ew')
+    patient_info.grid(column=0, row=4, sticky='ew', columnspan=2)
 
     button_add_new_patient = Button(frame_main_loc, text='Добавить\nнового\nпациента', command=add_new_patient)
-    button_add_new_patient.grid(column=1, row=3, rowspan=2, sticky='nswe')
+    button_add_new_patient.grid(column=2, row=3, rowspan=2, sticky='nswe')
 
     # button_updating_patient_data_base = Button(frame_main_loc, text='Обновить БД',
     #                                            command=updating_patient_data_base)
     # button_updating_patient_data_base.grid(column=1, row=4, sticky='ew')
     #
-    # button_delete_txt_patient_data = Button(frame_main_loc, text='Удалить', command=delete_txt_patient_data)
-    # button_delete_txt_patient_data.grid(column=2, row=3, sticky='ew')
+    button_delete_txt_patient_data = Button(frame_main_loc, text='X', command=delete_txt_patient_data)
+    button_delete_txt_patient_data.grid(column=1, row=3, sticky='ew')
     #
     # button_paste_txt_patient_data = Button(frame_main_loc, text='Вставить', command=paste_txt_patient_data)
     # button_paste_txt_patient_data.grid(column=2, row=4, sticky='ew')
@@ -10055,7 +10070,7 @@ def main_root():
     root.title('Генератор справок v_2.0')
     root.config(bg="#36566d")
     root.geometry('+0+0')
-    root.bind("<Control-KeyPress>", keypress)
+
 
     try:
         frame_lbl = Frame(padx=3, pady=3, bg="#36566d")
