@@ -22,6 +22,7 @@ from docx.shared import Pt
 from docx import Document
 from docxtpl import DocxTemplate
 from docxcompose.composer import Composer
+from mkb_10 import mkb_10
 
 all_data_certificate = {
     'sport_section': ('баскетболом', 'волейболом', 'вольной борьбой', 'гандболом', 'греблей', "гимнастикой", 'каратэ',
@@ -3689,6 +3690,185 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     paste_frame_examination()
 
+    def open_mkb_10_root():
+        if not data['examination'].get('is_mkb_10_root_open'):
+            data['examination']['is_mkb_10_root_open'] = True
+            mkb_10_root_main.grid()
+        else:
+            data['examination']['is_mkb_10_root_open'] = False
+            mkb_10_root_main.grid_remove()
+
+    def create_mkb_10_root():
+        def celect_code():
+            txt_diagnosis.insert('end', f"\n{celected_code.get()}")
+
+        def search_mkb(event=None):
+            def resize(event=None):
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+
+            def on_binds(event):
+                canvas.idbind = canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+            def off_binds(event=None):
+                canvas.unbind_all("<MouseWheel>")
+
+            def on_mousewheel(event):
+
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+
+                if os.name == 'posix':
+                    canvas.yview_scroll(int(-1 * event.delta), "units")
+                else:
+                    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+
+            if data['examination'].get('frame_found_data_mkb'):
+                frame_found_data_mkb = data['examination'].get('frame_found_data_mkb')
+                frame_found_data_mkb.destroy()
+
+
+            found_data = list()
+            mkb_code_edit = ''
+            mkb_name_edit = mkb_name.get()
+
+            if mkb_code.get():
+                word_list = ["qwertyuiopasdfghjkl;'zxcvbnm,.", "йцукенгшщзфывапролджэячсмитьбю"]
+
+                for word in mkb_code.get().lower():
+                    if word in word_list[1]:
+                        mkb_code_edit += word_list[0][word_list[1].index(word)]
+                    elif word == ',':
+                        mkb_code_edit += '.'
+                    else:
+                        mkb_code_edit += word
+                mkb_code_edit = mkb_code_edit.upper()
+
+            if mkb_code_edit and mkb_name_edit:
+                for key, value in mkb_10.items():
+                    if mkb_code_edit in key and mkb_name_edit.lower() in value.lower():
+                        found_data.append(f"{key} - {value}")
+            elif mkb_code_edit:
+                for key, value in mkb_10.items():
+                    if mkb_code_edit in key:
+                        found_data.append(f"{key} - {value}")
+            elif mkb_name_edit:
+                for key, value in mkb_10.items():
+                    if mkb_name_edit.lower() in value.lower():
+                        found_data.append(f"{key} - {value}")
+
+            if found_data:
+
+                master_frame = Frame(mkb_frame_scrolled)
+                data['examination']['frame_found_data_mkb'] = master_frame
+                master_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+
+                scroll_x = tk.Scrollbar(master_frame, orient=tk.HORIZONTAL)
+                scroll_y = tk.Scrollbar(master_frame, orient=tk.VERTICAL)
+
+                canvas = tk.Canvas(master_frame,
+                                   xscrollcommand=scroll_x.set,
+                                   yscrollcommand=scroll_y.set)
+                scroll_x.config(command=canvas.xview)
+                scroll_y.config(command=canvas.yview)
+
+                canvas_frame = Frame(canvas)
+
+                for mkb_data in found_data:
+                    but_text = ''
+                    for i in mkb_data.split():
+                        if len(but_text.split('\n')[-1]) > 40:
+                            but_text += '\n'
+                        but_text += i + ' '
+                    Radiobutton(canvas_frame, text=but_text,
+                                font=('Comic Sans MS', user.get('text_size')),
+                                value=f"{mkb_data}",
+                                variable=celected_code,
+                                command=celect_code,
+                                indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                                ).pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+
+                # canvas_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+
+                canvas['width'] = int(canvas.winfo_geometry().split('x')[0])
+                canvas_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
+                print(canvas.winfo_geometry())
+                canvas.grid(row=0, column=0, sticky="nsew")
+                scroll_x.grid(row=1, column=0, sticky="we")
+                scroll_y.grid(row=0, column=1, sticky="ns")
+
+                master_frame.rowconfigure(0, weight=1)
+                master_frame.columnconfigure(0, weight=1)
+
+                master_frame.bind("<Configure>", resize)
+                master_frame.update_idletasks()
+                print(canvas.winfo_geometry())
+                master_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
+
+
+
+                canvas.bind("<Enter>", on_binds)
+                canvas.bind("<Leave>", off_binds)
+
+                canvas.create_window((0, 0), window=canvas_frame, anchor="nw",
+                                     width=canvas.winfo_width())
+
+
+
+        mkb_code = StringVar()
+        mkb_name = StringVar()
+        celected_code = StringVar()
+
+        frame_main_mkb_10 = Frame(mkb_10_root_main, bg="#36566d")
+        Label(frame_main_mkb_10, text="Поиск по МКБ-10",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+        Button(frame_main_mkb_10, text=f"Закрыть окно",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_mkb_10_root,
+               bg='#f0fffe').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+
+        mkb_title_frame = Frame(frame_main_mkb_10, bg="#36566d")
+        Label(mkb_title_frame, text="Код: ",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, side='left')
+        txt_mkb = Entry(mkb_title_frame, width=10,
+              font=('Comic Sans MS', user.get('text_size')),
+              justify="center",
+              textvariable=mkb_code)
+        txt_mkb.pack(fill='x', expand=True, pady=3, padx=3, side='left')
+        txt_mkb.bind('<Return>', search_mkb)
+
+        Label(mkb_title_frame, text="Нозология: ",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, side='left')
+        txt_mkb = Entry(mkb_title_frame, width=30,
+              font=('Comic Sans MS', user.get('text_size')),
+              textvariable=mkb_name)
+        txt_mkb.pack(fill='x', expand=True, pady=3, padx=3, side='left')
+        txt_mkb.bind('<Return>', search_mkb)
+
+
+        mkb_title_frame.pack(fill='x', anchor='n')
+
+        mkb_frame_scrolled = Frame(frame_main_mkb_10)
+        mkb_frame_scrolled.pack(fill='both', expand=True)
+
+        data['examination']['is_mkb_10_root_open'] = False
+        frame_main_mkb_10.pack(fill='x', anchor='n')
+        mkb_10_root_main.grid(row=0, column=3, sticky="nwse")
+
+        mkb_10_root_main.grid_remove()
+
+    mkb_10_root_main = Frame(master=root_examination, padx=3, pady=3)
+    mkb_10_root_main.update_idletasks()
+    create_mkb_10_root()
+
     def paste_diagnosis_kb():
 
         def select_diagnosis_kb():
@@ -3733,6 +3913,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             mark_group_frame.rowconfigure(index='all', minsize=20)
 
             mark_group_frame.pack(fill='both', expand=True)
+
+        Button(frame_diagnosis_kb, text='MKБ-10',
+               command=open_mkb_10_root,
+               font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True)
 
         frame_diagnosis_kb.columnconfigure(index='all', minsize=40, weight=1)
         frame_diagnosis_kb.rowconfigure(index='all', minsize=20)
@@ -3939,8 +4123,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         frame_diagnosis_add_but.rowconfigure(index='all', minsize=20)
         frame_diagnosis_add_but.pack(fill='both', expand=True)
 
-
-
     if child_marker:
         paste_diagnosis_add_but()
 
@@ -4072,10 +4254,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         frame_prescription.columnconfigure(index='all', minsize=40, weight=1)
         frame_prescription.rowconfigure(index='all', minsize=20)
-
-
-
-
 
     def select_drugs_item(drug_name=None, weight=None):
         if drug_name:
@@ -4731,6 +4909,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         txt_prescription.delete(1.0, 'end')
         txt_prescription.insert(1.0, prescription_text.strip().replace('\n\n', '\n'))
 
+    def open_drugs_root():
+        if not data['examination'].get('is_drugs_root_open'):
+            data['examination']['is_drugs_root_open'] = True
+            drugs_root_main.grid()
+        else:
+            data['examination']['is_drugs_root_open'] = False
+            drugs_root_main.grid_remove()
+
     def create_drugs_root():
 
         def select_drugs_category():
@@ -4800,7 +4986,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             canvas_frame = Frame(canvas)
 
             data['examination']['canvas_frame_scrolled'] = canvas
-            data['examination']['canvas_frame_scrolled_canvas_frame'] = canvas_frame
 
             func(canvas_frame)
             #
@@ -4919,6 +5104,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                               bg="#36566d", fg='white')
 
             btn.pack(fill='x', expand=True)
+        Button(drug_category_frame, text=f"Закрыть окно препаратов",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_drugs_root,
+               bg='#f0fffe').pack(fill='both', expand=True)
+
         drug_category_frame.pack(fill='x', anchor='nw')
         all_drugs_frame_scrolled.pack(fill='both', expand=True)
         data['examination']['is_drugs_root_open'] = False
@@ -4935,13 +5125,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     drugs_root_main.update_idletasks()
     create_drugs_root()
 
-    def open_drugs_root():
-        if not data['examination'].get('is_drugs_root_open'):
-            data['examination']['is_drugs_root_open'] = True
-            drugs_root_main.grid()
-        else:
-            data['examination']['is_drugs_root_open'] = False
-            drugs_root_main.grid_remove()
+
 
 
 
@@ -5010,6 +5194,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             frame_loc.columnconfigure(index='all', minsize=40, weight=1)
             frame_loc.rowconfigure(index='all', minsize=20)
             frame_loc.pack(fill='both', expand=True)
+
         Button(frame_prescription_buttons, text=f"Препараты",
                font=('Comic Sans MS', user.get('text_size')),
                command=open_drugs_root,
