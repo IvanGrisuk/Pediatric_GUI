@@ -1300,6 +1300,11 @@ user = {'text_size': 10,
         'ped_div': '',
         'doctor_district': ''}
 
+app_info = {
+    'all_doctor_info': dict()
+
+
+}
 
 class ScrolledRoot(tk.Toplevel):
     def __init__(self, marker=None, func=None):
@@ -3727,6 +3732,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             if data['examination'].get('frame_found_data_mkb'):
                 frame_found_data_mkb = data['examination'].get('frame_found_data_mkb')
                 frame_found_data_mkb.destroy()
+            master_frame = Frame(mkb_frame_scrolled)
+            data['examination']['frame_found_data_mkb'] = master_frame
+            master_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
 
 
             found_data = list()
@@ -3758,12 +3766,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     if mkb_name_edit.lower() in value.lower():
                         found_data.append(f"{key} - {value}")
 
+
             if found_data:
-
-                master_frame = Frame(mkb_frame_scrolled)
-                data['examination']['frame_found_data_mkb'] = master_frame
-                master_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
-
 
                 scroll_x = tk.Scrollbar(master_frame, orient=tk.HORIZONTAL)
                 scroll_y = tk.Scrollbar(master_frame, orient=tk.VERTICAL)
@@ -3796,7 +3800,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                 canvas['width'] = int(canvas.winfo_geometry().split('x')[0])
                 canvas_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
-                print(canvas.winfo_geometry())
                 canvas.grid(row=0, column=0, sticky="nsew")
                 scroll_x.grid(row=1, column=0, sticky="we")
                 scroll_y.grid(row=0, column=1, sticky="ns")
@@ -3806,8 +3809,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                 master_frame.bind("<Configure>", resize)
                 master_frame.update_idletasks()
-                print(canvas.winfo_geometry())
-                master_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
+                canvas_frame['height'] = int(mkb_10_root_main.winfo_height() - frame_main_mkb_10.winfo_height())
 
 
 
@@ -3817,7 +3819,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 canvas.create_window((0, 0), window=canvas_frame, anchor="nw",
                                      width=canvas.winfo_width())
 
-
+            else:
+                Label(master_frame, text="Поиск не дал результатов!",
+                      font=('Comic Sans MS', user.get('text_size')),
+                      bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
 
         mkb_code = StringVar()
         mkb_name = StringVar()
@@ -3855,17 +3860,17 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
 
         mkb_title_frame.pack(fill='x', anchor='n')
+        frame_main_mkb_10.pack(fill='x', anchor='n')
 
-        mkb_frame_scrolled = Frame(frame_main_mkb_10)
+        mkb_frame_scrolled = Frame(mkb_10_root_main)
         mkb_frame_scrolled.pack(fill='both', expand=True)
 
         data['examination']['is_mkb_10_root_open'] = False
-        frame_main_mkb_10.pack(fill='x', anchor='n')
         mkb_10_root_main.grid(row=0, column=3, sticky="nwse")
 
         mkb_10_root_main.grid_remove()
 
-    mkb_10_root_main = Frame(master=root_examination, padx=3, pady=3)
+    mkb_10_root_main = Frame(master=root_examination, padx=3, pady=3, bg="#36566d")
     mkb_10_root_main.update_idletasks()
     create_mkb_10_root()
 
@@ -5095,6 +5100,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         Label(drug_category_frame, text="        Перечень лекарственных препаратов        ",
               font=('Comic Sans MS', user.get('text_size')),
               bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3)
+        Button(drug_category_frame, text=f"Закрыть окно препаратов",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_drugs_root,
+               bg='#f0fffe').pack(fill='both', expand=True)
+
         for drug_category in all_data_diagnosis.get("drugs"):
             btn = Radiobutton(drug_category_frame, text=f'{drug_category}',
                               font=('Comic Sans MS', user.get('text_size')),
@@ -5104,10 +5114,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                               bg="#36566d", fg='white')
 
             btn.pack(fill='x', expand=True)
-        Button(drug_category_frame, text=f"Закрыть окно препаратов",
-               font=('Comic Sans MS', user.get('text_size')),
-               command=open_drugs_root,
-               bg='#f0fffe').pack(fill='both', expand=True)
 
         drug_category_frame.pack(fill='x', anchor='nw')
         all_drugs_frame_scrolled.pack(fill='both', expand=True)
@@ -5790,6 +5796,8 @@ def data_base(command,
             cur.execute("CREATE TABLE IF NOT EXISTS app_data "
                         "(path_examination_data_base text, path_srv_data_base text, "
                         "app_password text, last_reg_password text)")
+            cur.execute('''CREATE TABLE IF NOT EXISTS statistic_DOC_db (
+            date TEXT, time TEXT, user_id TEXT, info TEXT, district TEXT)''')
 
             user['app_data'] = dict()
             for mark in ('path_examination_data_base', 'path_srv_data_base', 'app_password', 'last_reg_password'):
@@ -5878,78 +5886,6 @@ def data_base(command,
         except Exception:
             pass
 
-    elif command == 'edit_local_db':
-        user['my_saved_diagnosis'] = list()
-        user['my_LN'] = list()
-        user['my_sport_section'] = list()
-        edit_local_data = {
-            'my_saved_diagnosis': {
-                'my_saved_diagnosis_loc': list(),
-                'my_saved_diagnosis_global': list(),
-                'my_saved_diagnosis_dif': list()},
-            'my_LN': {
-                'my_LN_loc': list(),
-                'my_LN_global': list(),
-                'my_LN_dif': list()},
-            'my_sport_section': {
-                'my_sport_section_loc': list(),
-                'my_sport_section_global': list(),
-                'my_sport_section_dif': list()}
-        }
-
-        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-            cur = conn.cursor()
-
-            for marker in edit_local_data:
-                cur.execute(f"SELECT * FROM {marker} "
-                            f"WHERE doctor_name LIKE '{doctor_name}'")
-                for i in cur.fetchall():
-                    edit_local_data[f"{marker}"][f"{marker}_loc"].append(i)
-
-        try:
-
-            with sq.connect(database=f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
-                cur = conn.cursor()
-                for marker in edit_local_data:
-                    cur.execute(f"SELECT * FROM {marker} "
-                                f"WHERE doctor_name LIKE '{doctor_name}'")
-                    for i in cur.fetchall():
-                        edit_local_data[f"{marker}"][f"{marker}_global"].append(i)
-
-                for marker in ('my_saved_diagnosis', 'my_sport_section'):
-                    for marker_0 in edit_local_data[f"{marker}"].get(f"{marker}_loc"):
-                        if marker_0 not in edit_local_data[f"{marker}"].get(f"{marker}_global"):
-                            cur.execute(f"INSERT INTO {marker} VALUES({'?, ' * (len(marker_0) - 1) + '?'})",
-                                        marker_0)
-
-        except Exception as ex:
-            answer = f"ОШИБКА подключения\n{ex}"
-
-        else:
-            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                cur = conn.cursor()
-
-                for marker in ('my_saved_diagnosis', 'my_sport_section'):
-                    for marker_0 in edit_local_data[f"{marker}"].get(f"{marker}_global"):
-                        if marker_0 not in edit_local_data[f"{marker}"].get(f"{marker}_loc"):
-                            cur.execute(f"INSERT INTO {marker} VALUES({'?, ' * (len(marker_0) - 1) + '?'})",
-                                        marker_0)
-
-                if edit_local_data["my_LN"].get("my_LN_global"):
-                    cur.execute(f"DELETE FROM my_LN WHERE doctor_name LIKE '{doctor_name}'")
-                    for marker_0 in edit_local_data["my_LN"].get("my_LN_global"):
-                        cur.execute(f"INSERT INTO my_LN VALUES({'?, ' * (len(marker_0) - 1) + '?'})", marker_0)
-
-            answer = f"Синхронизация локальных данных - ОК"
-        for marker in edit_local_data:
-            marker_0 = '_loc'
-            if edit_local_data[f"{marker}"].get(f"{marker}_global"):
-                marker_0 = '_global'
-            for info in edit_local_data[f"{marker}"].get(f"{marker}{marker_0}"):
-                user[f"{marker}"].append(info[1:])
-
-        return answer
-
     elif command == 'last_edit_patient_db_srv':
         try:
             with sq.connect(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db") as conn:
@@ -5970,13 +5906,44 @@ def data_base(command,
         return last_edit_loc
 
     elif command == 'get_all_doctor_info':
+        user['my_saved_diagnosis'] = list()
+        user['my_LN'] = list()
+        user['my_sport_section'] = list()
+
         try:
+            local_data = dict()
             with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
                 cur = conn.cursor()
-
                 cur.execute("SELECT * FROM врачи")
                 all_doctor_info = cur.fetchall()
-            return all_doctor_info
+                for marker in ('my_saved_diagnosis', 'my_LN', 'my_sport_section'):
+                    cur.execute(f"SELECT * FROM {marker}")
+                    local_data[marker] = cur.fetchall()
+
+
+
+            for doctor_name, password, district, ped_div, manager, open_mark, text_size, add_info in all_doctor_info:
+                app_info['all_doctor_info'][doctor_name] = {
+                    'doctor_name': doctor_name,
+                    'password': password,
+                    'district': district,
+                    'ped_div': ped_div,
+                    'manager': manager,
+                    'open_mark': open_mark,
+                    'text_size': text_size,
+                    'add_info': add_info,
+                    'my_saved_diagnosis': list(),
+                    'my_LN': list(),
+                    'my_sport_section': list()}
+
+            for marker in ('my_saved_diagnosis', 'my_LN', 'my_sport_section'):
+                for info in local_data.get(marker):
+                    doctor_name = info[0]
+                    if doctor_name in app_info.get('all_doctor_info'):
+                        app_info['all_doctor_info'][doctor_name][marker].append(info[1:])
+
+                        # print(app_info['all_doctor_info'][doctor_name].get(marker))
+
         except Exception:
             return False
 
@@ -6024,6 +5991,8 @@ def data_base(command,
                                f"VALUES(?, ?, ?)", insert_data)
 
             user['my_saved_diagnosis'].append(insert_data[1:])
+            # if app_info.get('')
+
 
         except Exception:
             return False
@@ -6044,7 +6013,7 @@ def data_base(command,
                 cursor = connect.cursor()
                 cursor.execute("INSERT INTO my_sport_section VALUES(?, ?)",
                                insert_data)
-            user['my_sport_section'].append(insert_data)
+            user['my_sport_section'].append((insert_data[1], ))
         except Exception:
             return False
         else:
@@ -6066,9 +6035,10 @@ def data_base(command,
                 cursor.execute(f"DELETE FROM my_sport_section "
                                f"WHERE doctor_name LIKE '{user.get('doctor_name')}' "
                                f"AND sport_section LIKE '{delete_data}'")
-            if delete_data in user.get('my_sport_section'):
-                user['my_sport_section'].remove(insert_data)
-        except Exception:
+            for info in user.get('my_sport_section'):
+                if delete_data in info:
+                    user['my_sport_section'].remove(info)
+        except Exception as ex:
             return False
         else:
             return True
@@ -6159,13 +6129,11 @@ def data_base(command,
 
     elif command == 'statistic_write':
         date_now, time_now = datetime.now().strftime("%d.%m.%Y %H:%M:%S").split()
-        try:
-            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', 'приложение', "
-                            f"'{insert_data}', '{user.get('doctor_name')}')")
-        except Exception:
-            pass
+        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+            cur = conn.cursor()
+            cur.execute(f"INSERT INTO statistic_DOC_db VALUES('{date_now}', '{time_now}', 'приложение', "
+                        f"'{insert_data}', '{user.get('doctor_name')}')")
+
 
     elif command == 'get_doc_names_local':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
@@ -6223,9 +6191,10 @@ def data_base(command,
                 path = user['app_data'].get('path_examination_data_base')
 
 
-            path_examination = f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
-            if user.get('error_connection') or 'examination_db_place:____loc' in user.get('add_info'):
-                path_examination = f"{path}data_base.db"
+            # path_examination = f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
+            # if user.get('error_connection') or 'examination_db_place:____loc' in user.get('add_info'):
+            #     path_examination = f"{path}data_base.db"
+
             if command == 'examination__delete':
                 with sq.connect(f"{path_examination}") as connect:
                     cursor = connect.cursor()
@@ -6308,64 +6277,67 @@ def data_base(command,
 
 
             elif command == 'examination__edit_examination_loc':
-                new_examination = list()
-                with sq.connect(f"{path}data_base.db") as conn:
-                    cur = conn.cursor()
-
-                    cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
-                                f"examination_text, examination_key, add_info "
-                                f"FROM examination")
-                    examination_loc = cur.fetchall()
 
                 if 'examination_db_place:____srv' in user.get('add_info'):
-
-                    if examination_loc:
+                    local_data = {
+                        'new_examination_loc': list(),
+                        'new_examination_srv': list(),
+                        'examination_loc': list(),
+                        'examination_srv': list(),
+                        'found_data_statistic': list(),
+                        'loc': f"{path}data_base.db",
+                        'srv': f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
+                    }
+                    for path_mark in ('loc', 'srv'):
                         try:
-                            with sq.connect(
-                                    database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+                            with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
                                 cur = conn.cursor()
                                 cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
                                             f"examination_text, examination_key, add_info "
                                             f"FROM examination")
-                                examination_srv = cur.fetchall()
-
-                                for examination in examination_loc:
-                                    if examination not in examination_srv:
-                                        new_examination.append(examination)
-
-                                if new_examination:
-                                    cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", new_examination)
-
+                                local_data[f"examination_{path_mark}"] = cur.fetchall()
                         except Exception as ex:
                             return f"Exception edit_local_db\n{ex}"
-                        else:
-                            with sq.connect(f"{path}data_base.db") as conn:
-                                cur = conn.cursor()
-                                cur.execute(f"DELETE FROM examination")
-                            return f"Данные синхронизированы"
-                    else:
-                        return f"Нет осмотров"
-                elif 'examination_db_place:____loc' in user.get('add_info'):
+
+
+                    for mark_1, mark_2 in (('loc', 'srv'), ('srv', 'loc')):
+                        for examination in local_data.get(f"examination_{mark_1}"):
+                            if examination not in local_data.get(f"examination_{mark_2}"):
+                                local_data[f"new_examination_{mark_2}"].append(examination)
+
+                    for path_mark in ('loc', 'srv'):
+                        if local_data.get(f"new_examination_{path_mark}"):
+                            try:
+                                with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
+                                    cur = conn.cursor()
+                                    cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                                                    local_data.get(f"new_examination_{path_mark}"))
+                            except Exception as ex:
+                                return f"Exception edit_local_db\n{ex}"
+
+                with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                    cur = conn.cursor()
+                    cur.execute(f"SELECT * FROM statistic_DOC_db")
+                    found_data_statistic = cur.fetchall()
+
+                if found_data_statistic:
+                    for info in found_data_statistic:
+                        local_data["found_data_statistic"].append(info)
+
                     try:
-                        with sq.connect(
-                                database=f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+                        with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
                             cur = conn.cursor()
-                            cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
-                                        f"examination_text, examination_key, add_info "
-                                        f"FROM examination")
-                            examination_srv = cur.fetchall()
-                        for examination in examination_srv:
-                            if examination not in examination_loc:
-                                new_examination.append(examination)
+                            cur.executemany("INSERT INTO statistic_DOC_db VALUES(?, ?, ?, ?, ?)",
+                                            local_data.get(f"found_data_statistic"))
 
-                    except Exception as ex:
+                    except Exception:
                         return f"Exception edit_local_db\n{ex}"
-                    else:
-                        with sq.connect(f"{path}data_base.db") as conn:
-                            cur = conn.cursor()
-                            cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)", new_examination)
 
-                        return "Данные синхронизированы"
+                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                        cur = conn.cursor()
+                        cur.execute(f"DELETE FROM statistic_DOC_db")
+
+                return "Данные синхронизированы"
 
             # else:
             #
@@ -6777,6 +6749,9 @@ def certificate__editing_certificate():
 
                 col_, row_ = 0, 0
                 for sport_section in user.get('my_sport_section'):
+                    if not isinstance(sport_section, str):
+                        sport_section = sport_section[0]
+
                     Radiobutton(frame_delete_new_hobby, text=sport_section,
                                 font=('Comic Sans MS', user.get('text_size')),
                                 value=f"{sport_section}", variable=selected_delete_sport_section,
@@ -9181,22 +9156,21 @@ def paste_log_in_root(root):
 
         log_in_root.update()
 
-        answer = data_base(command='examination__edit_examination_loc',
-                           insert_data=user.get('add_info'))
+        answer = data_base(command='examination__edit_examination_loc')
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"{answer}")
 
         log_in_root.update()
 
-        load_info_text.set(f"{load_info_text.get()}\n"
-                           f"Синхронизация шаблонов...")
-
-        log_in_root.update()
-        answer = data_base(command='edit_local_db', doctor_name=selected_doctor_name.get())
-        load_info_text.set(f"{load_info_text.get()}\n"
-                           f"{answer}")
-
-        log_in_root.update()
+        # load_info_text.set(f"{load_info_text.get()}\n"
+        #                    f"Синхронизация шаблонов...")
+        #
+        # log_in_root.update()
+        # answer = data_base(command='edit_local_db', doctor_name=selected_doctor_name.get())
+        # load_info_text.set(f"{load_info_text.get()}\n"
+        #                    f"{answer}")
+        #
+        # log_in_root.update()
 
         load_info_text.set(f"{load_info_text.get()}\n"
                            f"Данные синхронизированы")
@@ -9208,7 +9182,7 @@ def paste_log_in_root(root):
 
         log_in_root.update()
 
-        if users_passwords.get(selected_doctor_name.get()):
+        if app_info['all_doctor_info'][selected_doctor_name.get()].get('password'):
             frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
             password_txt.focus()
         else:
@@ -9218,13 +9192,20 @@ def paste_log_in_root(root):
     def open_main_root():
 
         if not user.get('error_connection'):
-            user['doctor_name'] = all_users_info.get(selected_doctor_name.get())[0]
-            user['password'] = all_users_info.get(selected_doctor_name.get())[1]
-            user['doctor_district'] = all_users_info.get(selected_doctor_name.get())[2]
-            user['ped_div'] = all_users_info.get(selected_doctor_name.get())[3]
-            user['manager'] = all_users_info.get(selected_doctor_name.get())[4]
-            user['text_size'] = int(all_users_info.get(selected_doctor_name.get())[5])
-            user['add_info'] = all_users_info.get(selected_doctor_name.get())[6]
+            doctor_name = selected_doctor_name.get()
+            user['doctor_name'] = app_info['all_doctor_info'][doctor_name].get('doctor_name')
+            user['password'] = app_info['all_doctor_info'][doctor_name].get('password')
+            user['doctor_district'] = app_info['all_doctor_info'][doctor_name].get('district')
+            user['ped_div'] = app_info['all_doctor_info'][doctor_name].get('ped_div')
+            user['manager'] = app_info['all_doctor_info'][doctor_name].get('manager')
+            user['text_size'] = int(app_info['all_doctor_info'][doctor_name].get('text_size'))
+            user['add_info'] = app_info['all_doctor_info'][doctor_name].get('add_info')
+
+            user['my_saved_diagnosis'] = app_info['all_doctor_info'][doctor_name].get('my_saved_diagnosis')
+            user['my_LN'] = int(app_info['all_doctor_info'][doctor_name].get('my_LN'))
+            user['my_sport_section'] = app_info['all_doctor_info'][doctor_name].get('my_sport_section')
+
+
 
             try:
                 edit_local_db()
@@ -9240,7 +9221,7 @@ def paste_log_in_root(root):
         # log_in_root.quit()
 
     def is_valid__password(password):
-        if password == users_passwords.get(selected_doctor_name.get()):
+        if password == app_info['all_doctor_info'][selected_doctor_name.get()].get('password'):
             text_is_correct_password.set('Пароль принят')
             label_password['foreground'] = "green"
             open_main_root()
@@ -9307,21 +9288,20 @@ def paste_log_in_root(root):
         log_in_root.update()
 
         if not user.get('error_connection'):
-            all_doctor_info = data_base('get_all_doctor_info')
-            if all_doctor_info:
+            if not app_info.get('all_doctor_info'):
+                data_base('get_all_doctor_info')
 
+            if app_info.get('all_doctor_info'):
                 frame_doc = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
-
                 load_info_text.set("Выберите учетную запись")
 
-                for doctor_name, password, district, ped_div, manager, open_mark, text_size, add_info \
-                        in sorted(all_doctor_info, key=lambda i: i[0]):
-                    users_passwords[doctor_name] = str(password)
-                    all_users_info[doctor_name] = [doctor_name, password, district, ped_div, manager, text_size,
-                                                   add_info]
+                users_sorted_pd = dict()
+                for doctor_name in sorted(app_info.get('all_doctor_info')):
+                    ped_div = app_info['all_doctor_info'][doctor_name].get('ped_div')
                     if ped_div not in users_sorted_pd:
                         users_sorted_pd[ped_div] = list()
                     users_sorted_pd[ped_div].append(doctor_name)
+
 
                 row, col = 0, 0
                 for ped_div in sorted(users_sorted_pd):
@@ -9351,9 +9331,7 @@ def paste_log_in_root(root):
 
                 Label(frame_pass, text='Введите пароль: ',
                       font=('Comic Sans MS', 12), bg='white').grid(row=0, column=0, sticky='ew')
-
                 password_txt.grid(row=0, column=1, sticky='ew')
-
                 label_password.grid(row=0, column=2, sticky='ew')
 
             else:
@@ -9394,9 +9372,6 @@ def paste_log_in_root(root):
     txt_password_variable = StringVar()
     text_is_correct_password = StringVar()
 
-    users_passwords = dict()
-    all_users_info = dict()
-    users_sorted_pd = dict()
 
     load_info = Label(log_in_root, textvariable=load_info_text,
                       font=('Comic Sans MS', 12), bg="#36566d", fg='white')
