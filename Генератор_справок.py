@@ -9202,7 +9202,7 @@ def paste_log_in_root(root):
             user['add_info'] = app_info['all_doctor_info'][doctor_name].get('add_info')
 
             user['my_saved_diagnosis'] = app_info['all_doctor_info'][doctor_name].get('my_saved_diagnosis')
-            user['my_LN'] = int(app_info['all_doctor_info'][doctor_name].get('my_LN'))
+            user['my_LN'] = app_info['all_doctor_info'][doctor_name].get('my_LN')
             user['my_sport_section'] = app_info['all_doctor_info'][doctor_name].get('my_sport_section')
 
 
