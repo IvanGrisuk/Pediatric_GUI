@@ -6376,20 +6376,19 @@ def data_base(command,
 
                         except Exception as ex:
                             return f"Exception edit_local_db\n{ex}"
+
                 with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
                     cur = conn.cursor()
                     cur.execute(f"SELECT * FROM statistic_DOC_db")
                     found_data_statistic = cur.fetchall()
 
                 if found_data_statistic:
-                    for info in found_data_statistic:
-                        local_data["found_data_statistic"].append(info)
 
                     try:
                         with sq.connect(f"{user['app_data'].get('path_srv_data_base')}data_base.db") as conn:
                             cur = conn.cursor()
                             cur.executemany("INSERT INTO statistic_DOC_db VALUES(?, ?, ?, ?, ?)",
-                                            local_data.get(f"found_data_statistic"))
+                                            found_data_statistic)
 
                     except Exception:
                         return f"Exception edit_local_db\n{ex}"
