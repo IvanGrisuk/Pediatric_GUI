@@ -6308,7 +6308,6 @@ def data_base(command,
                             'loc': set(),
                             'loc_list': list(),
                             'deleted_list': list()},
-
                         'sorted_examination_srv': list(),
                         'loc': f"{path}data_base.db",
                         'srv': f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
@@ -6354,6 +6353,9 @@ def data_base(command,
                                  patient_info, examination_text,
                                  examination_key, add_info)
                             )
+                    print('sorted_examination_loc', len(local_data["sorted_examination_loc"].get(f"loc_list")))
+                    print('sorted_examination_loc', len(local_data["sorted_examination_loc"].get(f"deleted_list")))
+                    print('sorted_examination_srv', len(local_data.get(f"sorted_examination_srv")))
 
                     for path_mark in ('srv', 'loc'):
                         try:
