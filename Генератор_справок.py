@@ -9714,24 +9714,22 @@ def paste_frame_main(root):
             os.system(f"start {doc_name}")
 
     def search_loop():
-        patient_found_data = list()
+        search_data = {
+            'found_patient_root': None,
+            'found_patient_data': dict()
+        }
 
-        def select_patient(event=None):
-            num = ''
-            if event:
-                for i in str(event.widget).split('.!')[-1]:
-                    if i.isdigit():
-                        num += i
-            if not num:
-                num = 3
-            rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
-                patient_found_data[int(num) - 3]
+        def select_patient():
+            rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone, vac_1, vac_2 = \
+                search_data['found_patient_data'].get(int(selected_patient.get()))
             patient['name'] = f"{name_1} {name_2} {name_3}"
             patient['birth_date'] = birth_date
             patient['gender'] = gender
             patient['amb_cart'] = amb_cart
             patient['patient_district'] = district
             patient['address'] = address
+            patient['vac_1'] = vac_1
+            patient['vac_2'] = vac_2
             patient_info['text'] = f"ФИО: {patient.get('name')}\t" \
                                    f"Дата рождения: {patient.get('birth_date')}\n" \
                                    f"Адрес: {patient.get('address')}\n" \
@@ -9740,19 +9738,14 @@ def paste_frame_main(root):
             search_root.destroy()
             delete_txt_patient_data()
 
-        def button_search_in_db(*args, **kwargs):
-            delete_txt_patient_data()
-            txt_patient_data.insert(index=0,
-                                    string=text_patient_data.get())
-            search_root.destroy()
-            search_loop()
 
-        def search_in_db():
+        def button_search_in_db(event=None):
+            if search_data.get('found_patient_root'):
+                search_data['found_patient_root'].destroy()
+            search_root.update()
+
             word_list = ["qwertyuiopasdfghjkl;'zxcvbnm,.", "йцукенгшщзфывапролджэячсмитьбю"]
-            delete_txt_patient_data()
-            txt_patient_data.insert(0, text_patient_data.get())
-
-            patient_data = text_patient_data.get()
+            patient_data = txt_patient_data_variable.get()
             name = list()
 
             for i in patient_data.split():
@@ -9794,76 +9787,106 @@ def paste_frame_main(root):
                                                       f'Измените запрос')
 
             if not sql_str:
-                messagebox.showinfo('Ошибка', 'По введенной информации не удалось сформулировать sql запрос')
+                counter_patient.set('Ошибка!\n'
+                                    'По введенной информации не удалось сформулировать sql запрос')
+
 
             else:
                 with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
                     cur = conn.cursor()
-                    cur.execute(f"SELECT rowid, "
-                                f"district, "
-                                f"amb_cart, "
-                                f"Фамилия, "
-                                f"Имя, "
-                                f"Отчество, "
-                                f"Пол, "
-                                f"Дата_рождения, "
-                                f"Домашний_адрес, "
-                                f"Домашний_телефон "
-                                f"FROM patient_data WHERE {sql_str}")
+                    cur.execute(f"SELECT rowid, * FROM patient_data WHERE {sql_str}")
                     found_data = cur.fetchall()
 
                 if len(found_data) < 1:
-                    counter_patient['text'] = "По введенной информации не удалось найти пациента"
+                    counter_patient.set("По введенной информации не удалось найти пациента")
                     # messagebox.showinfo('Ошибка', 'По введенной информации не удалось найти пациента')
 
-                elif len(found_data) == 1:
-                    patient_found_data.append(found_data[0])
-                    select_patient()
-
                 else:
-                    counter_patient['text'] = f"Найдено пациентов: {len(found_data)}"
+                    search_data['found_patient_data'].clear()
+                    if len(found_data) == 1:
+                        search_data['found_patient_data'][found_data[0][0]] = found_data[0]
+                        selected_patient.set(found_data[0][0])
+                        select_patient()
 
-                    if len(found_data) > 15:
-                        count_patient = 15
                     else:
-                        count_patient = len(found_data)
 
-                    patient_found_data.clear()
-                    for num in range(count_patient):
-                        rowid, district, amb_cart, name_1, name_2, name_3, gender, birth_date, address, phone = \
-                            found_data[num]
+                        frame_search = Frame(master=search_root, bg="#36566d")
+                        search_data['found_patient_root'] = frame_search
+                        counter_patient.set(f"Найдено пациентов: {len(found_data)}")
+                        split_len = {
+                            'col_1': 0,
+                            'col_2': 0,
+                            'col_3': 0,
+                            'col_4': 0}
+                        for info in found_data:
+                            (rowid, district, amb_cart,
+                             name_1, name_2, name_3,
+                             gender, birth_date, address, phone,
+                             vac_1, vac_2) = info
 
-                        text = f"Участок: {district};\t" \
-                               f"№ амб: {amb_cart}\t" \
-                               f"ФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}\t" \
-                               f"{birth_date}\t" \
-                               f"Адрес: {address}"
-                        lbl_0 = Label(search_root, text=text, font=('Comic Sans MS', user.get('text_size')),
-                                      border=1, compound='left',
-                                      bg='#bbfffe', relief='ridge')
-                        lbl_0.grid(columnspan=3, sticky='w', padx=2, pady=2, ipadx=2, ipady=2)
-                        lbl_0.bind('<Double-Button-1>', select_patient)
-                        patient_found_data.append(found_data[num])
+                            for mark_1, mark_2 in (
+                                    (district, 'col_1'),
+                                    (amb_cart, 'col_2'),
+                                    (f"{name_1} {name_2} {name_3}", 'col_3')):
+                                if len(mark_1) > split_len.get(mark_2):
+                                    split_len[mark_2] = len(mark_1)
+
+                        for info in found_data:
+                            (rowid, district, amb_cart,
+                             name_1, name_2, name_3,
+                             gender, birth_date, address, phone,
+                             vac_1, vac_2) = info
+                            search_data['found_patient_data'][rowid] = info
+
+                            text = f"Участок: {district};" + ' ' * (split_len.get('col_1') - len(district))
+                            text += f"\t№ амб: {amb_cart};" + ' ' * (split_len.get('col_2') - len(amb_cart))
+                            text += f"\tФИО: {name_1.capitalize()} {name_2.capitalize()} {name_3.capitalize()}" \
+                                    + ' ' * (split_len.get('col_3') - len(f"{name_1} {name_2} {name_3}"))
+                            text += f"  \t{birth_date};  "
+                            text += f"  \tАдрес: {address}"
+
+                            Radiobutton(master=frame_search, text=text,
+                                        font=('Comic Sans MS', user.get('text_size')),
+                                        compound='left',
+                                        command=select_patient,
+                                        value=rowid, variable=selected_patient,
+                                        indicatoron=False, selectcolor='#77f1ff',
+                                        anchor='w'
+                                        ).pack(fill='both', expand=True, padx=2, pady=2, anchor='w')
+                        frame_search.columnconfigure(index='all', minsize=40, weight=1)
+                        frame_search.rowconfigure(index='all', minsize=20)
+                        frame_search.pack(fill='both', expand=True, padx=2, pady=2)
+
+
 
         search_root = Toplevel()
         search_root.title('Поиск пациента')
         search_root.config(bg='white')
         search_root.geometry('+0+0')
 
-        counter_patient = Label(search_root, text='', font=('Comic Sans MS', 16), bg='white')
-        counter_patient.grid(column=0, row=2, columnspan=3)
+        frame_title = Frame(master=search_root, bg="#36566d")
+        Label(frame_title, text='Окно данных пациента',
+              font=('Comic Sans MS', user.get('text_size')), bg="#36566d", fg='white').grid(column=0, row=0, columnspan=2)
 
-        Label(search_root, text='Окно данных пациента',
-              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, columnspan=3)
-        text_patient_data = Entry(search_root, width=100, font=('Comic Sans MS', user.get('text_size')))
-        text_patient_data.grid(column=0, row=1, columnspan=2)
-        text_patient_data.insert(0, txt_patient_data.get())
+        text_patient_data = Entry(frame_title, width=100,
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  textvariable=txt_patient_data_variable)
+        text_patient_data.grid(column=0, row=1)
         text_patient_data.focus()
         text_patient_data.bind('<Return>', button_search_in_db)
 
-        Button(search_root, text='Найти', command=button_search_in_db,
-               font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1)
-        search_in_db()
+        Button(frame_title, text='Найти', command=button_search_in_db,
+               font=('Comic Sans MS', user.get('text_size'))).grid(column=1, row=1, sticky='ew')
+
+        counter_patient = StringVar()
+        selected_patient = StringVar()
+        Label(frame_title,
+              textvariable=counter_patient,
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white'
+              ).grid(column=0, row=2, columnspan=2)
+        frame_title.pack(fill='both', expand=True, padx=2, pady=2)
+        button_search_in_db()
         search_root.mainloop()
 
     def redact_doctor():
@@ -10069,7 +10092,7 @@ def paste_frame_main(root):
         update_font_main()
 
     def search_patient(*args, **kwargs):
-        patient_data = txt_patient_data.get()
+        patient_data = txt_patient_data_variable.get()
 
         if ('Фамилия, имя, отчество пациента:' in patient_data or
                 '№ амб. карты' in patient_data or
@@ -10117,7 +10140,7 @@ def paste_frame_main(root):
         update_font_main()
 
     def delete_txt_patient_data():
-        txt_patient_data.delete(0, 'end')
+        txt_patient_data_variable.set('')
 
     def update_font_main():
 
@@ -10221,7 +10244,8 @@ def paste_frame_main(root):
     lbl_patient_main = Label(frame_main_loc, text='Окно данных пациента')
     lbl_patient_main.grid(column=0, row=2, columnspan=3, sticky='ew')
 
-    txt_patient_data = Entry(frame_main_loc, width=40)
+    txt_patient_data_variable = StringVar()
+    txt_patient_data = Entry(frame_main_loc, width=40, textvariable=txt_patient_data_variable)
     txt_patient_data.grid(column=0, row=3)
     txt_patient_data.bind('<Control-KeyPress>', paste_txt_patient_data)
     txt_patient_data.bind('<Return>', search_patient)
@@ -10232,15 +10256,8 @@ def paste_frame_main(root):
     button_add_new_patient = Button(frame_main_loc, text='Добавить\nнового\nпациента', command=add_new_patient)
     button_add_new_patient.grid(column=2, row=3, rowspan=2, sticky='nswe')
 
-    # button_updating_patient_data_base = Button(frame_main_loc, text='Обновить БД',
-    #                                            command=updating_patient_data_base)
-    # button_updating_patient_data_base.grid(column=1, row=4, sticky='ew')
-    #
     button_delete_txt_patient_data = Button(frame_main_loc, text='X', command=delete_txt_patient_data)
     button_delete_txt_patient_data.grid(column=1, row=3, sticky='ew')
-    #
-    # button_paste_txt_patient_data = Button(frame_main_loc, text='Вставить', command=paste_txt_patient_data)
-    # button_paste_txt_patient_data.grid(column=2, row=4, sticky='ew')
 
     frame_main_loc.columnconfigure(index='all', minsize=40, weight=1)
     frame_main_loc.rowconfigure(index='all', minsize=20)
