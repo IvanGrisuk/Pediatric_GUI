@@ -1440,7 +1440,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             for rowid, date_time, doctor_name, status, LN_type, patient_info, examination_text, examination_key \
                     in sorted(found_info.get('select_past_examination'),
                               key=lambda i: (datetime.now() -
-                                             datetime.strptime(f"{i[1]}", "%d.%m.%Y %H:%M")).total_seconds()):
+                                             datetime.strptime(f"{i[1]}", "%d.%m.%Y %H:%M:%S")).total_seconds()):
 
                 local_info['select_past_examination'].append((rowid, date_time, doctor_name, status, LN_type,
                                                               patient_info, examination_text, examination_key))
@@ -1482,10 +1482,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             if local_info['get_last_patient_ln'].get(ln_data):
                 last_visit = min(local_info['get_last_patient_ln'].get(ln_data),
                                  key=lambda i: (datetime.now() -
-                                                datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M")).total_seconds())
+                                                datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M:%S")).total_seconds())
 
                 local_info['get_last_patient_ln'][ln_data] = None
-                if ((datetime.now() - datetime.strptime(f"{last_visit[0]}", "%d.%m.%Y %H:%M")).total_seconds() / (
+                if ((datetime.now() - datetime.strptime(f"{last_visit[0]}", "%d.%m.%Y %H:%M:%S")).total_seconds() / (
                         60 * 60 * 24) < 14 and last_visit[1].split('__')[-1] != 'closed'):
 
                     local_info['get_last_patient_ln'][ln_data] = last_visit[1]
@@ -1508,9 +1508,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             if data['examination']['get_last_anthro_data'].get('txt_weight_variable'):
                 data['examination']['anthro']['txt_weight_variable'].set(
                     data['examination']['get_last_anthro_data'].get('txt_weight_variable'))
-
-
-
 
     def paste_past_examination():
         def past_examination(past_examination_frame: Frame):
@@ -1616,7 +1613,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             else:
 
                                 save_info_examination = [
-                                    f"{datetime.now().strftime('%d.%m.%Y %H:%M')}",
+                                    f"{datetime.now().strftime('%d.%m.%Y %H:%M:%S')}",
                                     f"{user.get('doctor_name')}",
                                     None,
                                     past_examination_data['found_info'][f"{rowid_}"].get("ln_type"),
@@ -1632,7 +1629,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 else:
                                     messagebox.showinfo('Инфо', f"Осмотр успешно сохранен")
                                     text = past_examination_data['found_info'][f"{rowid_}"].get("past_exam_text")
-                                    text.set(f"Время редактирования: {datetime.now().strftime('%d.%m.%Y %H:%M')}    "
+                                    text.set(f"Время редактирования: {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}    "
                                              f"Пользователь: {user.get('doctor_name')}")
                                     past_examination_frame.update()
 
@@ -1944,7 +1941,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 ln_data = type_ln
 
             save_info_examination = [
-                f"{datetime.now().strftime('%d.%m.%Y %H:%M')}",
+                f"{datetime.now().strftime('%d.%m.%Y %H:%M:%S')}",
                 f"{user.get('doctor_name')}",
                 'loc',
                 ln_data,
@@ -6297,92 +6294,98 @@ def data_base(command,
 
             elif command == 'examination__edit_examination_loc':
 
-                if 'examination_db_place:____srv' in user.get('add_info'):
-                    local_data = {
-                        'examination_loc': list(),
-                        'examination_srv': list(),
-                        'found_data_statistic': list(),
-                        'sorted_examination_loc': {
-                            'deleted': set(),
-                            'srv': set(),
-                            'loc': set(),
-                            'loc_list': list(),
-                            'deleted_list': list()},
-                        'sorted_examination_srv': list(),
-                        'loc': f"{path}data_base.db",
-                        'srv': f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
-                    }
-                    for path_mark in ('loc', 'srv'):
-                        try:
-                            with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
-                                cur = conn.cursor()
-                                cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
+                local_data = {
+                    'examination_loc': list(),
+                    'examination_srv': list(),
+                    'found_data_statistic': list(),
+                    'sorted_examination_loc': {
+                        'deleted': set(),
+                        'srv': set(),
+                        'loc': set(),
+                        'loc_list': list(),
+                        'deleted_list': list()},
+                    'sorted_examination_srv': list(),
+                    'loc': f"{path}data_base.db",
+                    'srv': f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
+                }
+
+                with sq.connect(database=f"{local_data.get('loc')}") as conn:
+                    cur = conn.cursor()
+                    cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
+                                    f"examination_text, examination_key, add_info "
+                                    f"FROM examination")
+                    local_data[f"examination_loc"] = cur.fetchall()
+
+                for examination in local_data.get("examination_loc"):
+                    (date_time, doctor_name, status, LN_type,
+                     patient_info, examination_text,
+                     examination_key, add_info) = examination
+                    if status in ('loc', 'srv', 'deleted'):
+                        local_data["sorted_examination_loc"][status].add(
+                            f"{date_time}__{doctor_name}__{patient_info}")
+                        if status == 'loc':
+                            local_data["sorted_examination_loc"][f"{status}_list"].append(
+                                (date_time, doctor_name, 'srv', LN_type,
+                                 patient_info, examination_text,
+                                 examination_key, add_info))
+
+
+                for path_mark in ('srv', 'loc'):
+                    try:
+                        with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
+                            cur = conn.cursor()
+                            if path_mark == 'srv':
+                                if 'examination_db_place:____srv' in user.get('add_info'):
+                                    cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
                                                 f"examination_text, examination_key, add_info "
                                                 f"FROM examination")
-                                local_data[f"examination_{path_mark}"] = cur.fetchall()
-                        except Exception as ex:
-                            return f"Exception edit_local_db\n{ex}"
+                                    local_data[f"examination_{path_mark}"] = cur.fetchall()
 
+                                cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                                                local_data["sorted_examination_loc"].get(f"loc_list"))
 
-                    for examination in local_data.get("examination_loc"):
-                        (date_time, doctor_name, status, LN_type,
-                         patient_info, examination_text,
-                         examination_key, add_info) = examination
-                        if status in ('loc', 'srv', 'deleted'):
-                            local_data["sorted_examination_loc"][status].add(
-                                f"{date_time}__{doctor_name}__{LN_type}__{patient_info}__{examination_text}")
-                            if status in ('loc', 'deleted'):
-                                local_data["sorted_examination_loc"][f"{status}_list"].append(
-                                    (date_time, doctor_name, 'srv', LN_type,
-                                     patient_info, examination_text,
-                                     examination_key, add_info))
+                                for examination in local_data["sorted_examination_loc"].get(f"deleted"):
+                                    date_time, doctor_name, patient_info = examination.split('__')
+                                    cur.execute(f"DELETE from examination "
+                                                    f"WHERE date_time LIKE '{date_time}' "
+                                                    f"AND doctor_name LIKE '{doctor_name}' "
+                                                    f"AND patient_info LIKE '{patient_info}' ")
 
+                            elif path_mark == 'loc':
+                                cur.execute("DELETE from examination WHERE status LIKE 'deleted'")
+                                cur.execute(f"UPDATE examination SET status = 'srv'")
 
+                    except Exception as ex:
+                        return f"Exception edit_local_db\n{ex}"
 
-
+                if 'examination_db_place:____srv' in user.get('add_info'):
                     for examination in local_data.get("examination_srv"):
                         (date_time, doctor_name, status, LN_type,
                          patient_info, examination_text,
                          examination_key, add_info) = examination
-                        key = f"{date_time}__{doctor_name}__{LN_type}__{patient_info}__{examination_text}"
+                        key = f"{date_time}__{doctor_name}__{patient_info}"
 
                         if not (key in local_data["sorted_examination_loc"].get('srv') or
                                 key in local_data["sorted_examination_loc"].get('deleted')):
+
                             local_data['sorted_examination_srv'].append(
                                 (date_time, doctor_name, 'srv', LN_type,
                                  patient_info, examination_text,
-                                 examination_key, add_info)
-                            )
-                    print('sorted_examination_loc', len(local_data["sorted_examination_loc"].get(f"loc_list")))
-                    print('sorted_examination_loc', len(local_data["sorted_examination_loc"].get(f"deleted_list")))
-                    print('sorted_examination_srv', len(local_data.get(f"sorted_examination_srv")))
+                                 examination_key, add_info))
 
-                    for path_mark in ('srv', 'loc'):
-                        try:
-                            with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
-                                cur = conn.cursor()
-                                if path_mark == 'srv':
-                                    cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
-                                                    local_data["sorted_examination_loc"].get(f"loc_list"))
-                                    for examination in local_data["sorted_examination_loc"].get(f"deleted_list"):
-                                        (date_time, doctor_name, status, LN_type,
-                                         patient_info, examination_text,
-                                         examination_key, add_info) = examination
-                                        cur.execute(f"DELETE from examination "
-                                                        f"WHERE date_time LIKE '{date_time}' "
-                                                        f"AND doctor_name LIKE '{doctor_name}' "
-                                                        f"AND LN_type LIKE '{LN_type}' "
-                                                        f"AND patient_info LIKE '{patient_info}' "
-                                                        f"AND examination_text LIKE '{examination_text}'")
+                    if local_data.get('sorted_examination_srv'):
+                        with sq.connect(database=f"{local_data.get('loc')}") as conn:
+                            cur = conn.cursor()
+                            cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                                            local_data.get(f"sorted_examination_srv"))
 
-                                elif path_mark == 'loc':
-                                    cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
-                                                    local_data.get(f"sorted_examination_srv"))
-                                    cur.execute("DELETE from examination WHERE status LIKE 'deleted'")
-                                    cur.execute(f"UPDATE examination SET status = 'srv'")
 
-                        except Exception as ex:
-                            return f"Exception edit_local_db\n{ex}"
+
+
+                print('sorted_examination_loc', len(local_data["sorted_examination_loc"].get(f"loc_list")))
+                print('sorted_examination_loc', len(local_data["sorted_examination_loc"].get(f"deleted_list")))
+                print('sorted_examination_srv', len(local_data.get(f"sorted_examination_srv")))
+
 
                 with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
                     cur = conn.cursor()
@@ -9228,6 +9231,7 @@ def paste_log_in_root(root):
                            f"{answer}")
         log_in_root.update()
         if 'Exception' in answer:
+            print(answer)
             time.sleep(3)
 
 
