@@ -9678,50 +9678,93 @@ def paste_frame_main(root):
             os.system(f"start {doc_name}")
 
     def download_camp():
-        district = user.get('doctor_district')
-        info = data_base(f"get_certificate_for_district__certificate_camp__{district}")
-        if not info:
-            messagebox.showerror("Ошибка", "Ошибка подключения к базе данных")
-        else:
+        def start_search():
+            district = user.get('doctor_district')
+            download_camp_variable.set(f"Выгрузка справок детского лагеря {district} участка...\n"
+                                       f"Обращение к базе данных...")
+            download_camp_root.update()
+            info = data_base(f"get_certificate_for_district__certificate_camp__{district}")
 
-            document = Document()
-            table = document.add_table(rows=(len(info) + 1), cols=7)
-            table.style = 'Table Grid'
-            widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
-            for row in table.rows:
-                for idx, width in enumerate(widths):
-                    row.cells[idx].width = width
-            data_table = ('Участок', '№ п/п', 'Дата выписки', 'ФИО', 'Дата рождения', 'Пол', 'Адрес')
-            hdr_cells = table.rows[0].cells
-            for i in range(7):
-                hdr_cells[i].text = data_table[i]
+            if not info:
+                download_camp_variable.set(f"{download_camp_variable.get()} \nОшибка подключения к базе данных")
+                download_camp_root.update()
 
-                rc = hdr_cells[i].paragraphs[0].runs[0]
-                rc.font.name = 'Times New Roman'
-                rc.font.size = Pt(8)
-                rc.font.bold = True
-            for i in range(1, len(info) + 1):
-                hdr_cells = table.rows[i].cells
-                for q in range(7):
-                    if info[i - 1][q]:
-                        hdr_cells[q].text = info[i - 1][q]
+            else:
+                download_camp_variable.set(f"{download_camp_variable.get()} ответ получен!\n"
+                                           f"Создаю документ...")
+                download_camp_root.update()
 
-                        rc = hdr_cells[q].paragraphs[0].runs[0]
-                        rc.font.name = 'Times New Roman'
-                        rc.font.size = Pt(8)
+                document = Document()
+                table = document.add_table(rows=(len(info) + 1), cols=7)
+                table.style = 'Table Grid'
+                widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+                for row in table.rows:
+                    for idx, width in enumerate(widths):
+                        row.cells[idx].width = width
+                data_table = ('Участок', '№ п/п', 'Дата выписки', 'ФИО', 'Дата рождения', 'Пол', 'Адрес')
+                hdr_cells = table.rows[0].cells
+                for i in range(7):
+                    hdr_cells[i].text = data_table[i]
 
-            sections = document.sections
-            for section in sections:
-                section.top_margin = Cm(1.5)
-                section.bottom_margin = Cm(1.5)
-                section.left_margin = Cm(1.5)
-                section.right_margin = Cm(1.5)
-                section.page_height = Cm(21)
-                section.page_width = Cm(14.8)
+                    rc = hdr_cells[i].paragraphs[0].runs[0]
+                    rc.font.name = 'Times New Roman'
+                    rc.font.size = Pt(8)
+                    rc.font.bold = True
+                len_doc = len(info)
+                per_num_data = dict()
+                for per_num in (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1):
+                    per_num_data[round(len_doc * per_num)] = per_num
+                print(per_num_data)
+                download_camp_variable.set(f"{download_camp_variable.get()} \n"
+                                           f"Таблица создана. Заполняю ячейки данными...")
+                download_camp_root.update()
 
-            doc_name = f'.{os.sep}generated{os.sep}концлагерь_{district}_участка.docx'
-            document.save(doc_name)
-            os.system(f"start {doc_name}")
+                for i in range(1, len(info) + 1):
+                    if per_num_data.get(i):
+                        download_camp_variable.set(f"{download_camp_variable.get()} \n"
+                                                   f"Завершено на {round(per_num_data.get(i) * 100)}%")
+                        download_camp_root.update()
+
+                    hdr_cells = table.rows[i].cells
+                    for q in range(7):
+                        if info[i - 1][q]:
+                            hdr_cells[q].text = info[i - 1][q]
+
+                            rc = hdr_cells[q].paragraphs[0].runs[0]
+                            rc.font.name = 'Times New Roman'
+                            rc.font.size = Pt(8)
+
+                sections = document.sections
+                for section in sections:
+                    section.top_margin = Cm(1.5)
+                    section.bottom_margin = Cm(1.5)
+                    section.left_margin = Cm(1.5)
+                    section.right_margin = Cm(1.5)
+                    section.page_height = Cm(21)
+                    section.page_width = Cm(14.8)
+
+                file_name = f'.{os.sep}generated{os.sep}концлагерь_{district}_участка.docx'
+                file_name = save_document(doc=document, doc_name=file_name)
+                download_camp_root.destroy()
+                os.system(f"start {file_name}")
+
+        download_camp_root = Toplevel()
+        download_camp_root.title('Инфо')
+        download_camp_variable = StringVar()
+        Label(download_camp_root, textvariable=download_camp_variable,
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, ipady=3, ipadx=3)
+        download_camp_variable.set("Выгрузка лагеря в среднем занимает около 5 минут\n"
+                                   "На время формирования документа не закрывайте приложение\n"
+                                   "Для начала выгрузки нажмите кнопку 'Начать поиск'")
+        btn_start = Button(download_camp_root, text='Начать поиск', command=start_search,
+                           font=('Comic Sans MS', user.get('text_size')))
+        btn_start.pack(fill='x', expand=True, ipady=3, ipadx=3)
+
+
+        download_camp_root.mainloop()
+
+
 
     def search_loop():
         search_data = {
