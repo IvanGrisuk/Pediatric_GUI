@@ -6322,7 +6322,7 @@ def data_base(command,
                      examination_key, add_info) = examination
                     if status in ('loc', 'srv', 'deleted'):
                         local_data["sorted_examination_loc"][status].add(
-                            f"{date_time}__{doctor_name}__{patient_info}")
+                            f"{date_time}___{doctor_name}___{patient_info}")
                         if status == 'loc':
                             local_data["sorted_examination_loc"][f"{status}_list"].append(
                                 (date_time, doctor_name, 'srv', LN_type,
@@ -6345,7 +6345,8 @@ def data_base(command,
                                                 local_data["sorted_examination_loc"].get(f"loc_list"))
 
                                 for examination in local_data["sorted_examination_loc"].get(f"deleted"):
-                                    date_time, doctor_name, patient_info = examination.split('__')
+                                    print(examination)
+                                    date_time, doctor_name, patient_info = examination.split('___')
                                     cur.execute(f"DELETE from examination "
                                                     f"WHERE date_time LIKE '{date_time}' "
                                                     f"AND doctor_name LIKE '{doctor_name}' "
@@ -6382,8 +6383,8 @@ def data_base(command,
 
 
 
-                print('sorted_examination_loc', len(local_data["sorted_examination_loc"].get(f"loc_list")))
-                print('sorted_examination_loc', len(local_data["sorted_examination_loc"].get(f"deleted_list")))
+                print('sorted_examination_loc_loc_list', len(local_data["sorted_examination_loc"].get(f"loc_list")))
+                print('sorted_examination_loc_deleted_list', len(local_data["sorted_examination_loc"].get(f"deleted_list")))
                 print('sorted_examination_srv', len(local_data.get(f"sorted_examination_srv")))
 
 
