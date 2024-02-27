@@ -9576,109 +9576,163 @@ def paste_frame_main(root):
         new_root.mainloop()
 
     def download_ped_div():
-        pediatric_division = user.get('ped_div')
-        info = data_base(f"get_certificate_for_district__certificate_ped_div__{pediatric_division}")
-        if not info:
-            messagebox.showerror("Ошибка", "Ошибка подключения к базе данных")
-        else:
-            if pediatric_division == '1':
-                document = Document()
-                table = document.add_table(rows=(len(info) + 1), cols=10)
-                table.style = 'Table Grid'
-                # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
-                # for row in table.rows:
-                #     for idx, width in enumerate(widths):
-                #         row.cells[idx].width = width
-                data_table = ('№ п/п',
-                              'Дата',
-                              'ФИО лица, обратившегося за выдачей справки и (или) другого документа',
-                              'Адрес',
-                              'Документ, удостоверяющий личность',
-                              'Наименование справки и (или) другого запрашиваемого документа',
-                              'Срок исполнения',
-                              'Размер платы, взимаемый',
-                              'Дата выдачи справки и (или) другого запрашиваемого документа',
-                              'ФИО врача')
-                hdr_cells = table.rows[0].cells
-                for i in range(10):
-                    hdr_cells[i].text = data_table[i]
+        def start_search():
+            pediatric_division = user.get('ped_div')
+            download_ped_div_variable.set(f"Выгрузка справок {pediatric_division} ПО...\n"
+                                          f"Обращение к базе данных...")
+            download_ped_div_root.update()
 
-                    rc = hdr_cells[i].paragraphs[0].runs[0]
-                    rc.font.name = 'Times New Roman'
-                    rc.font.size = Pt(10)
-                    rc.font.bold = True
-                for i in range(1, len(info) + 1):
-                    hdr_cells = table.rows[i].cells
-                    ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
-                    local_info = (
-                        num, date, name, address, 'паспорт', type_cert, '1 день', 'бесплатно', date, doctor_name)
-                    for q in range(10):
-                        hdr_cells[q].text = local_info[q]
-                        rc = hdr_cells[q].paragraphs[0].runs[0]
-                        rc.font.name = 'Times New Roman'
-                        rc.font.size = Pt(9)
-
+            info = data_base(f"get_certificate_for_district__certificate_ped_div__{pediatric_division}")
+            if not info:
+                download_ped_div_variable.set(f"{download_ped_div_variable.get()} \nОшибка подключения к базе данных")
+                download_ped_div_root.update()
             else:
-                document = Document()
-                table = document.add_table(rows=(len(info) + 1), cols=11)
-                table.style = 'Table Grid'
-                # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
-                # for row in table.rows:
-                #     for idx, width in enumerate(widths):
-                #         row.cells[idx].width = width
-                data_table = ('№ п/п',
-                              'ФИО, обратившегося за выдачей справки и (или) другого документа',
-                              "Дата рождения",
-                              'Домашний адрес',
-                              'Дата подачи заявления',
-                              'Наименование справки и (или) другого запрашиваемого документа',
-                              'Срок исполнения',
-                              'Документ, удостоверяющий личность',
-                              'Размер платы, взимаемой за подачу справки и (или) другого документа',
-                              'Дата выдачи справки и (или) другого запрашиваемого документа',
-                              'ФИО врача (роспись заявителя)')
-                hdr_cells = table.rows[0].cells
-                for i in range(11):
-                    hdr_cells[i].text = data_table[i]
+                download_ped_div_variable.set(f"{download_ped_div_variable.get()} ответ получен!\n"
+                                              f"Создаю документ...")
+                download_ped_div_root.update()
 
-                    rc = hdr_cells[i].paragraphs[0].runs[0]
-                    rc.font.name = 'Times New Roman'
-                    rc.font.size = Pt(10)
-                    rc.font.bold = True
-                for i in range(1, len(info) + 1):
-                    hdr_cells = table.rows[i].cells
-                    ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
-                    type_cert = f"пункт {type_cert}"
-                    local_info = (
-                        num,
-                        name,
-                        birth_date,
-                        address,
-                        date,
-                        type_cert,
-                        '1 день',
-                        'паспорт',
-                        'бесплатно',
-                        date,
-                        doctor_name)
-                    for q in range(11):
-                        hdr_cells[q].text = local_info[q]
-                        rc = hdr_cells[q].paragraphs[0].runs[0]
+                if pediatric_division == '1':
+                    document = Document()
+                    table = document.add_table(rows=(len(info) + 1), cols=10)
+                    table.style = 'Table Grid'
+                    # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+                    # for row in table.rows:
+                    #     for idx, width in enumerate(widths):
+                    #         row.cells[idx].width = width
+                    data_table = ('№ п/п',
+                                  'Дата',
+                                  'ФИО лица, обратившегося за выдачей справки и (или) другого документа',
+                                  'Адрес',
+                                  'Документ, удостоверяющий личность',
+                                  'Наименование справки и (или) другого запрашиваемого документа',
+                                  'Срок исполнения',
+                                  'Размер платы, взимаемый',
+                                  'Дата выдачи справки и (или) другого запрашиваемого документа',
+                                  'ФИО врача')
+                    hdr_cells = table.rows[0].cells
+                    for i in range(10):
+                        hdr_cells[i].text = data_table[i]
+
+                        rc = hdr_cells[i].paragraphs[0].runs[0]
                         rc.font.name = 'Times New Roman'
-                        rc.font.size = Pt(9)
+                        rc.font.size = Pt(10)
+                        rc.font.bold = True
 
-            sections = document.sections
-            for section in sections:
-                section.orientation = WD_ORIENT.LANDSCAPE
-                section.top_margin = Cm(1.5)
-                section.bottom_margin = Cm(1.5)
-                section.left_margin = Cm(1.5)
-                section.right_margin = Cm(1.5)
-                section.page_height = Cm(21)
-                section.page_width = Cm(29.7)
-            doc_name = f'.{os.sep}generated{os.sep}БРЕД_{pediatric_division}_го_ПО.docx'
-            document.save(doc_name)
-            os.system(f"start {doc_name}")
+                    len_doc = len(info)
+                    per_num_data = dict()
+                    for per_num in (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1):
+                        per_num_data[round(len_doc * per_num)] = per_num
+                    download_ped_div_variable.set(f"{download_ped_div_variable.get()} \n"
+                                                  f"Таблица создана. Заполняю ячейки данными...")
+                    download_ped_div_root.update()
+
+                    for i in range(1, len(info) + 1):
+                        if per_num_data.get(i):
+                            download_ped_div_variable.set(f"{download_ped_div_variable.get()} \n"
+                                                          f"Завершено на {round(per_num_data.get(i) * 100)}%")
+                            download_ped_div_root.update()
+
+                        hdr_cells = table.rows[i].cells
+                        ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
+                        local_info = (
+                            num, date, name, address, 'паспорт', type_cert, '1 день', 'бесплатно', date, doctor_name)
+                        for q in range(10):
+                            hdr_cells[q].text = local_info[q]
+                            rc = hdr_cells[q].paragraphs[0].runs[0]
+                            rc.font.name = 'Times New Roman'
+                            rc.font.size = Pt(9)
+
+                else:
+                    document = Document()
+                    table = document.add_table(rows=(len(info) + 1), cols=11)
+                    table.style = 'Table Grid'
+                    # widths = (Cm(1.0), Cm(1.0), Cm(2.0), Cm(3.0), Cm(2.5), Cm(1.8), Cm(3.0))
+                    # for row in table.rows:
+                    #     for idx, width in enumerate(widths):
+                    #         row.cells[idx].width = width
+                    data_table = ('№ п/п',
+                                  'ФИО, обратившегося за выдачей справки и (или) другого документа',
+                                  "Дата рождения",
+                                  'Домашний адрес',
+                                  'Дата подачи заявления',
+                                  'Наименование справки и (или) другого запрашиваемого документа',
+                                  'Срок исполнения',
+                                  'Документ, удостоверяющий личность',
+                                  'Размер платы, взимаемой за подачу справки и (или) другого документа',
+                                  'Дата выдачи справки и (или) другого запрашиваемого документа',
+                                  'ФИО врача (роспись заявителя)')
+                    hdr_cells = table.rows[0].cells
+                    for i in range(11):
+                        hdr_cells[i].text = data_table[i]
+
+                        rc = hdr_cells[i].paragraphs[0].runs[0]
+                        rc.font.name = 'Times New Roman'
+                        rc.font.size = Pt(10)
+                        rc.font.bold = True
+                    len_doc = len(info)
+                    per_num_data = dict()
+                    for per_num in (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1):
+                        per_num_data[round(len_doc * per_num)] = per_num
+                    download_ped_div_variable.set(f"{download_ped_div_variable.get()} \n"
+                                                  f"Таблица создана. Заполняю ячейки данными...")
+                    download_ped_div_root.update()
+
+                    for i in range(1, len(info) + 1):
+                        if per_num_data.get(i):
+                            download_ped_div_variable.set(f"{download_ped_div_variable.get()} \n"
+                                                          f"Завершено на {round(per_num_data.get(i) * 100)}%")
+                            download_ped_div_root.update()
+
+                        hdr_cells = table.rows[i].cells
+                        ped_div, district, num, date, name, birth_date, address, type_cert, doctor_name = info[i - 1]
+                        type_cert = f"пункт {type_cert}"
+                        local_info = (
+                            num,
+                            name,
+                            birth_date,
+                            address,
+                            date,
+                            type_cert,
+                            '1 день',
+                            'паспорт',
+                            'бесплатно',
+                            date,
+                            doctor_name)
+                        for q in range(11):
+                            hdr_cells[q].text = local_info[q]
+                            rc = hdr_cells[q].paragraphs[0].runs[0]
+                            rc.font.name = 'Times New Roman'
+                            rc.font.size = Pt(9)
+
+                sections = document.sections
+                for section in sections:
+                    section.orientation = WD_ORIENT.LANDSCAPE
+                    section.top_margin = Cm(1.5)
+                    section.bottom_margin = Cm(1.5)
+                    section.left_margin = Cm(1.5)
+                    section.right_margin = Cm(1.5)
+                    section.page_height = Cm(21)
+                    section.page_width = Cm(29.7)
+
+                file_name = f'.{os.sep}generated{os.sep}БРЕД_{pediatric_division}_го_ПО.docx'
+                file_name = save_document(doc=document, doc_name=file_name)
+                os.system(f"start {file_name}")
+                download_ped_div_root.destroy()
+
+        download_ped_div_root = Toplevel()
+        download_ped_div_root.title('Инфо')
+        download_ped_div_variable = StringVar()
+        Label(download_ped_div_root, textvariable=download_ped_div_variable,
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, ipady=3, ipadx=3)
+        download_ped_div_variable.set("Выгрузка справок в среднем занимает около 5 минут\n"
+                                      "На время формирования документа не закрывайте приложение\n"
+                                      "Для начала выгрузки нажмите кнопку 'Начать поиск'")
+        btn_start = Button(download_ped_div_root, text='Начать поиск', command=start_search,
+                           font=('Comic Sans MS', user.get('text_size')))
+        btn_start.pack(fill='x', expand=True, ipady=3, ipadx=3)
+
+        download_ped_div_root.mainloop()
 
     def download_camp():
         def start_search():
