@@ -6302,8 +6302,7 @@ def data_base(command,
                         'deleted': set(),
                         'srv': set(),
                         'loc': set(),
-                        'loc_list': list(),
-                        'deleted_list': list()},
+                        'loc_list': list()},
                     'sorted_examination_srv': list(),
                     'loc': f"{path}data_base.db",
                     'srv': f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
@@ -6329,6 +6328,11 @@ def data_base(command,
                                  patient_info, examination_text,
                                  examination_key, add_info))
 
+                print(f"len_examination_loc: "
+                      f"loc - {len(local_data['sorted_examination_loc'].get('loc'))}     "
+                      f"srv - {len(local_data['sorted_examination_loc'].get('srv'))}     "
+                      f"deleted - {len(local_data['sorted_examination_loc'].get('deleted'))}")
+
 
                 for path_mark in ('srv', 'loc'):
                     try:
@@ -6345,7 +6349,6 @@ def data_base(command,
                                                 local_data["sorted_examination_loc"].get(f"loc_list"))
 
                                 for examination in local_data["sorted_examination_loc"].get(f"deleted"):
-                                    print(examination)
                                     date_time, doctor_name, patient_info = examination.split('___')
                                     cur.execute(f"DELETE from examination "
                                                     f"WHERE date_time LIKE '{date_time}' "
@@ -6364,7 +6367,8 @@ def data_base(command,
                         (date_time, doctor_name, status, LN_type,
                          patient_info, examination_text,
                          examination_key, add_info) = examination
-                        key = f"{date_time}__{doctor_name}__{patient_info}"
+                        key = f"{date_time}___{doctor_name}___{patient_info}"
+
 
                         if not (key in local_data["sorted_examination_loc"].get('srv') or
                                 key in local_data["sorted_examination_loc"].get('deleted')):
@@ -6384,7 +6388,6 @@ def data_base(command,
 
 
                 print('sorted_examination_loc_loc_list', len(local_data["sorted_examination_loc"].get(f"loc_list")))
-                print('sorted_examination_loc_deleted_list', len(local_data["sorted_examination_loc"].get(f"deleted_list")))
                 print('sorted_examination_srv', len(local_data.get(f"sorted_examination_srv")))
 
 
