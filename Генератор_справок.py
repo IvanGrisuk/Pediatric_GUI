@@ -5755,6 +5755,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
 
 def save_document(doc: Document, doc_name: str):
+    if not os.path.exists(path=f".{os.sep}generated"):
+        os.mkdir(path=f".{os.sep}generated")
+
     try:
         doc.save(doc_name)
     except Exception:
@@ -9745,8 +9748,9 @@ def paste_frame_main(root):
 
                 file_name = f'.{os.sep}generated{os.sep}концлагерь_{district}_участка.docx'
                 file_name = save_document(doc=document, doc_name=file_name)
-                download_camp_root.destroy()
                 os.system(f"start {file_name}")
+                download_camp_root.destroy()
+
 
         download_camp_root = Toplevel()
         download_camp_root.title('Инфо')
