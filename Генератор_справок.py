@@ -6331,10 +6331,6 @@ def data_base(command,
                                  patient_info, examination_text,
                                  examination_key, add_info))
 
-                print(f"len_examination_loc: "
-                      f"loc - {len(local_data['sorted_examination_loc'].get('loc'))}     "
-                      f"srv - {len(local_data['sorted_examination_loc'].get('srv'))}     "
-                      f"deleted - {len(local_data['sorted_examination_loc'].get('deleted'))}")
 
 
                 for path_mark in ('srv', 'loc'):
@@ -6390,8 +6386,6 @@ def data_base(command,
 
 
 
-                print('sorted_examination_loc_loc_list', len(local_data["sorted_examination_loc"].get(f"loc_list")))
-                print('sorted_examination_srv', len(local_data.get(f"sorted_examination_srv")))
 
 
                 with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
@@ -6414,7 +6408,22 @@ def data_base(command,
                         cur = conn.cursor()
                         cur.execute(f"DELETE FROM statistic_DOC_db")
 
-                return "Данные синхронизированы"
+                print(f"len_examination_loc: "
+                      f"loc - {len(local_data['sorted_examination_loc'].get('loc'))}     "
+                      f"srv - {len(local_data['sorted_examination_loc'].get('srv'))}     "
+                      f"deleted - {len(local_data['sorted_examination_loc'].get('deleted'))}")
+                print('sorted_examination_loc_loc_list', len(local_data["sorted_examination_loc"].get(f"loc_list")))
+                print('sorted_examination_srv', len(local_data.get(f"sorted_examination_srv")))
+
+                answer = f"Данные синхронизированы!\n\n" \
+                         f"Выгружено осмотров на сервер: {len(local_data['sorted_examination_loc'].get('loc'))}\n" \
+                         f"Удалено осмотров: {len(local_data['sorted_examination_loc'].get('deleted'))}\n" \
+                         f"Всего осмотров в базе данных: " \
+                         f"{len(local_data['sorted_examination_loc'].get('loc')) + len(local_data['sorted_examination_loc'].get('srv'))}\n" \
+                         f"Загружено осмотров: {len(local_data.get('sorted_examination_srv'))}\n" \
+                         f"Обновлено статистики: {len(found_data_statistic)}\n"
+
+                return answer
 
             # else:
             #
@@ -9239,7 +9248,7 @@ def paste_log_in_root(root):
         log_in_root.update()
         if 'Exception' in answer:
             print(answer)
-            time.sleep(3)
+        time.sleep(3)
 
 
         # load_info_text.set(f"{load_info_text.get()}\n"
