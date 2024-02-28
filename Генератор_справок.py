@@ -6408,12 +6408,6 @@ def data_base(command,
                         cur = conn.cursor()
                         cur.execute(f"DELETE FROM statistic_DOC_db")
 
-                print(f"len_examination_loc: "
-                      f"loc - {len(local_data['sorted_examination_loc'].get('loc'))}     "
-                      f"srv - {len(local_data['sorted_examination_loc'].get('srv'))}     "
-                      f"deleted - {len(local_data['sorted_examination_loc'].get('deleted'))}")
-                print('sorted_examination_loc_loc_list', len(local_data["sorted_examination_loc"].get(f"loc_list")))
-                print('sorted_examination_srv', len(local_data.get(f"sorted_examination_srv")))
 
                 answer = f"Данные синхронизированы!\n\n" \
                          f"Выгружено осмотров на сервер: {len(local_data['sorted_examination_loc'].get('loc'))}\n" \
