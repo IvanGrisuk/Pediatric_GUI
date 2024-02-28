@@ -6366,6 +6366,9 @@ def data_base(command,
                         (date_time, doctor_name, status, LN_type,
                          patient_info, examination_text,
                          examination_key, add_info) = examination
+                        if len(date_time.split(':')) != 3:
+                            date_time += ":00"
+
                         key = f"{date_time}___{doctor_name}___{patient_info}"
 
 
