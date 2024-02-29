@@ -3188,6 +3188,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             patient_age_month = data['examination']['age_month'].get('month')
             if data['examination']['age_month'].get('year') > 0:
                 patient_age_month = 12
+            elif data['examination']['age_month'].get('month') == 0:
+                patient_age_month = 1
 
             frame_npr = Frame(examination_root, borderwidth=0.5, relief="solid", padx=1, pady=1, bg="#36566d")
 
@@ -10005,6 +10007,7 @@ def paste_frame_main(root):
               bg="#36566d", fg='white'
               ).grid(column=0, row=2, columnspan=2)
         frame_title.pack(fill='both', expand=True, padx=2, pady=2)
+        counter_patient.set('Поиск пациентов...')
         button_search_in_db()
         search_root.mainloop()
 
