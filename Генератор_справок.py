@@ -742,7 +742,8 @@ all_diagnosis = {
 
 all_data_diagnosis = {
     'diagnosis_ori': (('ринит', "синусит", 'фарингит', 'ринофaрингит', "тонзиллит", "ларингит"),
-                      ("отит", "конъюнктивит", "катаральный", "гнойный", "экссудативный"),
+                      ("отит", "конъюнктивит"),
+                      ("острый", "средний", "катаральный", "гнойный", "экссудативный", "буллезный", "аллергический"),
                       ("справа", "слева", "двусторонний"),
                       ("вирусная экзантема", "вирусная энантема"),
                       ("обструктивный", 'бронхит', 'пневмония', 'плеврит', 'трахеит', "ДН 0", "ДН 1", "ДН 2"),
@@ -5984,8 +5985,6 @@ def data_base(command,
             return False
 
 
-
-
     elif command == 'save_new_diagnosis':
         try:
             try:
@@ -6322,6 +6321,9 @@ def data_base(command,
                     (date_time, doctor_name, status, LN_type,
                      patient_info, examination_text,
                      examination_key, add_info) = examination
+                    if len(date_time.split(':')) == 2:
+                        date_time += ":00"
+
                     if status in ('loc', 'srv', 'deleted'):
                         local_data["sorted_examination_loc"][status].add(
                             f"{date_time}___{doctor_name}___{patient_info}")
@@ -6366,7 +6368,7 @@ def data_base(command,
                         (date_time, doctor_name, status, LN_type,
                          patient_info, examination_text,
                          examination_key, add_info) = examination
-                        if len(date_time.split(':')) != 3:
+                        if len(date_time.split(':')) == 2:
                             date_time += ":00"
 
                         key = f"{date_time}___{doctor_name}___{patient_info}"
