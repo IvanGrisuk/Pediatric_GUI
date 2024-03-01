@@ -6408,7 +6408,9 @@ def data_base(command,
                             cur.executemany("INSERT INTO statistic_DOC_db VALUES(?, ?, ?, ?, ?)",
                                             found_data_statistic)
 
-                    except Exception:
+
+                    except Exception as ex:
+
                         return f"Exception edit_local_db\n{ex}"
 
                     with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
@@ -10433,7 +10435,7 @@ def paste_frame_main(root):
 
 def main_root():
     root = Tk()
-    root.title('Генератор справок v_2.1')
+    root.title('Генератор справок v_2.1.3')
     root.config(bg="#36566d")
     root.geometry('+0+0')
 
