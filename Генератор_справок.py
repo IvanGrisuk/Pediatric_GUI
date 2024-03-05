@@ -198,7 +198,7 @@ all_data_certificate = {
     }}
 
 all_blanks_anal = {
-    'blood': ['Общие анализы крови:',
+    'blood': ['Общие анализы крови',
               'ОАК',
               'ОАК + ФОРМУЛА',
               'ОАК + СВЕРТЫВАЕМОСТЬ',
@@ -206,7 +206,7 @@ all_blanks_anal = {
               "ИММУНОГРАММА",
               'ГЛЮКОЗА',
               'ГЛЮКОЗА ПОД НАГРУЗКОЙ'],
-    'blood-inf': ['Анализы крови на инфекции:',
+    'blood-inf': ['Анализы крови на инфекции',
                   'КРОВЬ на инфекции',
                   'ВИЧ',
                   'ГЕПАТИТ',
@@ -214,7 +214,7 @@ all_blanks_anal = {
                   'ВИЧ экспресс',
                   'ГЕПАТИТ контакты'
                   ],
-    'urine': ['Анализы мочи:',
+    'urine': ['Анализы мочи',
               'ОАМ',
               'НЕЧИПОРЕНКО',
               'ЗИМНИЦКИЙ'],
@@ -224,12 +224,13 @@ all_blanks_anal = {
               'ГЛИСТЫ',
               "ДИСБАКТЕРИОЗ",
               "КАЛЬПРОТЕКТИН"],
-    'swab': ['Мазки:',
+    'swab': ['Мазки',
              'ЭОЗИНОФИЛЫ',
              'МАЗОК НА ФЛОРУ',
              'МАЗОК НА КОВИД'
              ],
-    'add': ['Сочетания анализов:',
+    'add': ['Сочетания анализов',
+            'ОАК  +  ФОРМУЛА',
             'ОАК + ОАМ',
             'ОАК + ОАМ + ГЛЮКОЗА',
             'ОАК + ОАМ + КОПРОГРАММА',
@@ -895,7 +896,7 @@ all_data_diagnosis = {
                      "отрицательные", "положительные", "сомнительные")),
 
 
-    "prescription": ("Назначения", ("Анализы", "ОАК", "ОАМ", "Глюкоза", "Копрограмма", "я/глист", "БАК"),
+    "prescription": ("Назначения",
                      ("Консультация", "офтальмолога", "хирурга", "оториноларинголога", "гастроэнтеролога", "пульмонолога"),
                      ("Рекомендации", "домашний режим", "питьевой режим", "дренажный массаж",
                       "полоскать горло", "орошать горло", "промывать нос", "ингалляции с физраствором",
@@ -977,7 +978,7 @@ all_data_diagnosis = {
              "выписан рецепт", "выписан льготный рецепт", "имеется дома"),
 
             ("Фосфомицин",
-             "Форма", "порошок для приг. раствора внутрь 3г N1",
+             "Форма", "порошок для приг. раствора внутрь 3г",
              "Кратность", "однократно", "1 р/сут", "2 р/сут",
              "Длительность", "3 дня", "5 дней", "7 дней", "продолжить",
              "Способ применения", "принимать внутрь перед приемом пищи", "подключить пробиотик",
@@ -1008,6 +1009,13 @@ all_data_diagnosis = {
              "Способ применения", "принимать при температуре 38.5 и выше",
              "принимать при болевом синдроме",
              "с интервалом не меньше 6 часов", "выписан льготный рецепт", "имеется дома"),
+
+            ("Ибупрофен+Парацетамол",
+             "Форма", "таб. диспергируемые 100мг/125мг", "таб. 400мг/325мг",
+             "Дозировка", "1 таб", "2 таб", "3 таб",
+             "Способ применения", "принимать при температуре 38.5 и выше",
+             "принимать при болевом синдроме",
+             "с интервалом не меньше 6 часов"),
 
             ("Оксиметазолин",
              "Форма", "0.01%", "0.025%", "0.05%",
@@ -1094,7 +1102,7 @@ all_data_diagnosis = {
              "Способ применения", "выписан рецепт", "выписан льготный рецепт", "имеется дома"),
 
             ("Флутиказон",
-             "Форма", "аэрозоль 50мкг/доза", "аэрозоль 125мкг/доза", "аэрозоль 250мкг/доза",
+             "Форма", "аэрозоль 50мкг/доза - 120 доз", "аэрозоль 125мкг/доза - 120 доз", "аэрозоль 250мкг/доза - 120 доз",
              "Дозировка", "1 доза", "2 дозы", "3 дозы",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
              "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "продолжить", "длительно",
@@ -1144,10 +1152,10 @@ all_data_diagnosis = {
              "при наличии гнойного содержимого - промыть конъюнктивальную полость", "выписан льготный рецепт", "имеется дома"),
 
             ("Офлоксацин",
-             "Форма", "капли глазные 0.3% по 1-2 капли", "мазь глазная 0.3% - закладывать за нижнее веко",
+             "Форма", "капли глазные 0.3%", "мазь глазная 0.3%",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут", "4 р/сут", "5 р/сут", "на ночь",
              "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "продолжить",
-             "Способ применения", "закапывать в открытый глаз", "закладывать за нижнее веко",
+             "Способ применения", "закапывать в открытый глаз  по 1-2 капли", "закладывать за нижнее веко",
              "при наличии гнойного содержимого - промыть конъюнктивальную полость"),
 
             ("Кромоглициевая кислота - капли глазные",
@@ -1191,7 +1199,7 @@ all_data_diagnosis = {
              "до улучшения симптомов", "до следующего осмотра"),
 
             ("Цетиризин",
-             "Форма", "кап. 10мг/мл", "таб. 10мг",
+             "Форма", "кап. 10мг/мл-20мл", "таб. 10мг",
              "Дозировка", "5 капель", "10 капель", "20 капель", "1/2 таб", "1 таб",
              "Кратность", "1 р/сут", "2 р/сут",
              "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
@@ -1229,7 +1237,7 @@ all_data_diagnosis = {
              "Длительность", "однократно", "3 дня", "5 дней"),
 
             ("Симетикон",
-             "Форма", "40мг/мл", "66.66 мг/мл", "100мг/мл", "300 мг/мл", "капс 40 мг", "капс 80 мг", "капс 120 мг",
+             "Форма", "капли для приема внутрь 40мг/мл", "капли для приема внутрь 66.66 мг/мл", "капли для приема внутрь 100мг/мл", "капли для приема внутрь 300 мг/мл", "капс 40 мг", "капс 80 мг", "капс 120 мг",
              "Дозировка", "4 капли", "6 капель", "8 капель", "14 капель", "16 капель", "25 капель", "50 капель",
                             "1 капс", "2 капс",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут", "4 р/сут", "после каждого приема пищи",
@@ -1277,7 +1285,7 @@ all_data_diagnosis = {
              "Способ применения", "выписан льготный рецепт", "имеется дома"),
 
             ("Симетикон",
-             "Форма", "40мг/мл", "66.66 мг/мл", "100мг/мл", "300 мг/мл", "капс 40 мг", "капс 80 мг", "капс 120 мг",
+             "Форма", "капли для приема внутрь 40мг/мл", "капли для приема внутрь 66.66 мг/мл", "капли для приема внутрь 100мг/мл", "капли для приема внутрь 300 мг/мл", "капс 40 мг", "капс 80 мг", "капс 120 мг",
              "Дозировка", "4 капли", "6 капель", "8 капель", "14 капель", "16 капель", "25 капель", "50 капель",
                             "1 капс", "2 капс",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут", "4 р/сут", "после каждого приема пищи",
@@ -1287,6 +1295,233 @@ all_data_diagnosis = {
 
     }
 }
+
+recipe_data = {
+	"Антибиотики": {
+		"Амоксициллин": {
+			"суспензия 125/5": "1 (одна упаковка)",
+			"суспензия 250/5": "1 (одна упаковка)",
+			"таб. 250": "30 (тридцать)",
+			"таб. 500": "20 (двадцать)",
+			"таб. 1000": "14 (четырнадцать)",
+		},
+		"Амоксициллин + клавулановая кислота": {
+			"суспензия 125/31.25/5": "1 (одна упаковка)",
+			"суспензия 200/28.5/5": "1 (одна упаковка)",
+			"суспензия 250/62.5/5": "1 (одна упаковка)",
+			"суспензия 400/57/5": "1 (одна упаковка)",
+			"суспензия 600/42.9/5": "1 (одна упаковка)",
+			"таб. 250/125": "15 (пятнадцать)",
+			"таб. 500/125": "14 (четырнадцать)",
+			"таб. 875/125": "14 (четырнадцать)",
+		},
+		"Цефуроксим": {
+			"суспензия 125/5": "1 (одна упаковка)",
+			"таб. 125": "10 (десять)",
+			"таб. 250": "10 (десять)",
+			"таб. 500": "10 (десять)",
+		},
+		"Кларитромицин": {
+			"суспензия 125/5": "1 (одна упаковка)",
+			"суспензия 250/5": "1 (одна упаковка)",
+			"таб. 250": "14 (четырнадцать)",
+			"таб. 500": "7 (семь)",
+		},
+		"Азитромицин": {
+			"суспензия 200/5": "1 (одна упаковка)",
+			"таб. 125": "6 (шесть)",
+			"таб. 250": "6 (шесть)",
+			"таб. 500": "6 (шесть)",
+		},
+		"Цефдинир": {
+			"суспензия 125/5": "1 (одна упаковка)",
+			"суспензия 250/5": "1 (одна упаковка)",
+			"таб. 300": "10 (десять)",
+		},
+		"Фосфомицин": {
+			"порошок для приг. раствора внутрь 3г": "1 (один)",
+		},
+		"Фуразидин (Фурагин)": {
+			"таблетки 50мг": "30 (тридцать)",
+		},
+	},
+	"ОРИ": {
+		"Парацетамол": {
+			"суппозитории": "10 (десять)",
+			"суспензия 30 мг/мл": "1 (одна упаковка)",
+			"суспензия 120 мг/5мл": "1 (одна упаковка)",
+			"таб. 200 мг": "20 (двадцать)",
+			"таб. 500 мг": "20 (двадцать)",
+		},
+		"Ибупрофен": {
+			"суппозитории": "10 (десять)",
+			"суспензия 100 мг/5мл": "1 (одна упаковка)",
+			"суспензия 200 мг/5мл": "1 (одна упаковка)",
+			"таб. 200 мг": "20 (двадцать)",
+			"таб. 400 мг": "20 (двадцать)",
+		},
+
+        "Ибупрофен+Парацетамол": {
+            "таб. диспергируемые 100мг/125мг": "20 (двадцать)",
+            "таб. 400мг/325мг": "20 (двадцать)"
+        },
+
+
+         "Оксиметазолин": {
+			"0.01%": "1 (одна упаковка)",
+			"0.025%": "1 (одна упаковка)",
+			"0.05%": "1 (одна упаковка)",
+		},
+		"Ксилометазолин": {
+			"0.05%": "1 (одна упаковка)",
+			"0.1%": "1 (одна упаковка)",
+		},
+		"Осельтамивир": {
+			"капс. 30мг": "10 (десять)",
+			"капс. 45мг": "10 (десять)",
+			"капс. 75мг": "10 (десять)",
+		},
+
+		"Амброксол": {
+			"раствор 7.5мг/мл": "1 (одна упаковка)",
+			"суспензия 15мг/5мл": "1 (одна упаковка)",
+			"суспензия 30мг/мл": "1 (одна упаковка)",
+			"таб 30 мг": "20 (двадцать)",
+		},
+		"Ацетилцистеин": {
+			"суспензия 20мг/мл": "1 (одна упаковка)",
+			"пор. 100мг": "20 (двадцать)",
+			"пор/таб. 200мг": "20 (двадцать)",
+			"пор/таб. 600мг": "10 (десять)",
+		},
+		"Мометазон": {
+			"спрей назальный 50мкг/доза 140доз": "1 (одна упаковка - 140 доз)",
+		},
+	},
+	"Бронхолитики": {
+		"Беродуал (Фенотерол+Ипратропия бромид)": {
+			"раствор 0.5мг+0.25мг": "1 (одна упаковка - 20мл)",
+			"аэрозоль 50мкг+20мкг/доза - 200 доз": "1 (одна упаковка - 200 доз)",
+		},
+		"Сальбутамол": {
+			"суспензия 2мг/5мл": "1 (одна упаковка)",
+			"аэрозоль 100мкг/доза - 200 доз": "1 (одна упаковка)",
+		},
+		"Флутиказон": {
+			"аэрозоль 50мкг/доза - 120 доз": "1 (одна упаковка)",
+			"аэрозоль 125мкг/доза - 120 доз": "1 (одна упаковка)",
+			"аэрозоль 250мкг/доза - 120 доз": "1 (одна упаковка)",
+		},
+
+		"Будесонид": {
+			"суспензия 0.25мг/мл - 2мл": "10 (десять) in amp",
+			"суспензия 0.5мг/мл - 2мл": "10 (десять) in amp",
+			"аэрозоль 100мкг/доза - 200 доз": "1 (одна упаковка)",
+			"аэрозоль 200мкг/доза - 200 доз": "1 (одна упаковка)",
+		},
+		"Монтелукаст": {
+			"таб. 4мг": "30 (тридцать)",
+			"таб. 5мг": "30 (тридцать)",
+			"таб. 10мг": "30 (тридцать)",
+		},
+	},
+	"Антигистаминные": {
+		"Хифенадин (Фенкарол)": {
+			"таб. 10мг": "20 (двадцать)",
+			"таб. 25мг": "20 (двадцать)",
+			"таб. 50мг": "15 (пятнадцать)",
+		},
+		"Цетиризин": {
+			"кап. 10мг/мл-20мл": "1 (одна упаковка)",
+			"таб. 10мг": "30 (тридцать)",
+		},
+		"Лоратадин": {
+			"суспензия 5мг/5мл": "1 (одна упаковка)",
+			"таб. 10мг": "10 (десять)",
+		},
+		"Дезлоратадин": {
+			"суспензия 0.5мг/мл": "1 (одна упаковка)",
+			"таб. 5мг": "30 (тридцать)",
+		},
+	},
+	"ЖКТ": {
+		"Нифуроксазид": {
+			"суспензия 220/5": "1 (одна упаковка)",
+			"капс. 100мг": "30 (тридцать)",
+			"капс. 200мг": "30 (тридцать)",
+		},
+		"Альбендазол": {
+			"суспензия 100мг/5мл - 20мл": "",
+			"таб. 400мг": "",
+		},
+		"Мебендазол": {
+			"суспензия 100мг/5мл - 20мл": "1 (одна упаковка)",
+			"таб. 100мг": "1 (одна упаковка)",
+		},
+		"Симетикон": {
+			"капли для приема внутрь 40мг/мл": "1 (одна упаковка)",
+			"капли для приема внутрь 66.66 мг/мл": "1 (одна упаковка)",
+			"капли для приема внутрь 100мг/мл": "1 (одна упаковка)",
+			"капли для приема внутрь 300 мг/мл": "1 (одна упаковка)",
+			"капс 40 мг": "1 (одна упаковка)",
+			"капс 80 мг": "1 (одна упаковка)",
+			"капс 120 мг": "1 (одна упаковка)",
+		},
+		"Смектит диоктаэдрический (Смекта)": {
+			"суспензия 3г/15мл": "1 (одна упаковка)",
+			"пор 3г": "10 (десять)",
+		},
+
+		"Дротаверин": {
+			"таб 40мг": "20 (двадцать)",
+			"таб 80мг": "20 (двадцать)",
+		},
+	},
+	"Льготные": {
+		"Холекальциферол": {
+			"водный раствор для приема внутрь 15000МЕ/1мл 10мл": "1 (одна упаковка)",
+			"масляный раствор для приема внутрь 0.5мг/мл 10мл": "1 (одна упаковка)",
+			"масляный раствор для приема внутрь 0.425мг/мл 5мл": "1 (одна упаковка)",
+		},
+		"Железа (III) гидроксид полимальтозат": {
+			"сироп 50мг/5мл 100мл": "1 (одна упаковка)",
+			"капли для приема внутрь 50мг/мл 30мл": "1 (одна упаковка)",
+			"раствор для инъекций 100мг/2мл N10": "1 (одна упаковка)",
+			"таблетки жевательные 100мг": "30 (тридцать)",
+		},
+		"Смектит диоктаэдрический (Смекта)": {
+			"суспензия 3г/15мл": "1 (одна упаковка)",
+			"пор 3г": "10 (десять)",
+		},
+		"Симетикон": {
+			"капли для приема внутрь 40мг/мл": "1 (одна упаковка)",
+			"капли для приема внутрь 66.66 мг/мл": "1 (одна упаковка)",
+			"капли для приема внутрь 100мг/мл": "1 (одна упаковка)",
+			"капли для приема внутрь 300 мг/мл": "1 (одна упаковка)",
+			"капс 40 мг": "1 (одна упаковка)",
+			"капс 80 мг": "1 (одна упаковка)",
+			"капс 120 мг": "1 (одна упаковка)",
+		},
+	}
+}
+
+
+# print("recipe_data = {")
+# for d_cat in all_data_diagnosis.get('drugs'):
+#     print(f"\t\"{d_cat}\":", '{')
+#     for d_name in all_data_diagnosis['drugs'].get(d_cat):
+#         print(f"\t\t\"{d_name[0]}\":", '{')
+#         for i in d_name[1:]:
+#             if i in ("Дозировка", "Кратность", "Длительность", 'Способ применения'):
+#                 break
+#             elif i == 'Форма':
+#                 pass
+#             else:
+#                 print(f"\t\t\t\"{i}\": \"\",")
+#         print('\t\t},')
+#     print('\t},')
+
+
 
 render_data = dict()
 
@@ -1301,7 +1536,7 @@ patient = {
     'address': ''
 }
 
-user = {'text_size': 10,
+user = {'text_size': 12,
         'doctor_name': '',
         'manager': '',
         'ped_div': '',
@@ -4138,6 +4373,226 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     if child_marker:
         paste_diagnosis_add_but()
 
+    def open_analyzes_root():
+        if not data['examination']['analyzes'].get('is_analyzes_root_open'):
+            data['examination']['analyzes']['is_analyzes_root_open'] = True
+            analyzes_root_main.grid()
+        else:
+            data['examination']['analyzes']['is_analyzes_root_open'] = False
+            analyzes_root_main.grid_remove()
+
+    def create_analyzes_root():
+        def create_anal_doc():
+            if not data['examination']['analyzes'].get('patient_anal'):
+                messagebox.showerror('Ошибка!', "Выберите хотя бы один анализ!")
+            else:
+
+                render_data['ped_div'] = user.get('ped_div')
+                render_data['doc_name'] = user.get('doctor_name')
+                render_data['district'] = patient.get('patient_district')
+                render_data['name'] = patient.get('name')
+                render_data['birth_date'] = patient.get('birth_date')
+                render_data['address'] = patient.get('address')
+                render_data['gender'] = patient.get('gender')
+                render_data['date'] = datetime.now().strftime("%d.%m.%Y")
+                render_data['amb_cart'] = patient.get('amb_cart')
+
+                print(data['examination']['analyzes'].get('patient_anal'))
+                if 'blood-inf__ГЕПАТИТ' in data['examination']['analyzes'].get('patient_anal'):
+                    with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
+                        cur = conn.cursor()
+                        cur.execute(f"SELECT Прививки FROM patient_data WHERE amb_cart LIKE '{patient.get('amb_cart')}'")
+                        vaccination = cur.fetchone()[0]
+                    if vaccination:
+                        vaccination = vaccination.split('\n')
+                        start = vaccination.index('Прививки против гепатита В')
+                        stop = vaccination.index('Прививки против кори, эпидемического паротита и краснухи')
+                        text = ''
+                        counter = 0
+                        for index in range(start + 1, stop):
+                            counter += 1
+                            if counter % 2 == 0:
+                                end = '\n'
+                            else:
+                                end = '\t\t'
+
+                            index_str = vaccination[index].split('__')
+                            text += f"V_{counter}: {index_str[1]} --- {index_str[3]} --- {index_str[6]}{end}"
+                        if not text:
+                            text = 'Нет данных о вакцинации\n'
+
+                    else:
+                        text = 'Нет данных о вакцинации\n'
+
+                    render_data['VGB_vaccination'] = text
+
+                all_links = list()
+                for anal_name in data['examination']['analyzes'].get('patient_anal'):
+                    category, anal_name = anal_name.split('__')
+
+                    doc = DocxTemplate(f".{os.sep}example{os.sep}{category}{os.sep}{anal_name}.docx")
+                    doc.render(render_data)
+                    doc.save(f".{os.sep}generated{os.sep}{anal_name}.docx")
+                    all_links.append(f".{os.sep}generated{os.sep}{anal_name}.docx")
+
+                master = Document(all_links.pop(0))
+                composer = Composer(master)
+                for link in all_links:
+                    master.add_page_break()
+                    doc_temp = Document(link)
+                    composer.append(doc_temp)
+                doc_name = f".{os.sep}generated{os.sep}Анализы.docx"
+                doc_name = save_document(doc=composer, doc_name=doc_name)
+                data['examination']['analyzes']['patient_anal'].clear()
+                for btn_name in data['examination']['analyzes'].get('anal_name_buttons'):
+                    active_btn = data['examination']['analyzes']['anal_name_buttons'].get(btn_name)
+                    active_btn['bg'] = '#cdcdcd'
+                    active_btn['text'] = f"{btn_name.split('__')[-1]}"
+
+                selected_anal.set('')
+                render_data.clear()
+                open_analyzes_root()
+
+                os.system(f"start {doc_name}")
+                data_base(command="statistic_write",
+                          insert_data="Анализы")
+
+
+        def select_anal_name():
+
+            category, anal_name = selected_button.get().split('__')
+            if category == 'add':
+                if anal_name == 'ОАК  +  ФОРМУЛА':
+                    anal_name = 'blood__ОАК + ФОРМУЛА'
+                    if anal_name not in data['examination']['analyzes'].get('patient_anal'):
+                        data['examination']['analyzes']['patient_anal'].append("blood__ОАК + ФОРМУЛА")
+                        active_btn = data['examination']['analyzes']['anal_name_buttons'].get("blood__ОАК + ФОРМУЛА")
+                        active_btn['bg'] = '#77f1ff'
+                        active_btn['text'] = f"✔{anal_name}"
+                else:
+                    for marker in anal_name.split(' + '):
+                        for btn_name in data['examination']['analyzes'].get('anal_name_buttons'):
+                            if (marker in btn_name
+                                    and 'add' not in btn_name
+                                    and btn_name not in data['examination']['analyzes'].get('patient_anal')):
+                                data['examination']['analyzes']['patient_anal'].append(btn_name)
+                                active_btn = data['examination']['analyzes']['anal_name_buttons'].get(btn_name)
+                                active_btn['bg'] = '#77f1ff'
+                                active_btn['text'] = f"✔{marker}"
+                                break
+            else:
+                btn_name = f"{category}__{anal_name}"
+                active_btn = data['examination']['analyzes']['anal_name_buttons'].get(btn_name)
+
+                if btn_name in data['examination']['analyzes'].get('patient_anal'):
+                    data['examination']['analyzes']['patient_anal'].remove(btn_name)
+                    active_btn['bg'] = '#cdcdcd'
+                    active_btn['text'] = f"{anal_name}"
+                else:
+                    data['examination']['analyzes']['patient_anal'].append(btn_name)
+                    active_btn['bg'] = '#77f1ff'
+                    active_btn['text'] = f"✔{anal_name}"
+
+
+
+            if 'blood__ОАК' in data['examination']['analyzes'].get('patient_anal') and \
+                ('blood__ОАК + ФОРМУЛА' in data['examination']['analyzes'].get('patient_anal')
+                 or 'blood__ОАК + СВЕРТЫВАЕМОСТЬ' in data['examination']['analyzes'].get('patient_anal')):
+                data['examination']['analyzes']['patient_anal'].remove("blood__ОАК")
+                data['examination']['analyzes']['anal_name_buttons'][f"blood__ОАК"]['bg'] = '#cdcdcd'
+                data['examination']['analyzes']['anal_name_buttons'][f"blood__ОАК"]['text'] = "ОАК"
+
+            lbl_text = "Анализы: "
+            for anal_name in data['examination']['analyzes'].get('patient_anal'):
+                category, anal_name = anal_name.split('__')
+                lbl_text += f"{anal_name}, "
+                if len(lbl_text.split('\n')[-1]) > 40:
+                    lbl_text += '\n'
+
+
+            lbl_text = lbl_text.strip()[:-1]
+            selected_anal.set(lbl_text)
+            lbl_text = lbl_text.replace('\n', '').lower().replace('анализы', 'Анализы')
+
+            prescription_text = txt_prescription.get(1.0, 'end').strip()
+            for string in prescription_text.split('\n'):
+                if string.startswith("Анализы:"):
+                    prescription_text = prescription_text.replace(string, lbl_text)
+                    break
+            else:
+                prescription_text = f"{lbl_text}\n{prescription_text}"
+            txt_prescription.delete(1.0, 'end')
+            txt_prescription.insert(1.0, prescription_text)
+
+        def select_anal_category():
+            if data['examination']['analyzes'].get('frame_anal_active'):
+                frame_anal_active = data['examination']['analyzes'].get('frame_anal_active')
+                frame_anal_active.pack_forget()
+            master_frame = data['examination']['analyzes']['anal_category_frames'].get(selected_button.get())
+            data['examination']['analyzes']['frame_anal_active'] = master_frame
+            master_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+        data['examination']['analyzes'] = {
+            'is_analyzes_root_open': False,
+            'frame_anal_active': None,
+            'anal_name_buttons': dict(),
+            'anal_category_frames': dict(),
+            'patient_anal': list()}
+
+        frame_main_analyzes = Frame(analyzes_root_main, bg="#36566d")
+        anal_frame_category = Frame(analyzes_root_main)
+
+        selected_anal = StringVar()
+
+        Label(frame_main_analyzes, textvariable=selected_anal,
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+        Button(frame_main_analyzes, text=f"Закрыть окно",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_analyzes_root,
+               bg='#f0fffe').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+        Button(frame_main_analyzes, text=f"Создать документ",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=create_anal_doc,
+               bg='#f0fffe').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+        Label(frame_main_analyzes, text=f"Категории анализов:\n{'_'*50}",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+
+        for category in all_blanks_anal:
+            Radiobutton(frame_main_analyzes, text=all_blanks_anal.get(category)[0],
+                        font=('Comic Sans MS', user.get('text_size')),
+                        value=category, variable=selected_button,
+                        command=select_anal_category,
+                        indicatoron=False, selectcolor='#77f1ff',
+                        bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3)
+
+            master_frame = Frame(anal_frame_category)
+            for anal_name in all_blanks_anal.get(category)[1:]:
+                btn = Radiobutton(master_frame, text=f'{anal_name}',
+                                    font=('Comic Sans MS', user.get('text_size')),
+                                    value=f"{category}__{anal_name}", variable=selected_button,
+                                    command=select_anal_name,
+                                    indicatoron=False, selectcolor='#77f1ff',
+                                    bg='#cdcdcd')
+                btn.pack(fill='both', expand=True, anchor='n')
+                data['examination']['analyzes']['anal_name_buttons'][f"{category}__{anal_name}"] = btn
+            data['examination']['analyzes']['anal_category_frames'][category] = master_frame
+
+
+
+        frame_main_analyzes.pack(fill='x', anchor='n')
+        anal_frame_category.pack(fill='both', expand=True)
+        analyzes_root_main.grid(row=0, column=3, sticky="nwse")
+        analyzes_root_main.grid_remove()
+
+    analyzes_root_main = Frame(master=root_examination, padx=3, pady=3, bg="#36566d")
+    analyzes_root_main.update_idletasks()
+    create_analyzes_root()
+
     def paste_frame_prescription():
         label_prescription = Label(master=frame_prescription_main,
                                    text=f"{all_data_diagnosis.get('prescription')[0]}",
@@ -4572,14 +5027,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             if drug_name == "Цетиризин":
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Форма'):
                     if age < 7:
-                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = 'кап. 10мг/мл'
+                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = 'кап. 10мг/мл-20мл'
                     else:
                         data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = 'таб. 10мг'
 
                 if not (data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка') and
                         data['examination']['selected_drugs'][drug_category][drug_name].get('Кратность')):
                     data['examination']['selected_drugs'][drug_category][drug_name]['Кратность'] = '1 р/сут'
-                    if data['examination']['selected_drugs'][drug_category][drug_name].get('Форма') == 'кап. 10мг/мл':
+                    if data['examination']['selected_drugs'][drug_category][drug_name].get('Форма') == 'кап. 10мг/мл-20мл':
                         if age < 3:
                             data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = '5 капель'
                         elif age < 12:
@@ -4777,16 +5232,16 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                         if "суспензия" in drug__form or (drug__form == 'автоматически' and age <= 14):
                             if drug__form == 'автоматически':
-                                text_paracetamol += f'Cуспензия 30мг/мл - ' \
-                                                    f'{round(weight * drug__dosa / 30, 1)} мл; '
+                                text_paracetamol += f'Cуспензия 30мг/мл -- ' \
+                                                    f'по {round(weight * drug__dosa / 30, 1)} мл; '
 
                             else:
                                 if '30' in drug__form:
-                                    text_paracetamol += f'Cуспензия 30мг/мл - ' \
-                                                        f'{round(weight * drug__dosa / 30, 1)} мл; '
+                                    text_paracetamol += f'Cуспензия 30мг/мл -- ' \
+                                                        f'по {round(weight * drug__dosa / 30, 1)} мл; '
                                 else:
-                                    text_paracetamol += f'Cуспензия 120 мг/5мл - ' \
-                                                        f'{round(weight * drug__dosa / 24, 1)} мл; '
+                                    text_paracetamol += f'Cуспензия 120 мг/5мл -- ' \
+                                                        f'по {round(weight * drug__dosa / 24, 1)} мл; '
 
                         if "таб." in drug__form or age > 5 and drug__form == 'автоматически':
                             if '200' in drug__form or (drug__form == 'автоматически' and weight < 35):
@@ -4794,20 +5249,20 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 if paracetamol_max < 100:
                                     text_paracetamol += ""
                                 elif paracetamol_max < 200:
-                                    text_paracetamol += "Таб. 200 мг: 1/2 т.; "
+                                    text_paracetamol += "Таб. 200 мг -- по 1/2 таб; "
                                 elif paracetamol_max < 300:
-                                    text_paracetamol += "Таб. 200 мг: 1 т.; "
+                                    text_paracetamol += "Таб. 200 мг -- по 1 таб; "
                                 elif paracetamol_max < 400:
-                                    text_paracetamol += "Таб. 200 мг: 1.5 т.; "
+                                    text_paracetamol += "Таб. 200 мг -- по 1.5 таб; "
                                 elif 400 <= paracetamol_max:
-                                    text_paracetamol += "Таб. 200 мг: 2 т.; "
+                                    text_paracetamol += "Таб. 200 мг -- по 2 таб; "
 
                             if '500' in drug__form or drug__form == 'автоматически':
 
                                 if paracetamol_min < 250 <= paracetamol_max:
-                                    text_paracetamol += "Таб. 500 мг: 1/2 т.; "
+                                    text_paracetamol += "Таб. 500 мг -- по 1/2 т.; "
                                 elif 500 <= paracetamol_max:
-                                    text_paracetamol += "Таб. 500 мг: 1 т.; "
+                                    text_paracetamol += "Таб. 500 мг -- по 1 т.; "
                         edited_string = text_paracetamol.strip() + ' '
 
                     elif drug_name == 'Ибупрофен':
@@ -4821,33 +5276,33 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             if ibuprofen_min < 60 <= ibuprofen_max:
                                 text_ibuprofen += f'Супп. 60 мг.; '
                         if drug__form == 'суспензия 100 мг/5мл' or (drug__form == 'автоматически' and age < 3):
-                            text_ibuprofen += f"суспензия 100мг/5мл - {round(drug__dosa * weight / 20, 1)}мл; "
+                            text_ibuprofen += f"суспензия 100мг/5мл -- по {round(drug__dosa * weight / 20, 1)}мл; "
 
                         if drug__form == 'суспензия 200 мг/5мл' or (drug__form == 'автоматически' and age >= 3):
-                            text_ibuprofen += f"Cуспензия 200мг/5мл - {round(drug__dosa * weight / 40, 1)}мл; "
+                            text_ibuprofen += f"Cуспензия 200мг/5мл -- по {round(drug__dosa * weight / 40, 1)}мл; "
 
                         if drug__form == 'таб. 200 мг' or (drug__form == 'автоматически' and age > 5):
                             if ibuprofen_max < 100:
                                 pass
                             elif ibuprofen_max < 200:
-                                text_ibuprofen += "Таб. 200 мг: 1/2 таб; "
+                                text_ibuprofen += "Таб. 200 мг -- по 1/2 таб; "
                             elif ibuprofen_max < 300:
-                                text_ibuprofen += "Таб. 200 мг: 1 таб; "
+                                text_ibuprofen += "Таб. 200 мг -- по 1 таб; "
                             elif ibuprofen_max < 400:
-                                text_ibuprofen += "Таб. 200 мг: 1.5 таб; "
+                                text_ibuprofen += "Таб. 200 мг -- по 1.5 таб; "
                             elif 400 <= ibuprofen_max:
-                                text_ibuprofen += "Таб. 200 мг: 2 таб; "
+                                text_ibuprofen += "Таб. 200 мг -- по 2 таб; "
 
                         if drug__form == 'таб. 400 мг':
                             if ibuprofen_max < 200:
                                 pass
                             elif ibuprofen_max < 400:
-                                text_ibuprofen += "Таб. 400 мг: 1/2 таб; "
+                                text_ibuprofen += "Таб. 400 мг -- по 1/2 таб; "
                             elif 400 == ibuprofen_max:
-                                text_ibuprofen += "Таб. 400 мг: 1 таб; "
+                                text_ibuprofen += "Таб. 400 мг -- по 1 таб; "
 
                         edited_string = text_ibuprofen.strip() + ' '
-
+                    edited_string += ' --  '
                     for marker in data['examination']['selected_drugs'][drug_category][drug_name].get(
                             'Способ применения', []):
                         edited_string += marker + ', '
@@ -4931,6 +5386,86 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     def create_drugs_root():
 
+        def create_recipe():
+            drug_category, drug_name, marker_rp = selected_button.get().split('__')
+            selected_button.set('')
+
+            print(drug_name, marker_rp)
+            prescription_text = txt_prescription.get(1.0, 'end').strip().split('\n')
+            edited_string = ''
+            for string in prescription_text:
+                if string.startswith(f"{drug_name}: "):
+                    edited_string = string
+            if not edited_string:
+                messagebox.showerror("Ошибка!", "Перед созданием рецепта выберите препарат \n"
+                                                "(форма/дозировка/способ применения)")
+            elif (drug_category == 'ОРИ'
+                  and drug_name in ('Парацетамол', 'Ибупрофен')
+                  and data['examination']['selected_drugs'][drug_category][drug_name].get("Форма", '') == 'автоматически'):
+                messagebox.showerror("Ошибка!", "Выберите определенную форму лекарства")
+
+            else:
+
+                d_t_d_n = '1 (одна упаковка)'
+                drug_name_short = edited_string.split('--')[0].strip()
+
+
+                if data['examination']['selected_drugs'][drug_category][drug_name].get("Форма", ''):
+                    form = data['examination']['selected_drugs'][drug_category][drug_name].get("Форма", '')
+                    print('form', form)
+                    if recipe_data.get(drug_category, dict()).get(drug_name, dict()).get(form):
+                        d_t_d_n = recipe_data[drug_category][drug_name].get(form)
+
+                signatura = edited_string.replace(drug_name_short, '').replace('--', '-').replace('  ', ' ')
+                signatura = signatura.replace('выписан рецепт', '').replace('выписан льготный рецепт', '').strip()
+                if signatura.startswith('-'):
+                    signatura = signatura[1:]
+                signatura = signatura.replace(' ,', '').strip()
+                if 'суппозитории' in edited_string:
+                    signatura = f"Ректально {signatura}"
+                else:
+                    signatura = f"Принимать внутрь {signatura}"
+
+                print(f"\nRp: {drug_name_short}\n"
+                      f"d.t.d.n {d_t_d_n}\n"
+                      f"S: {signatura}")
+                render_data.clear()
+
+                render_data['date'] = datetime.now().strftime("%d.%m.%Y")
+                patient_name = ''
+                for i in patient.get('name').strip().split():
+                    if not patient_name:
+                        patient_name += f"{i} "
+                    else:
+                        patient_name += f"{i[0]}."
+                render_data['name_short'] = patient_name
+                render_data['birth_date'] = patient.get('birth_date')
+                render_data['doc_name'] = user.get('doctor_name')
+                render_data['rp'] = f"{drug_name_short}\nD.t.d.n {d_t_d_n}\nS.: {signatura}"
+                render_data['address'] = patient.get('address')
+                render_data['drug_name'] = drug_name_short
+
+                age_txt = ""
+                if data['examination']['age_month'].get('year') in (2, 3, 4):
+                    age_txt += f" {data['examination']['age_month'].get('year')} года"
+                elif data['examination']['age_month'].get('year') == 1:
+                    age_txt += f" {data['examination']['age_month'].get('year')} год"
+                elif data['examination']['age_month'].get('year') > 1:
+                    age_txt += f" {data['examination']['age_month'].get('year')} лет"
+
+                age_txt += f" {data['examination']['age_month'].get('month')} мес."
+                render_data['age'] = drug_name_short
+
+                doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}рецепт_{marker_rp}.docx")
+                doc.render(render_data)
+                doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_рецепт.docx"
+                doc_name = save_document(doc=doc, doc_name=doc_name)
+                os.system(f"start {doc_name}")
+
+                render_data.clear()
+                data_base(command="statistic_write",
+                          insert_data="Рецепт")
+
         def select_drugs_category():
             for drug_category in data['examination'].get("all_drug_frame"):
                 if '__' not in drug_category:
@@ -4963,7 +5498,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     edit_frame.rowconfigure(index='all', minsize=20)
 
                     edit_frame.pack(fill='both', expand=True)
-
 
         def create_scroller_frame(master_frame, func):
             def resize(event):
@@ -5077,6 +5611,26 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             data['examination']['all_drug_buttons'][f"{drug_category}__{drug_name}__{mark_flag}__" \
                                                                     f"{mark}"] = btn
 
+                    Label(drug_frame_add, text="Рецепты:",
+                          font=('Comic Sans MS', user.get('text_size')),
+                          bg="#36566d", fg='white').pack(fill='both', expand=True)
+
+                    Radiobutton(drug_frame_add, text=f'Выписать простой рецепт',
+                                font=('Comic Sans MS', user.get('text_size')),
+                                value=f"{drug_category}__{drug_name}__простой_а6",
+                                variable=selected_button,
+                                command=create_recipe,
+                                indicatoron=False, selectcolor='#77f1ff',
+                                bg='#cdcdcd').pack(fill='both', expand=True)
+
+                    Radiobutton(drug_frame_add, text=f'Выписать льготный рецепт',
+                                font=('Comic Sans MS', user.get('text_size')),
+                                value=f"{drug_category}__{drug_name}__льготный_а6",
+                                variable=selected_button,
+                                command=create_recipe,
+                                indicatoron=False, selectcolor='#77f1ff',
+                                bg='#cdcdcd').pack(fill='both', expand=True)
+
                     data['examination']['all_drug_frame'][f"{drug_category}__{drug_name}"] = [drug_frame_add, False]
 
                     drug_frame_add.columnconfigure(index='all', minsize=40, weight=1)
@@ -5137,9 +5691,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     drugs_root_main = Frame(master=root_examination, padx=3, pady=3)
     drugs_root_main.update_idletasks()
     create_drugs_root()
-
-
-
 
 
 
@@ -5207,6 +5758,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             frame_loc.columnconfigure(index='all', minsize=40, weight=1)
             frame_loc.rowconfigure(index='all', minsize=20)
             frame_loc.pack(fill='both', expand=True)
+
+        Button(frame_prescription_buttons, text=f"Анализы",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_analyzes_root,
+               bg='#f0fffe').pack(fill='both', expand=True)
 
         Button(frame_prescription_buttons, text=f"Препараты",
                font=('Comic Sans MS', user.get('text_size')),
@@ -6612,14 +7168,16 @@ def get_age_d_m_y(birth_date):
         age = 0
     if age == -1:
         age = 11
-
     patient_age["month"] = age
 
     if today.day >= birthday.day:
         age = today.day - birthday.day
     else:
         new = datetime(today.year, today.month, 1) - timedelta(days=1)
+        if birthday.day > new.day:
+            birthday = new
         age = (today - datetime(new.year, new.month, birthday.day)).days
+
     patient_age["day"] = age
     return patient_age
 
@@ -7707,6 +8265,9 @@ def certificate__editing_certificate():
                         if ex_marker == 'diet':
                             messagebox.showerror('Ошибка!', 'Не указана диета!')
                         if ex_marker == 'desk':
+                            if (type_certificate == 'Оформление в ДДУ / СШ / ВУЗ'
+                                and render_data.get('type', '') == 'Оформление в ВУЗ'):
+                                continue
                             messagebox.showerror('Ошибка!', 'Не указана рассадка!')
                         raise ValueError
 
@@ -8460,17 +9021,25 @@ def analyzes__ask_analyzes():
                     active_btn['bg'] = '#cdcdcd'
 
     def select_category_analyzes():
+
         for analyzes_lbl in analyzes_category_vars:
             if analyzes_category_vars.get(analyzes_lbl).get() == 1:
-                for button in analyzes_lbl.split(' + '):
-                    active_btn = analyzes_buttons.get(button)
-                    active_btn['text'] = f"✔{button}"
+                if analyzes_lbl == 'ОАК  +  ФОРМУЛА':
+                    active_btn = analyzes_buttons.get("ОАК + ФОРМУЛА")
+                    active_btn['text'] = f"✔{analyzes_lbl}"
                     active_btn['bg'] = '#2efefa'
+                    analyzes_vars['blood']['ОАК + ФОРМУЛА'].set(1)
 
-                    for category_b in all_blanks_anal:
-                        if button in all_blanks_anal.get(category_b):
-                            active_btn = analyzes_vars[category_b].get(button)
-                            active_btn.set(1)
+                else:
+                    for button in analyzes_lbl.split(' + '):
+                        active_btn = analyzes_buttons.get(button)
+                        active_btn['text'] = f"✔{button}"
+                        active_btn['bg'] = '#2efefa'
+
+                        for category_b in all_blanks_anal:
+                            if button in all_blanks_anal.get(category_b):
+                                active_btn = analyzes_vars[category_b].get(button)
+                                active_btn.set(1)
 
     analyzes_vars = dict()
     analyzes_buttons = dict()
