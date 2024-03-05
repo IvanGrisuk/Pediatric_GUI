@@ -1367,12 +1367,12 @@ recipe_data = {
         },
 
 
-         "Оксиметазолин": {
+        "Оксиметазолин - капли в нос": {
 			"0.01%": "1 (одна упаковка)",
 			"0.025%": "1 (одна упаковка)",
 			"0.05%": "1 (одна упаковка)",
 		},
-		"Ксилометазолин": {
+		"Ксилометазолин - капли в нос": {
 			"0.05%": "1 (одна упаковка)",
 			"0.1%": "1 (одна упаковка)",
 		},
@@ -4877,7 +4877,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         data['examination']['selected_drugs'][drug_category][drug_name]['Способ применения'] = \
                             ['принимать при температуре 38.5 и выше', 'с интервалом не меньше 6 часов']
 
-            elif drug_name == "Оксиметазолин":
+            elif drug_name == "Оксиметазолин - капли в нос":
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Форма'):
                     if age < 1:
                         data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = '0.01%'
@@ -4893,7 +4893,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['selected_drugs'][drug_category][drug_name]['Способ применения'] = \
                         ['при заложенности носа']
 
-            elif drug_name == "Ксилометазолин":
+            elif drug_name == "Ксилометазолин - капли в нос":
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Форма'):
                     if age < 13:
                         data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = '0.05%'
@@ -5371,9 +5371,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 signatura = signatura.replace(' ,', '').strip()
                 if 'суппозитории' in edited_string:
                     signatura = f"Ректально {signatura}"
-                elif (drug_category == 'Антибиотики'
-                      or drug_category != 'Антибиотики' or
-                    drug_name in ('Парацетамол', 'Ибупрофен')):
+                elif (drug_category != 'Бронхолитики'
+                        and drug_category != 'Глазные капли'
+                        and 'капли' not in drug_name
+                        and 'спрей' not in drug_name):
                     signatura = f"Принимать внутрь {signatura}"
 
                 render_data.clear()
