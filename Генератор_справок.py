@@ -5454,7 +5454,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     age_txt += f" {data['examination']['age_month'].get('year')} лет"
 
                 age_txt += f" {data['examination']['age_month'].get('month')} мес."
-                render_data['age'] = drug_name_short
+                render_data['age'] = age_txt
 
                 doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}рецепт_{marker_rp}.docx")
                 doc.render(render_data)
