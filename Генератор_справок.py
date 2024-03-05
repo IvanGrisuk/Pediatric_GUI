@@ -1017,14 +1017,14 @@ all_data_diagnosis = {
              "принимать при болевом синдроме",
              "с интервалом не меньше 6 часов"),
 
-            ("Оксиметазолин",
+            ("Оксиметазолин - капли в нос",
              "Форма", "0.01%", "0.025%", "0.05%",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
              "Длительность", "3 дня", "не дольше 5 дней",
              "Способ применения", "при заложенности носа",
              "закапывать по 1-2 капли в каждый носовой ход после туалета физраствором", "выписан льготный рецепт", "имеется дома"),
 
-            ("Ксилометазолин",
+            ("Ксилометазолин - капли в нос",
              "Форма", "0.05%", "0.1%",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
              "Длительность", "3 дня", "не дольше 5 дней",
@@ -1284,12 +1284,12 @@ all_data_diagnosis = {
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут", "4 р/сут",
              "Способ применения", "выписан льготный рецепт", "имеется дома"),
 
-            ("Симетикон",
-             "Форма", "капли для приема внутрь 40мг/мл", "капли для приема внутрь 66.66 мг/мл", "капли для приема внутрь 100мг/мл", "капли для приема внутрь 300 мг/мл", "капс 40 мг", "капс 80 мг", "капс 120 мг",
-             "Дозировка", "4 капли", "6 капель", "8 капель", "14 капель", "16 капель", "25 капель", "50 капель",
-                            "1 капс", "2 капс",
+            ("Бифидумбактерин",
+             "Форма", "порошок для приг. раствора внутр. 5доз N10",
+             "Дозировка", "1 доза (1/5 флакона)", "2 дозы (2/5 флакона)", "3 дозы (3/5 флакона)",
+                "5 доз (1 флакон)", "10 доз (2 флакона)",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут", "4 р/сут", "после каждого приема пищи",
-             "Способ применения", "выписан льготный рецепт", "имеется дома"
+             "Способ применения", "содержимое флакона развести в теплой воде", "выписан льготный рецепт", "имеется дома"
              )
         )
 
@@ -4909,7 +4909,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['selected_drugs'][drug_category][drug_name]['Способ применения'] = \
                         ['при заложенности носа']
 
-
             elif drug_name == "Феназон+Лидокаин (отисфен) - капли ушные":
 
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка'):
@@ -4961,66 +4960,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Длительность'):
                     data['examination']['selected_drugs'][drug_category][drug_name]['Длительность'] = '5 дней'
 
-
-            elif drug_name == "Оксиметазолин":
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Форма'):
-                    if age < 1:
-                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = '0.01%'
-                    else:
-                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = '0.025%'
-
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Кратность'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Кратность'] = '2 р/сут'
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Длительность'):
-                    data['examination']['selected_drugs'][drug_category][drug_name][
-                        'Длительность'] = 'не дольше 5 дней'
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Способ применения'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Способ применения'] = \
-                        ['при заложенности носа']
-
-            elif drug_name == "Ксилометазолин":
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Форма'):
-                    if age < 13:
-                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = '0.05%'
-                    else:
-                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = '0.1%'
-
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Кратность'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Кратность'] = '3 р/сут'
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Длительность'):
-                    data['examination']['selected_drugs'][drug_category][drug_name][
-                        'Длительность'] = 'не дольше 5 дней'
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Способ применения'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Способ применения'] = \
-                        ['при заложенности носа']
-
-            elif drug_name == "Монтелукаст":
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Форма'):
-                    if age < 7:
-                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = 'таб. 4мг'
-                    elif age < 17:
-                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = 'таб. 5мг'
-                    else:
-                        data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = 'таб. 10мг'
-
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = '1 таб'
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Кратность'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Кратность'] = '1 р/сут на ночь'
-
-            elif drug_name == "Феназон+Лидокаин (отисфен) - капли ушные":
-
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = 'по 1-2 капли'
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Кратность'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Кратность'] = '3 р/сут'
-
-            elif drug_name == "Рифамицин (отофа) - капли ушные":
-
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = 'по 1-2 капли'
-                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Кратность'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Кратность'] = '3 р/сут'
 
         elif drug_category == 'Антигистаминные':
 
@@ -5112,6 +5051,15 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = 'по 1 капле'
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Кратность'):
                     data['examination']['selected_drugs'][drug_category][drug_name]['Кратность'] = '1 р/сут'
+
+            elif drug_name == "Бифидумбактерин":
+                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Форма'):
+                    data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = \
+                        'порошок для приг. раствора внутр. 5доз N10'
+                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка'):
+                    data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = '5 доз (1 флакон)'
+                if not data['examination']['selected_drugs'][drug_category][drug_name].get('Кратность'):
+                    data['examination']['selected_drugs'][drug_category][drug_name]['Кратность'] = '3 р/сут'
 
 
 
@@ -5423,12 +5371,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 signatura = signatura.replace(' ,', '').strip()
                 if 'суппозитории' in edited_string:
                     signatura = f"Ректально {signatura}"
-                else:
+                elif (drug_category == 'Антибиотики'
+                      or drug_category != 'Антибиотики' or
+                    drug_name in ('Парацетамол', 'Ибупрофен')):
                     signatura = f"Принимать внутрь {signatura}"
 
-                print(f"\nRp: {drug_name_short}\n"
-                      f"d.t.d.n {d_t_d_n}\n"
-                      f"S: {signatura}")
                 render_data.clear()
 
                 render_data['date'] = datetime.now().strftime("%d.%m.%Y")
