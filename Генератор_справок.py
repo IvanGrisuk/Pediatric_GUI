@@ -4618,7 +4618,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                 render_data['address_hospital'] = ' '
                 render_data['hospital'] = 'УЗ 19-я Городская детская поликлиника'
-                render_data['diagnosis'] = txt_diagnosis.get(1.0, 'end').strip()
+                render_data['diagnosis'] = txt_diagnosis.get(1.0, 'end').strip().replace('Диагноз:', "")
 
                 render_data['ped_div'] = user.get('ped_div')
                 render_data['doc_name'] = user.get('doctor_name')
