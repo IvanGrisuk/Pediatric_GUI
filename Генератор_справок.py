@@ -2080,10 +2080,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     add_info += f"{type_ln} № {txt_ln_num.get()} c {txt_ln_from.get()} по {txt_ln_until.get()}\n"
             if txt_second_examination.get():
                 add_info += f"Повторный осмотр: {txt_second_examination.get()}\n"
+                render_data['second_exam'] = f"Повторный осмотр: {txt_second_examination.get()}"
+            else:
+                render_data['second_exam'] = ''
             # add_info += f"Врач-педиатр: {user.get('doctor_name')}"
 
             render_data['doctor_name'] = user.get('doctor_name')
-            render_data['second_exam'] = f"Повторный осмотр: {txt_second_examination.get()}"
             render_data['add_info'] = add_info
 
             active_but = ""
@@ -2159,7 +2161,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                  f"{render_data.get('examination')}\n" \
                                  f"{render_data.get('diagnosis')}\n" \
                                  f"{render_data.get('prescription')}\n" \
-                                 f"{render_data.get('add_info')}\n" \
+                                 f"{render_data.get('add_info')}" \
                                  f"Врач-педиатр: {user.get('doctor_name')}"
 
             if type_ln in ('Лист ВН', 'Справка ВН'):
@@ -4689,7 +4691,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             lbl_text = lbl_text.strip()[:-1]
             selected_consult.set(lbl_text)
-
+            lbl_text = lbl_text.replace('\n', '')
             prescription_text = txt_prescription.get(1.0, 'end').strip()
             for string in prescription_text.split('\n'):
                 if string.startswith("Консультация:"):
