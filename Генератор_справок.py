@@ -2086,7 +2086,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             # add_info += f"Врач-педиатр: {user.get('doctor_name')}"
 
             render_data['doctor_name'] = user.get('doctor_name')
-            render_data['add_info'] = add_info
+            render_data['add_info'] = add_info.strip()
 
             active_but = ""
             if child_marker:
@@ -2161,7 +2161,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                  f"{render_data.get('examination')}\n" \
                                  f"{render_data.get('diagnosis')}\n" \
                                  f"{render_data.get('prescription')}\n" \
-                                 f"{render_data.get('add_info')}" \
+                                 f"{render_data.get('add_info')}\n" \
                                  f"Врач-педиатр: {user.get('doctor_name')}"
 
             if type_ln in ('Лист ВН', 'Справка ВН'):
