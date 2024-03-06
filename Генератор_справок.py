@@ -9827,32 +9827,35 @@ def paste_log_in_root(root):
             log_in_root.update()
             data_base('activate_app')
 
-        if not user.get('error_connection'):
-            edit_file = False
-            path = user['app_data'].get('path_srv_data_base')
-            for file in sorted(os.listdir(path)):
-                print(file)
-                if file.startswith('генератор_справок') and file.endswith('.zip'):
-                    print("found!", file)
+        # if not user.get('error_connection'):
+        #     edit_file = False
+        #     path = user['app_data'].get('path_srv_data_base')
+        #     for file in sorted(os.listdir(path)):
+        #         print(file)
+        #         if file.startswith('генератор_справок') and file.endswith('.zip'):
+        #             print("found!", file)
+        #
+        #             if not program_version in file:
+        #                 print("found_edit!", file)
+        #                 edit_file = True
+        #     if edit_file:
+        #         result = messagebox.askyesno(title='Обновление',
+        #                                      message=f"Доступно обновление\n{edit_file}\nУстановить?")
+        #         print(result)
+        #         if result:
+        #             os.system(f"start ..{os.sep}update_programm{os.sep}update_programm.exe")
+        #             root.destroy()
+        #             raise Exception
+        #         else:
+        #             paste_frame_main(root)
+        #
+        #     else:
+        #         paste_frame_main(root)
+        # else:
+        #     time.sleep(1)
+        #     paste_frame_main(root)
+        paste_frame_main(root)
 
-                    if not program_version in file:
-                        print("found_edit!", file)
-                        edit_file = True
-            if edit_file:
-                result = messagebox.askyesno(title='Обновление',
-                                             message=f"Доступно обновление\n{edit_file}\nУстановить?")
-                print(result)
-                if result:
-                    os.system(f"start ..{os.sep}update_programm{os.sep}update_programm.exe")
-                    root.destroy()
-                else:
-                    paste_frame_main(root)
-
-            else:
-                paste_frame_main(root)
-        else:
-            time.sleep(1)
-            paste_frame_main(root)
         # log_in_root.quit()
 
     def is_valid__password(password):
