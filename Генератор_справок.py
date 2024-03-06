@@ -1504,7 +1504,7 @@ recipe_data = {
 	}
 }
 
-program_version = '2.1.4'
+program_version = '2.1.5'
 # print("recipe_data = {")
 # for d_cat in all_data_diagnosis.get('drugs'):
 #     print(f"\t\"{d_cat}\":", '{')
@@ -4609,7 +4609,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     def create_consultation_root():
         cons_doc = ("офтальмолога", "хирурга", "оториноларинголога",
                     "гастроэнтеролога", "пульмонолога", "невролога",
-                    "R-грамма ОГК", "R-грамма ППН")
+                    "R-грамма ОГК", "R-грамма ППН", "ЭКГ")
 
         def create_consult_doc():
             if not data['examination']['consultation'].get('patient_consult'):
@@ -4636,12 +4636,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 for consult_name in data['examination']['consultation'].get('patient_consult'):
                     render_data['doctor'] = consult_name
 
-                    if 'R-грамма' not in consult_name:
-                        doc_name = 'НА КОНСУЛЬТАЦИЮ'
-                    else:
-                        doc_name = 'НА РЕНТГЕНОГРАММУ'
-
-                    doc = DocxTemplate(f".{os.sep}example{os.sep}direction{os.sep}{doc_name}.docx")
+                    doc = DocxTemplate(f".{os.sep}example{os.sep}direction{os.sep}НА КОНСУЛЬТАЦИЮ.docx")
                     doc.render(render_data)
                     doc.save(f".{os.sep}generated{os.sep}напр_{consult_name}.docx")
                     all_links.append(f".{os.sep}generated{os.sep}напр_{consult_name}.docx")
