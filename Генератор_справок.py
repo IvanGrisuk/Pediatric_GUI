@@ -897,7 +897,6 @@ all_data_diagnosis = {
 
 
     "prescription": ("Назначения",
-                     ("Консультация", "офтальмолога", "хирурга", "оториноларинголога", "гастроэнтеролога", "пульмонолога"),
                      ("Рекомендации", "домашний режим", "питьевой режим", "дренажный массаж",
                       "полоскать горло", "орошать горло", "промывать нос", "ингалляции с физраствором",
                       "диета", "Пробиотик"),
@@ -2081,7 +2080,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     add_info += f"{type_ln} № {txt_ln_num.get()} c {txt_ln_from.get()} по {txt_ln_until.get()}\n"
             if txt_second_examination.get():
                 add_info += f"Повторный осмотр: {txt_second_examination.get()}\n"
-            add_info += f"Врач-педиатр: {user.get('doctor_name')}"
+            # add_info += f"Врач-педиатр: {user.get('doctor_name')}"
+
+            render_data['doctor_name'] = user.get('doctor_name')
+            render_data['second_exam'] = f"Повторный осмотр: {txt_second_examination.get()}"
             render_data['add_info'] = add_info
 
             active_but = ""
@@ -2157,7 +2159,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                  f"{render_data.get('examination')}\n" \
                                  f"{render_data.get('diagnosis')}\n" \
                                  f"{render_data.get('prescription')}\n" \
-                                 f"{render_data.get('add_info')}"
+                                 f"{render_data.get('add_info')}\n" \
+                                 f"Врач-педиатр: {user.get('doctor_name')}"
 
             if type_ln in ('Лист ВН', 'Справка ВН'):
                 num_ln = ''
@@ -4593,6 +4596,155 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     analyzes_root_main.update_idletasks()
     create_analyzes_root()
 
+    def open_consultation_root():
+        if not data['examination']['consultation'].get('is_consultation_root_open'):
+            data['examination']['consultation']['is_consultation_root_open'] = True
+            consultation_root_main.grid()
+        else:
+            data['examination']['consultation']['is_consultation_root_open'] = False
+            consultation_root_main.grid_remove()
+
+    def create_consultation_root():
+        cons_doc = ("офтальмолога", "хирурга", "оториноларинголога",
+                    "гастроэнтеролога", "пульмонолога", "невролога",
+                    "R-грамма ОГК", "R-грамма ППН")
+
+        def create_consult_doc():
+            if not data['examination']['consultation'].get('patient_consult'):
+                messagebox.showerror('Ошибка!', "Выберите хотя бы одного специалиста!")
+            else:
+
+                render_data['address_hospital'] = ' '
+                render_data['hospital'] = 'УЗ 19-я Городская детская поликлиника'
+
+                render_data['ped_div'] = user.get('ped_div')
+                render_data['doc_name'] = user.get('doctor_name')
+                render_data['district'] = patient.get('patient_district')
+                render_data['name'] = patient.get('name')
+                render_data['birth_date'] = patient.get('birth_date')
+                render_data['address'] = patient.get('address')
+                render_data['gender'] = patient.get('gender')
+                render_data['date'] = datetime.now().strftime("%d.%m.%Y")
+                render_data['amb_cart'] = patient.get('amb_cart')
+
+                print(data['examination']['consultation'].get('patient_consult'))
+
+                all_links = list()
+                for consult_name in data['examination']['consultation'].get('patient_consult'):
+                    render_data['doctor'] = consult_name
+
+                    if 'R-грамма' not in consult_name:
+                        doc_name = 'НА КОНСУЛЬТАЦИЮ'
+                    else:
+                        doc_name = 'НА РЕНТГЕНОГРАММУ'
+
+                    doc = DocxTemplate(f".{os.sep}example{os.sep}direction{os.sep}{doc_name}.docx")
+                    doc.render(render_data)
+                    doc.save(f".{os.sep}generated{os.sep}напр_{consult_name}.docx")
+                    all_links.append(f".{os.sep}generated{os.sep}напр_{consult_name}.docx")
+
+                master = Document(all_links.pop(0))
+                composer = Composer(master)
+                for link in all_links:
+                    master.add_page_break()
+                    doc_temp = Document(link)
+                    composer.append(doc_temp)
+                doc_name = f".{os.sep}generated{os.sep}Направление.docx"
+                doc_name = save_document(doc=composer, doc_name=doc_name)
+                data['examination']['consultation']['patient_consult'].clear()
+                for btn_name in data['examination']['consultation'].get('consult_name_buttons'):
+                    active_btn = data['examination']['consultation']['consult_name_buttons'].get(btn_name)
+                    active_btn['bg'] = '#cdcdcd'
+                    active_btn['text'] = f"{btn_name.split('__')[-1]}"
+
+                selected_consult.set('')
+                render_data.clear()
+                open_consultation_root()
+
+                os.system(f"start {doc_name}")
+                data_base(command="statistic_write",
+                          insert_data="Направление")
+
+        def select_consult_name():
+
+            consult_name = selected_button.get()
+            active_btn = data['examination']['consultation']['consult_name_buttons'].get(consult_name)
+
+            if consult_name in data['examination']['consultation'].get('patient_consult'):
+                data['examination']['consultation']['patient_consult'].remove(consult_name)
+                active_btn['bg'] = '#cdcdcd'
+                active_btn['text'] = f"{consult_name}"
+            else:
+                data['examination']['consultation']['patient_consult'].append(consult_name)
+                active_btn['bg'] = '#77f1ff'
+                active_btn['text'] = f"✔{consult_name}"
+
+
+            lbl_text = "Консультация: "
+            for consult_name in data['examination']['consultation'].get('patient_consult'):
+                lbl_text += f"{consult_name}, "
+                if len(lbl_text.split('\n')[-1]) > 40:
+                    lbl_text += '\n'
+
+            lbl_text = lbl_text.strip()[:-1]
+            selected_consult.set(lbl_text)
+
+            prescription_text = txt_prescription.get(1.0, 'end').strip()
+            for string in prescription_text.split('\n'):
+                if string.startswith("Консультация:"):
+                    prescription_text = prescription_text.replace(string, lbl_text)
+                    break
+            else:
+                prescription_text = f"{lbl_text}\n{prescription_text}"
+            txt_prescription.delete(1.0, 'end')
+            txt_prescription.insert(1.0, prescription_text)
+
+        data['examination']['consultation'] = {
+            'is_consultation_root_open': False,
+            'consult_name_buttons': dict(),
+            'patient_consult': list()}
+
+        frame_main_consultation = Frame(consultation_root_main, bg="#36566d")
+        consult_frame_category = Frame(consultation_root_main)
+
+        selected_consult = StringVar()
+
+        Label(frame_main_consultation, textvariable=selected_consult,
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+        Button(frame_main_consultation, text=f"Закрыть окно",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_consultation_root,
+               bg='#f0fffe').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+        Button(frame_main_consultation, text=f"Создать документ",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=create_consult_doc,
+               bg='#f0fffe').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+        Label(frame_main_consultation, text=f"Специалисты:\n{'_' * 50}",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+        for consult_name in cons_doc:
+            btn = Radiobutton(consult_frame_category, text=consult_name,
+                              font=('Comic Sans MS', user.get('text_size')),
+                              value=consult_name, variable=selected_button,
+                              command=select_consult_name,
+                              indicatoron=False, selectcolor='#77f1ff',
+                              bg='#cdcdcd')
+            btn.pack(fill='both', expand=True, anchor='n')
+            data['examination']['consultation']['consult_name_buttons'][consult_name] = btn
+
+        frame_main_consultation.pack(fill='x', anchor='n')
+        consult_frame_category.pack(fill='both', expand=True)
+        consultation_root_main.grid(row=0, column=3, sticky="nwse")
+        consultation_root_main.grid_remove()
+
+    consultation_root_main = Frame(master=root_examination, padx=3, pady=3, bg="#36566d")
+    consultation_root_main.update_idletasks()
+    create_consultation_root()
+
     def paste_frame_prescription():
         label_prescription = Label(master=frame_prescription_main,
                                    text=f"{all_data_diagnosis.get('prescription')[0]}",
@@ -5711,6 +5863,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                font=('Comic Sans MS', user.get('text_size')),
                command=open_analyzes_root,
                bg='#f0fffe').pack(fill='both', expand=True)
+
+        Button(frame_prescription_buttons, text=f"Консультация",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_consultation_root,
+               bg='#f0fffe').pack(fill='both', expand=True)
+
 
         Button(frame_prescription_buttons, text=f"Препараты",
                font=('Comic Sans MS', user.get('text_size')),
@@ -9348,7 +9506,7 @@ def direction__create_direction():
     render_data['gender'] = data.get('gender')
     render_data['date'] = datetime.now().strftime("%d.%m.%Y")
     render_data['amb_cart'] = data.get('amb_cart')
-    render_data['doctor'] = data.get('direction_doctor')
+    render_data['doctor'] = data.get('direction_doctor', "____________________________________")
     render_data['address_hospital'] = address_hospital.get(data.get('hospital', ''))
 
     hospital = data.get('hospital', '')
