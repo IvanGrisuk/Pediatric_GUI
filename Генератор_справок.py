@@ -4616,6 +4616,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                 render_data['address_hospital'] = ' '
                 render_data['hospital'] = 'УЗ 19-я Городская детская поликлиника'
+                render_data['diagnosis'] = txt_diagnosis.get(1.0, 'end').strip()
 
                 render_data['ped_div'] = user.get('ped_div')
                 render_data['doc_name'] = user.get('doctor_name')
@@ -9506,8 +9507,9 @@ def direction__create_direction():
     render_data['gender'] = data.get('gender')
     render_data['date'] = datetime.now().strftime("%d.%m.%Y")
     render_data['amb_cart'] = data.get('amb_cart')
-    render_data['doctor'] = data.get('direction_doctor', "____________________________________")
+    render_data['doctor'] = data.get('direction_doctor', "_________________________________________")
     render_data['address_hospital'] = address_hospital.get(data.get('hospital', ''))
+    render_data['diagnosis'] = "__________________________________________"
 
     hospital = data.get('hospital', '')
     if 'РНПЦ' in hospital:
