@@ -23,6 +23,7 @@ from docx import Document
 from docxtpl import DocxTemplate
 from docxcompose.composer import Composer
 from mkb_10 import mkb_10
+import subprocess, platform
 
 all_data_certificate = {
     'sport_section': ('баскетболом', 'волейболом', 'вольной борьбой', 'гандболом', 'греблей', "гимнастикой", 'каратэ',
@@ -1910,9 +1911,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 section.page_height = Cm(10.5)
                                 section.page_width = Cm(14.8)
 
-                        file_name = f'.{os.sep}generated{os.sep}осмотр.docx'
-                        file_name = save_document(doc=document, doc_name=file_name)
-                        os.system(f"start {file_name}")
+                        doc_name = f'.{os.sep}generated{os.sep}осмотр.docx'
+                        doc_name = save_document(doc=document, doc_name=file_name)
+                        run_document(doc_name)
 
             past_examination_data = dict()
             past_examination_data['buttons'] = dict()
@@ -2196,7 +2197,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр__" \
                            f"{datetime.now().strftime('%d_%m_%Y_%H_%M')}.docx"
                 doc_name = save_document(doc=doc, doc_name=doc_name)
-                os.system(f"start {doc_name}")
+                run_document(doc_name)
 
             answer, message = data_base(command='examination__save',
                                         insert_data=save_info_examination)
@@ -4458,7 +4459,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 render_data.clear()
                 open_analyzes_root()
 
-                os.system(f"start {doc_name}")
+                run_document(doc_name)
+
                 data_base(command="statistic_write",
                           insert_data="Анализы")
 
@@ -4658,8 +4660,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 selected_consult.set('')
                 render_data.clear()
                 open_consultation_root()
+                run_document(doc_name)
 
-                os.system(f"start {doc_name}")
                 data_base(command="statistic_write",
                           insert_data="Направление")
 
@@ -5558,7 +5560,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 doc.render(render_data)
                 doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_рецепт.docx"
                 doc_name = save_document(doc=doc, doc_name=doc_name)
-                os.system(f"start {doc_name}")
+                run_document(doc_name)
 
                 render_data.clear()
                 data_base(command="statistic_write",
@@ -6440,6 +6442,15 @@ def save_document(doc: Document, doc_name: str):
 
     else:
         return doc_name
+
+
+def run_document(doc_name):
+    if platform.system() == 'Darwin':  # macOS
+        subprocess.call(('open', doc_name))
+    elif platform.system() == 'Windows':  # Windows
+        subprocess.call(('start', "", doc_name), shell=True)
+    else:  # linux variants
+        subprocess.call(('xdg-open', doc_name))
 
 
 def data_base(command,
@@ -8966,15 +8977,13 @@ def certificate__create_doc():
             doc_name = save_document(doc=composer, doc_name=doc_name)
 
             # composer.save(doc_name)
-
-        os.system(f"start {doc_name}")
+        run_document(doc_name)
 
         doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
         doc.render(render_data)
         doc_name_exam = f".{os.sep}generated{os.sep}{data['patient'].get('name').split()[0]}_осмотр.docx"
         doc_name_exam = save_document(doc=doc, doc_name=doc_name_exam)
-
-        os.system(f"start {doc_name_exam}")
+        run_document(doc_name_exam)
 
     else:
 
@@ -9061,8 +9070,7 @@ def certificate__create_doc():
                     doc_name = save_document(doc=composer, doc_name=doc_name)
 
                     # composer.save(doc_name)
-
-        os.system(f"start {doc_name}")
+        run_document(doc_name)
     data_base(command="statistic_write",
               insert_data="Справка")
     data.clear()
@@ -9276,7 +9284,7 @@ def analyzes__create_doc(analyzes):
     doc_name = save_document(doc=composer, doc_name=doc_name)
 
     # composer.save(")
-    os.system(f"start {doc_name}")
+    run_document(doc_name)
     data_base(command="statistic_write",
               insert_data="Анализы")
     render_data.clear()
