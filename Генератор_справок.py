@@ -876,7 +876,7 @@ all_data_diagnosis = {
                      "проводится во все отделы", "хрипов нет", '\n',
                      "хрипы -", "сухие", "влажные", "проводные", "свистящие", '\n',
                     "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", '\n',
-                     "справа", "слева"),
+                     "справа", "слева", "с обеих сторон"),
                     ("Сердце", "тоны сердца -", "ясные", "приглушены", "ритмичные", '\n',
                      "границы в пределах возрастной нормы", "систолический шум", "на верхушке"),
                     ("Живот", "мягкий", "безболезненный", "доступен глубокой пальпации", '\n',
@@ -995,7 +995,7 @@ all_data_diagnosis = {
 
         "ОРИ": (
             ("Парацетамол",
-             "Форма", "автоматически", "суппозитории", "суспензия 30 мг/мл", "суспензия 120 мг/5мл",
+             "Форма", "автоматически", "суппозитории", "раствор 30 мг/мл", "суспензия 120 мг/5мл",
              "таб. 200 мг", "таб. 500 мг",
              "Дозировка", "10 мг/кг", "12.5 мг/кг", "15 мг/кг",
              "Способ применения", "принимать при температуре 38.5 и выше",
@@ -1663,8 +1663,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             'get_last_patient_ln': {
                 "Справка ВН": list(),
                 "Лист ВН": list()},
-            'get_last_anthro_data': dict()}
-
+            'get_last_anthro_data': dict(),
+            'LN_data': {
+                'last_patient_ln': dict()}
+        }
 
         if found_info.get('get_last_doc_LN'):
             for ln_info in found_info.get('get_last_doc_LN'):
@@ -1683,6 +1685,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 for ln_data in ("Справка ВН", "Лист ВН"):
                     if LN_type.startswith(ln_data):
                         local_info['get_last_patient_ln'][ln_data].append((date_time, LN_type))
+
 
                 if child_marker:
                     if not local_info.get('get_last_anthro_data'):
@@ -1712,6 +1715,35 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                             name, variable = marker.split('__')
                                             if name == 'txt_weight_variable':
                                                 local_info['get_last_anthro_data'][name] = variable
+
+                    if 'LN_blank_data:____' in examination_key:
+                        for string in examination_key.split('__<end!>__\n'):
+                            if string.startswith('LN_blank_data:____'):
+                                local_ln_data = {
+                                    "Дата осмотра": date_time,
+                                    "Фамилия": "",
+                                    "Имя": "",
+                                    "Отчество": "",
+                                    "Дата рождения": "",
+                                    "Место работы (службы, учебы)": "",
+                                    "Информация про ребенка (в корешок)": ""}
+                                for marker in string.replace('LN_blank_data:____', '').split("____"):
+                                    if len(marker.split('__')) == 2:
+                                        name, variable = marker.split('__')
+                                        if name in local_ln_data:
+                                            local_ln_data[name] = variable
+                                if (local_ln_data.get('Фамилия')
+                                        and local_ln_data.get('Дата рождения')):
+
+                                    key = f"{local_ln_data.get('Фамилия')} " \
+                                          f"{local_ln_data.get('Имя')} " \
+                                          f"{local_ln_data.get('Отчество')} -- " \
+                                          f"{local_ln_data.get('Дата рождения')} \n" \
+                                          f"{local_ln_data.get('Адрес места жительства')} -- " \
+                                          f"{local_ln_data.get('Место работы (службы, учебы)')} " \
+                                          f"{local_ln_data.get('Информация про ребенка (в корешок)')}"
+                                    local_info['LN_data']['last_patient_ln'][key] = local_ln_data.copy()
+
 
 
         for ln_data in ("Справка ВН", "Лист ВН"):
@@ -2144,7 +2176,15 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 active_but = f"{active_but}" \
                              f"{patient_anthro_data_but_loc}__<end!>__\n"
 
+                active_but += f"drugs:{local_drugs_text}__<end!>__\n"
             render_data['epicrisis_add_text'] = txt_epicrisis_add.get(1.0, 'end').strip()
+            if data['examination']['LN_data']['current_data'].get('save'):
+                local_ln_data = ''
+                for marker in ('Дата осмотра', 'Фамилия', 'Имя', 'Отчество',
+                               'Дата рождения', 'Место работы (службы, учебы)',
+                               'Информация про ребенка (в корешок)'):
+                    local_ln_data += f"____{marker}__{data['examination']['LN_data']['current_data'].get(marker).get().strip()}"
+                    active_but += f"LN_blank_data:{local_drugs_text}__<end!>__\n"
 
             active_but = f"{active_but}" \
                          f"complaints_text:____{render_data.get('complaints')}__<end!>__\n" \
@@ -2152,6 +2192,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                          f"diagnosis_text:____{render_data.get('diagnosis')}__<end!>__\n" \
                          f"prescription_text:____{render_data.get('prescription')}__<end!>__\n" \
                          f"epicrisis_add_text:____{render_data.get('epicrisis_add_text')}__<end!>__\n"
+
+            print(active_but)
 
             patient_anthro_data = render_data.get('patient_anthro_data', '').replace('\n', '  ')
             active_examination = f"{render_data.get('date_time')}{render_data.get('patient_info')}\n" \
@@ -5012,7 +5054,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = 'автоматически'
 
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = '10 мг/кг'
+                    data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = '12.5 мг/кг'
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Способ применения'):
                     if mark_flag != 'Способ применения':
                         data['examination']['selected_drugs'][drug_category][drug_name]['Способ применения'] = \
@@ -5023,7 +5065,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['selected_drugs'][drug_category][drug_name]['Форма'] = 'автоматически'
 
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Дозировка'):
-                    data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = '5 мг/кг'
+                    data['examination']['selected_drugs'][drug_category][drug_name]['Дозировка'] = '7.5 мг/кг'
                 if not data['examination']['selected_drugs'][drug_category][drug_name].get('Способ применения'):
                     if mark_flag != 'Способ применения':
                         data['examination']['selected_drugs'][drug_category][drug_name]['Способ применения'] = \
@@ -5330,14 +5372,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                     supp_text += str(i) + 'мг., '
                                 text_paracetamol += supp_text
 
-                        if "суспензия" in drug__form or (drug__form == 'автоматически' and age <= 14):
+                        if "суспензия" in drug__form or "раствор" in drug__form or (drug__form == 'автоматически' and age <= 14):
                             if drug__form == 'автоматически':
-                                text_paracetamol += f'Cуспензия 30мг/мл -- ' \
+                                text_paracetamol += f'Раствор 30мг/мл -- ' \
                                                     f'по {round(weight * drug__dosa / 30, 1)} мл; '
 
                             else:
                                 if '30' in drug__form:
-                                    text_paracetamol += f'Cуспензия 30мг/мл -- ' \
+                                    text_paracetamol += f'Раствор 30мг/мл -- ' \
                                                         f'по {round(weight * drug__dosa / 30, 1)} мл; '
                                 else:
                                     text_paracetamol += f'Cуспензия 120 мг/5мл -- ' \
@@ -5918,6 +5960,213 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     paste_frame_prescription()
 
+    def write_ln():
+        data['examination']['LN_data']['type_doc'] = selected_button.get()
+
+        def save():
+            def check_input():
+                error_flag = False
+
+                for marker in data['examination']['LN_data'].get('current_data'):
+                    if marker in ("Фамилия", "Имя", "Дата рождения", "Адрес места жительства",
+                                  'Место работы (службы, учебы)') and not data['examination']['LN_data']['current_data'].get(marker).get():
+                        messagebox.showerror('Ошибка', f"Ошибка!\nНе указан пункт\n'{marker}'")
+                        return False
+                    elif marker == "Дата рождения":
+                        try:
+                            if get_age(birth_date) < 0:
+                                messagebox.showerror('Ошибка', f"Дата рождения не может быть больше текущей даты!")
+                                return False
+                        except Exception:
+                            messagebox.showerror('Ошибка', f"Дата рождения должна быть в формате 'ДД.ММ.ГГ'")
+                            return False
+                return True
+
+
+            if check_input():
+                render_data.clear()
+
+                data['examination']['LN_data']['current_data']['save'] = True
+                render_data['patient_info_1'] = \
+                    data['examination']['LN_data']['current_data'].get('Информация про ребенка (в корешок)').get().strip()
+                render_data['patient_info_2'] = \
+                    data['examination']['LN_data']['current_data'].get('Особые отметки').get().strip()
+                render_data['parent_name_full'] = \
+                    f"{data['examination']['LN_data']['current_data'].get('Фамилия').get().strip()} " \
+                    f"{data['examination']['LN_data']['current_data'].get('Имя').get().strip()} " \
+                    f"{data['examination']['LN_data']['current_data'].get('Отчество').get().strip()}"
+                render_data['address'] = \
+                    data['examination']['LN_data']['current_data'].get('Адрес места жительства').get().strip()
+                render_data['work'] = \
+                    data['examination']['LN_data']['current_data'].get('Место работы (службы, учебы)').get().strip()
+                render_data['doctor_name'] = \
+                    user.get('doctor_name').split()[0]
+
+                for marker_1, marker_2 in (('date_open', 'Дата выдачи'), ('date_from', 'Дата начала ВН'),
+                                           ('birth_date_1', 'Дата рождения'), ('birth_date_2', 'Дата рождения'),
+                                           ('parent_name_1', 'Фамилия'), ('parent_name_2', 'Имя'),
+                                           ('parent_name_3', 'Отчество')):
+                    if marker_1 in ('date_open', 'date_from', 'birth_date_1', 'birth_date_2'):
+                        date = ''
+                        for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
+                            if word.isdigit():
+                                date += word
+                            else:
+                                date += '.'
+                        date = date.split('.')
+                        if len(date[-1]) == 4:
+                            year = date.pop(-1)
+                            date.append(f"{year[-2]}{year[-1]}")
+                        date = ''.join(date)
+                        text = list()
+                        for word in date:
+                            text.append(word)
+                        if marker_1 == 'birth_date_2':
+                            render_data[marker_1] = '   '.join(text)
+                        else:
+                            render_data[marker_1] = '  '.join(text)
+                    else:
+                        text = list()
+                        for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
+                            text.append(word)
+                        render_data[marker_1] = ' '.join(text)
+
+
+                doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}"
+                                   f"БЛАНК_ВН_{selected_type_ln.get().replace(' ', '_'.capitalize())}.docx")
+                doc.render(render_data)
+                doc_name = f".{os.sep}generated{os.sep}БЛАНК_ВН_{patient.get('name', '').split()[0]}.docx"
+                doc_name = save_document(doc=doc, doc_name=doc_name)
+
+                render_data.clear()
+                open_consultation_root()
+                run_document(doc_name)
+
+                data_base(command="statistic_write",
+                          insert_data="Документ ВН")
+
+        def select_last_data():
+            last_info = selected_button.get()
+            for marker in data['examination']['LN_data']['last_patient_ln'].get(last_info, []):
+                data['examination']['LN_data']['current_data'][marker].set(
+                    data['examination']['LN_data']['last_patient_ln'][last_info].get(marker))
+
+        def calendar_LN():
+            text_field = selected_button.get()
+            selected_button.set('')
+            paste_calendar(text_field=text_field)
+
+
+        if data['examination']['LN_data'].get('ln_root'):
+            data['examination']['LN_data']['ln_root'].destroy()
+
+        new_root = Toplevel()
+        data['examination']['LN_data']['ln_root'] = new_root
+        new_root.title(f"Генерация документа {selected_type_ln.get()} {data['examination']['LN_data'].get('type_doc')}")
+        new_root.bind("<Control-KeyPress>", keypress)
+
+        data['examination']['LN_data']['current_data'] = {
+            "Дата выдачи": StringVar(),
+            "Дата начала ВН": StringVar(),
+            "Дата окончания ВН": StringVar(),
+            "Фамилия": StringVar(),
+            "Имя": StringVar(),
+            "Отчество": StringVar(),
+            "Дата рождения": StringVar(),
+            "Адрес места жительства": StringVar(),
+            "Место работы (службы, учебы)": StringVar(),
+            "Информация про ребенка (в корешок)": StringVar(),
+            "Особые отметки": StringVar(),
+        }
+
+        data['examination']['LN_data']['current_data']['Дата выдачи'].set(datetime.now().strftime("%d.%m.%y"))
+        data['examination']['LN_data']['current_data']['Дата начала ВН'].set(datetime.now().strftime("%d.%m.%y"))
+        data['examination']['LN_data']['current_data']['Адрес места жительства'].set(patient.get('address', ''))
+
+        if 'по уходу' in data['examination']['LN_data'].get('type_doc'):
+            try:
+                data['examination']['LN_data']['current_data'][
+                    'Информация про ребенка (в корешок)'].set(
+                    f"{' '.join(patient.get('name', ' ').strip().split()[:-1])} {patient.get('birth_date', '')}")
+                data['examination']['LN_data']['current_data'][
+                    'Особые отметки'].set(
+                    f"{patient.get('name', ' ').strip().split()[1]} {patient.get('birth_date', '')}")
+            except IndexError:
+                data['examination']['LN_data']['current_data'][
+                    'Информация про ребенка (в корешок)'].set(
+                    f"{patient.get('name', ' ')} {patient.get('birth_date', '')}")
+                data['examination']['LN_data']['current_data'][
+                    'Особые отметки'].set(
+                    f"{patient.get('name', ' ')} {patient.get('birth_date', '')}")
+
+
+        if 'по болезни' in data['examination']['LN_data'].get('type_doc'):
+            data['examination']['LN_data']['current_data']['Дата рождения'].set(patient.get('birth_date', ''))
+            if len(patient.get('name', ' ').strip().split()) == 3:
+                data['examination']['LN_data']['current_data']['Фамилия'].set(
+                    patient.get('name').strip().split()[0])
+                data['examination']['LN_data']['current_data']['Имя'].set(
+                    patient.get('name').strip().split()[1])
+                data['examination']['LN_data']['current_data']['Отчество'].set(
+                    patient.get('name').strip().split()[2])
+
+
+        frame_title = Frame(new_root)
+        for marker in ('Дата выдачи', 'Дата начала ВН', 'Дата окончания ВН'):
+            frame = Frame(frame_title)
+            Label(frame, text=f"{marker}:",
+                  font=('Comic Sans MS', user.get('text_size')),
+                  bg="#36566d", fg='white').grid(column=0, row=0, sticky='nwse', padx=2, pady=2, ipadx=3)
+            Entry(frame, width=15, font=('Comic Sans MS', user.get('text_size')),
+                      textvariable=data['examination']['LN_data']['current_data'].get(marker)
+                      ).grid(column=1, row=0, sticky='nwse', ipadx=2, ipady=2)
+            Radiobutton(frame, text="Календарь",
+                        font=('Comic Sans MS', user.get('text_size')),
+                        value=f"ln_root_{marker}__{marker}",
+                        variable=selected_button,
+                        command=calendar_LN,
+                        indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                        ).grid(column=0, row=1, sticky='nwse', ipadx=2, ipady=2, columnspan=2)
+
+            frame.pack(fill='both', expand=True, padx=2, pady=2, side='left')
+        frame_title.pack(fill='both', expand=True, padx=2, pady=2)
+
+        row = 0
+        frame = Frame(new_root)
+        for marker in ('Фамилия', 'Имя', 'Отчество', 'Дата рождения',
+                       'Адрес места жительства', 'Место работы (службы, учебы)',
+                       'Информация про ребенка (в корешок)', 'Особые отметки'):
+            Label(frame, text=marker,
+                  font=('Comic Sans MS', user.get('text_size')),
+                  bg="#36566d", fg='white').grid(column=0, row=row, sticky='nwse', padx=2, pady=2)
+            Entry(frame, width=30, font=('Comic Sans MS', user.get('text_size')),
+                      textvariable=data['examination']['LN_data']['current_data'].get(marker)
+                      ).grid(column=1, row=row, sticky='nwse', ipadx=2, ipady=2)
+            row += 1
+        frame.pack(fill='both', expand=True, padx=2, pady=2)
+        frame.columnconfigure(index='all', minsize=40, weight=1)
+
+        Button(new_root, text='Создать документ', command=save,
+               font=('Comic Sans MS', user.get('text_size'))
+               ).pack(fill='both', expand=True, padx=2, pady=2)
+
+        if data['examination']['LN_data'].get('last_patient_ln'):
+            frame = Frame(new_root)
+            Label(frame, text="Прошлые данные",
+                  font=('Comic Sans MS', user.get('text_size')),
+                  bg="#36566d", fg='white').pack(fill='both', expand=True, padx=2, pady=2)
+
+            for key in data['examination']['LN_data'].get('last_patient_ln'):
+                Radiobutton(frame, text=key,
+                            font=('Comic Sans MS', user.get('text_size')),
+                            value=f"{key}",
+                            variable=selected_button,
+                            command=select_last_data,
+                            indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                            ).grid(column=0, row=1, sticky='nwse', ipadx=2, ipady=2, columnspan=2)
+
+        new_root.mainloop()
+
     def paste_frame_ln():
         def calendar_ln_from():
             paste_calendar(text_field='ln_from__Больничный с ...')
@@ -5993,11 +6242,30 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         Button(frame_ln_add, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
                command=calendar_ln_until).grid(row=1, column=5, sticky='ew')
 
+        Radiobutton(frame_ln_add, text="Создать документ по уходу",
+                    font=('Comic Sans MS', user.get('text_size')),
+                    value=f"по уходу",
+                    variable=selected_button,
+                    command=write_ln,
+                    indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                    ).grid(column=0, row=2, sticky='nwse', ipadx=2, ipady=2, columnspan=2)
+
+        Radiobutton(frame_ln_add, text="Создать документ по болезни",
+                    font=('Comic Sans MS', user.get('text_size')),
+                    value=f"по болезни",
+                    variable=selected_button,
+                    command=write_ln,
+                    indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                    ).grid(column=2, row=2, sticky='nwse', ipadx=2, ipady=2, columnspan=4)
+
+
+
         Label(master=frame_second_examination, text="Повторный осмотр",
               font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=1, column=0, sticky='ew')
         txt_second_examination.grid(row=1, column=1, sticky='ew', columnspan=2)
         Button(frame_second_examination, text='Календарь', font=('Comic Sans MS', user.get('text_size')),
                command=calendar_second_examination).grid(row=1, column=3, sticky='ew')
+
 
         frame_ln.columnconfigure(index='all', minsize=40, weight=1)
         frame_ln.rowconfigure(index='all', minsize=20)
@@ -6214,8 +6482,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     def paste_calendar(text_field):
         command, marker = text_field.split('__')
+        if data['examination'].get('calendar_root'):
+            data['examination']['calendar_root'].destroy()
 
         calendar_root = Toplevel()
+        data['examination']['calendar_root'] = calendar_root
         calendar_root.title(f'Календарь {marker}')
         calendar_root.config(bg='white')
 
@@ -6248,20 +6519,25 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     i = f"0{i}"
                 edit_day.append(i)
             answer = '.'.join(edit_day)
-            if command == 'ln_from':
+            if command.startswith('ln_root_'):
+                data['examination']['LN_data']['current_data'][command.split('_')[-1]].set(answer)
+
+            elif command == 'ln_from':
                 txt_ln_from.delete(0, 'end')
                 txt_ln_from.insert(0, answer)
 
-            if command == 'ln_until':
+            elif command == 'ln_until':
                 txt_ln_until.delete(0, 'end')
                 txt_ln_until.insert(0, answer)
 
                 txt_second_examination.delete(0, 'end')
                 txt_second_examination.insert(0, answer)
 
-            if command == 'second_examination':
+            elif command == 'second_examination':
                 txt_second_examination.delete(0, 'end')
                 txt_second_examination.insert(0, answer)
+
+
 
             calendar_root.destroy()
 
