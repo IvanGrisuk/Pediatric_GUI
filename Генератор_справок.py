@@ -6092,7 +6092,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         else:
             data['examination']['LN_data']['current_data']['Дата начала ВН'].set(datetime.now().strftime("%d.%m.%y"))
         if txt_ln_until.get().strip():
-            data['examination']['LN_data']['current_data']['Дата начала ВН'].set(txt_ln_until.get().strip())
+            data['examination']['LN_data']['current_data']['Дата окончания ВН'].set(txt_ln_until.get().strip())
         data['examination']['LN_data']['current_data']['Адрес места жительства'].set(patient.get('address', ''))
 
         if 'по уходу' in data['examination']['LN_data'].get('type_doc'):
