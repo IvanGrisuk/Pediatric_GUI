@@ -5981,7 +5981,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         return False
                     elif marker == "Дата рождения":
                         try:
-                            if get_age(birth_date) < 0:
+                            if get_age(data['examination']['LN_data']['current_data'].get(marker).get()) < 0:
                                 messagebox.showerror('Ошибка', f"Дата рождения не может быть больше текущей даты!")
                                 return False
                         except Exception:
@@ -6009,7 +6009,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 render_data['doctor_name'] = \
                     user.get('doctor_name').split()[0]
 
-                for marker_1, marker_2 in (('date_open', 'Дата выдачи'), ('date_from', 'Дата начала ВН'),
+                for marker_1, marker_2 in (('date_open', 'Дата выдачи'), ('date_from', 'Дата начала ВН'), ('date_until', 'Дата окончания ВН'),
                                            ('birth_date_1', 'Дата рождения'), ('birth_date_2', 'Дата рождения'),
                                            ('parent_name_1', 'Фамилия'), ('parent_name_2', 'Имя'),
                                            ('parent_name_3', 'Отчество')):
@@ -6087,7 +6087,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         }
 
         data['examination']['LN_data']['current_data']['Дата выдачи'].set(datetime.now().strftime("%d.%m.%y"))
-        data['examination']['LN_data']['current_data']['Дата начала ВН'].set(datetime.now().strftime("%d.%m.%y"))
+        if txt_ln_from.get().strip():
+            data['examination']['LN_data']['current_data']['Дата начала ВН'].set(txt_ln_from.get().strip())
+        else:
+            data['examination']['LN_data']['current_data']['Дата начала ВН'].set(datetime.now().strftime("%d.%m.%y"))
+        if txt_ln_until.get().strip():
+            data['examination']['LN_data']['current_data']['Дата начала ВН'].set(txt_ln_until.get().strip())
         data['examination']['LN_data']['current_data']['Адрес места жительства'].set(patient.get('address', ''))
 
         if 'по уходу' in data['examination']['LN_data'].get('type_doc'):
