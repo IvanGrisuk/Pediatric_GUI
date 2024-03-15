@@ -6009,11 +6009,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 render_data['doctor_name'] = \
                     user.get('doctor_name').split()[0]
 
-                for marker_1, marker_2 in (('date_open', 'Дата выдачи'), ('date_from', 'Дата начала ВН'), ('date_until', 'Дата окончания ВН'),
-                                           ('birth_date_1', 'Дата рождения'), ('birth_date_2', 'Дата рождения'),
+                for marker_1, marker_2 in (('d_open', 'Дата выдачи'), ('d_from', 'Дата начала ВН'),
+                                           ('d_until', 'Дата окончания ВН'),
+                                           ('b_d_1', 'Дата рождения'), ('b_d_2', 'Дата рождения'),
                                            ('parent_name_1', 'Фамилия'), ('parent_name_2', 'Имя'),
                                            ('parent_name_3', 'Отчество')):
-                    if marker_1 in ('date_open', 'date_from', 'date_until', 'birth_date_1', 'birth_date_2'):
+                    if marker_1 in ('d_open', 'd_from', 'd_until', 'b_d_1', 'b_d_2'):
                         date = ''
                         for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
                             if word.isdigit():
@@ -6028,7 +6029,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         text = list()
                         for word in date:
                             text.append(word)
-                        if marker_1 == 'birth_date_2':
+                        if marker_1 == 'b_d_2':
                             render_data[marker_1] = '   '.join(text)
                         else:
                             render_data[marker_1] = '  '.join(text)
