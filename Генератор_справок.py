@@ -1512,7 +1512,7 @@ recipe_data = {
 	}
 }
 
-program_version = '2.1.5'
+program_version = '2.1.6'
 # print("recipe_data = {")
 # for d_cat in all_data_diagnosis.get('drugs'):
 #     print(f"\t\"{d_cat}\":", '{')
@@ -6013,7 +6013,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                            ('birth_date_1', 'Дата рождения'), ('birth_date_2', 'Дата рождения'),
                                            ('parent_name_1', 'Фамилия'), ('parent_name_2', 'Имя'),
                                            ('parent_name_3', 'Отчество')):
-                    if marker_1 in ('date_open', 'date_from', 'birth_date_1', 'birth_date_2'):
+                    if marker_1 in ('date_open', 'date_from', 'date_until', 'birth_date_1', 'birth_date_2'):
                         date = ''
                         for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
                             if word.isdigit():
