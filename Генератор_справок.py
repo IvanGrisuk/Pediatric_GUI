@@ -1512,6 +1512,157 @@ recipe_data = {
 	}
 }
 
+anthropometry = {
+    "до года": {
+        'мужской': {
+            'weight': {
+                0: [2700, 2900, 3100, 3400, 3700, 3900, 4200],
+                1: [3300, 3600, 4000, 4300, 4700, 5100, 5400],
+                2: [3900, 4200, 4600, 5100, 5600, 6000, 6400],
+                3: [4500, 4900, 5300, 5800, 6400, 7000, 7300],
+                4: [5100, 5500, 6000, 6500, 7200, 7600, 8100],
+                5: [5600, 6100, 6500, 7100, 7800, 8300, 8800],
+                6: [6100, 6600, 7100, 7600, 8400, 9000, 9400],
+                7: [6600, 7100, 7600, 8200, 8900, 9500, 9900],
+                8: [7100, 7500, 8000, 8600, 9400, 10000, 10500],
+                9: [7500, 7900, 8400, 9100, 9800, 10500, 11000],
+                10: [7900, 8300, 8800, 9500, 10300, 10900, 11400],
+                11: [8200, 8600, 9100, 9800, 10600, 11200, 11800],
+                12: [8500, 8900, 9400, 10000, 10900, 11600, 12100]},
+            'height': {
+                0: [46.5, 48.0, 49.8, 51.3, 52.3, 53.5, 55.0],
+                1: [49.5, 51.2, 52.7, 54.5, 55.6, 56.5, 57.3],
+                2: [52.6, 53.8, 55.3, 57.3, 58.2, 59.4, 60.9],
+                3: [55.3, 56.5, 58.1, 60.0, 60.9, 62.0, 63.8],
+                4: [57.5, 58.7, 60.6, 62.0, 63.1, 64.5, 66.3],
+                5: [59.9, 61.1, 62.3, 64.3, 65.6, 67.0, 68.9],
+                6: [61.7, 63.0, 64.8, 66.1, 67.7, 69.0, 71.2],
+                7: [63.8, 65.1, 66.3, 68.0, 69.8, 71.1, 73.5],
+                8: [65.5, 66.8, 68.1, 70.0, 71.3, 73.1, 75.3],
+                9: [67.3, 68.2, 69.8, 71.3, 73.2, 75.1, 77.1],
+                10: [68.8, 69.6, 71.2, 73.0, 75.1, 76.9, 78.8],
+                11: [70.1, 71.3, 72.6, 74.3, 76.2, 78.0, 80.3],
+                12: [71.2, 72.3, 74.0, 75.5, 77.3, 79.7, 81.7],}},
+
+        'женский': {
+            'weight': {
+                0: [2600, 2800, 3000, 3300, 3700, 3900, 4100],
+                1: [3300, 3600, 3800, 4200, 4500, 4700, 5100],
+                2: [3800, 4200, 4500, 4800, 5200, 5500, 5900],
+                3: [4400, 4800, 5200, 5500, 5900, 6300, 6700],
+                4: [5000, 5400, 5800, 6200, 6600, 7000, 7500],
+                5: [5500, 5900, 6300, 6700, 7200, 7700, 8100],
+                6: [5900, 6300, 6800, 7300, 7800, 8300, 8700],
+                7: [6400, 6800, 7300, 7700, 8400, 8900, 9300],
+                8: [6700, 7200, 7600, 8200, 8800, 9300, 9700],
+                9: [7100, 7500, 8000, 8600, 9200, 9700, 10100],
+                10: [7400, 7900, 8400, 9000, 9600, 10100, 10500],
+                11: [7700, 8300, 8700, 9300, 9900, 10500, 10900],
+                12: [8000, 8500, 9000, 9600, 10200, 10800, 11300],
+            },
+            'height': {
+                0: [45.8, 47.5, 49.8, 50.7, 52.0, 53.1, 53.9],
+                1: [48.5, 50.3, 52.1, 53.5, 55.0, 56.1, 57.3],
+                2: [51.2, 53.3, 55.2, 56.8, 58.0, 59.3, 60.6],
+                3: [54.0, 56.2, 57.6, 59.3, 60.7, 61.8, 63.6],
+                4: [56.7, 58.4, 60.0, 61.2, 62.8, 64.0, 65.7],
+                5: [59.1, 60.8, 62.0, 63.8, 65.1, 66.0, 68.0],
+                6: [60.8, 62.5, 64.1, 65.5, 67.1, 68.8, 70.0],
+                7: [62.7, 64.1, 65.9, 67.5, 69.2, 70.4, 71.9],
+                8: [64.5, 66.0, 67.5, 69.0, 70.5, 72.5, 73.7],
+                9: [66.0, 67.5, 69.1, 70.2, 72.0, 74.1, 75.5],
+                10: [67.5, 69.0, 70.3, 71.9, 73.2, 75.3, 76.8],
+                11: [68.9, 70.1, 71.5, 73.0, 74.7, 76.5, 78.1],
+                12: [70.1, 71.4, 72.8, 74.1, 75.8, 78.0, 79.6]}
+        }},
+
+    "после года": {
+        'мужской': {
+            'weight': {
+                0: [8.5, 8.9, 9.4, 10, 10.9, 11.6, 12.1],
+                1: [8.5, 8.9, 9.4, 10, 10.9, 11.6, 12.1],
+                2: [10.6, 11, 11.7, 12.6, 13.5, 14.2, 15],
+                3: [12.1, 12.8, 13.8, 14.8, 16, 16.9, 17.7],
+                4: [13.4, 14.2, 15.1, 16.4, 17.8, 19.4, 20.3],
+                5: [14.8, 15.7, 16.8, 18.3, 20, 21.7, 23.4],
+                6: [16.3, 17.5, 18.8, 20.4, 22.6, 24.7, 26.7],
+                7: [18, 19.5, 21, 22.9, 25.4, 28, 30.8],
+                8: [20, 21.5, 23.3, 25.5, 28.3, 31.4, 35.5],
+                9: [21.9, 23.5, 25.6, 28.1, 31.5, 35.1, 39.1],
+                10: [23.9, 25.6, 28.2, 31.4, 35.1, 39.7, 44.7],
+                11: [26, 28, 31, 34.9, 39.9, 44.9, 51.5],
+                12: [28.2, 30.7, 34.4, 38.8, 45.1, 50.6, 58.7],
+                13: [30.9, 33.8, 38, 43.4, 50.6, 56.8, 66],
+                14: [34.3, 38, 42.8, 48.8, 56.6, 63.4, 73.2],
+                15: [38.7, 43, 48.3, 54.8, 62.8, 70, 80.1],
+                16: [44, 48.3, 54, 61, 69.6, 76.5, 84.7],
+                17: [49.3, 54.6, 59.8, 66.3, 74, 80.1, 87.8]
+            },
+            'height': {
+                0: [71.2, 72.3, 74, 75.5, 77.3, 79.7, 81.7],
+                1: [71.2, 72.3, 74, 75.5, 77.3, 79.7, 81.7],
+                2: [81.3, 83, 84.5, 86.8, 89, 90.8, 94],
+                3: [88, 90, 92.3, 96, 99.8, 102, 104.5],
+                4: [93.2, 95.5, 98.3, 102, 105.5, 108, 110.6],
+                5: [98.9, 101.5, 104.4, 108.3, 112, 114.5, 117],
+                6: [105, 107.7, 110.9, 115, 118.7, 121.1, 123.8],
+                7: [111, 113.6, 116.8, 121.2, 125, 128, 130.6],
+                8: [116.3, 119, 122.1, 126.9, 130.8, 134.5, 137],
+                9: [121.5, 124.7, 125.6, 133.4, 136.3, 140.3, 143],
+                10: [126.3, 129.4, 133, 137.8, 142, 146.7, 149.2],
+                11: [131.3, 134.5, 138.5, 143.2, 148.3, 152.9, 156.2],
+                12: [136.2, 140, 143.6, 149.2, 154.5, 159.5, 163.5],
+                13: [141.8, 145.7, 149.8, 154.8, 160.6, 166, 170.7],
+                14: [148.3, 152.3, 156.2, 161.2, 167.7, 172, 176.7],
+                15: [154.6, 158.6, 162.5, 166.8, 173.5, 177.6, 181.6],
+                16: [158.8, 163.2, 166.8, 173.3, 177.8, 182, 186.3],
+                17: [162.8, 166.6, 171.6, 177.3, 181.6, 186, 188.5]
+            }},
+
+        'женский': {
+            'weight': {
+                0: [8, 8.5, 9, 9.6, 10.2, 10.8, 11.3],
+                1: [8, 8.5, 9, 9.6, 10.2, 10.8, 11.3],
+                2: [10.2, 10.8, 11.3, 12.1, 12.8, 13.5, 14.1],
+                3: [11.7, 12.5, 13.3, 13.7, 15.5, 16.5, 17.6],
+                4: [13, 14, 14.8, 15.9, 17.6, 18.9, 20],
+                5: [14.7, 15.7, 16.6, 18.1, 19.7, 21.6, 23.2],
+                6: [16.3, 17.4, 18.7, 20.4, 22.5, 24.8, 27.1],
+                7: [17.9, 19.4, 20.6, 22.7, 25.3, 28.3, 31.6],
+                8: [20, 21.4, 23, 25.1, 28.5, 32.1, 36.3],
+                9: [21.9, 23.4, 25.5, 28.2, 32, 36.3, 41],
+                10: [22.7, 25, 27.7, 30.6, 34.9, 39.8, 47.4],
+                11: [24.9, 27.8, 30.7, 34.3, 38.9, 44.6, 55.2],
+                12: [27.8, 31.8, 36, 40, 45.4, 51.8, 63.4],
+                13: [32, 38.7, 43, 47.5, 52.5, 59, 69],
+                14: [37.6, 43.8, 48.2, 52.8, 58, 64, 72.2],
+                15: [42, 46.8, 50.6, 55.2, 60.4, 66.5, 74.9],
+                16: [45.2, 48.4, 51.8, 56.5, 61.3, 67.6, 75.6],
+                17: [46.2, 49.2, 52.9, 57.3, 61.9, 68, 76]
+            },
+            'height': {
+                0: [70.1, 71.4, 72.8, 74.1, 75.8, 78, 79.6],
+                1: [70.1, 71.4, 72.8, 74.1, 75.8, 78, 79.6],
+                2: [80.1, 81.7, 83.3, 85.2, 87.5, 90.1, 92.5],
+                3: [89, 90.8, 93, 95.5, 98.1, 100.7, 103.1],
+                4: [94, 96.1, 98.5, 101.5, 104.1, 106.9, 109.7],
+                5: [100, 102.5, 104.7, 107.5, 110.7, 113.6, 116.7],
+                6: [105.3, 108, 110.9, 114.1, 118, 120.6, 124],
+                7: [111.1, 113.6, 116.9, 120.8, 124.8, 128, 131.3],
+                8: [116.5, 119.3, 123, 127.2, 131, 134.3, 137.7],
+                9: [122, 124.8, 128.4, 132.8, 137, 140.5, 144.8],
+                10: [127, 130.5, 134.3, 139, 142.9, 146.7, 151],
+                11: [131.8, 136.2, 140.2, 145.3, 148.8, 153.2, 157.7],
+                12: [137.6, 142.2, 145.9, 150.4, 154.2, 159.2, 163.2],
+                13: [143, 148.3, 151.8, 155.5, 159.8, 163.7, 168],
+                14: [147.8, 152.6, 155.4, 159, 163.6, 167.2, 171.2],
+                15: [150.7, 154.4, 157.2, 161.2, 166, 169.2, 173.4],
+                16: [151.6, 155.2, 158, 162.5, 166.8, 170.2, 173.8],
+                17: [152.2, 155.8, 158.6, 162.8, 169.2, 170.4, 174.2]
+            }
+        }}
+}
+
 program_version = '2.1.6'
 # print("recipe_data = {")
 # for d_cat in all_data_diagnosis.get('drugs'):
@@ -1745,9 +1896,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                     key = f"{local_ln_data.get('Фамилия')} " \
                                           f"{local_ln_data.get('Имя')} " \
                                           f"{local_ln_data.get('Отчество')} -- " \
-                                          f"{local_ln_data.get('Дата рождения')} \n" \
-                                          f"{local_ln_data.get('Адрес места жительства')} -- " \
-                                          f"{local_ln_data.get('Место работы (службы, учебы)')} " \
+                                          f"{local_ln_data.get('Дата рождения')} -- " \
+                                          f"{local_ln_data.get('Место работы (службы, учебы)')} -- " \
                                           f"{local_ln_data.get('Информация про ребенка (в корешок)')}"
                                     local_info['LN_data']['last_patient_ln'][key] = local_ln_data.copy()
 
@@ -2185,13 +2335,15 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                 active_but += f"drugs:{local_drugs_text}__<end!>__\n"
             render_data['epicrisis_add_text'] = txt_epicrisis_add.get(1.0, 'end').strip()
-            if data['examination']['LN_data']['current_data'].get('save'):
+            if (type_ln in ('Лист ВН', 'Справка ВН')
+                    and data['examination']['LN_data'].get('current_data')
+                    and data['examination']['LN_data']['current_data'].get('save')):
                 local_ln_data = ''
-                for marker in ('Дата осмотра', 'Фамилия', 'Имя', 'Отчество',
+                for marker in ('Фамилия', 'Имя', 'Отчество',
                                'Дата рождения', 'Место работы (службы, учебы)',
                                'Информация про ребенка (в корешок)'):
                     local_ln_data += f"____{marker}__{data['examination']['LN_data']['current_data'].get(marker).get().strip()}"
-                    active_but += f"LN_blank_data:{local_drugs_text}__<end!>__\n"
+                active_but += f"LN_blank_data:{local_ln_data}__<end!>__\n"
 
             active_but = f"{active_but}" \
                          f"complaints_text:____{render_data.get('complaints')}__<end!>__\n" \
@@ -3011,6 +3163,135 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                     text += f"{name_}    ".replace('_', select_name)
 
+
+        if variable in ('txt_weight_variable', 'txt_height_variable'):
+
+            if not data['examination']['anthro'].get('anthro_height_weight'):
+                marker_age_y = 'после года'
+                marker_age = data['examination']['age_month'].get('year')
+                if marker_age > 17:
+                    marker_age = 17
+                if child_marker:
+                    marker_age_y = 'до года'
+                    marker_age = data['examination']['age_month'].get('month')
+                    if data['examination']['age_month'].get('year') > 0:
+                        marker_age = 12
+                print(f"marker_age_y {marker_age_y}, marker_age {marker_age}")
+
+                data['examination']['anthro']['anthro_height_weight'] = dict()
+                marker_gender = 'женский'
+                if patient.get('gender').lower().startswith('м'):
+                    marker_gender = 'мужской'
+
+                data['examination']['anthro']['anthro_height_weight']['anthro_height'] = \
+                    anthropometry[marker_age_y][marker_gender]['height'].get(marker_age)
+                data['examination']['anthro']['anthro_height_weight']['anthro_weight'] = \
+                    anthropometry[marker_age_y][marker_gender]['weight'].get(marker_age)
+
+            anthro_height = data['examination']['anthro']['anthro_height_weight'].get('anthro_height')
+            anthro_weight = data['examination']['anthro']['anthro_height_weight'].get('anthro_weight')
+
+
+            height, weight = None, None
+            if variable == 'txt_weight_variable':
+                if num:
+                    weight = num
+            elif data['examination']['anthro'].get('txt_weight_variable').get():
+                weight = float(data['examination']['anthro'].get('txt_weight_variable').get().replace(',', '.'))
+            if variable == 'txt_height_variable':
+                if num:
+                    height = num
+            elif data['examination']['anthro'].get('txt_height_variable').get():
+                height = float(data['examination']['anthro'].get('txt_height_variable').get().replace(',', '.'))
+
+            print(f"anthro_weight {anthro_weight}, \nanthro_height {anthro_height} \nweight {weight}, height {height}")
+
+            patient_physical_anthro = ""
+
+            if height and weight:
+                if anthro_height and anthro_weight:
+
+                    index_height, index_weight = 7, 7
+
+                    for a_height in anthro_height:
+                        if height < a_height:
+                            index_height = anthro_height.index(a_height)
+                            break
+
+
+                    for a_weight in anthro_weight:
+                        if weight <= a_weight:
+                            index_weight = anthro_weight.index(a_weight)
+                            break
+
+                    print(f"index_height {index_height}, index_weight {index_weight}\n")
+                    if index_height == 0:
+                        anthro = 'Низкое '
+                    elif index_height <= 2:
+                        anthro = 'Ниже среднего '
+                    elif index_height <= 4:
+                        anthro = 'Среднее '
+                    elif index_height <= 6:
+                        anthro = 'Выше среднего '
+                    elif index_height == 7:
+                        anthro = 'Высокое '
+
+                    if abs(index_weight - index_height) <= 1:
+                        anthro += 'гармоничное'
+                    elif abs(index_weight - index_height) < 3:
+                        anthro += 'дисгармоничное'
+                    else:
+                        anthro += 'резко дисгармоничное'
+                    patient_physical_anthro = f"Физическое развитие: {anthro}"
+                    text = f"{text.strip()}\nФизическое развитие: {anthro}"
+
+            if weight:
+                if anthro_weight:
+                    index_weight = 7
+                    for a_weight in anthro_weight:
+                        if weight <= a_weight:
+                            index_weight = anthro_weight.index(a_weight)
+                            break
+
+                    if index_weight == 0:
+                        anthro = f'Вес резко ниже нормы ({anthro_weight[0]} - {anthro_weight[-1]})'
+                    elif index_weight <= 2:
+                        anthro = 'Вес ниже среднего '
+                    elif index_weight <= 4:
+                        anthro = 'Вес в норме '
+                    elif index_weight <= 6:
+                        anthro = 'Вес выше среднего '
+                    elif index_weight == 7:
+                        anthro = f'Вес резко выше нормы ({anthro_weight[0]} - {anthro_weight[-1]})'
+
+                    patient_physical_anthro = f"{anthro} -- {patient_physical_anthro}"
+
+            if height:
+                if anthro_height:
+                    index_height = 7
+                    for a_height in anthro_height:
+                        if height < a_height:
+                            index_height = anthro_height.index(a_height)
+                            break
+
+                    if index_height == 0:
+                        anthro = f'Рост резко ниже нормы ({anthro_height[0]} - {anthro_height[-1]})'
+                    elif index_height <= 2:
+                        anthro = 'Рост ниже среднего '
+                    elif index_height <= 4:
+                        anthro = 'Рост в норме '
+                    elif index_height <= 6:
+                        anthro = 'Рост выше среднего '
+                    elif index_height == 7:
+                        anthro = f'Рост резко выше нормы ({anthro_height[0]} - {anthro_height[-1]})'
+
+                    patient_physical_anthro = f"{anthro} -- {patient_physical_anthro}"
+
+            if not patient_physical_anthro:
+                patient_physical_anthro = "Физическое развитие: нет данных"
+            data['examination']['anthro']['patient_physical_anthro'].set(patient_physical_anthro)
+
+
         data['examination']['anthro']['patient_anthro_data'].set(text.strip())
 
         return True
@@ -3545,14 +3826,17 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             paste_hr_br()
         data['examination']['anthro'] = dict()
         data['examination']['anthro']['patient_anthro_data'] = StringVar()
+        data['examination']['anthro']['patient_physical_anthro'] = StringVar()
 
         for mark in local_data_anthro:
             for name, variable in local_data_anthro.get(mark):
                 data['examination']['anthro'][variable] = StringVar()
 
+        counter_col = 0
         for mark in local_data_anthro:
             if mark == 'anal':
                 continue
+
             frame = Frame(frame_patient_anthro, padx=3, pady=3)
             row = 0
             for name, variable in local_data_anthro.get(mark):
@@ -3577,17 +3861,27 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['anthro'][variable].set(render_data.get('br'))
                 elif variable == 'txt_temp_variable':
                     data['examination']['anthro'][variable].set(random.choice(['36,6', '36,7', '36,5']))
-                elif mark == 'anal':
-                    data['examination']['anthro'][variable].set(f"{data['examination']['age_month'].get('month')} мес.")
 
 
                 row += 1
 
             frame.columnconfigure(index='all', minsize=40, weight=1)
             frame.rowconfigure(index='all', minsize=20)
-            frame.pack(fill='both', expand=True, side="left")
+            frame.grid(column=counter_col, row=0, sticky='nwse')
+            if child_marker and mark == 'weight':
+                frame.grid_configure(rowspan=2)
+            counter_col += 1
+            # frame.pack(fill='both', expand=True, side="left")
 
 
+        lbl = Label(master=frame_patient_anthro,
+                    textvariable=data['examination']['anthro'].get('patient_physical_anthro'),
+                    font=('Comic Sans MS', user.get('text_size')),
+                    bg='white')
+        if child_marker:
+            lbl.grid(column=1, row=1, sticky='nwse', columnspan=3)
+        else:
+            lbl.grid(column=0, row=1, sticky='nwse', columnspan=4)
 
 
         frame_patient_anthro.columnconfigure(index='all', minsize=40, weight=1)
@@ -5987,6 +6281,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         except Exception:
                             messagebox.showerror('Ошибка', f"Дата рождения должна быть в формате 'ДД.ММ.ГГ'")
                             return False
+                    elif marker in ("Дата выдачи", "Дата начала ВН", "Дата окончания ВН"):
+                        try:
+                            get_age(data['examination']['LN_data']['current_data'].get(marker).get())
+                        except Exception:
+                            messagebox.showerror('Ошибка', f"{marker} должна быть в формате 'ДД.ММ.ГГ'")
+                            return False
+
                 return True
 
 
@@ -6047,17 +6348,17 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 doc_name = save_document(doc=doc, doc_name=doc_name)
 
                 render_data.clear()
-                open_consultation_root()
                 run_document(doc_name)
-
+                new_root.destroy()
                 data_base(command="statistic_write",
                           insert_data="Документ ВН")
 
         def select_last_data():
             last_info = selected_button.get()
             for marker in data['examination']['LN_data']['last_patient_ln'].get(last_info, []):
-                data['examination']['LN_data']['current_data'][marker].set(
-                    data['examination']['LN_data']['last_patient_ln'][last_info].get(marker))
+                if data['examination']['LN_data']['current_data'].get(marker):
+                    data['examination']['LN_data']['current_data'][marker].set(
+                        data['examination']['LN_data']['last_patient_ln'][last_info].get(marker))
 
         def calendar_LN():
             text_field = selected_button.get()
@@ -6072,20 +6373,20 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         data['examination']['LN_data']['ln_root'] = new_root
         new_root.title(f"Генерация документа {selected_type_ln.get()} {data['examination']['LN_data'].get('type_doc')}")
         new_root.bind("<Control-KeyPress>", keypress)
-
-        data['examination']['LN_data']['current_data'] = {
-            "Дата выдачи": StringVar(),
-            "Дата начала ВН": StringVar(),
-            "Дата окончания ВН": StringVar(),
-            "Фамилия": StringVar(),
-            "Имя": StringVar(),
-            "Отчество": StringVar(),
-            "Дата рождения": StringVar(),
-            "Адрес места жительства": StringVar(),
-            "Место работы (службы, учебы)": StringVar(),
-            "Информация про ребенка (в корешок)": StringVar(),
-            "Особые отметки": StringVar(),
-        }
+        if not data['examination']['LN_data'].get('current_data'):
+            data['examination']['LN_data']['current_data'] = {
+                "Дата выдачи": StringVar(),
+                "Дата начала ВН": StringVar(),
+                "Дата окончания ВН": StringVar(),
+                "Фамилия": StringVar(),
+                "Имя": StringVar(),
+                "Отчество": StringVar(),
+                "Дата рождения": StringVar(),
+                "Адрес места жительства": StringVar(),
+                "Место работы (службы, учебы)": StringVar(),
+                "Информация про ребенка (в корешок)": StringVar(),
+                "Особые отметки": StringVar(),
+            }
 
         data['examination']['LN_data']['current_data']['Дата выдачи'].set(datetime.now().strftime("%d.%m.%y"))
         if txt_ln_from.get().strip():
@@ -6123,6 +6424,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 data['examination']['LN_data']['current_data']['Отчество'].set(
                     patient.get('name').strip().split()[2])
 
+            data['examination']['LN_data']['current_data']['Информация про ребенка (в корешок)'].set("")
+            data['examination']['LN_data']['current_data']['Особые отметки'].set("")
 
         frame_title = Frame(new_root)
         for marker in ('Дата выдачи', 'Дата начала ВН', 'Дата окончания ВН'):
@@ -6176,7 +6479,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             variable=selected_button,
                             command=select_last_data,
                             indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
-                            ).grid(column=0, row=1, sticky='nwse', ipadx=2, ipady=2, columnspan=2)
+                            ).pack(fill='both', expand=True, padx=2, pady=2)
+            frame.pack(fill='both', expand=True, padx=2, pady=2)
 
         new_root.mainloop()
 
@@ -8565,20 +8869,23 @@ def certificate__editing_certificate():
                                                     f"Допуск в детский коллектив с {ori_add_to_childhood.get()}"
 
             if type_certificate == 'Годовой медосмотр':
-                date = data['patient'].get('birth_date')
-                while datetime.now() > datetime.strptime(date, "%d.%m.%Y"):
-                    day, month, year = date.split('.')
-                    year = str(int(year) + 1)
-                    date = '.'.join([day, month, year])
-                if (datetime.now().month == datetime.strptime(date, '%d.%m.%Y').month or
-                    (datetime.now() + timedelta(30)).month == datetime.strptime(date, "%d.%m.%Y").month) and \
-                        datetime.now().year >= datetime.strptime(date, '%d.%m.%Y').year:
-                    day, month, year = date.split('.')
-                    year = str(int(year) + 1)
-                    date = '.'.join([day, month, year])
+                try:
+                    date = data['patient'].get('birth_date')
+                    while datetime.now() > datetime.strptime(date, "%d.%m.%Y"):
+                        day, month, year = date.split('.')
+                        year = str(int(year) + 1)
+                        date = '.'.join([day, month, year])
+                    if (datetime.now().month == datetime.strptime(date, '%d.%m.%Y').month or
+                        (datetime.now() + timedelta(30)).month == datetime.strptime(date, "%d.%m.%Y").month) and \
+                            datetime.now().year >= datetime.strptime(date, '%d.%m.%Y').year:
+                        day, month, year = date.split('.')
+                        year = str(int(year) + 1)
+                        date = '.'.join([day, month, year])
 
-                render_data['validity_period'] = (datetime.strptime(date, '%d.%m.%Y') -
-                                                  timedelta(1)).strftime('%d.%m.%Y')
+                    render_data['validity_period'] = (datetime.strptime(date, '%d.%m.%Y') -
+                                                      timedelta(1)).strftime('%d.%m.%Y')
+                except Exception:
+                    render_data['validity_period'] = '1 год'
 
             if type_certificate == 'На кружки и секции':
                 render_data['place_of_requirement'] = \
@@ -9054,84 +9361,6 @@ def certificate__create_doc():
             render_data['posture'] = '\nОсанка не нарушена.'
         else:
             render_data['posture'] = ''
-        anthropometry = {
-            'мужской': {
-                'weight': {
-                    1: [8.5, 8.9, 9.4, 10, 10.9, 11.6, 12.1, 1000],
-                    2: [10.6, 11, 11.7, 12.6, 13.5, 14.2, 15, 1000],
-                    3: [12.1, 12.8, 13.8, 14.8, 16, 16.9, 17.7, 1000],
-                    4: [13.4, 14.2, 15.1, 16.4, 17.8, 19.4, 20.3, 1000],
-                    5: [14.8, 15.7, 16.8, 18.3, 20, 21.7, 23.4, 1000],
-                    6: [16.3, 17.5, 18.8, 20.4, 22.6, 24.7, 26.7, 1000],
-                    7: [18, 19.5, 21, 22.9, 25.4, 28, 30.8, 1000],
-                    8: [20, 21.5, 23.3, 25.5, 28.3, 31.4, 35.5, 1000],
-                    9: [21.9, 23.5, 25.6, 28.1, 31.5, 35.1, 39.1, 1000],
-                    10: [23.9, 25.6, 28.2, 31.4, 35.1, 39.7, 44.7, 1000],
-                    11: [26, 28, 31, 34.9, 39.9, 44.9, 51.5, 1000],
-                    12: [28.2, 30.7, 34.4, 38.8, 45.1, 50.6, 58.7, 1000],
-                    13: [30.9, 33.8, 38, 43.4, 50.6, 56.8, 66, 1000],
-                    14: [34.3, 38, 42.8, 48.8, 56.6, 63.4, 73.2, 1000],
-                    15: [38.7, 43, 48.3, 54.8, 62.8, 70, 80.1, 1000],
-                    16: [44, 48.3, 54, 61, 69.6, 76.5, 84.7, 1000],
-                    17: [49.3, 54.6, 59.8, 66.3, 74, 80.1, 87.8, 1000]},
-                'height': {
-                    1: [71.2, 72.3, 74, 75.5, 77.3, 79.7, 81.7, 1000],
-                    2: [81.3, 83, 84.5, 86.8, 89, 90.8, 94, 1000],
-                    3: [88, 90, 92.3, 96, 99.8, 102, 104.5, 1000],
-                    4: [93.2, 95.5, 98.3, 102, 105.5, 108, 110.6, 1000],
-                    5: [98.9, 101.5, 104.4, 108.3, 112, 114.5, 117, 1000],
-                    6: [105, 107.7, 110.9, 115, 118.7, 121.1, 123.8, 1000],
-                    7: [111, 113.6, 116.8, 121.2, 125, 128, 130.6, 1000],
-                    8: [116.3, 119, 122.1, 126.9, 130.8, 134.5, 137, 1000],
-                    9: [121.5, 124.7, 125.6, 133.4, 136.3, 140.3, 143, 1000],
-                    10: [126.3, 129.4, 133, 137.8, 142, 146.7, 149.2, 1000],
-                    11: [131.3, 134.5, 138.5, 143.2, 148.3, 152.9, 156.2, 1000],
-                    12: [136.2, 140, 143.6, 149.2, 154.5, 159.5, 163.5, 1000],
-                    13: [141.8, 145.7, 149.8, 154.8, 160.6, 166, 170.7, 1000],
-                    14: [148.3, 152.3, 156.2, 161.2, 167.7, 172, 176.7, 1000],
-                    15: [154.6, 158.6, 162.5, 166.8, 173.5, 177.6, 181.6, 1000],
-                    16: [158.8, 163.2, 166.8, 173.3, 177.8, 182, 186.3, 1000],
-                    17: [162.8, 166.6, 171.6, 177.3, 181.6, 186, 188.5, 1000]}},
-
-            'женский': {
-                'weight': {
-                    1: [8, 8.5, 9, 9.6, 10.2, 10.8, 11.3, 1000],
-                    2: [10.2, 10.8, 11.3, 12.1, 12.8, 13.5, 14.1, 1000],
-                    3: [11.7, 12.5, 13.3, 13.7, 15.5, 16.5, 17.6, 1000],
-                    4: [13, 14, 14.8, 15.9, 17.6, 18.9, 20, 1000],
-                    5: [14.7, 15.7, 16.6, 18.1, 19.7, 21.6, 23.2, 1000],
-                    6: [16.3, 17.4, 18.7, 20.4, 22.5, 24.8, 27.1, 1000],
-                    7: [17.9, 19.4, 20.6, 22.7, 25.3, 28.3, 31.6, 1000],
-                    8: [20, 21.4, 23, 25.1, 28.5, 32.1, 36.3, 1000],
-                    9: [21.9, 23.4, 25.5, 28.2, 32, 36.3, 41, 1000],
-                    10: [22.7, 25, 27.7, 30.6, 34.9, 39.8, 47.4, 1000],
-                    11: [24.9, 27.8, 30.7, 34.3, 38.9, 44.6, 55.2, 1000],
-                    12: [27.8, 31.8, 36, 40, 45.4, 51.8, 63.4, 1000],
-                    13: [32, 38.7, 43, 47.5, 52.5, 59, 69, 1000],
-                    14: [37.6, 43.8, 48.2, 52.8, 58, 64, 72.2, 1000],
-                    15: [42, 46.8, 50.6, 55.2, 60.4, 66.5, 74.9, 1000],
-                    16: [45.2, 48.4, 51.8, 56.5, 61.3, 67.6, 75.6, 1000],
-                    17: [46.2, 49.2, 52.9, 57.3, 61.9, 68, 76, 1000]},
-                'height': {
-                    1: [70.1, 71.4, 72.8, 74.1, 75.8, 78, 79.6, 1000],
-                    2: [80.1, 81.7, 83.3, 85.2, 87.5, 90.1, 92.5, 1000],
-                    3: [89, 90.8, 93, 95.5, 98.1, 100.7, 103.1, 1000],
-                    4: [94, 96.1, 98.5, 101.5, 104.1, 106.9, 109.7, 1000],
-                    5: [100, 102.5, 104.7, 107.5, 110.7, 113.6, 116.7, 1000],
-                    6: [105.3, 108, 110.9, 114.1, 118, 120.6, 124, 1000],
-                    7: [111.1, 113.6, 116.9, 120.8, 124.8, 128, 131.3, 1000],
-                    8: [116.5, 119.3, 123, 127.2, 131, 134.3, 137.7, 1000],
-                    9: [122, 124.8, 128.4, 132.8, 137, 140.5, 144.8, 1000],
-                    10: [127, 130.5, 134.3, 139, 142.9, 146.7, 151, 1000],
-                    11: [131.8, 136.2, 140.2, 145.3, 148.8, 153.2, 157.7, 1000],
-                    12: [137.6, 142.2, 145.9, 150.4, 154.2, 159.2, 163.2, 1000],
-                    13: [143, 148.3, 151.8, 155.5, 159.8, 163.7, 168, 1000],
-                    14: [147.8, 152.6, 155.4, 159, 163.6, 167.2, 171.2, 1000],
-                    15: [150.7, 154.4, 157.2, 161.2, 166, 169.2, 173.4, 1000],
-                    16: [151.6, 155.2, 158, 162.5, 166.8, 170.2, 173.8, 1000],
-                    17: [152.2, 155.8, 158.6, 162.8, 169.2, 170.4, 174.2, 1000]}
-            }
-        }
 
         indicators = {
             '0-3': {
@@ -9168,53 +9397,55 @@ def certificate__create_doc():
                             f"{random.randrange(start=indicator['bp'][2], stop=indicator['bp'][3], step=1)}"
 
         anthro = ' (выше- ниже-) среднее, (дис-) гармоничное'
-        try:
-            height = float(render_data.get('height'))
-            weight = float(render_data.get('weight'))
-            if render_data.get('gender').lower().startswith('м'):
-                anthro_height = anthropometry['мужской']['height'].get(age, [])
-                anthro_weight = anthropometry['мужской']['weight'].get(age, [])
-            else:
-                anthro_height = anthropometry['женский']['height'].get(age, [])
-                anthro_weight = anthropometry['женский']['weight'].get(age, [])
-            for a_height in anthro_height:
-                if height < a_height:
-                    index_height = anthro_height.index(a_height)
-                    break
-            else:
-                index_height = 7
+        if render_data.get('height') and render_data.get('weight'):
+            try:
+                height = float(render_data.get('height'))
+                weight = float(render_data.get('weight'))
+                if render_data.get('gender').lower().startswith('м'):
+                    anthro_height = anthropometry["после года"]['мужской']['height'].get(age, [])
+                    anthro_weight = anthropometry["после года"]['мужской']['weight'].get(age, [])
+                else:
+                    anthro_height = anthropometry["после года"]['женский']['height'].get(age, [])
+                    anthro_weight = anthropometry["после года"]['женский']['weight'].get(age, [])
+                if anthro_height and anthro_weight:
+                    for a_height in anthro_height:
+                        if height < a_height:
+                            index_height = anthro_height.index(a_height)
+                            break
+                    else:
+                        index_height = 7
 
-            for a_weight in anthro_weight:
-                if weight <= a_weight:
-                    index_weight = anthro_weight.index(a_weight)
-                    break
-            else:
-                index_weight = 7
-            if index_height == 0:
-                anthro = 'Низкое '
-            elif index_height <= 2:
-                anthro = 'Ниже среднего '
-            elif index_height <= 4:
-                anthro = 'Среднее '
-            elif index_height <= 6:
-                anthro = 'Выше среднего '
-            elif index_height == 7:
-                anthro = 'Высокое '
+                    for a_weight in anthro_weight:
+                        if weight <= a_weight:
+                            index_weight = anthro_weight.index(a_weight)
+                            break
+                    else:
+                        index_weight = 7
+                    if index_height == 0:
+                        anthro = 'Низкое '
+                    elif index_height <= 2:
+                        anthro = 'Ниже среднего '
+                    elif index_height <= 4:
+                        anthro = 'Среднее '
+                    elif index_height <= 6:
+                        anthro = 'Выше среднего '
+                    elif index_height == 7:
+                        anthro = 'Высокое '
 
-            if abs(index_weight - index_height) <= 1:
-                anthro += 'гармоничное'
-            elif abs(index_weight - index_height) < 3:
-                anthro += 'дисгармоничное'
-            else:
-                anthro += 'резко дисгармоничное'
+                    if abs(index_weight - index_height) <= 1:
+                        anthro += 'гармоничное'
+                    elif abs(index_weight - index_height) < 3:
+                        anthro += 'дисгармоничное'
+                    else:
+                        anthro += 'резко дисгармоничное'
 
-            if 'Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное' in render_data.get('diagnosis'):
-                render_data['diagnosis'] = \
-                    render_data.get('diagnosis').replace('Физическое развитие (выше- ниже-) '
-                                                         'среднее, (дис-) гармоничное',
-                                                         f"Физическое развитие: {anthro}")
-        except Exception:
-            pass
+                    if 'Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное' in render_data.get('diagnosis', ''):
+                        render_data['diagnosis'] = \
+                            render_data.get('diagnosis', '').replace('Физическое развитие (выше- ниже-) '
+                                                                     'среднее, (дис-) гармоничное',
+                                                                     f"Физическое развитие: {anthro}")
+            except Exception:
+                pass
         render_data['anthro'] = anthro
 
         render_data['imt'] = round(float(render_data.get('weight')) /
