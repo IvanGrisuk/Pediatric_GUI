@@ -6330,10 +6330,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         text = list()
                         for word in date:
                             text.append(word)
-                        if marker_1 == 'b_d_2':
-                            render_data[marker_1] = '   '.join(text)
-                        else:
-                            render_data[marker_1] = '  '.join(text)
+                        render_data[marker_1] = '  '.join(text)
                     else:
                         text = list()
                         for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
