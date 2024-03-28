@@ -7584,6 +7584,7 @@ def data_base(command,
                     'srv': f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
                 }
                 user['load_info_text'].set(f"{user['load_info_text'].get()}\nИзвлечение локальных осмотров... ")
+                user['log_in_root'].update()
 
                 with sq.connect(database=f"{local_data.get('loc')}") as conn:
                     cur = conn.cursor()
@@ -7594,7 +7595,7 @@ def data_base(command,
 
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
                                            f"Синхронизация...")
-
+                user['log_in_root'].update()
 
                 for examination in local_data.get("examination_loc"):
                     (date_time, doctor_name, status, LN_type,
@@ -7615,6 +7616,7 @@ def data_base(command,
 
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
                                            f"Изменение локальной БД... ")
+                user['log_in_root'].update()
 
                 try:
                     with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
@@ -7647,6 +7649,7 @@ def data_base(command,
 
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
                                            f"Запись на сервер... ")
+                user['log_in_root'].update()
 
                 if 'examination_db_place:____srv' in user.get('add_info'):
                     for examination in local_data.get("examination_srv"):
@@ -7681,6 +7684,7 @@ def data_base(command,
 
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
                                            f"Запись статистики... ")
+                user['log_in_root'].update()
 
                 if found_data_statistic:
 
@@ -7712,6 +7716,9 @@ def data_base(command,
 
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
                                            f"{answer}")
+                user['log_in_root'].update()
+
+                time.sleep(2)
 
 
 
@@ -10474,6 +10481,7 @@ def paste_log_in_root(root):
         # user['load_info_text'].set(f"{load_info_text.get()}\n"
         #                            f"{answer}")
         log_in_root.update()
+        # user['log_in_root'].update()
         # if 'Exception' in answer:
         #     print(answer)
         time.sleep(3)
