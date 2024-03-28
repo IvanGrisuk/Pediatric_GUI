@@ -7618,10 +7618,10 @@ def data_base(command,
                                            f"Изменение локальной БД... ")
                 user['log_in_root'].update()
 
-                try:
-                    with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
-                        cur = conn.cursor()
-                        for path_mark in ('srv', 'loc'):
+                for path_mark in ('srv', 'loc'):
+                    try:
+                        with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
+                            cur = conn.cursor()
 
                             if path_mark == 'srv':
                                 if 'examination_db_place:____srv' in user.get('add_info'):
@@ -7644,8 +7644,8 @@ def data_base(command,
                                 cur.execute("DELETE from examination WHERE status LIKE 'deleted'")
                                 cur.execute(f"UPDATE examination SET status = 'srv'")
 
-                except Exception as ex:
-                    return f"Exception edit_local_db\n{ex}"
+                    except Exception as ex:
+                        return f"Exception edit_local_db\n{ex}"
 
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
                                            f"Запись на сервер... ")
@@ -7704,6 +7704,7 @@ def data_base(command,
                             cur.execute(f"DELETE FROM statistic_DOC_db")
 
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n")
+                user['log_in_root'].update()
 
 
                 answer = f"Данные синхронизированы!\n\n" \
@@ -7717,8 +7718,9 @@ def data_base(command,
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
                                            f"{answer}")
                 user['log_in_root'].update()
-
-                time.sleep(2)
+                print('time.sleep')
+                time.sleep(3)
+                print('time.sleep')
 
 
 
@@ -10477,14 +10479,14 @@ def paste_log_in_root(root):
 
         log_in_root.update()
         user['load_info_text'] = load_info_text
-        data_base(command='examination__edit_examination_loc')
+        answer = data_base(command='examination__edit_examination_loc')
         # user['load_info_text'].set(f"{load_info_text.get()}\n"
         #                            f"{answer}")
         log_in_root.update()
         # user['log_in_root'].update()
-        # if 'Exception' in answer:
-        #     print(answer)
-        time.sleep(3)
+        if 'Exception' in answer:
+            print(answer)
+        # time.sleep(2)
 
 
         # load_info_text.set(f"{load_info_text.get()}\n"
