@@ -3238,12 +3238,23 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                     if abs(index_weight - index_height) <= 1:
                         anthro += 'гармоничное'
-                    elif abs(index_weight - index_height) < 3:
-                        anthro += 'дисгармоничное'
                     else:
-                        anthro += 'резко дисгармоничное'
+                        if abs(index_weight - index_height) < 3:
+                            anthro += 'дисгармоничное'
+                        else:
+                            anthro += 'резко дисгармоничное'
+
+                        if not  2 < index_height < 5 and not  2 < index_weight < 5:
+                            anthro += ' по росту и по весу'
+                        elif not  2 < index_height < 5:
+                            anthro += ' по росту'
+                        elif not  2 < index_weight < 5:
+                            anthro += ' по весу'
+
                     patient_physical_anthro = f"Физическое развитие: {anthro}"
                     text = f"{text.strip()}\nФизическое развитие: {anthro}"
+
+
 
             if weight:
                 if anthro_weight:
@@ -7572,6 +7583,7 @@ def data_base(command,
                     'loc': f"{path}data_base.db",
                     'srv': f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
                 }
+                user['load_info_text'].set(f"{user['load_info_text'].get()}\nИзвлечение локальных осмотров... ")
 
                 with sq.connect(database=f"{local_data.get('loc')}") as conn:
                     cur = conn.cursor()
@@ -7579,6 +7591,10 @@ def data_base(command,
                                     f"examination_text, examination_key, add_info "
                                     f"FROM examination")
                     local_data[f"examination_loc"] = cur.fetchall()
+
+                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
+                                           f"Синхронизация...")
+
 
                 for examination in local_data.get("examination_loc"):
                     (date_time, doctor_name, status, LN_type,
@@ -7597,11 +7613,14 @@ def data_base(command,
                                  examination_key, add_info))
 
 
+                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
+                                           f"Изменение локальной БД... ")
 
-                for path_mark in ('srv', 'loc'):
-                    try:
-                        with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
-                            cur = conn.cursor()
+                try:
+                    with sq.connect(database=f"{local_data.get(path_mark)}") as conn:
+                        cur = conn.cursor()
+                        for path_mark in ('srv', 'loc'):
+
                             if path_mark == 'srv':
                                 if 'examination_db_place:____srv' in user.get('add_info'):
                                     cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
@@ -7623,8 +7642,11 @@ def data_base(command,
                                 cur.execute("DELETE from examination WHERE status LIKE 'deleted'")
                                 cur.execute(f"UPDATE examination SET status = 'srv'")
 
-                    except Exception as ex:
-                        return f"Exception edit_local_db\n{ex}"
+                except Exception as ex:
+                    return f"Exception edit_local_db\n{ex}"
+
+                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
+                                           f"Запись на сервер... ")
 
                 if 'examination_db_place:____srv' in user.get('add_info'):
                     for examination in local_data.get("examination_srv"):
@@ -7652,14 +7674,13 @@ def data_base(command,
                                             local_data.get(f"sorted_examination_srv"))
 
 
-
-
-
-
                 with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
                     cur = conn.cursor()
                     cur.execute(f"SELECT * FROM statistic_DOC_db")
                     found_data_statistic = cur.fetchall()
+
+                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
+                                           f"Запись статистики... ")
 
                 if found_data_statistic:
 
@@ -7673,10 +7694,12 @@ def data_base(command,
                     except Exception as ex:
 
                         return f"Exception edit_local_db\n{ex}"
+                    else:
+                        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                            cur = conn.cursor()
+                            cur.execute(f"DELETE FROM statistic_DOC_db")
 
-                    with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                        cur = conn.cursor()
-                        cur.execute(f"DELETE FROM statistic_DOC_db")
+                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n")
 
 
                 answer = f"Данные синхронизированы!\n\n" \
@@ -7687,7 +7710,10 @@ def data_base(command,
                          f"Загружено осмотров: {len(local_data.get('sorted_examination_srv'))}\n" \
                          f"Обновлено статистики: {len(found_data_statistic)}\n"
 
-                return answer
+                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
+                                           f"{answer}")
+
+
 
             # else:
             #
@@ -10443,13 +10469,13 @@ def paste_log_in_root(root):
                            f"Синхронизация осмотров...")
 
         log_in_root.update()
-
-        answer = data_base(command='examination__edit_examination_loc')
-        load_info_text.set(f"{load_info_text.get()}\n"
-                           f"{answer}")
+        user['load_info_text'] = load_info_text
+        data_base(command='examination__edit_examination_loc')
+        # user['load_info_text'].set(f"{load_info_text.get()}\n"
+        #                            f"{answer}")
         log_in_root.update()
-        if 'Exception' in answer:
-            print(answer)
+        # if 'Exception' in answer:
+        #     print(answer)
         time.sleep(3)
 
 
