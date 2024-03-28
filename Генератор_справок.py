@@ -10486,7 +10486,7 @@ def paste_log_in_root(root):
         # user['log_in_root'].update()
         if 'Exception' in answer:
             print(answer)
-        # time.sleep(2)
+        time.sleep(2)
 
 
         # load_info_text.set(f"{load_info_text.get()}\n"
