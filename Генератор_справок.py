@@ -23,6 +23,8 @@ from docx import Document
 from docxtpl import DocxTemplate
 from docxcompose.composer import Composer
 from mkb_10 import mkb_10
+from post_1201 import post_1201
+
 import subprocess, platform
 
 all_data_certificate = {
@@ -1663,7 +1665,7 @@ anthropometry = {
         }}
 }
 
-program_version = '2.1.6'
+program_version = '2.1.7'
 # print("recipe_data = {")
 # for d_cat in all_data_diagnosis.get('drugs'):
 #     print(f"\t\"{d_cat}\":", '{')
@@ -1823,7 +1825,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 "Лист ВН": list()},
             'get_last_anthro_data': dict(),
             'LN_data': {
-                'last_patient_ln': dict()}
+                'last_patient_ln': dict()},
+            'anamnesis': ''
+
         }
 
         if found_info.get('get_last_doc_LN'):
@@ -1862,6 +1866,16 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 local_info['get_last_diagnosis_text'] = string.replace('diagnosis_text:____', '')
 
                 else:
+                    if not local_info.get('anamnesis'):
+                        if (datetime.now() - datetime.strptime(date_time, "%d.%m.%Y %H:%M:%S")).total_seconds() < 2592000:
+                            if 'anamnesis:____' in examination_key:
+                                for string in examination_key.split('__<end!>__\n'):
+                                    if string.startswith('anamnesis:____'):
+                                        txt_anamnesis.insert(1.0, string.replace('anamnesis:____', ''))
+                                        local_info['anamnesis'] = 'True'
+                        else:
+                            local_info['anamnesis'] = 'None'
+
                     if not local_info.get('get_last_anthro_data'):
                         if ('type_examination:____adult__' in examination_key
                                 and 'txt_weight_variable' in examination_key):
@@ -1990,6 +2004,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                             elif "selected_place:____" in selected_marker:
                                 selected_place.set(selected_marker.replace('selected_place:____', ''))
+
+                            elif "anamnesis:____" in selected_marker:
+                                txt_anamnesis.delete(1.0, 'end')
+                                txt_anamnesis.insert(1.0, selected_marker.replace('anamnesis:____', ''))
 
                             else:
                                 for but_marker in ('complaints', 'examination', 'prescription',
@@ -2352,12 +2370,21 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                          f"prescription_text:____{render_data.get('prescription')}__<end!>__\n" \
                          f"epicrisis_add_text:____{render_data.get('epicrisis_add_text')}__<end!>__\n"
 
+            anamnesis = txt_anamnesis.get(1.0, 'end').strip()
+            if not child_marker:
+                active_but = f"{active_but}" \
+                             f"anamnesis:____{anamnesis}__<end!>__\n"
+                if anamnesis:
+                    anamnesis = f"\nАнамнез заболевания: {anamnesis}"
+                    print(anamnesis)
+            render_data['anamnesis'] = anamnesis
+
             print(active_but)
 
             patient_anthro_data = render_data.get('patient_anthro_data', '').replace('\n', '  ')
             active_examination = f"{render_data.get('date_time')}{render_data.get('patient_info')}\n" \
                                  f"{render_data.get('epicrisis_add_text')}\n" \
-                                 f"Жалобы: {render_data.get('complaints')}\n" \
+                                 f"Жалобы: {render_data.get('complaints')}{anamnesis}\n" \
                                  f"Данные объективного обследования: " \
                                  f"{patient_anthro_data}\n" \
                                  f"{render_data.get('examination')}\n" \
@@ -2393,6 +2420,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 active_but,
                 None]
             if doc_size:
+
                 doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
                 doc.render(render_data)
                 doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр__" \
@@ -3592,6 +3620,22 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     paste_frame_complaints()
 
+    frame_anamnesis = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    txt_anamnesis = ScrolledText(frame_anamnesis, width=15, height=3,
+                                 font=('Comic Sans MS', user.get('text_size')),
+                                 wrap="word")
+
+    if not child_marker:
+        print("data['examination'].get('anamnesis')", data['examination'].get('anamnesis'))
+        if data['examination'].get('anamnesis') and data['examination'].get('anamnesis') != 'None':
+
+            txt_anamnesis.insert(1.0, data['examination'].get('anamnesis').strip())
+        Label(master=frame_anamnesis,
+              text="Анамнез заболевания",
+              font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
+        txt_anamnesis.pack(fill='both', expand=True)
+        frame_anamnesis.pack(fill='both', expand=True, padx=2, pady=2)
+
     def paste_patient_anthro_data():
         def paste_npr_root():
             def selected_age_month(event=None):
@@ -3831,7 +3875,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             frame_npr.pack(fill='both', expand=True, padx=2, pady=2)
 
-        frame_patient_anthro = Frame(examination_root, borderwidth=0.5, relief="solid", padx=1, pady=1, bg="#36566d")
+        frame_patient_anthro_main = Frame(examination_root, borderwidth=0.5, relief="solid", padx=1, pady=1)
+        Label(master=frame_patient_anthro_main,
+              text="Данные обследования",
+              font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
+
+
+        frame_patient_anthro = Frame(frame_patient_anthro_main, padx=1, pady=1)
 
         if not render_data.get('hr'):
             paste_hr_br()
@@ -3898,6 +3948,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         frame_patient_anthro.columnconfigure(index='all', minsize=40, weight=1)
         frame_patient_anthro.rowconfigure(index='all', minsize=20)
         frame_patient_anthro.pack(fill='both', expand=True)
+        frame_patient_anthro_main.pack(fill='both', expand=True, padx=2, pady=2)
 
         if child_marker:
             paste_npr_root()
@@ -4478,21 +4529,23 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     def paste_diagnosis_kb():
 
+        def edti__txt_diagnosis(event=None):
+            txt_diagnosis_info = txt_diagnosis.get(1.0, 'end').strip()
+            txt_diagnosis_info = txt_diagnosis_info.replace('  ', ' ')
+            txt_diagnosis.delete(1.0, 'end')
+            txt_diagnosis.insert(1.0, txt_diagnosis_info)
+
+
         def select_diagnosis_kb():
             diagnosis_button = selected_button.get()
             selected_button.set('')
+            txt_diagnosis.insert("insert", f" {diagnosis_button} ")
 
-            txt_diagnosis_info = txt_diagnosis.get(1.0, 'end').strip()
-
-            edited_text = txt_diagnosis_info.split('\n')[0]
-            edited_text += f" {diagnosis_button} "
-
-            txt_diagnosis.delete(1.0, 'end')
-            txt_diagnosis.insert(1.0, txt_diagnosis_info.replace(txt_diagnosis_info.split('\n')[0],
-                                                                 txt_diagnosis_info.split('\n')[0] + f" {diagnosis_button} "))
 
         txt_diagnosis['width'] = 30
         txt_diagnosis['height'] = 5
+        txt_diagnosis.bind("<FocusOut>", edti__txt_diagnosis)
+
         frame_diagnosis_kb = Frame(frame_diagnosis_txt, borderwidth=1, relief="solid")
         destroy_elements['frame_diagnosis_kb'] = frame_diagnosis_kb
 
@@ -4573,9 +4626,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     1: ("ОАК + ОАМ (даны направления)", "ОАЭ и ЭКГ при отсутствии данных о проведении",
                         "Консультация невролога (запись через справку)", "Консультация хирурга (ортопеда)"),
                     6: ("Консультация офтальмолога и оториноларинголога (запись через справку)", ),
+
                     11: ("ОАК + ОАМ (даны направления)", "Консультация стоматолога в 12 мес")
                 }
-
             }
 
             if data['examination']['age_month'].get('year') == 0:
@@ -6147,6 +6200,189 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     create_drugs_root()
 
 
+    def open_dispanser_root():
+        if not data['examination'].get('is_dispanser_root_open'):
+            data['examination']['is_dispanser_root_open'] = True
+            dispanser_root_main.grid()
+        else:
+            data['examination']['is_dispanser_root_open'] = False
+            dispanser_root_main.grid_remove()
+
+    def create_dispanser_root():
+        def celect_dispanser():
+            txt_prescription.insert('end', f"\nОбсленование и наблюдение согласно постановлению МЗ РБ № 1201:"
+                                           f"\n{celected_code.get()}")
+            open_dispanser_root()
+
+        def search_mkb(event=None):
+            def resize(event=None):
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+
+            def on_binds(event):
+                canvas.idbind = canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+            def off_binds(event=None):
+                canvas.unbind_all("<MouseWheel>")
+
+            def on_mousewheel(event):
+
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+
+                if os.name == 'posix':
+                    canvas.yview_scroll(int(-1 * event.delta), "units")
+                else:
+                    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+            if data['examination'].get('frame_found_data_dispanser'):
+                frame_found_data_dispanser = data['examination'].get('frame_found_data_dispanser')
+                frame_found_data_dispanser.destroy()
+            master_frame = Frame(mkb_frame_scrolled)
+            data['examination']['frame_found_data_dispanser'] = master_frame
+            master_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+            found_data = list()
+            mkb_code_edit = ''
+            mkb_name_edit = mkb_name.get()
+
+            if mkb_code.get():
+                word_list = ["qwertyuiopasdfghjkl;'zxcvbnm,.", "йцукенгшщзфывапролджэячсмитьбю"]
+
+                for word in mkb_code.get().lower():
+                    if word in word_list[1]:
+                        mkb_code_edit += word_list[0][word_list[1].index(word)]
+                    elif word == ',':
+                        mkb_code_edit += '.'
+                    else:
+                        mkb_code_edit += word
+                mkb_code_edit = mkb_code_edit.upper()
+
+            if mkb_code_edit and mkb_name_edit:
+                for dispanser_data in post_1201:
+                    key = dispanser_data.get('mkb_key')
+                    value = dispanser_data.get('Наименование заболевания')
+
+                    if mkb_code_edit in key and mkb_name_edit.lower() in value.lower():
+                        found_data.append(dispanser_data)
+            elif mkb_code_edit:
+                for dispanser_data in post_1201:
+                    key = dispanser_data.get('mkb_key')
+                    if mkb_code_edit in key:
+                        found_data.append(dispanser_data)
+            elif mkb_name_edit:
+                for dispanser_data in post_1201:
+                    value = dispanser_data.get('Наименование заболевания')
+                    if mkb_name_edit.lower() in value.lower():
+                        found_data.append(dispanser_data)
+
+            if found_data:
+
+                scroll_x = tk.Scrollbar(master_frame, orient=tk.HORIZONTAL)
+                scroll_y = tk.Scrollbar(master_frame, orient=tk.VERTICAL)
+
+                canvas = tk.Canvas(master_frame,
+                                   xscrollcommand=scroll_x.set,
+                                   yscrollcommand=scroll_y.set)
+                scroll_x.config(command=canvas.xview)
+                scroll_y.config(command=canvas.yview)
+
+                canvas_frame = Frame(canvas)
+
+                for dispanser_data in found_data:
+                    dispanser_data = f"Наименование заболевания: " \
+                                     f"{dispanser_data.get('Наименование заболевания')}\n" \
+                                     f"Сроки и кратность медицинских обследований: " \
+                                     f"{dispanser_data.get('Сроки и кратность медицинских обследований')}\n" \
+                                     f"Сроки наблюдения за пациентом: " \
+                                     f"{dispanser_data.get('Сроки наблюдения за пациентом')}"
+
+                    but_text = ''
+                    for i in dispanser_data.split(" "):
+                        if len(but_text.split('\n')[-1]) > 60:
+                            but_text += '\n'
+                        but_text += i + ' '
+                    Radiobutton(canvas_frame, text=but_text,
+                                font=('Comic Sans MS', user.get('text_size')),
+                                value=f"{dispanser_data}",
+                                variable=celected_code,
+                                command=celect_dispanser,
+                                indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                                ).pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+                # canvas_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+                canvas['width'] = int(canvas.winfo_geometry().split('x')[0])
+                canvas_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
+                canvas.grid(row=0, column=0, sticky="nsew")
+                scroll_x.grid(row=1, column=0, sticky="we")
+                scroll_y.grid(row=0, column=1, sticky="ns")
+
+                master_frame.rowconfigure(0, weight=1)
+                master_frame.columnconfigure(0, weight=1)
+
+                master_frame.bind("<Configure>", resize)
+                master_frame.update_idletasks()
+                canvas_frame['height'] = int(dispanser_root_main.winfo_height() - frame_main_dispanser.winfo_height())
+
+                canvas.bind("<Enter>", on_binds)
+                canvas.bind("<Leave>", off_binds)
+
+                canvas.create_window((0, 0), window=canvas_frame, anchor="nw",
+                                     width=canvas.winfo_width())
+
+            else:
+                Label(master_frame, text="Поиск не дал результатов!",
+                      font=('Comic Sans MS', user.get('text_size')),
+                      bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+        mkb_code = StringVar()
+        mkb_name = StringVar()
+        celected_code = StringVar()
+
+        frame_main_dispanser = Frame(dispanser_root_main, bg="#36566d")
+        Label(frame_main_dispanser, text="Поиск по постановлению 1201",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+        Button(frame_main_dispanser, text=f"Закрыть окно",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_dispanser_root,
+               bg='#f0fffe').pack(fill='x', expand=True, pady=3, padx=3, anchor='n')
+
+        mkb_title_frame = Frame(frame_main_dispanser, bg="#36566d")
+        Label(mkb_title_frame, text="Код (МКБ-10): ",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, side='left')
+        txt_mkb = Entry(mkb_title_frame, width=10,
+                        font=('Comic Sans MS', user.get('text_size')),
+                        justify="center",
+                        textvariable=mkb_code)
+        txt_mkb.pack(fill='x', expand=True, pady=3, padx=3, side='left')
+        txt_mkb.bind('<Return>', search_mkb)
+
+        Label(mkb_title_frame, text="Нозология: ",
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white').pack(fill='x', expand=True, pady=3, padx=3, side='left')
+        txt_mkb = Entry(mkb_title_frame, width=30,
+                        font=('Comic Sans MS', user.get('text_size')),
+                        textvariable=mkb_name)
+        txt_mkb.pack(fill='x', expand=True, pady=3, padx=3, side='left')
+        txt_mkb.bind('<Return>', search_mkb)
+
+        mkb_title_frame.pack(fill='x', anchor='n')
+        frame_main_dispanser.pack(fill='x', anchor='n')
+
+        mkb_frame_scrolled = Frame(dispanser_root_main)
+        mkb_frame_scrolled.pack(fill='both', expand=True)
+
+        data['examination']['is_dispanser_root_open'] = False
+        dispanser_root_main.grid(row=0, column=3, sticky="nwse")
+
+        dispanser_root_main.grid_remove()
+
+    dispanser_root_main = Frame(master=root_examination, padx=3, pady=3, bg="#36566d")
+    dispanser_root_main.update_idletasks()
+    create_dispanser_root()
 
     def paste_prescription_kb():
 
@@ -6227,6 +6463,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         Button(frame_prescription_buttons, text=f"Препараты",
                font=('Comic Sans MS', user.get('text_size')),
                command=open_drugs_root,
+               bg='#f0fffe').pack(fill='both', expand=True)
+
+        Button(frame_prescription_buttons, text=f"Диспансеризация \n(пост. 1201)",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=open_dispanser_root,
                bg='#f0fffe').pack(fill='both', expand=True)
 
 
@@ -6346,8 +6587,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         text = list()
                         for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
                             text.append(word)
-                        render_data[marker_1] = ' '.join(text)
-
+                        if marker_1 in ('parent_name_1', 'parent_name_2', 'parent_name_3'):
+                            render_data[marker_1] = '  '.join(text)
+                        else:
+                            render_data[marker_1] = ' '.join(text)
 
                 doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}"
                                    f"БЛАНК_ВН_{selected_type_ln.get().replace(' ', '_'.capitalize())}.docx")
@@ -7715,12 +7958,9 @@ def data_base(command,
                          f"Загружено осмотров: {len(local_data.get('sorted_examination_srv'))}\n" \
                          f"Обновлено статистики: {len(found_data_statistic)}\n"
 
-                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
+                user['load_info_text'].set(f"{user['load_info_text'].get()}\n"
                                            f"{answer}")
                 user['log_in_root'].update()
-                print('time.sleep')
-                time.sleep(3)
-                print('time.sleep')
 
 
 
