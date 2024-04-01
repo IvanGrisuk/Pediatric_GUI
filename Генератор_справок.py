@@ -3881,7 +3881,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
               font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
 
 
-        frame_patient_anthro = Frame(frame_patient_anthro_main, padx=1, pady=1)
+        frame_patient_anthro = Frame(frame_patient_anthro_main, borderwidth=0.5, relief="solid", padx=1, pady=1, bg="#36566d")
 
         if not render_data.get('hr'):
             paste_hr_br()
@@ -7858,7 +7858,7 @@ def data_base(command,
 
 
                 user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
-                                           f"Изменение локальной БД... ")
+                                           f"Изменение локальной БД")
                 user['log_in_root'].update()
 
                 for path_mark in ('srv', 'loc'):
@@ -7867,6 +7867,10 @@ def data_base(command,
                             cur = conn.cursor()
 
                             if path_mark == 'srv':
+                                user['load_info_text'].set(f"{user['load_info_text'].get()}\n"
+                                                           f"Ожидание ответа сервера... ")
+                                user['log_in_root'].update()
+
                                 if 'examination_db_place:____srv' in user.get('add_info'):
                                     cur.execute(f"SELECT date_time, doctor_name, status, LN_type, patient_info, "
                                                 f"examination_text, examination_key, add_info "
@@ -7882,15 +7886,25 @@ def data_base(command,
                                                     f"WHERE date_time LIKE '{date_time}' "
                                                     f"AND doctor_name LIKE '{doctor_name}' "
                                                     f"AND patient_info LIKE '{patient_info}' ")
+                                user['load_info_text'].set(f"{user['load_info_text'].get()}ОК")
+                                user['log_in_root'].update()
+
 
                             elif path_mark == 'loc':
+                                user['load_info_text'].set(f"{user['load_info_text'].get()}\n"
+                                                           f"Локальные... ")
+                                user['log_in_root'].update()
+
                                 cur.execute("DELETE from examination WHERE status LIKE 'deleted'")
                                 cur.execute(f"UPDATE examination SET status = 'srv'")
+                                user['load_info_text'].set(f"{user['load_info_text'].get()}ОК")
+                                user['log_in_root'].update()
+
 
                     except Exception as ex:
                         return f"Exception edit_local_db\n{ex}"
 
-                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
+                user['load_info_text'].set(f"{user['load_info_text'].get()}\n"
                                            f"Запись на сервер... ")
                 user['log_in_root'].update()
 
@@ -7919,15 +7933,15 @@ def data_base(command,
                             cur.executemany("INSERT INTO examination VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
                                             local_data.get(f"sorted_examination_srv"))
 
+                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
+                                           f"Запись статистики... ")
+                user['log_in_root'].update()
 
                 with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
                     cur = conn.cursor()
                     cur.execute(f"SELECT * FROM statistic_DOC_db")
                     found_data_statistic = cur.fetchall()
 
-                user['load_info_text'].set(f"{user['load_info_text'].get()} ОК\n"
-                                           f"Запись статистики... ")
-                user['log_in_root'].update()
 
                 if found_data_statistic:
 
@@ -11547,10 +11561,9 @@ def paste_frame_main(root):
                                               'Укажите размер текста числом от 5 до 30')
 
             else:
-                if user.get('doctor_name', "") == "Грисюк И.А.":
-                    user['app_data']['path_examination_data_base'] = txt_path_db_loc.get().strip()
-                    user['app_data']['path_srv_data_base'] = txt_path_db_srv.get().strip()
-                    data_base(command='edit_path_db')
+                user['app_data']['path_examination_data_base'] = txt_path_db_loc.get().strip()
+                user['app_data']['path_srv_data_base'] = txt_path_db_srv.get().strip()
+                data_base(command='edit_path_db')
 
                 if user.get('error_connection'):
                     new_doc = [doctor_name, district, ped_div, manager, True, text_size]
@@ -11665,17 +11678,16 @@ def paste_frame_main(root):
 
         txt_path_db_srv = Entry(new_root, width=30, font=('Comic Sans MS', user.get('text_size')))
 
-        if user.get('doctor_name', "") == "Грисюк И.А.":
 
-            Label(new_root, text='path loc DB: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=6)
-            txt_path_db_loc.grid(column=1, row=6, sticky='ew')
-            if user['app_data'].get('path_examination_data_base'):
-                txt_path_db_loc.insert(0, user['app_data'].get('path_examination_data_base', ''))
+        Label(new_root, text='path loc DB: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=6)
+        txt_path_db_loc.grid(column=1, row=6, sticky='ew')
+        if user['app_data'].get('path_examination_data_base'):
+            txt_path_db_loc.insert(0, user['app_data'].get('path_examination_data_base', ''))
 
-            Label(new_root, text='path srv DB: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=7)
-            txt_path_db_srv.grid(column=1, row=7, sticky='ew')
-            if user['app_data'].get('path_srv_data_base'):
-                txt_path_db_srv.insert(0, user['app_data'].get('path_srv_data_base', ''))
+        Label(new_root, text='path srv DB: ', font=('Comic Sans MS', user.get('text_size'))).grid(column=0, row=7)
+        txt_path_db_srv.grid(column=1, row=7, sticky='ew')
+        if user['app_data'].get('path_srv_data_base'):
+            txt_path_db_srv.insert(0, user['app_data'].get('path_srv_data_base', ''))
 
 
 
