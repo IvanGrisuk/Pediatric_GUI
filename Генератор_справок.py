@@ -28,10 +28,12 @@ from post_1201 import post_1201
 import subprocess, platform
 
 all_data_certificate = {
-    'sport_section': ('баскетболом', 'волейболом', 'вольной борьбой', 'гандболом', 'греблей', "гимнастикой", 'каратэ',
-                      'легкой атлетикой', 'музыкой', 'плаванием в бассейне', 'спортивной гимнастикой', 'танцами',
-                      'теннисом', 'тхэквондо', "ушу", 'фигурным катанием', 'фигурным катанием', 'футболом', 'хоккеем',
-                      'шахматами', 'шашками', '+ СОРЕВНОВАНИЯ'),
+    'sport_section': (('баскетболом', 'волейболом', 'гандболом', 'теннисом', 'футболом', 'хоккеем'),
+                      ('боксом', 'вольной борьбой', 'каратэ', 'тхэквондо', "ушу"),
+                      ('плаванием в бассейне', 'греблей'),
+                      ("гимнастикой", 'спортивной гимнастикой', 'легкой атлетикой', 'фигурным катанием'),
+                      ('музыкой', 'танцами', 'шахматами', 'шашками'),
+                      ('+ СОРЕВНОВАНИЯ',) ),
     "health": {
         "group": ("1", "2", "3", "4"),
         "physical": ("Основная", "Подготовительная", "СМГ", "ЛФК"),
@@ -922,6 +924,9 @@ all_data_diagnosis = {
 
                       "от Пневмококковой инфекции",
                       "от Менингококковой инфекции", "\n",
+                      "Реакция Манту",
+                      "Диаскинтест", "\n",
+
                       "ВГВ + А(а)КДС + ХИБ + ИПВ",
                       "А(а)КДС + ВГА", "\n"
 
@@ -6470,6 +6475,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                command=open_dispanser_root,
                bg='#f0fffe').pack(fill='both', expand=True)
 
+        Button(frame_prescription_buttons, text=f"Справка",
+               font=('Comic Sans MS', user.get('text_size')),
+               command=fast_certificate,
+               bg='#f0fffe').pack(fill='both', expand=True)
+
+
 
         # data['examination']['prescription_frame']['Препараты'] = frame_prescription_buttons_drugs_buttons
 
@@ -8162,35 +8173,469 @@ def get_age_d_m_y(birth_date):
     return patient_age
 
 
-def certificate_cmd():
+def fast_certificate():
     if not patient.get('name'):
         messagebox.showinfo('Ошибка', "Не выбран пациент!")
     else:
-        data.clear()
-        render_data.clear()
+        data['certificate'] = {
+            'main_label': StringVar(),
+            'all_roots': dict()
+        }
 
-        data['text_size'] = user.get('text_size')
+        print(data.get('certificate'))
 
-        if not data.get('patient'):
-            data['patient'] = dict()
-        data['patient']['name'] = patient.get('name', '')
-        data['patient']['birth_date'] = patient.get('birth_date', '')
-        data['patient']['gender'] = patient.get('gender', '')
-        data['patient']['amb_cart'] = patient.get('amb_cart', '')
-        data['patient']['patient_district'] = patient.get('patient_district', '')
-        data['patient']['address'] = patient.get('address', '')
 
-        if not data.get('doctor'):
-            data['doctor'] = dict()
-        data['doctor']['doctor_name'] = user.get('doctor_name', '')
-        data['doctor']['manager'] = user.get('manager', '')
-        data['doctor']['ped_div'] = user.get('ped_div', '')
-        data['doctor']['doctor_district'] = user.get('doctor_district', '')
+        # data['text_size'] = user.get('text_size')
+        #
+        # if not data.get('patient'):
+        #     data['patient'] = dict()
+        # data['patient']['name'] = patient.get('name', '')
+        # data['patient']['birth_date'] = patient.get('birth_date', '')
+        # data['patient']['gender'] = patient.get('gender', '')
+        # data['patient']['amb_cart'] = patient.get('amb_cart', '')
+        # data['patient']['patient_district'] = patient.get('patient_district', '')
+        # data['patient']['address'] = patient.get('address', '')
+        #
+        # if not data.get('doctor'):
+        #     data['doctor'] = dict()
+        # data['doctor']['doctor_name'] = user.get('doctor_name', '')
+        # data['doctor']['manager'] = user.get('manager', '')
+        # data['doctor']['ped_div'] = user.get('ped_div', '')
+        # data['doctor']['doctor_district'] = user.get('doctor_district', '')
 
-        if not data.get('certificate'):
-            data['certificate'] = dict()
+        certificate_main_root = Toplevel()
+        certificate_main_root.bind("<Control-KeyPress>", keypress)
+        certificate_main_root.config(bg='white')
+        certificate_main_root.title(f'Cоздание справки')
 
-        certificate__ask_type_certificate()
+        selected_button = StringVar()
+
+        data['certificate']['main_label'].set(f"Данные пациента:    "
+                                               f"Участок: {patient.get('patient_district')};    "
+                                               f"№ амб: {patient.get('amb_cart')};\n"
+                                               f"ФИО: {patient.get('name')};    "
+                                               f"{patient.get('birth_date')};    "
+                                               f"пол: {patient.get('gender')};\n"
+                                               f"Адрес: {patient.get('address')};")
+
+        Label(master=certificate_main_root,
+              textvariable=data['certificate'].get('main_label'),
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d",
+              fg='white'
+              ).pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+        def pack_frame_type_cert():
+            def select_type_cert():
+                if data['certificate']['type_cert_frames'].get('selected_cert'):
+                    data['certificate']['type_cert_frames']['selected_cert'].pack_forget()
+                type_cert_frame = data['certificate']['type_cert_frames'].get(selected_button.get())
+                type_cert_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+                data['certificate']['type_cert_frames']['selected_cert'] = type_cert_frame
+
+            frame_type_cert = Frame(certificate_main_root)
+            Label(master=certificate_main_root,
+                  text="Тип справки:",
+                  font=('Comic Sans MS', user.get('text_size')),
+                  ).pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+            frame_type_cert_but = Frame(frame_type_cert)
+            counter = 0
+            for type_cert in all_data_certificate.get('type'):
+                counter += 1
+                if counter == 5:
+                    counter = 1
+                    frame_type_cert_but.columnconfigure(index='all', minsize=40, weight=1)
+                    frame_type_cert_but.rowconfigure(index='all', minsize=20)
+                    frame_type_cert_but.pack(fill='both', expand=True, padx=2, pady=2)
+                    frame_type_cert_but = Frame(frame_type_cert)
+
+                Radiobutton(master=frame_type_cert_but,
+                            text=type_cert,
+                            font=('Comic Sans MS', user.get('text_size')),
+                            value=type_cert,
+                            variable=selected_button,
+                            command=select_type_cert,
+                            indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                            ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
+            frame_type_cert_but.columnconfigure(index='all', minsize=40, weight=1)
+            frame_type_cert_but.rowconfigure(index='all', minsize=20)
+            frame_type_cert_but.pack(fill='both', expand=True, padx=2, pady=2)
+            frame_type_cert.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+        pack_frame_type_cert()
+
+        def pack_scrolled_frame():
+            def resize(event=None):
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+
+            def on_binds(event):
+                canvas.idbind = canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+            def off_binds(event=None):
+                canvas.unbind_all("<MouseWheel>")
+
+            def on_mousewheel(event):
+
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+
+                if os.name == 'posix':
+                    canvas.yview_scroll(int(-1 * event.delta), "units")
+                else:
+                    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+            certificate_main_root.update_idletasks()
+            height = (certificate_main_root.winfo_screenheight() - certificate_main_root.winfo_height())
+            master_frame = Frame(certificate_main_root)
+            master_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+            scroll_x = tk.Scrollbar(master_frame, orient=tk.HORIZONTAL)
+            scroll_y = tk.Scrollbar(master_frame, orient=tk.VERTICAL)
+
+            canvas = tk.Canvas(master_frame,
+                               xscrollcommand=scroll_x.set,
+                               yscrollcommand=scroll_y.set, height=height)
+            scroll_x.config(command=canvas.xview)
+            scroll_y.config(command=canvas.yview)
+
+            canvas_frame = Frame(canvas)
+            data['certificate']['scrolled_frame'] = canvas_frame
+
+
+            # canvas['width'] = int(canvas.winfo_geometry().split('x')[0])
+            # canvas_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
+            canvas.grid(row=0, column=0, sticky="nsew")
+            scroll_x.grid(row=1, column=0, sticky="we")
+            scroll_y.grid(row=0, column=1, sticky="ns")
+
+            master_frame.rowconfigure(0, weight=1)
+            master_frame.columnconfigure(0, weight=1)
+
+            master_frame.bind("<Configure>", resize)
+            master_frame.update_idletasks()
+            canvas_frame['height'] = height
+
+            canvas.bind("<Enter>", on_binds)
+            canvas.bind("<Leave>", off_binds)
+
+            canvas.create_window((0, 0), window=canvas_frame, anchor="nw",
+                                 width=canvas.winfo_width())
+
+        pack_scrolled_frame()
+
+        def create_type_cert_frames():
+            canvas_frame = data['certificate']['scrolled_frame']
+            data['certificate']['type_cert_frames'] = dict()
+            selected_place = StringVar()
+            label_place_text = StringVar()
+            selected_button = StringVar()
+            hobby_txt = StringVar()
+            new_hobby_txt = StringVar()
+            job_txt = StringVar()
+
+
+            for type_certificate in all_data_certificate.get('type'):
+
+                master_frame = Frame(canvas_frame)
+                data['certificate']['type_cert_frames'][type_certificate] = master_frame
+                Label(master=master_frame,
+                      text=type_certificate,
+                      font=('Comic Sans MS', user.get('text_size')),
+                      bg="#36566d",
+                      fg='white'
+                      ).pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+
+                if not all_data_certificate['all_info'].get(type_certificate).get('place_of_requirement'):
+                    def select_place():
+                        type_cert, place = selected_place.get().split('__')
+                        data['certificate']['place_of_requirement'] = place
+                        label_place_text.set(f"{label_place_text.get().split(':')[0]}: {place}")
+
+                        if type_cert == "Оформление в ДДУ / СШ / ВУЗ" and place == 'ВУЗ (колледж)':
+                            if not data['certificate'].get('frame_specialties'):
+                                frame_specialties = Frame(master=data['certificate']['type_cert_frames'].get(type_cert),
+                                                          borderwidth=1, relief="solid", padx=4, pady=4)
+                                specialties_txt = ScrolledText(frame_specialties, width=80, height=2,
+                                                               font=('Comic Sans MS', user.get('text_size')),
+                                                               wrap="word")
+
+                                data['certificate']['frame_specialties'] = frame_specialties
+                                data['certificate']['specialties_txt'] = specialties_txt
+                                Label(frame_specialties, text="Специальности для поступления:",
+                                      font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both',
+                                                                                                      expand=True,
+                                                                                                      padx=2, pady=2)
+                                specialties_txt.pack(fill='both', expand=True, padx=2, pady=2)
+
+                                frame_specialties.columnconfigure(index='all', minsize=40, weight=1)
+                                frame_specialties.rowconfigure(index='all', minsize=20)
+                                frame_specialties.pack(fill='both', expand=True, padx=2, pady=2)
+
+                        else:
+                            if data['certificate'].get('frame_specialties'):
+                                data['certificate']['frame_specialties'].pack_forget()
+                                data['certificate']['frame_specialties'] = None
+                        frame_place.update()
+
+                    frame_place = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+
+                    if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
+                        text = "Куда оформляетесь?:"
+                        place = ('Детское Дошкольное Учреждение',
+                                 'Средняя школа (гимназия)',
+                                 'ВУЗ (колледж)', 'Кадетское училище')
+                    else:
+                        text = "Место требования справки:"
+                        place = all_data_certificate.get('place')
+
+                    label_place_text.set(text)
+                    Label(frame_place, textvariable=label_place_text,
+                          font=('Comic Sans MS', user.get('text_size')),
+                          bg='white').pack(fill='both', expand=True, padx=2, pady=2)
+
+
+                    frame_place_1 = Frame(frame_place, borderwidth=1, relief="solid", padx=4, pady=4)
+
+                    row, col = 0, 0
+                    for mark in place:
+                        btn = Radiobutton(frame_place_1, text=mark,
+                                          font=('Comic Sans MS', user.get('text_size')),
+                                          value=f"{type_certificate}__{mark}",
+                                          variable=selected_place, command=select_place,
+                                          indicatoron=False, selectcolor='#77f1ff')
+                        btn.grid(row=row, column=col, sticky='ew')
+                        col += 1
+                        if col == 3:
+                            row += 1
+                            col = 0
+
+                        frame_place_1.columnconfigure(index='all', minsize=40, weight=1)
+                        frame_place_1.rowconfigure(index='all', minsize=20)
+                        frame_place_1.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    frame_place.columnconfigure(index='all', minsize=40, weight=1)
+                    frame_place.rowconfigure(index='all', minsize=20)
+                    frame_place.pack(fill='both', expand=True, padx=2, pady=2)
+
+
+
+
+                if type_certificate in ('На кружки и секции', 'Может работать по специальности...'):
+                    def save_new_hobby():
+                        if not new_hobby_txt.get():
+                            messagebox.showerror('Ошибка', "Не указан кружок / секция для сохранения")
+                        else:
+                            if data_base(command='save_new_hobby',
+                                         insert_data=[user.get('doctor_name'), new_hobby_txt.get()]):
+
+                                messagebox.showinfo('Инфо', "Секция сохранена в избранное\n")
+                                certificate_main_root.destroy()
+                            else:
+                                messagebox.showinfo('Инфо', "Ошибка при сохранении")
+
+                    def append_hobby():
+                        if selected_button.get() == '+ СОРЕВНОВАНИЯ':
+                            if hobby_txt.get():
+                                hobby_txt.set(f"{hobby_txt.get()} и участия в соревнованиях")
+                            else:
+                                hobby_txt.set("участия в соревнованиях по ")
+                        else:
+                            if hobby_txt.get():
+                                hobby_txt.set(f"{hobby_txt.get()}, {selected_button.get()}")
+                            else:
+                                hobby_txt.set(f"{selected_button.get()}")
+
+                    def delete_new_hobby():
+                        if not user.get('my_sport_section'):
+                            messagebox.showinfo('Инфо', "Нет сохраненных данных")
+
+                        else:
+                            def delete_sport_section():
+                                if data_base(command='delete_sport_section',
+                                             delete_data=selected_delete_sport_section.get()):
+                                    messagebox.showinfo("Инфо", "Запись удалена")
+                                    delete_new_hobby_root.destroy()
+                                    delete_new_hobby()
+                                else:
+                                    messagebox.showerror("Ошибка", "Запись не удалена")
+
+                            delete_new_hobby_root = Toplevel()
+                            delete_new_hobby_root.title('Удаление секций')
+                            delete_new_hobby_root.config(bg='white')
+
+                            selected_delete_sport_section = StringVar()
+
+                            Label(delete_new_hobby_root, text="Выберите секцию для удаления",
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  bg='white').pack(fill='both', expand=True, padx=2, pady=2)
+                            frame_delete_new_hobby = Frame(delete_new_hobby_root, borderwidth=1,
+                                                           relief="solid", padx=4, pady=4)
+
+                            col_, row_ = 0, 0
+                            for sport_section in user.get('my_sport_section'):
+                                if not isinstance(sport_section, str):
+                                    sport_section = sport_section[0]
+
+                                Radiobutton(frame_delete_new_hobby, text=sport_section,
+                                            font=('Comic Sans MS', user.get('text_size')),
+                                            value=f"{sport_section}", variable=selected_delete_sport_section,
+                                            command=delete_sport_section, indicatoron=False,
+                                            selectcolor='#77f1ff').grid(row=row_, column=col_, sticky='ew')
+                                col_ += 1
+                                if col_ == 5:
+                                    col_ = 0
+                                    row_ += 1
+                            frame_delete_new_hobby.columnconfigure(index='all', minsize=40, weight=1)
+                            frame_delete_new_hobby.rowconfigure(index='all', minsize=20)
+                            frame_delete_new_hobby.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    frame_section = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                    if type_certificate == 'На кружки и секции':
+
+                        frame = Frame(frame_section, borderwidth=1, relief="solid")
+                        Label(frame, text='Может заниматься:',
+                              font=('Comic Sans MS', user.get('text_size')),
+                              bg='white').pack(fill='both', expand=True, side='left')
+                        Entry(frame, textvariable=hobby_txt,
+                              width=150, font=('Comic Sans MS', user.get('text_size'))
+                              ).pack(fill='both', expand=True, side='left')
+                        frame.columnconfigure(index='all', minsize=40, weight=1)
+                        frame.rowconfigure(index='all', minsize=20)
+                        frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+
+                        frame = Frame(frame_section, borderwidth=1, relief="solid")
+                        Label(frame, text="Добавить кружок в избранное: ",
+                              font=('Comic Sans MS', user.get('text_size')),
+                              bg='white').pack(fill='both', expand=True, side='left')
+                        Entry(frame, textvariable=new_hobby_txt,
+                              width=50, font=('Comic Sans MS', user.get('text_size'))
+                              ).pack(fill='both', expand=True, side='left')
+                        Button(frame, text='Сохранить', command=save_new_hobby,
+                               font=('Comic Sans MS', user.get('text_size'))
+                               ).pack(fill='both', expand=True, side='left')
+
+                        frame.columnconfigure(index='all', minsize=40, weight=1)
+                        frame.rowconfigure(index='all', minsize=20)
+                        frame.pack(fill='both', expand=True, padx=2, pady=2)
+                        if user.get('my_sport_section'):
+                            row, col = 0, 0
+                            frame = Frame(frame_section, borderwidth=1, relief="solid")
+                            Label(frame, text='Мои кружки и секции',
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  bg='white').grid(row=0, column=0, sticky='ew')
+
+                            col += 1
+                            for mark in user.get('my_sport_section'):
+                                mark = mark[0]
+                                btn = Radiobutton(frame, text=mark,
+                                                  font=('Comic Sans MS', user.get('text_size')),
+                                                  value=f"{mark}",
+                                                  variable=selected_button, command=append_hobby,
+                                                  indicatoron=False, selectcolor='#77f1ff')
+                                btn.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew', row=row, column=col)
+
+                                col += 1
+                                if col == 5:
+                                    col = 0
+                                    row += 1
+
+                            Button(frame, text='Редактировать мой список',
+                                   command=delete_new_hobby,
+                                   font=('Comic Sans MS', user.get('text_size'))
+                                   ).grid(padx=2, pady=2, sticky='ew', row=row, column=col)
+
+                            frame.columnconfigure(index='all', minsize=40, weight=1)
+                            frame.rowconfigure(index='all', minsize=20)
+                            frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                        frame_but = Frame(frame_section, borderwidth=1, relief="solid")
+
+                        for mark_group in all_data_certificate.get('sport_section'):
+                            frame = Frame(frame_but)
+                            for mark in mark_group:
+
+                                Radiobutton(frame, text=mark,
+                                          font=('Comic Sans MS', user.get('text_size')),
+                                          value=f"{mark}",
+                                          variable=selected_button, command=append_hobby,
+                                          indicatoron=False, selectcolor='#77f1ff'
+                                            ).pack(fill='both', expand=True, side='left')
+
+                            frame.columnconfigure(index='all', minsize=40, weight=1)
+                            frame.rowconfigure(index='all', minsize=20)
+                            frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                        frame_but.columnconfigure(index='all', minsize=40, weight=1)
+                        frame_but.rowconfigure(index='all', minsize=20)
+                        frame_but.pack(fill='both', expand=True, padx=2, pady=2)
+
+                        frame = Frame(frame_section, borderwidth=1, relief="solid")
+
+                        Label(frame, text="Группа здоровья:",
+                              font=('Comic Sans MS', user.get('text_size')),
+                              bg='white').pack(fill='both', expand=True, side='left')
+
+                        selected_health_group = StringVar()
+
+                        def select_health_group():
+                            data['certificate']['health_group'] = selected_health_group.get()
+
+                        for mark in all_data_certificate.get('health').get('group'):
+                            Radiobutton(frame, text=mark,
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      value=mark, variable=selected_health_group,
+                                      command=select_health_group, indicatoron=False,
+                                        selectcolor='#77f1ff').pack(fill='both', expand=True, side='left')
+
+                        frame.columnconfigure(index='all', minsize=40, weight=1)
+                        frame.rowconfigure(index='all', minsize=20)
+                        frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                        frame = Frame(frame_section, borderwidth=1, relief="solid")
+
+                        Label(frame, text="Группа по физ-ре:",
+                              font=('Comic Sans MS', user.get('text_size')),
+                              bg='white').pack(fill='both', expand=True, side='left')
+
+                        selected_fiz_group = StringVar()
+
+                        def select_fiz_group():
+                            data['certificate']['physical'] = selected_fiz_group.get()
+
+                        for mark in all_data_certificate.get('health').get('physical'):
+                            btn = Radiobutton(frame, text=mark,
+                                              font=('Comic Sans MS', user.get('text_size')),
+                                              value=mark, variable=selected_fiz_group, command=select_fiz_group,
+                                              indicatoron=False, selectcolor='#77f1ff')
+                            btn.pack(fill='both', expand=True, side='left')
+
+                        frame.columnconfigure(index='all', minsize=40, weight=1)
+                        frame.rowconfigure(index='all', minsize=20)
+                        frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    else:
+                        txt = 'Может работать по специальности:'
+                        Label(frame_section, text=txt,
+                              font=('Comic Sans MS', user.get('text_size')),
+                              bg='white').pack(fill='both', expand=True, side='left')
+
+                        Entry(frame_section, textvariable=job_txt, width=70,
+                              font=('Comic Sans MS', user.get('text_size'))
+                              ).pack(fill='both', expand=True, side='left')
+
+
+                    frame_section.columnconfigure(index='all', minsize=40, weight=1)
+                    frame_section.rowconfigure(index='all', minsize=20)
+                    frame_section.pack(fill='both', expand=True, padx=2, pady=2)
+
+
+        create_type_cert_frames()
+        certificate_main_root.geometry('+0+0')
+
+
 
 
 def certificate__ask_type_certificate():
@@ -8223,305 +8668,7 @@ def certificate__ask_type_certificate():
 
 
 def certificate__editing_certificate():
-    destroy_elements = dict()
-    edit_cert_root = Toplevel()
-    edit_cert_root.geometry('+0+0')
 
-    edit_cert_root.bind("<Control-KeyPress>", keypress)
-
-    type_certificate = data['certificate'].get('type_certificate')
-
-    edit_cert_root.title(f'Редактирование справки {type_certificate}')
-    edit_cert_root.config(bg='white')
-
-    Label(edit_cert_root, text=f"Данные пациента:\n"
-                               f"Участок: {data['patient'].get('patient_district')};    "
-                               f"№ амб: {data['patient'].get('amb_cart')};\n"
-                               f"ФИО: {data['patient'].get('name')};    "
-                               f"{data['patient'].get('birth_date')};    "
-                               f"пол: {data['patient'].get('gender')};\n"
-                               f"Адрес: {data['patient'].get('address')};",
-
-          font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True,
-                                                                          padx=2, pady=2)
-    if not all_data_certificate['all_info'].get(type_certificate).get('place_of_requirement'):
-        frame_place = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-
-        if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
-            text = "Куда оформляетесь?:"
-            place = ('Детское Дошкольное Учреждение',
-                     'Средняя школа (гимназия)',
-                     'ВУЗ (колледж)', 'Кадетское училище')
-        else:
-            text = "Место требования справки:"
-            place = all_data_certificate.get('place')
-
-        Label(frame_place, text=text,
-              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0, sticky='ew')
-
-        frame_place.columnconfigure(index='all', minsize=40, weight=1)
-        frame_place.rowconfigure(index='all', minsize=20)
-        frame_place.pack(fill='both', expand=True, padx=2, pady=2)
-
-        destroy_elements['place_of_requirement'] = list()
-        label_place_text = StringVar()
-        Label(frame_place, textvariable=label_place_text,
-              font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=1, row=0, sticky='ew')
-
-        def select_place():
-            data['certificate']['place_of_requirement'] = selected_place.get()
-            # for el in destroy_elements.get('place_of_requirement'):
-            #     el.destroy()
-            label_place_text.set(selected_place.get())
-
-            if type_certificate == "Оформление в ДДУ / СШ / ВУЗ" and selected_place.get() == 'ВУЗ (колледж)':
-                Label(frame_specialties, text="Специальности для поступления:",
-                      font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True,
-                                                                                      padx=2, pady=2)
-                specialties_txt.pack(fill='both', expand=True, padx=2, pady=2)
-
-                frame_specialties.columnconfigure(index='all', minsize=40, weight=1)
-                frame_specialties.rowconfigure(index='all', minsize=20)
-                frame_specialties.pack(fill='both', after=frame_place, expand=True, padx=2, pady=2)
-                frame_select_desk.destroy()
-
-            frame_place.update()
-
-
-        frame_specialties = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-        specialties_txt = ScrolledText(frame_specialties, width=80, height=2,
-                                       font=('Comic Sans MS', user.get('text_size')), wrap="word")
-
-        selected_place = StringVar()
-        frame_place_1 = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-        destroy_elements['place_of_requirement'].append(frame_place_1)
-
-        row, col = 0, 0
-        for mark in place:
-            btn = Radiobutton(frame_place_1, text=mark,
-                              font=('Comic Sans MS', user.get('text_size')),
-                              value=mark, variable=selected_place, command=select_place,
-                              indicatoron=False, selectcolor='#77f1ff')
-            btn.grid(row=row, column=col, sticky='ew')
-            col += 1
-            if col == 3:
-                row += 1
-                col = 0
-
-            frame_place_1.columnconfigure(index='all', minsize=40, weight=1)
-            frame_place_1.rowconfigure(index='all', minsize=20)
-            frame_place_1.pack(fill='both', expand=True, padx=2, pady=2)
-
-    if type_certificate in ('На кружки и секции', 'Может работать по специальности...'):
-
-        def close_frame_hobby():
-            frame_hobby.destroy()
-            frame_hobby.update()
-
-        def append_hobby():
-
-            hobby_txt.delete(0, 'end')
-
-            for hobby in data['certificate'].get('regime_but'):
-                if data['certificate']['regime_but'][hobby].get() == 1:
-                    if len(hobby_txt.get()) == 0:
-                        if hobby != '+ СОРЕВНОВАНИЯ':
-                            hobby_txt.insert(0, hobby)
-                        else:
-                            hobby_txt.insert(0, 'участия в соревнованиях по ')
-                    else:
-                        if hobby != '+ СОРЕВНОВАНИЯ':
-                            hobby_txt.insert('end', f", {hobby}")
-                        else:
-                            hobby_txt.insert('end', ' и участия в соревнованиях')
-
-        def save_new_hobby():
-            if not new_hobby_txt.get():
-                messagebox.showerror('Ошибка', "Не указан кружок / секция для сохранения")
-                new_hobby_txt.focus()
-            else:
-                if data_base(command='save_new_hobby',
-                             insert_data=[user.get('doctor_name'), new_hobby_txt.get()]):
-
-                    messagebox.showinfo('Инфо', "Секция сохранена в избранное")
-                    edit_cert_root.destroy()
-                    certificate__editing_certificate()
-                else:
-                    messagebox.showinfo('Инфо', "Ошибка при сохранении")
-
-        def delete_new_hobby():
-            if not user.get('my_sport_section'):
-                messagebox.showinfo('Инфо', "Нет сохраненных данных")
-
-            else:
-                def delete_sport_section():
-                    if data_base(command='delete_sport_section',
-                                 delete_data=selected_delete_sport_section.get()):
-                        messagebox.showinfo("Инфо", "Запись удалена")
-                        delete_new_hobby_root.destroy()
-                        delete_new_hobby()
-                    else:
-                        messagebox.showerror("Ошибка", "Запись не удалена")
-
-                delete_new_hobby_root = Toplevel()
-                delete_new_hobby_root.title('Удаление секций')
-                delete_new_hobby_root.config(bg='white')
-
-                selected_delete_sport_section = StringVar()
-
-                Label(delete_new_hobby_root, text="Выберите секцию для удаления",
-                      font=('Comic Sans MS', user.get('text_size')),
-                      bg='white').pack(fill='both', expand=True, padx=2, pady=2)
-                frame_delete_new_hobby = Frame(delete_new_hobby_root, borderwidth=1, relief="solid", padx=4, pady=4)
-
-                col_, row_ = 0, 0
-                for sport_section in user.get('my_sport_section'):
-                    if not isinstance(sport_section, str):
-                        sport_section = sport_section[0]
-
-                    Radiobutton(frame_delete_new_hobby, text=sport_section,
-                                font=('Comic Sans MS', user.get('text_size')),
-                                value=f"{sport_section}", variable=selected_delete_sport_section,
-                                command=delete_sport_section, indicatoron=False,
-                                selectcolor='#77f1ff').grid(row=row_, column=col_, sticky='ew')
-                    col_ += 1
-                    if col_ == 5:
-                        col_ = 0
-                        row_ += 1
-                frame_delete_new_hobby.columnconfigure(index='all', minsize=40, weight=1)
-                frame_delete_new_hobby.rowconfigure(index='all', minsize=20)
-                frame_delete_new_hobby.pack(fill='both', expand=True, padx=2, pady=2)
-
-        frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-        if type_certificate == 'На кружки и секции':
-            txt = 'Может заниматься:'
-        else:
-            txt = 'Может работать по специальности:'
-
-        Label(frame, text=txt, font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=0)
-        hobby_txt = Entry(frame, width=70, font=('Comic Sans MS', user.get('text_size')))
-        hobby_txt.grid(column=2, row=0, columnspan=3)
-
-        frame.columnconfigure(index='all', minsize=40, weight=1)
-        frame.rowconfigure(index='all', minsize=20)
-        frame.pack(fill='both', expand=True, padx=2, pady=2)
-
-        if type_certificate == 'На кружки и секции':
-            frame_hobby = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-
-            row, col = 0, 0
-
-            data['certificate']['regime_but'] = dict()
-            if user.get('my_sport_section'):
-
-                frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-
-                Label(frame, text='Мои кружки и секции',
-                      font=('Comic Sans MS', user.get('text_size')), bg='white').grid(row=0, column=0, sticky='ew')
-
-                col += 1
-                for mark in user.get('my_sport_section'):
-                    mark = mark[0]
-                    data['certificate']['regime_but'][mark] = IntVar()
-                    btn = Checkbutton(frame, text=mark,
-                                      font=('Comic Sans MS', user.get('text_size')),
-                                      variable=data['certificate']['regime_but'].get(mark), command=append_hobby,
-                                      onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
-                    btn.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew', row=row, column=col)
-
-                    col += 1
-                    if col == 5:
-                        col = 0
-                        row += 1
-
-                    Button(frame, text='Редактировать мой список', command=delete_new_hobby,
-                           font=('Comic Sans MS', user.get('text_size'))).grid(ipadx=2, ipady=2, padx=2, pady=2,
-                                                                               sticky='ew', row=row, column=col)
-
-                frame.columnconfigure(index='all', minsize=40, weight=1)
-                frame.rowconfigure(index='all', minsize=20)
-                frame.pack(fill='both', expand=True, padx=2, pady=2)
-
-            frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-
-            Label(frame, text="Добавить кружок или секцию в избранное: ",
-                  font=('Comic Sans MS', user.get('text_size')),
-                  bg='white').pack(fill='both', expand=True, side='left')
-
-            new_hobby_txt = Entry(frame, width=70, font=('Comic Sans MS', user.get('text_size')))
-            new_hobby_txt.pack(fill='both', expand=True, side='left')
-            Button(frame, text='Сохранить', command=save_new_hobby,
-                   font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True, side='left')
-
-            frame.columnconfigure(index='all', minsize=40, weight=1)
-            frame.rowconfigure(index='all', minsize=20)
-            frame.pack(fill='both', expand=True, padx=2, pady=2)
-
-            row, col = 0, 0
-
-            for mark in all_data_certificate.get('sport_section'):
-                data['certificate']['regime_but'][mark] = IntVar()
-
-                btn = Checkbutton(frame_hobby, text=mark,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  variable=data['certificate']['regime_but'].get(mark), command=append_hobby,
-                                  onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff')
-                btn.grid(ipadx=2, ipady=2, padx=2, pady=2, sticky='ew', row=row, column=col)
-
-                col += 1
-                if col == 5:
-                    col = 0
-                    row += 1
-
-            Button(frame_hobby, text='Скрыть', command=close_frame_hobby,
-                   font=('Comic Sans MS', user.get('text_size'))).grid(column=col, row=row, sticky="ew")
-
-            frame_hobby.columnconfigure(index='all', minsize=40, weight=1)
-            frame_hobby.rowconfigure(index='all', minsize=20)
-            frame_hobby.pack(fill='both', expand=True, padx=2, pady=2)
-
-            frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-
-            Label(frame, text="Группа здоровья:",
-                  font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
-
-            selected_health_group = StringVar()
-
-            def select_health_group():
-                data['certificate']['health_group'] = selected_health_group.get()
-
-            for mark in all_data_certificate.get('health').get('group'):
-                btn = Radiobutton(frame, text=mark,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  value=mark, variable=selected_health_group,
-                                  command=select_health_group, indicatoron=False, selectcolor='#77f1ff')
-                btn.grid(row=0, column=(all_data_certificate.get('health').get('group').index(mark) + 1), sticky='ew')
-
-            frame.columnconfigure(index='all', minsize=40, weight=1)
-            frame.rowconfigure(index='all', minsize=20)
-            frame.pack(fill='both', expand=True, padx=2, pady=2)
-
-            frame = Frame(edit_cert_root, borderwidth=1, relief="solid", padx=4, pady=4)
-
-            Label(frame, text="Группа по физ-ре:",
-                  font=('Comic Sans MS', user.get('text_size')), bg='white').grid(column=0, row=0)
-
-            selected_fiz_group = StringVar()
-
-            def select_fiz_group():
-                data['certificate']['physical'] = selected_fiz_group.get()
-
-            for mark in all_data_certificate.get('health').get('physical'):
-                btn = Radiobutton(frame, text=mark,
-                                  font=('Comic Sans MS', user.get('text_size')),
-                                  value=mark, variable=selected_fiz_group, command=select_fiz_group,
-                                  indicatoron=False, selectcolor='#77f1ff')
-                btn.grid(row=0, column=(all_data_certificate.get('health').get('physical').index(mark) + 1),
-                         sticky='ew')
-
-            frame.columnconfigure(index='all', minsize=40, weight=1)
-            frame.rowconfigure(index='all', minsize=20)
-            frame.pack(fill='both', expand=True, padx=2, pady=2)
 
     if type_certificate == 'По выздоровлении':
         def calendar_ori_from():
@@ -11895,7 +12042,7 @@ def paste_frame_main(root):
                            anchor='center')
     lbl_to_do_main.grid(column=0, row=0, columnspan=2, sticky='ew')
 
-    button_certificate_cmd = Button(frame_main_loc, text='Справка', command=certificate_cmd)
+    button_certificate_cmd = Button(frame_main_loc, text='Справка', command=fast_certificate)
     button_certificate_cmd.grid(column=0, row=1, sticky='ew')
 
     button_analyzes_cmd = Button(frame_main_loc, text='Анализы', command=analyzes_cmd)
