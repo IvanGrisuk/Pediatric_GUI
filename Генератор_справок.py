@@ -105,7 +105,8 @@ all_data_certificate = {
         "Годовой медосмотр": {
             "additional_medical_information": "Рост _____ см; Вес _____ кг; Vis OD/OS = __________; АД ________\n"
                                               "| Осмотрен на чесотку, педикулез, микроспорию |",
-            "diagnosis": "Группа здоровья: _ ; Группа по физкультуре: _ ;",
+            "diagnosis": "Группа здоровья: _ ; Группа по физкультуре: _ ;\n"
+                         f"Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное",
             "recommendation": "Режим _; Стол _;",
             "date_of_issue": "now"},
 
@@ -144,7 +145,8 @@ all_data_certificate = {
             "additional_medical_information": "Рост _____ см; Вес _____ кг; Vis OD/OS = __________; АД ________\n"
                                               "| Осмотрен на чесотку, педикулез, микроспорию |\n"
                                               "Данные о профилактических прививках прилагаются",
-            "diagnosis": f"Группа здоровья: _ ; Группа по физкультуре: _ ;",
+            "diagnosis": f"Группа здоровья: _ ; Группа по физкультуре: _ ;\n"
+                         f"Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное",
             "recommendation": "Режим _; Стол _;",
             "date_of_issue": "now",
             "validity_period": "1 год"},
@@ -168,7 +170,8 @@ all_data_certificate = {
                                               "| Осмотрен на чесотку, педикулез, микроспорию |\n"
                                               "В контакте с инфекционными больными в течение 35 дней не был\n"
                                               "Данные о профилактических прививках прилагаются",
-            "diagnosis": f"diagnosis\nГруппа здоровья: _ ; Группа по физкультуре: _ ;\n"
+            "diagnosis": f"Группа здоровья: _ ; Группа по физкультуре: _ ;\n"
+                         f"Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное\n"
                          "На момент осмотра соматически здоров",
             "recommendation": "Режим _; Стол _;",
             "date_of_issue": "now",
@@ -182,7 +185,7 @@ all_data_certificate = {
 
         "Об обслуживании в поликлинике": {
             "place_of_requirement": "По месту требования",
-            "diagnosis": "Ребенок обслуживается в УЗ '19-я городская детская поликлиника с ___________'",
+            "diagnosis": "Ребенок обслуживается в УЗ '19-я городская детская поликлиника' с ___________",
             "date_of_issue": "now",
             "validity_period": "1 год"},
 
@@ -207,8 +210,7 @@ all_data_certificate = {
                                               f"Hbs-Ag: дата {'_' * 10} закл-е: _______________________________\n"
                                               f"RW: дата {'_' * 10} закл-е: ___________________________________\n"
                                               "Данные о профилактических прививках прилагаются",
-            "diagnosis": f"diagnosis\n"
-                         f"Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное\n"
+            "diagnosis": f"Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное\n"
                          f"НПР - соответствует возрасту",
             "date_of_issue": "now",
             "validity_period": "1 год"
@@ -7591,10 +7593,6 @@ def data_base(command,
         else:
             return True
 
-
-
-
-
     elif command == 'save_doctor_local':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
@@ -7735,15 +7733,33 @@ def data_base(command,
         else:
             return True, True
 
+    elif command == 'certificate__upload_last_data':
+        path = f".{os.sep}data_base{os.sep}"
+        if user['app_data'].get('path_examination_data_base'):
+            path = user['app_data'].get('path_examination_data_base')
+        path_examination = f"{path}data_base.db"
+
+        found_info = {
+            'select_past_examination': None}
+
+        with sq.connect(f"{path_examination}") as conn:
+            cur = conn.cursor()
+            cur.execute(f"SELECT date_time, examination_key "
+                        f"FROM examination "
+                        f"WHERE patient_info LIKE "
+                        f"'{patient.get('name').strip()}__{patient.get('birth_date').strip()}' "
+                        f"AND status NOT LIKE 'deleted' "
+                        f"AND add_info LIKE 'certificate'")
+            found_info['select_past_examination'] = cur.fetchall()
+        return found_info
+
+
+
     elif command.startswith('examination'):
         try:
             path = f".{os.sep}data_base{os.sep}"
             if user['app_data'].get('path_examination_data_base'):
                 path = user['app_data'].get('path_examination_data_base')
-
-
-            # path_examination = f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
-            # if user.get('error_connection') or 'examination_db_place:____loc' in user.get('add_info'):
             path_examination = f"{path}data_base.db"
 
             if command == 'examination__delete':
@@ -8359,6 +8375,57 @@ def fast_certificate():
               fg='white'
               ).pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
 
+        selected_place = StringVar()
+        label_place_text = StringVar()
+        label_place_text.set("Место требования справки: ")
+
+        selected_button = StringVar()
+        hobby_txt = StringVar()
+        new_hobby_txt = StringVar()
+        job_txt = StringVar()
+        selected_diagnosis_ori = StringVar()
+
+        ori_from = StringVar()
+        ori_until = StringVar()
+        ori_home_regime = StringVar()
+        ori_add_to_childhood = StringVar()
+        ori_fizra_days = StringVar()
+
+        selected_chickenpox = StringVar()
+        selected_allergy = StringVar()
+        allergy_txt = StringVar()
+        selected_injury_operation = StringVar()
+        injury_operation_txt = StringVar()
+
+        height = StringVar()
+        weight = StringVar()
+        vision = StringVar()
+
+        patient_anthropometry = StringVar()
+
+        selected_health_group = StringVar()
+        selected_fiz_group = StringVar()
+        selected_diet = StringVar()
+
+        patient_temp = StringVar()
+        patient_br = StringVar()
+        patient_hr = StringVar()
+        patient_bp = StringVar()
+
+        patient_passport = StringVar()
+        rgr_ogk = StringVar()
+
+        date_of_issue = StringVar()
+        date_of_issue.set(datetime.now().strftime('%d.%m.%Y'))
+
+        regime_vars = dict()
+        for mark in all_data_certificate.get('health').get('regime'):
+            regime_vars[mark] = IntVar()
+        desk_vars = dict()
+        for mark in all_data_certificate.get('health').get('desk'):
+            desk_vars[mark] = IntVar()
+
+
         def pack_frame_type_cert():
             def select_type_cert():
                 if data['certificate']['type_cert_frames'].get('selected_cert'):
@@ -8422,7 +8489,7 @@ def fast_certificate():
                     canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
             certificate_main_root.update_idletasks()
-            height = (certificate_main_root.winfo_screenheight() - certificate_main_root.winfo_height())
+            height = (certificate_main_root.winfo_screenheight() - certificate_main_root.winfo_height() - 200)
             width = certificate_main_root.winfo_screenheight()
             if certificate_main_root.winfo_screenwidth() < width:
                 width = certificate_main_root.winfo_screenwidth()
@@ -8472,54 +8539,237 @@ def fast_certificate():
         def create_type_cert_frames():
             canvas_frame = data['certificate']['scrolled_frame']
 
-            selected_place = StringVar()
-            label_place_text = StringVar()
-            selected_button = StringVar()
-            hobby_txt = StringVar()
-            new_hobby_txt = StringVar()
-            job_txt = StringVar()
-            selected_diagnosis_ori = StringVar()
-
-            ori_from = StringVar()
-            ori_until = StringVar()
-            ori_home_regime = StringVar()
-            ori_add_to_childhood = StringVar()
-            ori_fizra_days = StringVar()
-
-            selected_chickenpox = StringVar()
-            selected_allergy = StringVar()
-            allergy_txt = StringVar()
-            selected_injury_operation = StringVar()
-            injury_operation_txt = StringVar()
-
-            height = StringVar()
-            weight = StringVar()
-            vision = StringVar()
-
-            patient_anthropometry = StringVar()
-
-
-            selected_health_group = StringVar()
-            selected_fiz_group = StringVar()
-            selected_diet = StringVar()
-
-            patient_temp = StringVar()
-            patient_br = StringVar()
-            patient_hr = StringVar()
-            patient_bp = StringVar()
-
-            date_of_issue = StringVar()
-            date_of_issue.set(datetime.now().strftime('%d.%m.%Y'))
-
-            regime_vars = dict()
-            for mark in all_data_certificate.get('health').get('regime'):
-                regime_vars[mark] = IntVar()
-            desk_vars = dict()
-            for mark in all_data_certificate.get('health').get('desk'):
-                desk_vars[mark] = IntVar()
             sanatorium_profile = dict()
 
             def create_certificate():
+                def certificate__create_doc():
+                    if type_certificate in ('ЦКРОиР',
+                                            'О нуждаемости в сан-кур лечении',
+                                            'Об усыновлении (удочерении)',
+                                            'Бесплатное питание') \
+                            or (type_certificate == 'Оформление в ДДУ / СШ / ВУЗ' and not
+                    ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
+                     ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
+                        doctor_name, district, pediatric_division = (user.get('doctor_name'),
+                                                                     user.get('doctor_district'),
+                                                                     user.get('ped_div'))
+
+                        if type_certificate in ('ЦКРОиР', 'Бесплатное питание'):
+                            type_cert = '7.9'
+                        else:
+                            type_cert = '7.6'
+                        info = [pediatric_division,
+                                district,
+                                None,
+                                datetime.now().strftime("%d.%m.%Y"),
+                                render_data.get('name'),
+                                render_data.get('birth_date'),
+                                render_data.get('address'),
+                                type_cert,
+                                doctor_name]
+
+                        number = data_base(command='save_certificate_ped_div',
+                                           insert_data=[pediatric_division, info, 'certificate_ped_div'])
+
+                        render_data['number_cert'] = f"№ {number}"
+
+
+                    if (type_certificate == "Оформление в ДДУ / СШ / ВУЗ"
+                        and "Детское Дошкольное Учреждение" not in render_data.get('place_of_requirement')) \
+                            or type_certificate == 'Об усыновлении (удочерении)':
+                        doc_name = ""
+                        if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
+                            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_справка_Оформление.docx"
+                            if not render_data.get('number_cert'):
+                                render_data['number_cert'] = '№ ______'
+                        elif type_certificate == 'Об усыновлении (удочерении)':
+                            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_справка_Об_усыновлении.docx"
+
+
+                        render_data['manager'] = user.get('manager', '______________________')
+
+                        doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а4 годовая.docx")
+                        doc.render(render_data)
+                        doc_name = save_document(doc=doc, doc_name=doc_name)
+
+                        file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=4)
+                        if file_name_vac:
+                            master = Document(doc_name)
+                            master.add_page_break()
+                            composer = Composer(master)
+                            doc_temp = Document(file_name_vac)
+                            composer.append(doc_temp)
+                            doc_name = save_document(doc=composer, doc_name=doc_name)
+
+                            # composer.save(doc_name)
+                        run_document(doc_name)
+
+                        doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
+                        doc.render(render_data)
+                        doc_name_exam = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
+                        doc_name_exam = save_document(doc=doc, doc_name=doc_name_exam)
+                        run_document(doc_name_exam)
+
+                    else:
+                        if type_certificate in ('ЦКРОиР', 'Бесплатное питание'):
+                            doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}Выписка.docx")
+                            render_data['manager'] = '______________________'
+                            if type_certificate == 'Бесплатное питание':
+                                render_data['manager'] = user.get('manager', '______________________')
+
+                            doc.render(render_data)
+                            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_" \
+                                       f"Выписка_{type_certificate}.docx".replace(' ', '_')
+                            doc_name = save_document(doc=doc, doc_name=doc_name)
+
+
+                        elif type_certificate in ('Годовой медосмотр', 'В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
+                            if type_certificate.startswith('В детский лагерь'):
+                                info = [user.get('doctor_district'),
+                                        None,
+                                        datetime.now().strftime("%d.%m.%Y"),
+                                        render_data.get('name'),
+                                        render_data.get('birth_date'),
+                                        render_data.get('gender'),
+                                        render_data.get('address')]
+                                number = data_base(command='save_certificate_ped_div',
+                                                   insert_data=[user.get('doctor_district'), info, 'certificate_camp'])
+                                render_data['number_cert'] = f"№ {user.get('doctor_district')} / {number}"
+                            render_data['manager'] = '______________________'
+                            if type_certificate.startswith('Оформление в ДДУ / СШ / ВУЗ'):
+                                render_data['manager'] = user.get('manager', '______________________')
+
+                            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_" \
+                                       f"справка_{type_certificate}.docx".replace(' в ДДУ / СШ / ВУЗ', '').replace(' ', '_')
+
+                            master = Document(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
+                            master.add_page_break()
+                            composer = Composer(master)
+
+                            if type_certificate in ('В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
+                                file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=5)
+                                if file_name_vac:
+                                    doc_temp = Document(file_name_vac)
+                                    composer.append(doc_temp)
+                                    master.add_page_break()
+
+                            master.add_section()
+                            master.sections[-1].orientation = WD_ORIENT.LANDSCAPE
+                            master.sections[-1].page_width = master.sections[0].page_height
+                            master.sections[-1].page_height = master.sections[0].page_width
+                            doc_temp = Document(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
+                            composer.append(doc_temp)
+                            doc_name = save_document(doc=composer, doc_name=doc_name)
+
+                            doc = DocxTemplate(doc_name)
+                            doc.render(render_data)
+
+                            doc_name = save_document(doc=doc, doc_name=doc_name)
+
+                        else:
+                            doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
+                            doc.render(render_data)
+                            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]} " \
+                                       f"справка {type_certificate}.docx".replace(' ', '_')
+                            doc_name = save_document(doc=doc, doc_name=doc_name)
+                            render_data['manager'] = '______________________'
+                            if type_certificate == 'О нуждаемости в сан-кур лечении':
+                                render_data['manager'] = user.get('manager', '______________________')
+
+
+                            if (type_certificate in ('В детский лагерь', 'Может работать по специальности...')
+                                    or(type_certificate == 'Об отсутствии контактов'
+                                       and data['certificate'].get('place_of_requirement') == 'В стационар')):
+                                file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=5)
+                                if file_name_vac:
+                                    master = Document(doc_name)
+                                    master.add_page_break()
+                                    composer = Composer(master)
+                                    doc_temp = Document(file_name_vac)
+                                    composer.append(doc_temp)
+                                    doc_name = save_document(doc=composer, doc_name=doc_name)
+
+                                    # composer.save(doc_name)
+                        run_document(doc_name)
+                    data_base(command="statistic_write",
+                              insert_data="Справка")
+                    def save_info_examination():
+
+                        active_examination = f"Выдана справка: {type_certificate}\n" \
+                                             f"Цель выдачи справки: {render_data.get('place_of_requirement')}\n" \
+                                             f"Перенесенные заболевания: {render_data.get('past_illnesses')}\n" \
+                                             f"Дополнительные медицинские сведения: " \
+                                             f"{render_data.get('additional_medical_information')}\n" \
+                                             f"Заключение: {render_data.get('diagnosis')}\n" \
+                                             f"Рекомендации: {render_data.get('recommendation')}"
+
+                        active_but = f"type_examination:____certificate__<end!>__\n" \
+                                     f"type_certificate:____{type_certificate}__<end!>__\n"
+                        if type_certificate in ('Годовой медосмотр',
+                                                'Оформление в ДДУ / СШ / ВУЗ',
+                                                'В детский лагерь',
+                                                'Об усыновлении (удочерении)',
+                                                'Об отсутствии контактов',
+                                                'Бесплатное питание',
+                                                'О нуждаемости в сан-кур лечении'):
+                            active_but += f"chickenpox_allergy_injury:____" \
+                                          f"chickenpox__{data['certificate'].get('chickenpox', '')}____" \
+                                          f"allergy__{data['certificate'].get('allergy', '')}____" \
+                                          f"allergy_txt__{allergy_txt.get()}____" \
+                                          f"injury__{data['certificate'].get('injury_operation', '')}____" \
+                                          f"injury_txt__{injury_operation_txt.get()}__<end!>__\n"
+
+                        if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ',
+                                                'В детский лагерь', 'Об усыновлении (удочерении)'):
+                            active_but += f"health_physical_group:____" \
+                                          f"health_group__{data['certificate'].get('health_group', '')}____" \
+                                          f"physical__{data['certificate'].get('physical', '')}____" \
+                                          f"diet__{data['certificate'].get('diet', '')}____"
+                            for var in data['certificate'].get('regime', []):
+                                active_but += f"regime__{var}____"
+                            for var in data['certificate'].get('desk', []):
+                                active_but += f"desk__{var}____"
+                            active_but += "__<end!>__\n"
+
+                        if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'ЦКРОиР',
+                                                'В детский лагерь', 'Об усыновлении (удочерении)',
+                                                'О нуждаемости в сан-кур лечении'):
+                            diagnosis_txt = data['certificate']['type_cert_info'][type_certificate].get('diagnosis_txt')
+                            active_but += f"diagnosis_txt:____{diagnosis_txt.get(1.0, 'end').strip()}__<end!>__\n"
+
+                        if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь'):
+                            active_but += f"patient_anthro:____" \
+                                          f"height__{height.get()}____" \
+                                          f"weight__{weight.get()}____" \
+                                          f"vision__{vision.get()}____" \
+                                          f"__<end!>__\n"
+
+                        if type_certificate == 'ЦКРОиР':
+                            add_med_info = data['certificate']['type_cert_info']['ЦКРОиР'].get('ЦКРОиР_add_med_info')
+                            active_but += f"ЦКРОиР_add_med_info:____{add_med_info.get(1.0, 'end').strip()}__<end!>__\n"
+                            active_but += f"ЦКРОиР_add_med_info_doctors:____"
+                            for doctors in ('Невролог', 'Офтальмолог', 'ЛОР', 'Логопед'):
+                                active_but += f"{doctors}____" \
+                                          f"{data['certificate']['type_cert_info']['ЦКРОиР'][f'{doctors}_txt'].get()}" \
+                                              f"__!__"
+                            active_but += "__<end!>__\n"
+                        'certificate__upload_last_data'
+                        save_info = [
+                            f"{datetime.now().strftime('%d.%m.%Y %H:%M:%S')}",
+                            f"{user.get('doctor_name')}",
+                            'loc',
+                            '',
+                            f"{patient.get('name').strip()}__{patient.get('birth_date').strip()}",
+                            active_examination,
+                            active_but,
+                            'certificate']
+                        answer, message = data_base(command='examination__save',
+                                                    insert_data=save_info)
+
+                    save_info_examination()
+                    data['certificate'].clear()
+                    render_data.clear()
+
                 type_certificate = selected_button.get()
                 render_data.clear()
                 try:
@@ -8528,6 +8778,8 @@ def fast_certificate():
 
                     render_data['time'] = datetime.now().strftime("%H:%M")
                     render_data['number_cert'] = ''
+                    render_data['doctor_name'] = user.get('doctor_name')
+
                     render_data['name'] = patient.get('name')
                     render_data['birth_date'] = patient.get('birth_date')
                     render_data['gender'] = patient.get('gender')
@@ -8539,25 +8791,7 @@ def fast_certificate():
                     render_data['validity_period'] = \
                         data['certificate']['type_cert_info'][type_certificate]['validity_period'].get()
 
-
-
-                    # data['text_size'] = user.get('text_size')
-                    #
-                    # if not data.get('patient'):
-                    #     patient = dict()
-                    # patient['name'] = patient.get('name', '')
-                    # patient['birth_date'] = patient.get('birth_date', '')
-                    # patient['gender'] = patient.get('gender', '')
-                    # patient['amb_cart'] = patient.get('amb_cart', '')
-                    # patient['patient_district'] = patient.get('patient_district', '')
-                    # patient['address'] = patient.get('address', '')
-                    #
-                    # if not data.get('doctor'):
-                    #     data['doctor'] = dict()
-                    # data['doctor']['doctor_name'] = user.get('doctor_name', '')
-                    # data['doctor']['manager'] = user.get('manager', '')
-                    # data['doctor']['ped_div'] = user.get('ped_div', '')
-                    # data['doctor']['doctor_district'] = user.get('doctor_district', '')
+                    diagnosis_txt = data['certificate']['type_cert_info'][type_certificate].get('diagnosis_txt')
 
                     if not render_data.get('place_of_requirement'):
                         if not data['certificate'].get('place_of_requirement'):
@@ -8565,7 +8799,6 @@ def fast_certificate():
                             raise ValueError
 
                         render_data['place_of_requirement'] = data['certificate'].get('place_of_requirement')
-
 
                     if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
                         place_of_req = render_data.get('place_of_requirement')
@@ -8579,11 +8812,11 @@ def fast_certificate():
                             render_data['place_of_requirement'] = 'Средняя школа (гимназия)'
                             render_data['type'] = 'Оформление в Среднюю школу (гимназию)'
                             if patient.get('gender', '') == 'женский':
-                                render_data['diagnosis'] += '\nГотова к обучению в ' \
-                                                            'общеобразовательной школе с _______ лет'
+                                render_data['diagnosis'] += f'\nГотова к обучению в ' \
+                                                            f"общеобразовательной школе с {age.get('year')} лет"
                             else:
                                 render_data['diagnosis'] += '\nГотов к обучению в ' \
-                                                            'общеобразовательной школе с _______ лет'
+                                                            f"общеобразовательной школе с {age.get('year')} лет"
 
                         if place_of_req == 'ВУЗ (колледж)':
                             render_data['type'] = 'Оформление в ВУЗ'
@@ -8618,7 +8851,7 @@ def fast_certificate():
                                 '\nУЗИ щитовидной  железы : ____________________________________________'
 
                             render_data['diagnosis'] += \
-                                '\nФизическое развитие (выше- ниже-) среднее, (дис-) гармоничное\n' \
+                                '\n' \
                                 'Врачебное профессионально-консультативное заключение: ' \
                                 'отсутствуют медицинские противопоказания к обучению  в ГУО ' \
                                 '«Минском городском  кадетском училище».'
@@ -8652,18 +8885,16 @@ def fast_certificate():
                                                             f"Освобождение от занятий физкультурой и плаванием \n" \
                                                             f"в бассейне на {ori_fizra_days.get()} дней"
 
-
-
                     if type_certificate == 'На кружки и секции':
                         render_data['place_of_requirement'] = \
                             f"{render_data.get('place_of_requirement')}{hobby_txt.get()}" \
-                            f"".replace('участия в соревнованиях по ', '').replace(' и участия в соревнованиях', '')
+                            f"".replace('участия в соревнованиях по ', '').replace(' и участия в соревнованиях', '').replace(' , ', '')
 
                         render_data['diagnosis'] = f"{render_data.get('diagnosis')}{hobby_txt.get()}"
 
                         if data['certificate'].get('health_group'):
                             render_data['diagnosis'] = \
-                                f"{render_data.get('diagnosis')}\n " \
+                                f"{render_data.get('diagnosis')}\n" \
                                 f"Группа здоровья: {data['certificate'].get('health_group')};"
 
                         if data['certificate'].get('physical'):
@@ -8673,7 +8904,7 @@ def fast_certificate():
 
                     if type_certificate == 'Может работать по специальности...':
                         render_data['diagnosis'] = \
-                            f"{render_data.get('diagnosis')} {hobby_txt.get()}"
+                            f"{render_data.get('diagnosis')} {job_txt.get()}"
 
                     if type_certificate in ('Годовой медосмотр',
                                             'Оформление в ДДУ / СШ / ВУЗ',
@@ -8713,24 +8944,22 @@ def fast_certificate():
 
                             render_data['injury'] = data['certificate'].get('injury_operation', '')
                             if data['certificate'].get('injury_operation', '') == '-':
-                                text_past_illnesses += 'Травм и операций не было; '
+                                text_past_illnesses += '\nТравм и операций не было; '
+                                render_data['injury'] = '-'
                             if data['certificate'].get('injury_operation', '') == '+':
-                                text_past_illnesses += 'Травмы и операции: '
+                                text_past_illnesses += '\nТравмы и операции: '
                                 if len(injury_operation_txt.get()) > 1:
-                                    text_past_illnesses += f'\n{injury_operation_txt.get()}'
+                                    text_past_illnesses += f'{injury_operation_txt.get()}'
                                     data['certificate']['injury'] = f"+\n{injury_operation_txt.get()}"
                                     render_data['injury'] = f"{render_data.get('injury')}\n{injury_operation_txt.get()}"
 
                         if render_data.get('past_illnesses'):
-                            render_data[
-                                'past_illnesses'] = f"{text_past_illnesses}\n{render_data.get('past_illnesses')}"
+                            render_data['past_illnesses'] = f"{render_data.get('past_illnesses', '').strip()}" \
+                                                            f"\n{text_past_illnesses}"
                         else:
                             render_data['past_illnesses'] = text_past_illnesses
 
-                    if type_certificate in ('Годовой медосмотр',
-                                            'Оформление в ДДУ / СШ / ВУЗ',
-                                            'В детский лагерь',
-                                            'Об усыновлении (удочерении)'):
+                    if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь', 'Об усыновлении (удочерении)'):
 
                         for ex_marker in ('health_group', 'physical', 'regime', 'diet', 'desk'):
                             if not data['certificate'].get(ex_marker):
@@ -8748,33 +8977,20 @@ def fast_certificate():
                                         continue
                                     messagebox.showerror('Ошибка!', 'Не указана рассадка!')
                                 raise ValueError
-
                         if not weight.get():
                             messagebox.showerror('Ошибка!', 'Не указан вес!')
-                            raise ValueError
-
-                        if not weight.get().replace('.', '').replace(',', '').isdigit():
-                            messagebox.showerror('Ошибка!', 'Укажите вес цифрами!')
                             raise ValueError
 
                         if not height.get():
                             messagebox.showerror('Ошибка!', 'Не указан рост!')
                             raise ValueError
 
-                        if not height.get().replace('.', '').replace(',', '').isdigit():
-                            messagebox.showerror('Ошибка!', 'Укажите рост цифрами!')
-                            raise ValueError
-
                         if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ'):
                             render_data['visus'] = f"VIS OD/OS\n= {vision.get()}\n"
-                            render_data['additional_medical_information'] = \
-                                render_data.get('additional_medical_information',
-                                                '').replace('Vis OD/OS = __________', f"Vis OD/OS = {vision.get()}")
                         else:
                             render_data['visus'] = ''
 
-                        render_data["add_diagnosis"] = \
-                            data['certificate']['type_cert_info'][type_certificate].get('diagnosis_txt').get(1.0, 'end').strip()
+                        render_data["add_diagnosis"] = diagnosis_txt.get(1.0, 'end').strip()
                         render_data['height'] = height.get().replace(',', '.')
                         render_data['weight'] = weight.get().replace(',', '.')
                         render_data['group'] = selected_health_group.get()
@@ -8783,23 +8999,29 @@ def fast_certificate():
                         add_med_info = render_data.get('additional_medical_information', '')
                         add_med_info = add_med_info.replace('Рост _____ см', f'Рост {height.get()} см')
                         add_med_info = add_med_info.replace('Вес _____ кг', f'Вес {weight.get()} кг')
+                        add_med_info = add_med_info.replace('Vis OD/OS = __________', f"Vis OD/OS = {vision.get()}")
+                        add_med_info = add_med_info.replace('АД ________', f'АД {patient_bp.get()} мм.рт.ст.')
+
                         render_data['additional_medical_information'] = add_med_info
 
-                        diagnosis_certificate = render_data.get('diagnosis', '')
+                        render_data['temp'] = patient_temp.get()
+                        render_data['br'] = patient_br.get()
+                        render_data['hr'] = patient_hr.get()
+                        render_data['bp'] = patient_bp.get()
+
+
+                        diagnosis_cert = render_data.get('diagnosis', '')
                         if type_certificate in ('В детский лагерь',
                                                 'Об усыновлении (удочерении)',
                                                 'О нуждаемости в сан-кур лечении'):
-                            diagnosis = data['certificate']['type_cert_info'][type_certificate].get('diagnosis_txt')
 
-                            diagnosis_certificate = f"{diagnosis.get(1.0, 'end').strip()}\n{diagnosis_certificate}"
+                            diagnosis_cert = f"{diagnosis_txt.get(1.0, 'end').strip()}\n{diagnosis_cert}"
 
-                        diagnosis_certificate = diagnosis_certificate.replace('Группа здоровья: _',
-                                                                              f'Группа здоровья: '
-                                                                              f'{selected_health_group.get()}')
-                        diagnosis_certificate = diagnosis_certificate.replace('Группа по физкультуре: _',
-                                                                              f'Группа по физкультуре: '
-                                                                              f'{selected_fiz_group.get()}')
-                        render_data['diagnosis'] = diagnosis_certificate
+                        diagnosis_cert = diagnosis_cert.replace('Группа здоровья: _',
+                                                                f'Группа здоровья: {selected_health_group.get()}')
+                        diagnosis_cert = diagnosis_cert.replace('Группа по физкультуре: _',
+                                                                f'Группа по физкультуре: {selected_fiz_group.get()}')
+                        render_data['diagnosis'] = diagnosis_cert
 
                         recommendation = render_data.get('recommendation', '')
                         recommendation = recommendation.replace('Режим _',
@@ -8825,36 +9047,87 @@ def fast_certificate():
                                 result += 'средний ряд '
                             if 'по росту' in data['certificate'].get('desk'):
                                 result += 'по росту'
-                            if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ'):
-                                if 'Детское Дошкольное Учреждение' in data['certificate'].get('place_of_requirement'):
-                                    recommendation = recommendation.replace('Парта _', f" Мебель {result}")
-                                    render_data['desk'] = f"Мебель {result}"
-                                else:
-                                    recommendation = recommendation.replace('Парта _', f" Парта {result}")
-                                    render_data['desk'] = f"Парта {result}"
+
+                            if 'Детское Дошкольное Учреждение' in data['certificate'].get('place_of_requirement'):
+                                recommendation = recommendation.replace('Парта _', f" Мебель {result}")
+                                render_data['desk'] = f"Мебель {result}"
+                            else:
+                                recommendation = recommendation.replace('Парта _', f" Парта {result}")
+                                render_data['desk'] = f"Парта {result}"
+
+                            if render_data.get('place_of_requirement') in ('Средняя школа (гимназия)',
+                                                                           'Детское Дошкольное Учреждение'):
+                                recommendation = f"{recommendation} \nРазрешены занятия в бассейне"
 
                         render_data['recommendation'] = recommendation
+
+                        if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ' or age.get('year') >= 11:
+                            render_data['hearing'] = '\nСлух в норме.'
+                        else:
+                            render_data['hearing'] = ''
+
+                        if age.get('year') >= 4:
+                            render_data['posture'] = '\nОсанка не нарушена.'
+                        else:
+                            render_data['posture'] = ''
+
+                        if 'Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное' in render_data.get(
+                                'diagnosis', ''):
+                            render_data['diagnosis'] = render_data.get('diagnosis', '').replace(
+                                    'Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное',
+                                    f"Физическое развитие: {patient_anthropometry.get().split('--')[-1].strip()}")
+                        render_data['anthro'] = patient_anthropometry.get()
+
+                        render_data['imt'] = round(float(render_data.get('weight')) /
+                                                   (float(render_data.get('height')) / 100) ** 2, 1)
+
+                        if 'Для поступления в учреждения высшего' in render_data.get('place_of_requirement'):
+                            patient_passport_loc = patient_passport.get()
+                            if not patient_passport_loc:
+                                patient_passport_loc = '_______________________________'
+                            rgr_ogk_loc = rgr_ogk.get()
+                            if not rgr_ogk_loc:
+                                rgr_ogk_loc = '_______________________________'
+
+                            render_data['name'] += f'\nИдентификационный №: {patient_passport_loc}'
+                            render_data['additional_medical_information'] += f"\nФлюорография: {rgr_ogk_loc}"
+
+                            render_data["add_diagnosis"] = f"{render_data.get('add_diagnosis')}\n" \
+                                                           f"Идентификационный № паспорта: {patient_passport_loc}\n" \
+                                                           f"Флюорография: {rgr_ogk_loc}"
 
                     if type_certificate == 'О нуждаемости в сан-кур лечении':
                         render_data['recommendation'] = f"Ребенок нуждается в санаторно-курортном лечении: \n" \
                                       f"{', '.join(data['certificate'].get('sanatorium_profile'))} профиля"
+                        render_data['diagnosis'] = diagnosis_txt.get(1.0, 'end').strip()
+
+
                     if type_certificate == 'ЦКРОиР':
                         result = data['certificate']['type_cert_info'][type_certificate]['ЦКРОиР_add_med_info'].get(1.0, 'end').strip()
                         for doctors in ('Невролог', 'Офтальмолог',  'ЛОР',  'Логопед'):
                             result += f"\n{doctors}: " \
-                                      f"{data['certificate']['type_cert_info'][type_certificate][f'{doctors}_txt']}"
+                                      f"{data['certificate']['type_cert_info'][type_certificate][f'{doctors}_txt'].get()}"
                         render_data['additional_medical_information'] = result
+                        render_data['diagnosis'] = diagnosis_txt.get(1.0, 'end').strip()
+
+
+                    if not render_data.get('additional_medical_information'):
+                        render_data['additional_medical_information'] = '_' * 60
+                    if not render_data.get('past_illnesses'):
+                        render_data['past_illnesses'] = '_' * 60
+                    if not render_data.get('recommendation'):
+                        render_data['recommendation'] = '_' * 50
+
 
 
                 except ValueError:
-                    canvas_frame.focus_force()
+                    canvas_frame.focus()
                 else:
                     print('<-------------------------------->')
                     for i in render_data:
                         print(f"----> {i}", render_data.get(i))
-                    # edit_cert_root.quit()
-                    # edit_cert_root.destroy()
-                    # certificate__create_doc()
+                    certificate_main_root.destroy()
+                    certificate__create_doc()
 
             def diagnosis_healthy():
                 for type_cert in data['certificate'].get('type_cert_info'):
@@ -8878,9 +9151,6 @@ def fast_certificate():
                         desk_vars[marker].set(1)
                     else:
                         desk_vars[marker].set(0)
-
-
-
 
                 data['certificate']['health_group'] = selected_health_group.get()
                 data['certificate']['physical'] = selected_fiz_group.get()
@@ -9218,6 +9488,31 @@ def fast_certificate():
 
             paste_bp()
             for type_certificate in all_data_certificate.get('type'):
+                def paste_diagnosis_frame():
+                    frame_diagnosis = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                    frame = Frame(frame_diagnosis)
+                    Label(frame, text="Диагноз:",
+                          font=('Comic Sans MS', user.get('text_size')), bg='white'
+                          ).pack(fill='both', expand=True, side='left')
+                    Button(frame, text='Здоров', command=diagnosis_healthy,
+                           font=('Comic Sans MS', user.get('text_size'))
+                           ).pack(fill='both', expand=True, side='left')
+                    but = Button(frame, text='Открыть клавиатуру диагнозов', command=diagnosis_kb,
+                               font=('Comic Sans MS', user.get('text_size')))
+                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_main_but'] = but
+                    but.pack(fill='both', expand=True, side='left')
+                    frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    frame = Frame(frame_diagnosis)
+                    diagnosis = ScrolledText(frame, width=80, height=4,
+                                             font=('Comic Sans MS', user.get('text_size')), wrap="word")
+                    diagnosis.pack(fill='both', expand=True)
+                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_txt'] = diagnosis
+                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_frame'] = frame
+
+                    frame.pack(fill='both', expand=True, padx=2, pady=2)
+                    frame_diagnosis.pack(fill='both', expand=True, padx=2, pady=2)
+
 
                 data['certificate']['type_cert_info'][type_certificate] = dict()
 
@@ -9236,46 +9531,64 @@ def fast_certificate():
                     def select_place():
                         type_cert, place = selected_place.get().split('__')
                         data['certificate']['place_of_requirement'] = place
-                        label_place_text.set(f"{label_place_text.get().split(':')[0]}: {place}")
+                        label_place_text.set(f"Место требования справки: {place}")
 
                         if type_cert == "Оформление в ДДУ / СШ / ВУЗ" and place == 'ВУЗ (колледж)':
                             if not data['certificate'].get('frame_specialties'):
-                                frame_specialties = Frame(master=data['certificate']['type_cert_frames'].get(type_cert),
-                                                          borderwidth=1, relief="solid", padx=4, pady=4)
-                                specialties_txt = ScrolledText(frame_specialties, width=80, height=2,
+                                frame_place = data['certificate']['type_cert_info'][type_cert].get("frame_place")
+                                frame_specialties = Frame(master=frame_place,
+                                              borderwidth=1, relief="solid", padx=4, pady=4)
+                                data['certificate']['frame_specialties'] = frame_specialties
+                                frame = Frame(frame_specialties)
+                                specialties_txt = ScrolledText(frame, width=80, height=4,
                                                                font=('Comic Sans MS', user.get('text_size')),
                                                                wrap="word")
-
-                                data['certificate']['frame_specialties'] = frame_specialties
                                 data['certificate']['specialties_txt'] = specialties_txt
-                                Label(frame_specialties, text="Специальности для поступления:",
-                                      font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both',
-                                                                                                      expand=True,
-                                                                                                      padx=2, pady=2)
+                                Label(frame, text="Специальности для поступления:",
+                                      font=('Comic Sans MS', user.get('text_size')), bg='white'
+                                      ).pack(fill='both', expand=True, padx=2, pady=2)
                                 specialties_txt.pack(fill='both', expand=True, padx=2, pady=2)
+                                frame.pack(fill='both', expand=True, padx=2, pady=2)
 
-                                frame_specialties.columnconfigure(index='all', minsize=40, weight=1)
-                                frame_specialties.rowconfigure(index='all', minsize=20)
+                                frame = Frame(frame_specialties)
+                                Label(frame, text="Идентификационный № паспорта:",
+                                      font=('Comic Sans MS', user.get('text_size')), bg='white'
+                                      ).pack(fill='both', expand=True, side='left')
+                                Entry(frame, textvariable=patient_passport,
+                                      width=50, font=('Comic Sans MS', user.get('text_size'))
+                                      ).pack(fill='both', expand=True, side='left')
+                                frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                                frame = Frame(frame_specialties)
+                                Label(frame, text="Флюорография:",
+                                      font=('Comic Sans MS', user.get('text_size')), bg='white'
+                                      ).pack(fill='both', expand=True, side='left')
+                                Entry(frame, textvariable=rgr_ogk,
+                                      width=50, font=('Comic Sans MS', user.get('text_size'))
+                                      ).pack(fill='both', expand=True, side='left')
+                                frame.pack(fill='both', expand=True, padx=2, pady=2)
+                                if age.get('year') >= 17:
+                                    rgr_ogk.set("№ _________ от ____ - Заключение: ОГК без патологии")
+                                else:
+                                    rgr_ogk.set("не подлежит по возрасту.")
+
+
                                 frame_specialties.pack(fill='both', expand=True, padx=2, pady=2)
 
                         else:
                             if data['certificate'].get('frame_specialties'):
                                 data['certificate']['frame_specialties'].pack_forget()
                                 data['certificate']['frame_specialties'] = None
-                        frame_place.update()
 
                     frame_place = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                    data['certificate']['type_cert_info'][type_certificate]['frame_place'] = frame_place
 
+                    place = all_data_certificate.get('place')
                     if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
-                        text = "Куда оформляетесь?:"
                         place = ('Детское Дошкольное Учреждение',
                                  'Средняя школа (гимназия)',
                                  'ВУЗ (колледж)', 'Кадетское училище')
-                    else:
-                        text = "Место требования справки:"
-                        place = all_data_certificate.get('place')
 
-                    label_place_text.set(text)
                     Label(frame_place, textvariable=label_place_text,
                           font=('Comic Sans MS', user.get('text_size')),
                           bg='white').pack(fill='both', expand=True, padx=2, pady=2)
@@ -9783,31 +10096,7 @@ def fast_certificate():
 
                     frame.pack(fill='both', expand=True, padx=2, pady=2)
 
-                    frame_diagnosis = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
-                    frame = Frame(frame_diagnosis)
-                    Label(frame, text="Диагноз:",
-                          font=('Comic Sans MS', user.get('text_size')), bg='white'
-                          ).pack(fill='both', expand=True, side='left')
-                    Button(frame, text='Здоров', command=diagnosis_healthy,
-                           font=('Comic Sans MS', user.get('text_size'))
-                           ).pack(fill='both', expand=True, side='left')
-                    but = Button(frame, text='Открыть клавиатуру диагнозов', command=diagnosis_kb,
-                               font=('Comic Sans MS', user.get('text_size')))
-                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_main_but'] = but
-                    but.pack(fill='both', expand=True, side='left')
-                    frame.pack(fill='both', expand=True, padx=2, pady=2)
-
-                    frame = Frame(frame_diagnosis)
-                    diagnosis = ScrolledText(frame, width=80, height=4,
-                                             font=('Comic Sans MS', user.get('text_size')), wrap="word")
-                    diagnosis.pack(fill='both', expand=True)
-                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_txt'] = diagnosis
-                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_frame'] = frame
-
-                    frame.pack(fill='both', expand=True, padx=2, pady=2)
-                    frame_diagnosis.pack(fill='both', expand=True, padx=2, pady=2)
-
-
+                    paste_diagnosis_frame()
 
                     for txt, marker, variable in (('Группа здоровья', 'group', selected_health_group),
                                                   ('Группа по физ-ре', 'physical', selected_fiz_group),
@@ -9844,31 +10133,7 @@ def fast_certificate():
                                 result.append(regime)
                         data['certificate']['sanatorium_profile'] = result
 
-                    frame_diagnosis = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
-                    frame = Frame(frame_diagnosis)
-                    Label(frame, text="Диагноз:",
-                          font=('Comic Sans MS', user.get('text_size')), bg='white'
-                          ).pack(fill='both', expand=True, side='left')
-                    Button(frame, text='Здоров', command=diagnosis_healthy,
-                           font=('Comic Sans MS', user.get('text_size'))
-                           ).pack(fill='both', expand=True, side='left')
-                    but = Button(frame, text='Открыть клавиатуру диагнозов', command=diagnosis_kb,
-                               font=('Comic Sans MS', user.get('text_size')))
-                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_main_but'] = but
-                    but.pack(fill='both', expand=True, side='left')
-                    frame.pack(fill='both', expand=True, padx=2, pady=2)
-
-                    frame = Frame(frame_diagnosis)
-                    diagnosis = ScrolledText(frame, width=80, height=4,
-                                             font=('Comic Sans MS', user.get('text_size')), wrap="word")
-                    diagnosis.pack(fill='both', expand=True)
-                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_txt'] = diagnosis
-                    data['certificate']['type_cert_info'][type_certificate]['diagnosis_frame'] = frame
-
-                    frame.pack(fill='both', expand=True, padx=2, pady=2)
-                    frame_diagnosis.pack(fill='both', expand=True, padx=2, pady=2)
-
-
+                    paste_diagnosis_frame()
                     frame_profiles = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
 
                     Label(frame_profiles, text="Профиль санатория:",
@@ -9893,16 +10158,39 @@ def fast_certificate():
                     frame_profiles.pack(fill='both', expand=True)
 
                 if type_certificate == 'ЦКРОиР':
-                    frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                    def set_default():
+                        diagnosis = data['certificate']['type_cert_info']["ЦКРОиР"].get('ЦКРОиР_add_med_info')
+                        diagnosis.delete(1.0, 'end')
+                        diagnosis.insert(1.0, all_data_certificate['all_info']['ЦКРОиР'].get('additional_medical_information'))
+                        for doctors, diagnosis in (('Невролог', 'Без очаговой патологии'),
+                                                   ('Офтальмолог', 'Без патологии'),
+                                                   ('ЛОР', 'Без патологии'),
+                                                   ('Логопед', 'ОНР ( __ ур. р. р.)')):
+                            data['certificate']['type_cert_info']['ЦКРОиР'][f"{doctors}_txt"].set(diagnosis)
+
+
+                    frame_add_info = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                    frame = Frame(frame_add_info)
                     Label(frame, text="Данные о развитии:",
                           font=('Comic Sans MS', user.get('text_size')), bg='white'
-                          ).pack(fill='both', expand=True)
+                          ).pack(fill='both', expand=True, side='left')
+                    Button(frame, text='Вернуть данные по умолчанию',
+                           command=set_default,
+                           font=('Comic Sans MS', user.get('text_size'))
+                           ).pack(fill='both', expand=True, side='left')
+
+                    frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    frame = Frame(frame_add_info)
+
                     diagnosis = ScrolledText(frame, width=80, height=8,
                                              font=('Comic Sans MS', user.get('text_size')), wrap="word")
                     diagnosis.pack(fill='both', expand=True)
                     diagnosis.insert(1.0, all_data_certificate['all_info']['ЦКРОиР'].get('additional_medical_information'))
                     data['certificate']['type_cert_info'][type_certificate]['ЦКРОиР_add_med_info'] = diagnosis
                     frame.pack(fill='both', expand=True, padx=2, pady=2)
+                    frame_add_info.pack(fill='both', expand=True, padx=2, pady=2)
+
                     for doctors, diagnosis in (('Невролог', 'Без очаговой патологии'),
                                                ('Офтальмолог', 'Без патологии'),
                                                ('ЛОР', 'Без патологии'),
@@ -9926,6 +10214,8 @@ def fast_certificate():
                               font=('Comic Sans MS', user.get('text_size'))
                               ).pack(fill='both', expand=True, side='left')
                         frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    paste_diagnosis_frame()
 
                 def paste_validaty_period():
                     frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
@@ -9985,279 +10275,131 @@ def fast_certificate():
                             indicatoron=False, selectcolor='#77f1ff',
                             bg="#36566d",
                             fg='white',
-                            ).pack(fill='both', expand=True, side='left')
+                            ).pack(fill='both', expand=True)
                 frame.pack(fill='both', expand=True)
 
         create_type_cert_frames()
+        certificate_main_root.update_idletasks()
+        def upload_last_data():
+            found_info = data_base(command='certificate__upload_last_data')
+            local_info = {
+                'select_past_examination': list(),
+                'get_last_anthro_data': dict(),
+
+            }
+            flags = {
+                'chickenpox_allergy_injury': False,
+                'health_physical_group': False,
+                'diagnosis_txt': False,
+                'patient_anthro': False,
+                'ЦКРОиР_add_med_info': False,
+                'ЦКРОиР_add_med_info_doctors': False,
+                'break': False
+            }
+
+            if found_info.get('select_past_examination'):
+                for rowid, date_time, doctor_name, status, LN_type, patient_info, examination_text, examination_key \
+                        in sorted(found_info.get('select_past_examination'),
+                                  key=lambda i: (datetime.now() -
+                                                 datetime.strptime(f"{i[1]}", "%d.%m.%Y %H:%M:%S")).total_seconds()):
+
+                    for string in examination_key.split('__<end!>__\n'):
+                        if string.startswith('chickenpox_allergy_injury:____'):
+                            if not flags.get('chickenpox_allergy_injury'):
+                                flags['chickenpox_allergy_injury'] = True
+                                chickenpox_variables = (('chickenpox', selected_chickenpox),
+                                                        ('allergy', selected_allergy),
+                                                        ('allergy_txt', allergy_txt),
+                                                        ('injury', selected_injury_operation),
+                                                        ('injury_txt', injury_operation_txt))
+
+                                for marker in string.replace('chickenpox_allergy_injury:____', '').split('____'):
+                                    if len(marker.split('__')) == 2:
+                                        var_name, info = marker.split('__')
+                                        for name, variable in chickenpox_variables:
+                                            if var_name == name:
+                                                variable.set(info)
+
+                        elif string.startswith('health_physical_group:____'):
+                            if not flags.get('health_physical_group'):
+                                flags['health_physical_group'] = True
+                                health_variables = (('health_group', selected_health_group),
+                                                    ('physical', selected_fiz_group),
+                                                    ('diet', selected_diet),
+                                                    ('regime', regime_vars),
+                                                    ('desk', desk_vars))
+
+                                for marker in string.replace('health_physical_group:____', '').split('____'):
+                                    if len(marker.split('__')) == 2:
+                                        var_name, info = marker.split('__')
+                                        if var_name in ('health_group', 'physical', 'diet'):
+                                            for name, variable in health_variables:
+                                                if var_name == name:
+                                                    variable.set(info)
+                                        elif var_name in ('regime', 'desk'):
+                                            for name, variable in health_variables:
+                                                if var_name == name:
+                                                    if variable.get(info):
+                                                        variable[info].set(1)
+
+                        elif string.startswith('diagnosis_txt:____'):
+                            if not flags.get('diagnosis_txt'):
+                                flags['diagnosis_txt'] = True
+                                text = string.replace('diagnosis_txt:____', '')
+                                for type_certificate in data['certificate'].get('type_cert_info'):
+                                    if data['certificate']['type_cert_info'][type_certificate].get('diagnosis_txt'):
+                                        diagnosis_txt = data['certificate']['type_cert_info'][type_certificate].get(
+                                            'diagnosis_txt')
+                                        diagnosis_txt.insert(1.0, text)
+
+                        elif string.startswith('patient_anthro:____'):
+                            if not flags.get('patient_anthro'):
+                                flags['patient_anthro'] = True
+                                chickenpox_variables = (('height', height),
+                                                        ('weight', weight),
+                                                        ('vision', vision))
+
+                                for marker in string.replace('patient_anthro:____', '').split('____'):
+                                    if len(marker.split('__')) == 2:
+                                        var_name, info = marker.split('__')
+                                        for name, variable in chickenpox_variables:
+                                            if var_name == name:
+                                                variable.set(info)
+
+                        elif string.startswith('ЦКРОиР_add_med_info'):
+
+                            if string.startswith('ЦКРОиР_add_med_info:____'):
+                                if not flags.get('ЦКРОиР_add_med_info'):
+                                    flags['ЦКРОиР_add_med_info'] = True
+                                    text = string.replace('ЦКРОиР_add_med_info:____', '')
+                                    add_med_info = data['certificate']['type_cert_info']['ЦКРОиР'].get('ЦКРОиР_add_med_info')
+                                    add_med_info.delete(1.0, 'end')
+                                    add_med_info.insert(1.0, text)
+
+                            elif string.startswith('ЦКРОиР_add_med_info_doctors:____'):
+                                if not flags.get('ЦКРОиР_add_med_info_doctors'):
+                                    flags['ЦКРОиР_add_med_info_doctors'] = True
+                                    for marker in string.replace('ЦКРОиР_add_med_info_doctors:____', '').split('__!__'):
+                                        if len(marker.split('____')) == 2:
+                                            var_name, info = marker.split('__')
+                                            data['certificate']['type_cert_info']['ЦКРОиР'][f'{var_name}_txt'].set(info)
+
+                    flags['break'] = True
+                    for flag in flags:
+                        if not flags.get(flag):
+                            flags['break'] = False
+                    if flags.get('break'):
+                        break
+
+
+
+        upload_last_data()
         certificate_main_root.geometry('+0+0')
         certificate_main_root.update()
 
 
 
 
-def certificate__create_doc():
-    type_certificate = data['certificate'].get('type_certificate', '')
-
-    if not render_data.get('additional_medical_information'):
-        render_data['additional_medical_information'] = '_' * 60
-    if not render_data.get('past_illnesses'):
-        render_data['past_illnesses'] = '_' * 60
-    if not render_data.get('recommendation'):
-        render_data['recommendation'] = '_' * 50
-
-    render_data['doctor_name'] = data['doctor'].get('doctor_name')
-
-    if (type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ')
-            and render_data.get('place_of_requirement') in ('Средняя школа (гимназия)',
-                                                            'Детское Дошкольное Учреждение')):
-        render_data['recommendation'] = f"{render_data.get('recommendation', '')} \nРазрешены занятия в бассейне"
-        if (data['doctor'].get('doctor_district') == '19'
-                and render_data.get('place_of_requirement') != 'Средняя школа (гимназия)'):
-            render_data['recommendation'] = \
-                render_data.get('recommendation', '').replace('\nРазрешены занятия в бассейне', '')
-
-    if type_certificate in ('ЦКРОиР', 'О нуждаемости в сан-кур лечении',
-                            'Об усыновлении (удочерении)', 'Бесплатное питание') \
-            or (data['certificate'].get('type_certificate') == 'Оформление в ДДУ / СШ / ВУЗ' and not
-    ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
-     ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
-        doctor_name, district, pediatric_division = (data['doctor'].get('doctor_name'),
-                                                     data['doctor'].get('doctor_district'),
-                                                     data['doctor'].get('ped_div'))
-
-        if data['certificate'].get('type_certificate') in ('ЦКРОиР', 'Бесплатное питание'):
-            type_cert = '7.9'
-        else:
-            type_cert = '7.6'
-        info = [pediatric_division,
-                district,
-                None,
-                datetime.now().strftime("%d.%m.%Y"),
-                render_data.get('name'),
-                render_data.get('birth_date'),
-                render_data.get('address'),
-                type_cert,
-                doctor_name]
-
-        number = data_base(command='save_certificate_ped_div',
-                           insert_data=[pediatric_division, info, 'certificate_ped_div'])
-
-        render_data['number_cert'] = f"№ {number}"
-
-    if data['certificate'].get('type_certificate') in ('Годовой медосмотр',
-                                                       'Оформление в ДДУ / СШ / ВУЗ',
-                                                       'В детский лагерь',
-                                                       'Об усыновлении (удочерении)'):
-
-
-        if data['certificate'].get('type_certificate') == 'Оформление в ДДУ / СШ / ВУЗ' or age.get('year') >= 11:
-            render_data['hearing'] = '\nСлух в норме.'
-        else:
-            render_data['hearing'] = ''
-
-        if age.get('year') >= 4:
-            render_data['posture'] = '\nОсанка не нарушена.'
-        else:
-            render_data['posture'] = ''
-
-        anthro = ' (выше- ниже-) среднее, (дис-) гармоничное'
-        if render_data.get('height') and render_data.get('weight'):
-            try:
-                height = float(render_data.get('height'))
-                weight = float(render_data.get('weight'))
-                if render_data.get('gender').lower().startswith('м'):
-                    anthro_height = anthropometry["после года"]['мужской']['height'].get(age, [])
-                    anthro_weight = anthropometry["после года"]['мужской']['weight'].get(age, [])
-                else:
-                    anthro_height = anthropometry["после года"]['женский']['height'].get(age, [])
-                    anthro_weight = anthropometry["после года"]['женский']['weight'].get(age, [])
-                if anthro_height and anthro_weight:
-                    for a_height in anthro_height:
-                        if height < a_height:
-                            index_height = anthro_height.index(a_height)
-                            break
-                    else:
-                        index_height = 7
-
-                    for a_weight in anthro_weight:
-                        if weight <= a_weight:
-                            index_weight = anthro_weight.index(a_weight)
-                            break
-                    else:
-                        index_weight = 7
-                    if index_height == 0:
-                        anthro = 'Низкое '
-                    elif index_height <= 2:
-                        anthro = 'Ниже среднего '
-                    elif index_height <= 4:
-                        anthro = 'Среднее '
-                    elif index_height <= 6:
-                        anthro = 'Выше среднего '
-                    elif index_height == 7:
-                        anthro = 'Высокое '
-
-                    if abs(index_weight - index_height) <= 1:
-                        anthro += 'гармоничное'
-                    elif abs(index_weight - index_height) < 3:
-                        anthro += 'дисгармоничное'
-                    else:
-                        anthro += 'резко дисгармоничное'
-
-                    if 'Физическое развитие (выше- ниже-) среднее, (дис-) гармоничное' in render_data.get('diagnosis', ''):
-                        render_data['diagnosis'] = \
-                            render_data.get('diagnosis', '').replace('Физическое развитие (выше- ниже-) '
-                                                                     'среднее, (дис-) гармоничное',
-                                                                     f"Физическое развитие: {anthro}")
-            except Exception:
-                pass
-        render_data['anthro'] = anthro
-
-        render_data['imt'] = round(float(render_data.get('weight')) /
-                                   (float(render_data.get('height')) / 100) ** 2, 1)
-
-        render_data['additional_medical_information'] = render_data.get('additional_medical_information',
-                                                                        '').replace(
-            'АД ________', f"АД {render_data['bp']} мм.рт.ст.")
-        render_data['diagnosis'] = render_data.get('diagnosis', '').replace(
-            'школе с _______ лет', f"школе с {age} лет")
-
-    if (type_certificate == "Оформление в ДДУ / СШ / ВУЗ"
-        and "Детское Дошкольное Учреждение" not in render_data.get('place_of_requirement')) \
-            or type_certificate == 'Об усыновлении (удочерении)':
-        doc_name = ""
-        if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
-            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_справка_Оформление.docx"
-            if not render_data.get('number_cert'):
-                render_data['number_cert'] = '№ ______'
-        elif data['certificate'].get('type_certificate') == 'Об усыновлении (удочерении)':
-            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_справка_Об_усыновлении.docx"
-
-        if 'Для поступления в учреждения высшего' in render_data.get('place_of_requirement'):
-            render_data['name'] += f'\nИдентификационный № _______________________________'
-            if age.get('year') >= 17:
-                render_data['additional_medical_information'] += '\nФлюорография: № _________ от __ . __ . ____ ' \
-                                                                 'Заключение: ОГК без патологии'
-            else:
-                render_data['additional_medical_information'] += '\nФлюорография: не подлежит по возрасту.'
-
-        manager = data["doctor"].get('manager')
-        if manager:
-            render_data['manager'] = manager
-        else:
-            render_data['manager'] = '______________________'
-
-        doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а4 годовая.docx")
-        doc.render(render_data)
-        doc_name = save_document(doc=doc, doc_name=doc_name)
-
-        file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=4)
-        if file_name_vac:
-            master = Document(doc_name)
-            master.add_page_break()
-            composer = Composer(master)
-            doc_temp = Document(file_name_vac)
-            composer.append(doc_temp)
-            doc_name = save_document(doc=composer, doc_name=doc_name)
-
-            # composer.save(doc_name)
-        run_document(doc_name)
-
-        doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
-        doc.render(render_data)
-        doc_name_exam = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_осмотр.docx"
-        doc_name_exam = save_document(doc=doc, doc_name=doc_name_exam)
-        run_document(doc_name_exam)
-
-    else:
-
-        if type_certificate.startswith('ЦКРОиР'):
-            doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}выписка ЦКРОиР.docx")
-            doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_ЦКРОиР.docx"
-            doc_name = save_document(doc=doc, doc_name=doc_name)
-
-        elif type_certificate.startswith('Бесплатное питание'):
-            doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}Выписка.docx")
-            doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_" \
-                       f"Выписка_Бесплатное_питание.docx"
-            doc_name = save_document(doc=doc, doc_name=doc_name)
-
-        elif type_certificate in ('Годовой медосмотр', 'В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
-            if data['certificate'].get('type_certificate').startswith('В детский лагерь'):
-                info = [data['doctor'].get('doctor_district'),
-                        None,
-                        datetime.now().strftime("%d.%m.%Y"),
-                        render_data.get('name'),
-                        render_data.get('birth_date'),
-                        render_data.get('gender'),
-                        render_data.get('address')]
-                number = data_base(command='save_certificate_ped_div',
-                                   insert_data=[user.get('doctor_district'), info, 'certificate_camp'])
-
-                render_data['number_cert'] = f"№ {data['doctor'].get('doctor_district')} / {number}"
-            if data['certificate'].get('type_certificate').startswith('Оформление в ДДУ / СШ / ВУЗ'):
-                manager = data["doctor"].get('manager')
-                if manager:
-                    render_data['manager'] = manager
-                else:
-                    render_data['manager'] = '______________________'
-
-            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_" \
-                       f"справка_{type_certificate}.docx".replace(' в ДДУ / СШ / ВУЗ', '').replace(' ', '_')
-
-            master = Document(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
-            master.add_page_break()
-            composer = Composer(master)
-
-            if type_certificate in ('В детский лагерь', "Оформление в ДДУ / СШ / ВУЗ"):
-                file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=5)
-                if file_name_vac:
-                    doc_temp = Document(file_name_vac)
-                    composer.append(doc_temp)
-                    master.add_page_break()
-
-            master.add_section()
-            master.sections[-1].orientation = WD_ORIENT.LANDSCAPE
-            master.sections[-1].page_width = master.sections[0].page_height
-            master.sections[-1].page_height = master.sections[0].page_width
-            doc_temp = Document(f".{os.sep}example{os.sep}certificate{os.sep}осмотр.docx")
-            composer.append(doc_temp)
-            doc_name = save_document(doc=composer, doc_name=doc_name)
-
-            # composer.save(doc_name)
-
-            doc = DocxTemplate(doc_name)
-            doc.render(render_data)
-
-            doc_name = save_document(doc=doc, doc_name=doc_name)
-
-        else:
-            doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}справка а5.docx")
-            doc.render(render_data)
-            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]} " \
-                       f"справка {type_certificate}.docx".replace(' ', '_')
-            doc_name = save_document(doc=doc, doc_name=doc_name)
-
-            if (data['certificate'].get('type_certificate') in ('В детский лагерь',
-                                                                'Может работать по специальности...') or
-                    (data['certificate'].get('type_certificate') == 'Об отсутствии контактов' and
-                     data['certificate'].get('place_of_requirement') == 'В стационар')):
-                file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=5)
-                if file_name_vac:
-                    master = Document(doc_name)
-                    master.add_page_break()
-                    composer = Composer(master)
-                    doc_temp = Document(file_name_vac)
-                    composer.append(doc_temp)
-                    doc_name = save_document(doc=composer, doc_name=doc_name)
-
-                    # composer.save(doc_name)
-        run_document(doc_name)
-    data_base(command="statistic_write",
-              insert_data="Справка")
-    data.clear()
-    render_data.clear()
 
 
 def analyzes_cmd():
