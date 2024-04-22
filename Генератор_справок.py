@@ -10395,6 +10395,8 @@ def fast_certificate():
 
         upload_last_data()
         certificate_main_root.geometry('+0+0')
+        selected_button.set('')
+
         certificate_main_root.update()
 
 
