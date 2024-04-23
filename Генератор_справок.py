@@ -6690,6 +6690,15 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
             if check_input():
                 render_data.clear()
+                txt_ln_from.delete(0, 'end')
+                txt_ln_from.insert(0, data['examination']['LN_data']['current_data'].get("Дата начала ВН").get().strip())
+
+                txt_ln_until.delete(0, 'end')
+                txt_ln_until.insert(0, data['examination']['LN_data']['current_data'].get("Дата окончания ВН").get().strip())
+
+                txt_second_examination.delete(0, 'end')
+                txt_second_examination.insert(0, data['examination']['LN_data']['current_data'].get("Дата окончания ВН").get().strip())
+
 
                 data['examination']['LN_data']['current_data']['save'] = True
                 render_data['patient_info_1'] = \
