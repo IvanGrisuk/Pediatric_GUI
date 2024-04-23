@@ -70,7 +70,7 @@ all_data_certificate = {
                    "атопический дерматит", "аллергический ринит", "поллиноз",  "_",
                    "угроза", "БРА", "Ig-индуцированная", "аллерген-индуцированная", "_",
                    "интермиттирующее", "персистирующее", "среднетяжелое", "тяжелое", "течение", "ремиссия", "_",
-                   "хр. гастрит", "ГЭРБ", "СДН", "ВСД", "нефроптоз", "справа", "слева", "_",
+                   "хр. гастрит", "ГЭРБ", "дисграфия", "СДН", "ВСД", "нефроптоз", "справа", "слева", "_",
                    "анемия", "легкой", "средней", "тяжелой", "степени тяжести", "_",
                    "субклинический гипотиреоз", "диффузный токсический зоб", "ИМТ", "ДМТ", "СД", "_"
                    )),
@@ -922,28 +922,25 @@ all_data_diagnosis = {
                       "диета", "Пробиотик"),
                      ("Разрешена вакцинация",
                       "V -", "V1 -", "V2 -", "V3 -", "V4 -", "R -", "R1 -", "R2 -", "R3 -", "R4 -", "\n",
-                      "БЦЖ-М",
-                      "ВГВ",
-                      "ВГА",
-                      "ХИБ",
-                      "ИПВ",
-                      "КПК", "\n",
+                      "БЦЖ-М", "ХИБ", "ИПВ", "\n",
+                      "ВГВ", "(Эувакс)", "\n",
+                      "ВГА", "(Хаврикс)", "(Хеалив)", "(Альгавак)", "(Аваксим)", "\n",
+                      "КПК", "(Приорикс)", "\n",
 
-                      "А(а)КДС",
-                      "АДС",
-                      "АДС-М",
-                      "АДМ", "\n",
-                      "от Гриппа",
-                      "от ротавируса",
-                      "от Ветряной оспы", "\n",
+                      "А(а)КДС", "АДС", "АДМ", "\n",
+                      "АДС-М", "(Инфанрикс)", "(Адасель)", "\n",
+                      "от Гриппа", "(Гриппол +)", "(Гриппол)", "(Ваксигрипп тетра)", "\n",
+                      "от ротавируса", "(Рота-V-Эйд)", "\n",
+                      "от Ветряной оспы", "(Варилрикс)", "(Варицелла)", "\n",
 
-                      "от Пневмококковой инфекции",
-                      "от Менингококковой инфекции", "\n",
-                      "Реакция Манту",
-                      "Диаскинтест", "\n",
+                      "от Пневмококковой инфекции", "(Превенар-13)", "(Синфлорикс)", "\n",
+                      "от Менингококковой инфекции", "(Менактра)", "\n",
+                      "Реакция Манту", "Диаскинтест", "\n",
 
-                      "ВГВ + А(а)КДС + ХИБ + ИПВ",
-                      "А(а)КДС + ВГА", "\n"
+                      "ВГВ + А(а)КДС + ХИБ + ИПВ", "(Инфанрикс гекса)", "(Гексаксим)", "\n",
+                      "А(а)КДС + ХИБ", "(Тетраксим)", "\n",
+                      "А(а)КДС + ВГА", "\n",
+                      "На бесплатной основе", "\n"
 
                       )),
 
@@ -1022,7 +1019,8 @@ all_data_diagnosis = {
              "Дозировка", "10 мг/кг", "12.5 мг/кг", "15 мг/кг",
              "Способ применения", "принимать при температуре 38.5 и выше",
              "принимать при болевом синдроме",
-             "с интервалом не меньше 6 часов", "выписан льготный рецепт", "имеется дома"),
+             "с интервалом не меньше 6 часов", "с интервалом не меньше 8 часов",
+             "выписан льготный рецепт", "имеется дома"),
 
             ("Ибупрофен",
              "Форма", "автоматически", "суппозитории", "суспензия 100 мг/5мл", "суспензия 200 мг/5мл",
@@ -1030,7 +1028,8 @@ all_data_diagnosis = {
              "Дозировка", "5 мг/кг", "7.5 мг/кг", "10 мг/кг",
              "Способ применения", "принимать при температуре 38.5 и выше",
              "принимать при болевом синдроме",
-             "с интервалом не меньше 6 часов", "выписан льготный рецепт", "имеется дома"),
+             "с интервалом не меньше 6 часов", "с интервалом не меньше 8 часов",
+             "выписан льготный рецепт", "имеется дома"),
 
             ("Ибупрофен+Парацетамол",
              "Форма", "таб. диспергируемые 100мг/125мг", "таб. 400мг/325мг",
@@ -1218,27 +1217,123 @@ all_data_diagnosis = {
              "Дозировка", "1/4 таб", "1/2 таб", "1 таб", "1.5 таб",
              "Кратность", "1 р/сут", "2 р/сут", "3 р/сут",
              "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
-             "до улучшения симптомов", "до следующего осмотра"),
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "выписан льготный рецепт"
+             ),
 
             ("Цетиризин",
              "Форма", "кап. 10мг/мл-20мл", "таб. 10мг",
              "Дозировка", "5 капель", "10 капель", "20 капель", "1/2 таб", "1 таб",
              "Кратность", "1 р/сут", "2 р/сут",
              "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
-             "до улучшения симптомов", "до следующего осмотра"),
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "выписан льготный рецепт"),
 
             ("Лоратадин",
              "Форма", "суспензия 5мг/5мл", "таб. 10мг",
              "Дозировка", "5 миллилитров", "10 миллилитров", "1/2 таб", "1 таб",
              "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
-             "до улучшения симптомов", "до следующего осмотра"),
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "выписан льготный рецепт"),
 
             ("Дезлоратадин",
              "Форма", "суспензия 0.5мг/мл", "таб. 5мг",
              "Дозировка", "2.5 миллилитра", "5 миллилитров", "10 миллилитров", "1/2 таб", "1 таб",
              "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
-             "до улучшения симптомов", "до следующего осмотра")),
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "выписан льготный рецепт"),
 
+            ("Хлоропирамин",
+             "Инструкция - раствор для инъекций\n"
+             "1-12 месяцев -- 5 мг -- 0.25 миллилитра\n"
+             "1-6 лет -- 10 мг -- 0.5 миллилитра\n"
+             "6-14 лет -- 10-20 мг -- 0.5-1.0 миллилитр\n"
+             "14-18 лет -- 20 мг -- 1.0 миллилитр\n"
+             "Максимальная суточная доза - 2мг/кг\n\n"
+             "таблетки 25мг\n"
+             "2-6 лет -- 1/2 таб 2 раза в сутки\n"
+             "6-14 лет -- 1/2 таб 2-3 раза в сутки\n"
+             "14-18 лет -- 1 таб 3-4 раза в сутки",
+
+             "Форма", "раствор для инъекций 20мг / 1мл", "таб. 25мг N20",
+             "Дозировка", "0.25 миллилитра (5 мг)", "0.5 миллилитра (10 мг)", "1.0 миллилитр (20 мг)",
+             "1/2 таб", "1 таб", "2 таб",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "Внутримышечно!", "выписан рецепт"
+             )
+
+        ),
+
+        "Неотложка": (
+            ("Хлоропирамин",
+             "Инструкция - раствор для инъекций\n"
+             "1-12 месяцев -- 5 мг -- 0.25 миллилитра\n"
+             "1-6 лет -- 10 мг -- 0.5 миллилитра\n"
+             "6-14 лет -- 10-20 мг -- 0.5-1.0 миллилитр\n"
+             "14-18 лет -- 20 мг -- 1.0 миллилитр\n"
+             "Максимальная суточная доза - 2мг/кг\n\n"
+             "таблетки 25мг\n"
+             "2-6 лет -- 1/2 таб 2 раза в сутки\n"
+             "6-14 лет -- 1/2 таб 2-3 раза в сутки\n"
+             "14-18 лет -- 1 таб 3-4 раза в сутки",
+
+             "Форма", "раствор для инъекций 20мг / 1мл", "таб. 25мг N20",
+             "Дозировка", "0.25 миллилитра (5 мг)", "0.5 миллилитра (10 мг)", "1.0 миллилитр (20 мг)",
+             "1/2 таб", "1 таб", "2 таб",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "Внутримышечно!", "выписан рецепт"
+             ),
+
+            ("Преднизолон",
+             "Инструкция - раствор для инъекций\n"
+             "Дозировка 1-3 мг/кг\n",
+
+             "Форма", "раствор для инъекций 30мг/1мл 1мл N10", "таб. 5мг N50",
+             "Дозировка", "0.25 миллилитра (7.5 мг)", "0.5 миллилитра (15 мг)", "1.0 миллилитр (30 мг)",
+             "1/2 таб", "1 таб", "2 таб",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "Внутримышечно!", "развести в 3 мл физраствора - для ингалляций",
+             "выписан рецепт"
+             ),
+
+            ("Дексаметазон",
+             "Инструкция - раствор для инъекций\n"
+             "Дозировка 0.5 мг/кг\n",
+
+             "Форма", "раствор для инъекций 4мг/мл 2мл", "таб. 0.5мг N50",
+             "Дозировка", "0.25 миллилитра", "0.5 миллилитра", "1.0 миллилитр",
+             "1/2 таб", "1 таб", "2 таб",
+             "Длительность", "3 дня", "5 дней", "7 дней", "10 дней", "14 дней", "30 дней",
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "Внутримышечно!",
+             "выписан рецепт"
+             ),
+
+            ("Эпинефрин",
+             "Инструкция\n"
+             "Дозировка 10 мкг/кг но не больше 0.3 мг\n"
+             "Показания: Анафилактический шок, бронхоспазм\n"
+             "до 6 месяцев -- 100-150 мкг -- 0.1-0.15 миллилитра\n"
+             "6 мес - 6 лет -- 150 мкг -- 0.15 миллилитра\n"
+             "6-12 лет -- 300 мкг -- 0.3 миллилитра\n"
+             "старше 12 лет -- 500 мкг -- 0.5 миллилитра",
+
+             "Форма", "раствор для инъекций 1.82мг/мл 1мл",
+             "Дозировка", "0.1 миллилитр", "0.15 миллилитра", "0.3 миллилитра", "0.5 миллилитра", "1.0 миллилитр",
+             "до улучшения симптомов", "до следующего осмотра",
+             "Способ применения", "Внутримышечно!", "выписан рецепт"
+             ),
+
+            ("Литическая смесь",
+             "Форма", "Метамизол натрия (Анальгин) раствор для инъекций 50% 2мл "
+                      "+ Дротаверин раствор для инъекций 2% 2мл",
+             "Дозировка", "0.1 миллилитр на год жизни Внутримышечно!"
+             ),
+
+        ),
         "ЖКТ": (
             ("Нифуроксазид",
              "Форма", "суспензия 220/5", "капс. 100мг", "капс. 200мг",
@@ -1975,7 +2070,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         past_examination_data['buttons'][but_info].set(0)
                 if selected_past_but_info:
                     rowid_, command = selected_past_but_info.split('__')
-                    if command == 'Удалить осмотр':
+                    if command in ('Удалить осмотр', 'Удалить справку'):
                         result = messagebox.askyesno(title='Удаление осмотра',
                                                      message="Удалить осмотр?")
                         if result:
@@ -2106,11 +2201,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                         document = Document()
                         paragraph = document.add_paragraph()
                         for text in exam_text.split('\n'):
+                            text = text.strip()
 
                             for marker in ('Жалобы:', 'Данные объективного обследования:', 'Диагноз:'):
-                                if marker in text:
+                                if text.startswith(marker):
                                     text = text.replace(marker, '')
-
                                     p = paragraph.add_run(marker)
                                     r_fmt = p.font
                                     r_fmt.name = 'Times New Roman'
@@ -2136,7 +2231,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 section.page_width = Cm(14.8)
 
                         doc_name = f'.{os.sep}generated{os.sep}осмотр.docx'
-                        doc_name = save_document(doc=document, doc_name=file_name)
+                        doc_name = save_document(doc=document, doc_name=doc_name)
                         run_document(doc_name)
 
             past_examination_data = dict()
@@ -2208,21 +2303,35 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     #       font=('Comic Sans MS', user.get('text_size')),
                     #       bg='white').pack(fill='both', expand=True, side="top")
 
-                    for mark in ('Удалить осмотр',
-                                 'Загрузить в текущий',
-                                 "Печать А5",
-                                 "Печать А6",
-                                 "Сохранить изменения"):
-                        past_examination_data['buttons'][f"{rowid}__{mark}"] = IntVar()
-                        if mark not in ("Сохранить изменения", 'Удалить осмотр') \
-                                or doctor_name == user.get('doctor_name'):
+                    if examination_key.startswith('type_examination:____certificate__'):
+                        if doctor_name == user.get('doctor_name'):
+                            mark = 'Удалить справку'
+                            past_examination_data['buttons'][f"{rowid}__{mark}"] = IntVar()
                             Checkbutton(local_frame, text=mark,
                                         font=('Comic Sans MS', user.get('text_size')),
                                         onvalue=1, offvalue=0,
                                         variable=past_examination_data['buttons'].get(f"{rowid}__{mark}"),
                                         command=selected_past_but,
                                         indicatoron=False,
-                                        selectcolor='#77f1ff').pack(fill='both', expand=True, side="left")
+                                        selectcolor='#77f1ff').pack(fill='both', expand=True)
+                    else:
+                        for mark in ('Удалить осмотр',
+                                     'Загрузить в текущий',
+                                     "Печать А5",
+                                     "Печать А6",
+                                     "Сохранить изменения"):
+                            past_examination_data['buttons'][f"{rowid}__{mark}"] = IntVar()
+
+                            if mark not in ("Сохранить изменения", 'Удалить осмотр') \
+                                    or doctor_name == user.get('doctor_name'):
+                                Checkbutton(local_frame, text=mark,
+                                            font=('Comic Sans MS', user.get('text_size')),
+                                            onvalue=1, offvalue=0,
+                                            variable=past_examination_data['buttons'].get(f"{rowid}__{mark}"),
+                                            command=selected_past_but,
+                                            indicatoron=False,
+                                            selectcolor='#77f1ff').pack(fill='both', expand=True, side="left")
+
 
                     local_frame.columnconfigure(index='all', minsize=40, weight=1)
                     local_frame.rowconfigure(index='all', minsize=20)
@@ -2437,6 +2546,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 active_but,
                 None]
             if doc_size:
+                render_data['diagnosis'] = render_data.get('diagnosis', '').replace('Диагноз:', '')
 
                 doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}осмотр_педиатра_{doc_size}.docx")
                 doc.render(render_data)
@@ -3531,14 +3641,14 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         if data['examination'].get('open_complaints_kb') == 'open':
             data['examination']['open_complaints_kb'] = 'closed'
             change_complaints_kb_button['text'] = 'открыть клавиатуру жалоб'
-            txt_complaints['height'] = 2
+            txt_complaints['height'] = 4
             txt_complaints['width'] = 100
             frame_complaints_buttons.grid_forget()
             frame_complaints_main.grid_configure(row=0, column=0, sticky='ew', columnspan=3)
         else:
             data['examination']['open_complaints_kb'] = 'open'
             change_complaints_kb_button['text'] = 'скрыть клавиатуру жалоб'
-            txt_complaints['height'] = 6
+            txt_complaints['height'] = 8
             txt_complaints['width'] = 15
             frame_complaints_buttons.grid(row=0, column=1, sticky='ew', columnspan=2)
             frame_complaints_main.grid_configure(row=0, column=0, sticky='ew', columnspan=1)
@@ -3626,7 +3736,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     frame_complaints = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
     frame_complaints_main = Frame(frame_complaints, padx=1, pady=1)
     frame_complaints_buttons = Frame(frame_complaints, padx=1, pady=1)
-    txt_complaints = ScrolledText(frame_complaints_main, width=15, height=6,
+    txt_complaints = ScrolledText(frame_complaints_main, width=15, height=8,
                                   font=('Comic Sans MS', user.get('text_size')),
                                   wrap="word")
     change_complaints_kb_button = Button(frame_complaints_main, text='скрыть клавиатуру жалоб',
@@ -4599,6 +4709,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
 
     frame_diagnosis_txt = Frame(examination_root, borderwidth=1, relief="solid", padx=3, pady=3)
+    Label(master=frame_diagnosis_txt, text="Диагноз",
+          font=('Comic Sans MS', user.get('text_size')), bg='white'
+          ).pack(fill='both', expand=True, padx=2, pady=2)
+
     txt_diagnosis = ScrolledText(frame_diagnosis_txt, width=70, height=3,
                                  font=('Comic Sans MS', user.get('text_size')),
                                  wrap="word")
@@ -5934,7 +6048,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                 if data['examination']['selected_drugs'][drug_category][drug_name].get("Форма", ''):
                     form = data['examination']['selected_drugs'][drug_category][drug_name].get("Форма", '')
-                    print('form', form)
                     if recipe_data.get(drug_category, dict()).get(drug_name, dict()).get(form):
                         d_t_d_n = recipe_data[drug_category][drug_name].get(form)
 
@@ -5948,7 +6061,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 elif (drug_category != 'Бронхолитики'
                         and drug_category != 'Глазные капли'
                         and 'капли' not in drug_name
-                        and 'спрей' not in drug_name):
+                        and 'спрей' not in drug_name
+                        and 'Внутримышечно' not in signatura
+                        and 'ингалляц' not in signatura):
                     signatura = f"Принимать внутрь {signatura}"
 
                 render_data.clear()
@@ -5994,7 +6109,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['all_drug_frame'][drug_category].pack_forget()
             all_drug_frame = data['examination']['all_drug_frame'].get(selected_button.get())
             all_drug_frame.pack(fill='both', expand=True)
-            data['examination']['canvas_frame_scrolled'].yview_moveto(0.001)
+            all_drug_frame.update_idletasks()
+            print("all_drug_frame", all_drug_frame.winfo_width())
+            data['examination']['canvas_frame_scrolled'].yview_moveto(0)
 
         def select_drugs_name():
             if data['examination']['all_drug_frame'].get(selected_button.get()):
@@ -6116,6 +6233,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             Label(drug_frame_add, text=f"{mark}",
                                   font=('Comic Sans MS', user.get('text_size')),
                                   bg="#36566d", fg='white').pack(fill='both', expand=True)
+                        elif mark.startswith('Инструкция'):
+                            Label(drug_frame_add, text=f"{mark}",
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  bg="#36566d", fg='white').pack(fill='both', expand=True, pady=2)
+
+
                         else:
                             btn_text = ''
                             for i in mark.split():
@@ -7522,7 +7645,6 @@ def data_base(command,
         except Exception:
             return False
 
-
     elif command == 'save_new_diagnosis':
         try:
             try:
@@ -8443,27 +8565,27 @@ def fast_certificate():
                   font=('Comic Sans MS', user.get('text_size')),
                   ).pack(fill='both', expand=True)
             frame_type_cert_but = Frame(frame_type_cert)
-            counter = 0
+            all_type_cert = [[]]
             for type_cert in all_data_certificate.get('type'):
-                counter += 1
-                if counter == 5:
-                    counter = 1
-                    frame_type_cert_but.columnconfigure(index='all', minsize=40, weight=1)
-                    frame_type_cert_but.rowconfigure(index='all', minsize=20)
-                    frame_type_cert_but.pack(fill='both', expand=True)
-                    frame_type_cert_but = Frame(frame_type_cert)
-
-                Radiobutton(master=frame_type_cert_but,
-                            text=type_cert,
-                            font=('Comic Sans MS', user.get('text_size')),
-                            value=type_cert,
-                            variable=selected_button,
-                            command=select_type_cert,
-                            indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
-                            ).pack(fill='both', expand=True, padx=1, pady=1, side='left')
-            frame_type_cert_but.columnconfigure(index='all', minsize=40, weight=1)
-            frame_type_cert_but.rowconfigure(index='all', minsize=20)
-            frame_type_cert_but.pack(fill='both', expand=True, padx=2, pady=2)
+                if len(all_type_cert[-1]) == 4:
+                    all_type_cert.append(list())
+                all_type_cert[-1].append(type_cert)
+            for type_cert_data in all_type_cert:
+                frame = Frame(frame_type_cert_but)
+                for type_cert in type_cert_data:
+                    Radiobutton(master=frame,
+                                text=type_cert,
+                                font=('Comic Sans MS', user.get('text_size')),
+                                value=type_cert,
+                                variable=selected_button,
+                                command=select_type_cert,
+                                indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                                ).pack(fill='both', expand=True, padx=1, pady=1, side='left')
+                frame.pack(fill='both', expand=True)
+            # frame_type_cert_but.columnconfigure(index='all', minsize=40, weight=1)
+            # frame_type_cert_but.rowconfigure(index='all', minsize=20)
+            data['certificate']['frame_type_cert_but'] = frame_type_cert_but
+            # frame_type_cert_but.pack(fill='both', expand=True, padx=2, pady=2)
             frame_type_cert.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
 
         pack_frame_type_cert()
@@ -8716,7 +8838,7 @@ def fast_certificate():
                                           f"chickenpox__{data['certificate'].get('chickenpox', '')}____" \
                                           f"allergy__{data['certificate'].get('allergy', '')}____" \
                                           f"allergy_txt__{allergy_txt.get()}____" \
-                                          f"injury__{data['certificate'].get('injury_operation', '')}____" \
+                                          f"injury_operation__{data['certificate'].get('injury_operation', '')}____" \
                                           f"injury_txt__{injury_operation_txt.get()}__<end!>__\n"
 
                         if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ',
@@ -8772,6 +8894,8 @@ def fast_certificate():
 
                 type_certificate = selected_button.get()
                 render_data.clear()
+                data['certificate']['type_cert_frames']['selected_cert'].pack_forget()
+
                 try:
                     for marker in all_data_certificate['all_info'].get(type_certificate):
                         render_data[marker] = all_data_certificate['all_info'][type_certificate].get(marker)
@@ -8792,6 +8916,8 @@ def fast_certificate():
                         data['certificate']['type_cert_info'][type_certificate]['validity_period'].get()
 
                     diagnosis_txt = data['certificate']['type_cert_info'][type_certificate].get('diagnosis_txt')
+                    if diagnosis_txt:
+                        data['certificate']['diagnosis_text'] = diagnosis_txt.get(1.0, 'end').strip()
 
                     if not render_data.get('place_of_requirement'):
                         if not data['certificate'].get('place_of_requirement'):
@@ -9121,13 +9247,17 @@ def fast_certificate():
 
 
                 except ValueError:
+                    data['certificate']['type_cert_frames']['selected_cert'].pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
                     canvas_frame.focus()
                 else:
                     print('<-------------------------------->')
                     for i in render_data:
                         print(f"----> {i}", render_data.get(i))
-                    certificate_main_root.destroy()
+
+
                     certificate__create_doc()
+                    certificate_main_root.destroy()
+
 
             def diagnosis_healthy():
                 for type_cert in data['certificate'].get('type_cert_info'):
@@ -9485,6 +9615,194 @@ def fast_certificate():
                                    weight=weight_var)
                 )
                 return True
+
+            def select_chickenpox():
+                data['certificate']['chickenpox'] = selected_chickenpox.get()
+
+            def select_allergy():
+                data['certificate']['allergy'] = selected_allergy.get()
+                if selected_allergy.get() == '+':
+                    if not data['certificate'].get('is_frame_allergy_open'):
+                        data['certificate']['is_frame_allergy_open'] = True
+                        for type_cert in data['certificate'].get('type_cert_info'):
+                            if data['certificate']['type_cert_info'][type_cert].get('frame_allergy'):
+                                frame_allergy = data['certificate']['type_cert_info'][type_cert].get(
+                                    'frame_allergy')
+                                frame = Frame(frame_allergy, borderwidth=1, relief="solid", padx=2, pady=2)
+                                Label(frame, text="Аллергия на:",
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      bg='white').pack(fill='both', expand=True, side='left')
+                                Entry(frame, width=60, textvariable=allergy_txt,
+                                      font=('Comic Sans MS', user.get('text_size'))
+                                      ).pack(fill='both', expand=True, side='left')
+                                frame.pack(fill='both', expand=True)
+                                data['certificate']['type_cert_info'][type_cert]['frame_allergy_txt'] = frame
+
+
+                else:
+                    if data['certificate'].get('is_frame_allergy_open'):
+                        data['certificate']['is_frame_allergy_open'] = False
+                        for type_cert in data['certificate'].get('type_cert_info'):
+                            if data['certificate']['type_cert_info'][type_cert].get('frame_allergy_txt'):
+                                frame = data['certificate']['type_cert_info'][type_cert].get('frame_allergy_txt')
+                                frame.pack_forget()
+                                frame.destroy()
+                                data['certificate']['type_cert_info'][type_cert]['frame_allergy_txt'] = False
+
+            def select_injury_operation():
+                data['certificate']['injury_operation'] = selected_injury_operation.get()
+                if selected_injury_operation.get() == '+':
+                    if not data['certificate'].get('is_frame_injury_open'):
+                        data['certificate']['is_frame_injury_open'] = True
+                        for type_cert in data['certificate'].get('type_cert_info'):
+                            if data['certificate']['type_cert_info'][type_cert].get('frame_injury'):
+                                frame_allergy = data['certificate']['type_cert_info'][type_cert].get(
+                                    'frame_injury')
+                                frame = Frame(frame_allergy, borderwidth=1, relief="solid", padx=2, pady=2)
+                                Label(frame, text="Травмы и операции:",
+                                      font=('Comic Sans MS', user.get('text_size')),
+                                      bg='white').pack(fill='both', expand=True, side='left')
+                                Entry(frame, width=60, textvariable=injury_operation_txt,
+                                      font=('Comic Sans MS', user.get('text_size'))
+                                      ).pack(fill='both', expand=True, side='left')
+                                frame.pack(fill='both', expand=True)
+                                data['certificate']['type_cert_info'][type_cert]['frame_injury_txt'] = frame
+
+
+                else:
+                    if data['certificate'].get('is_frame_injury_open'):
+                        data['certificate']['is_frame_injury_open'] = False
+                        for type_cert in data['certificate'].get('type_cert_info'):
+                            if data['certificate']['type_cert_info'][type_cert].get('frame_injury_txt'):
+                                frame = data['certificate']['type_cert_info'][type_cert].get('frame_injury_txt')
+                                frame.pack_forget()
+                                frame.destroy()
+                                data['certificate']['type_cert_info'][type_cert]['frame_injury_txt'] = False
+
+            def upload_last_data():
+                found_info = data_base(command='certificate__upload_last_data')
+                local_info = {
+                    'select_past_examination': list(),
+                    'get_last_anthro_data': dict(),
+
+                }
+                flags = {
+                    'chickenpox_allergy_injury': False,
+                    'health_physical_group': False,
+                    'diagnosis_txt': False,
+                    'patient_anthro': False,
+                    'ЦКРОиР_add_med_info': False,
+                    'ЦКРОиР_add_med_info_doctors': False,
+                    'break': False
+                }
+                variables = {
+                    'chickenpox_allergy_injury': {
+                        'chickenpox': selected_chickenpox,
+                        'allergy': selected_allergy,
+                        'injury_operation': selected_injury_operation,
+                        'allergy_txt': allergy_txt,
+                        'injury_txt': injury_operation_txt},
+                    'health_physical_group': {
+                        'health_group': selected_health_group,
+                        'physical': selected_fiz_group,
+                        'diet': selected_diet,
+                        'regime': regime_vars,
+                        'desk': desk_vars},
+                    'patient_anthro': {
+                        'height': height,
+                        'weight': weight,
+                        'vision': vision
+                    }
+
+                }
+
+                if found_info.get('select_past_examination'):
+                    for rowid, examination_key in sorted(found_info.get('select_past_examination'),
+                                                         key=lambda i: (datetime.now() -
+                                                                        datetime.strptime(f"{i[0]}",
+                                                                                          "%d.%m.%Y %H:%M:%S")).total_seconds()):
+
+                        for string in examination_key.split('__<end!>__\n'):
+                            if string.startswith('chickenpox_allergy_injury:____'):
+                                if not flags.get('chickenpox_allergy_injury'):
+                                    flags['chickenpox_allergy_injury'] = True
+                                    string = string.replace('chickenpox_allergy_injury:____', '').split('____')
+                                    for marker in string:
+                                        if len(marker.split('__')) == 2:
+                                            var_name, info = marker.split('__')
+                                            if variables['chickenpox_allergy_injury'].get(var_name):
+                                                variable = variables['chickenpox_allergy_injury'].get(var_name)
+                                                variable.set(info)
+                                    select_chickenpox()
+                                    select_allergy()
+                                    select_injury_operation()
+
+                            elif string.startswith('health_physical_group:____'):
+                                if not flags.get('health_physical_group'):
+                                    flags['health_physical_group'] = True
+                                    for marker in string.replace('health_physical_group:____', '').split('____'):
+                                        if len(marker.split('__')) == 2:
+                                            var_name, info = marker.split('__')
+                                            if var_name in ('health_group', 'physical', 'diet'):
+                                                if variables['health_physical_group'].get(var_name):
+                                                    variable = variables['health_physical_group'].get(var_name)
+                                                    variable.set(info)
+
+                                            elif var_name in ('regime', 'desk'):
+                                                variable = variables['health_physical_group'].get(var_name)
+                                                if variable.get(info):
+                                                    variable[info].set(1)
+                                    select_health()
+
+                            elif string.startswith('diagnosis_txt:____'):
+                                if not flags.get('diagnosis_txt'):
+                                    flags['diagnosis_txt'] = True
+                                    text = string.replace('diagnosis_txt:____', '')
+                                    for type_certificate in data['certificate'].get('type_cert_info'):
+                                        if data['certificate']['type_cert_info'][type_certificate].get('diagnosis_txt'):
+                                            diagnosis_txt = data['certificate']['type_cert_info'][type_certificate].get(
+                                                'diagnosis_txt')
+                                            diagnosis_txt.insert(1.0, text)
+
+                            elif string.startswith('patient_anthro:____'):
+                                if not flags.get('patient_anthro'):
+                                    flags['patient_anthro'] = True
+                                    chickenpox_variables = ()
+
+                                    for marker in string.replace('patient_anthro:____', '').split('____'):
+                                        if len(marker.split('__')) == 2:
+                                            var_name, info = marker.split('__')
+                                            if variables['patient_anthro'].get(var_name):
+                                                variable = variables['patient_anthro'].get(var_name)
+                                                variable.set(info)
+
+                            elif string.startswith('ЦКРОиР_add_med_info'):
+
+                                if string.startswith('ЦКРОиР_add_med_info:____'):
+                                    if not flags.get('ЦКРОиР_add_med_info'):
+                                        flags['ЦКРОиР_add_med_info'] = True
+                                        text = string.replace('ЦКРОиР_add_med_info:____', '')
+                                        add_med_info = data['certificate']['type_cert_info']['ЦКРОиР'].get(
+                                            'ЦКРОиР_add_med_info')
+                                        add_med_info.delete(1.0, 'end')
+                                        add_med_info.insert(1.0, text)
+
+                                elif string.startswith('ЦКРОиР_add_med_info_doctors:____'):
+                                    if not flags.get('ЦКРОиР_add_med_info_doctors'):
+                                        flags['ЦКРОиР_add_med_info_doctors'] = True
+                                        for marker in string.replace('ЦКРОиР_add_med_info_doctors:____', '').split(
+                                                '__!__'):
+                                            if len(marker.split('____')) == 2:
+                                                var_name, info = marker.split('____')
+                                                data['certificate']['type_cert_info']['ЦКРОиР'][f'{var_name}_txt'].set(
+                                                    info)
+
+                        flags['break'] = True
+                        for flag in flags:
+                            if not flags.get(flag):
+                                flags['break'] = False
+                        if flags.get('break'):
+                            break
 
             paste_bp()
             for type_certificate in all_data_certificate.get('type'):
@@ -9905,68 +10223,6 @@ def fast_certificate():
                     frame_ori.pack(fill='both', expand=True, padx=2, pady=2)
 
                 if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь', 'Об усыновлении (удочерении)', 'Об отсутствии контактов', 'Бесплатное питание', 'О нуждаемости в сан-кур лечении'):
-                    def select_chickenpox():
-                        data['certificate']['chickenpox'] = selected_chickenpox.get()
-
-                    def select_allergy():
-                        data['certificate']['allergy'] = selected_allergy.get()
-                        if selected_allergy.get() == '+':
-                            if not data['certificate'].get('is_frame_allergy_open'):
-                                data['certificate']['is_frame_allergy_open'] = True
-                                for type_cert in data['certificate'].get('type_cert_info'):
-                                    if data['certificate']['type_cert_info'][type_cert].get('frame_allergy'):
-                                        frame_allergy = data['certificate']['type_cert_info'][type_cert].get(
-                                            'frame_allergy')
-                                        frame = Frame(frame_allergy, borderwidth=1, relief="solid", padx=2, pady=2)
-                                        Label(frame, text="Аллергия на:",
-                                              font=('Comic Sans MS', user.get('text_size')),
-                                              bg='white').pack(fill='both', expand=True, side='left')
-                                        Entry(frame, width=60, textvariable=allergy_txt,
-                                              font=('Comic Sans MS', user.get('text_size'))
-                                              ).pack(fill='both', expand=True, side='left')
-                                        frame.pack(fill='both', expand=True)
-                                        data['certificate']['type_cert_info'][type_cert]['frame_allergy_txt'] = frame
-
-
-                        else:
-                            if data['certificate'].get('is_frame_allergy_open'):
-                                data['certificate']['is_frame_allergy_open'] = False
-                                for type_cert in data['certificate'].get('type_cert_info'):
-                                    if data['certificate']['type_cert_info'][type_cert].get('frame_allergy_txt'):
-                                        frame = data['certificate']['type_cert_info'][type_cert].get('frame_allergy_txt')
-                                        frame.pack_forget()
-                                        frame.destroy()
-                                        data['certificate']['type_cert_info'][type_cert]['frame_allergy_txt'] = False
-
-                    def select_injury_operation():
-                        data['certificate']['injury_operation'] = selected_injury_operation.get()
-                        if selected_injury_operation.get() == '+':
-                            if not data['certificate'].get('is_frame_injury_open'):
-                                data['certificate']['is_frame_injury_open'] = True
-                                for type_cert in data['certificate'].get('type_cert_info'):
-                                    if data['certificate']['type_cert_info'][type_cert].get('frame_injury'):
-                                        frame_allergy = data['certificate']['type_cert_info'][type_cert].get(
-                                            'frame_injury')
-                                        frame = Frame(frame_allergy, borderwidth=1, relief="solid", padx=2, pady=2)
-                                        Label(frame, text="Травмы и операции:",
-                                              font=('Comic Sans MS', user.get('text_size')),
-                                              bg='white').pack(fill='both', expand=True, side='left')
-                                        Entry(frame, width=60, textvariable=injury_operation_txt,
-                                              font=('Comic Sans MS', user.get('text_size'))
-                                              ).pack(fill='both', expand=True, side='left')
-                                        frame.pack(fill='both', expand=True)
-                                        data['certificate']['type_cert_info'][type_cert]['frame_injury_txt'] = frame
-
-
-                        else:
-                            if data['certificate'].get('is_frame_injury_open'):
-                                data['certificate']['is_frame_injury_open'] = False
-                                for type_cert in data['certificate'].get('type_cert_info'):
-                                    if data['certificate']['type_cert_info'][type_cert].get('frame_injury_txt'):
-                                        frame = data['certificate']['type_cert_info'][type_cert].get('frame_injury_txt')
-                                        frame.pack_forget()
-                                        frame.destroy()
-                                        data['certificate']['type_cert_info'][type_cert]['frame_injury_txt'] = False
 
 
                     frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
@@ -10272,136 +10528,20 @@ def fast_certificate():
                             value=type_certificate,
                             variable=selected_button,
                             command=create_certificate,
-                            indicatoron=False, selectcolor='#77f1ff',
+                            indicatoron=False, selectcolor='#36566d',
                             bg="#36566d",
                             fg='white',
                             ).pack(fill='both', expand=True)
                 frame.pack(fill='both', expand=True)
 
+            certificate_main_root.update_idletasks()
+            certificate_main_root.geometry('+0+0')
+            upload_last_data()
+            selected_button.set('')
+            data['certificate']['frame_type_cert_but'].pack(fill='both', expand=True, padx=2, pady=2)
+
+
         create_type_cert_frames()
-        certificate_main_root.update_idletasks()
-        def upload_last_data():
-            found_info = data_base(command='certificate__upload_last_data')
-            local_info = {
-                'select_past_examination': list(),
-                'get_last_anthro_data': dict(),
-
-            }
-            flags = {
-                'chickenpox_allergy_injury': False,
-                'health_physical_group': False,
-                'diagnosis_txt': False,
-                'patient_anthro': False,
-                'ЦКРОиР_add_med_info': False,
-                'ЦКРОиР_add_med_info_doctors': False,
-                'break': False
-            }
-
-            if found_info.get('select_past_examination'):
-                for rowid, date_time, doctor_name, status, LN_type, patient_info, examination_text, examination_key \
-                        in sorted(found_info.get('select_past_examination'),
-                                  key=lambda i: (datetime.now() -
-                                                 datetime.strptime(f"{i[1]}", "%d.%m.%Y %H:%M:%S")).total_seconds()):
-
-                    for string in examination_key.split('__<end!>__\n'):
-                        if string.startswith('chickenpox_allergy_injury:____'):
-                            if not flags.get('chickenpox_allergy_injury'):
-                                flags['chickenpox_allergy_injury'] = True
-                                chickenpox_variables = (('chickenpox', selected_chickenpox),
-                                                        ('allergy', selected_allergy),
-                                                        ('allergy_txt', allergy_txt),
-                                                        ('injury', selected_injury_operation),
-                                                        ('injury_txt', injury_operation_txt))
-
-                                for marker in string.replace('chickenpox_allergy_injury:____', '').split('____'):
-                                    if len(marker.split('__')) == 2:
-                                        var_name, info = marker.split('__')
-                                        for name, variable in chickenpox_variables:
-                                            if var_name == name:
-                                                variable.set(info)
-
-                        elif string.startswith('health_physical_group:____'):
-                            if not flags.get('health_physical_group'):
-                                flags['health_physical_group'] = True
-                                health_variables = (('health_group', selected_health_group),
-                                                    ('physical', selected_fiz_group),
-                                                    ('diet', selected_diet),
-                                                    ('regime', regime_vars),
-                                                    ('desk', desk_vars))
-
-                                for marker in string.replace('health_physical_group:____', '').split('____'):
-                                    if len(marker.split('__')) == 2:
-                                        var_name, info = marker.split('__')
-                                        if var_name in ('health_group', 'physical', 'diet'):
-                                            for name, variable in health_variables:
-                                                if var_name == name:
-                                                    variable.set(info)
-                                        elif var_name in ('regime', 'desk'):
-                                            for name, variable in health_variables:
-                                                if var_name == name:
-                                                    if variable.get(info):
-                                                        variable[info].set(1)
-
-                        elif string.startswith('diagnosis_txt:____'):
-                            if not flags.get('diagnosis_txt'):
-                                flags['diagnosis_txt'] = True
-                                text = string.replace('diagnosis_txt:____', '')
-                                for type_certificate in data['certificate'].get('type_cert_info'):
-                                    if data['certificate']['type_cert_info'][type_certificate].get('diagnosis_txt'):
-                                        diagnosis_txt = data['certificate']['type_cert_info'][type_certificate].get(
-                                            'diagnosis_txt')
-                                        diagnosis_txt.insert(1.0, text)
-
-                        elif string.startswith('patient_anthro:____'):
-                            if not flags.get('patient_anthro'):
-                                flags['patient_anthro'] = True
-                                chickenpox_variables = (('height', height),
-                                                        ('weight', weight),
-                                                        ('vision', vision))
-
-                                for marker in string.replace('patient_anthro:____', '').split('____'):
-                                    if len(marker.split('__')) == 2:
-                                        var_name, info = marker.split('__')
-                                        for name, variable in chickenpox_variables:
-                                            if var_name == name:
-                                                variable.set(info)
-
-                        elif string.startswith('ЦКРОиР_add_med_info'):
-
-                            if string.startswith('ЦКРОиР_add_med_info:____'):
-                                if not flags.get('ЦКРОиР_add_med_info'):
-                                    flags['ЦКРОиР_add_med_info'] = True
-                                    text = string.replace('ЦКРОиР_add_med_info:____', '')
-                                    add_med_info = data['certificate']['type_cert_info']['ЦКРОиР'].get('ЦКРОиР_add_med_info')
-                                    add_med_info.delete(1.0, 'end')
-                                    add_med_info.insert(1.0, text)
-
-                            elif string.startswith('ЦКРОиР_add_med_info_doctors:____'):
-                                if not flags.get('ЦКРОиР_add_med_info_doctors'):
-                                    flags['ЦКРОиР_add_med_info_doctors'] = True
-                                    for marker in string.replace('ЦКРОиР_add_med_info_doctors:____', '').split('__!__'):
-                                        if len(marker.split('____')) == 2:
-                                            var_name, info = marker.split('__')
-                                            data['certificate']['type_cert_info']['ЦКРОиР'][f'{var_name}_txt'].set(info)
-
-                    flags['break'] = True
-                    for flag in flags:
-                        if not flags.get(flag):
-                            flags['break'] = False
-                    if flags.get('break'):
-                        break
-
-
-
-        upload_last_data()
-        certificate_main_root.geometry('+0+0')
-        selected_button.set('')
-
-        certificate_main_root.update()
-
-
-
-
 
 
 def analyzes_cmd():
