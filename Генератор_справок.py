@@ -5120,7 +5120,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         frame_main_analyzes.pack(fill='x', anchor='n')
         anal_frame_category.pack(fill='both', expand=True)
-        analyzes_root_main.grid(row=0, column=3, sticky="nwse")
+        analyzes_root_main.grid(row=0, column=3, sticky="nwse", rowspan=3)
         analyzes_root_main.grid_remove()
 
     analyzes_root_main = Frame(master=root_examination, padx=3, pady=3, bg="#36566d")
@@ -5265,7 +5265,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         frame_main_consultation.pack(fill='x', anchor='n')
         consult_frame_category.pack(fill='both', expand=True)
-        consultation_root_main.grid(row=0, column=3, sticky="nwse")
+        consultation_root_main.grid(row=0, column=3, sticky="nwse", rowspan=3)
         consultation_root_main.grid_remove()
 
     consultation_root_main = Frame(master=root_examination, padx=3, pady=3, bg="#36566d")
@@ -6320,7 +6320,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
 
 
-        drugs_root_main.grid(row=0, column=3, sticky="nwse")
+        drugs_root_main.grid(row=0, column=3, sticky="nwse", rowspan=3)
         create_scroller_frame(master_frame=all_drugs_frame_scrolled, func=create_drugs_frame)
 
         drugs_root_main.grid_remove()
@@ -6506,7 +6506,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         mkb_frame_scrolled.pack(fill='both', expand=True)
 
         data['examination']['is_dispanser_root_open'] = False
-        dispanser_root_main.grid(row=0, column=3, sticky="nwse")
+        dispanser_root_main.grid(row=0, column=3, sticky="nwse", rowspan=3)
 
         dispanser_root_main.grid_remove()
 
@@ -7327,34 +7327,37 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         def create_examination_doc_none():
             create_examination_doc()
 
-        frame_button = Frame(examination_root, relief="solid", padx=1, pady=1)
-
-
-
+        frame_button = Frame(examination_root, relief="solid", padx=1, pady=1, bg="#36566d")
         Button(frame_button, text='Печать А5',
+               bg="#36566d", fg='white',
                command=create_examination_doc_a5,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=0, columnspan=2, sticky='nswe')
 
         Button(frame_button, text='Печать А6',
+               bg="#36566d", fg='white',
                command=create_examination_doc_a6,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=1, columnspan=2, sticky='nswe')
 
         Button(frame_button, text='Печать А5 + рекомендации',
+               bg="#36566d", fg='white',
                command=create_examination_doc_a5_rec,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=0, columnspan=2, sticky='nswe')
 
         Button(frame_button, text='Печать А6 + рекомендации',
+               bg="#36566d", fg='white',
                command=create_examination_doc_a6_rec,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=4, row=1, columnspan=2, sticky='nswe')
 
 
         Button(frame_button, text='Сохранить без печати',
+               bg="#36566d", fg='white',
                command=create_examination_doc_none,
                font=('Comic Sans MS', user.get('text_size'))).grid(column=2, row=2, columnspan=4, sticky='nswe')
 
 
         if child_marker:
             Button(frame_button, text='Печать А5 \nежемесячный',
+                   bg="#36566d", fg='white',
                    command=create_examination_doc_a5_disp,
                    font=('Comic Sans MS', user.get('text_size'))).grid(column=6, row=0, rowspan=3, sticky='nswe')
 
@@ -7564,22 +7567,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         create_calendar()
 
-
-    age_txt = f"Возраст:"
-    if patient_age.get('year') in (2, 3, 4):
-        age_txt += f" {patient_age.get('year')} года"
-    elif patient_age.get('year') == 1:
-        age_txt += f" {patient_age.get('year')} год"
-    elif patient_age.get('year') > 1:
-        age_txt += f" {patient_age.get('year')} лет"
-
-    age_txt += f" {patient_age.get('month')} мес. "
-    if patient_age.get('year') == 0:
-        age_txt += f"{patient_age.get('day')} д."
-
-    # upload_last_data()
-    patient_banner.set(value=f"ФИО: {patient.get('name')}    Дата рождения: {patient.get('birth_date')}    "
-                             f"{age_txt}\n Адрес: {patient.get('address')}")
     start_action(upload_last_data)
 
 
