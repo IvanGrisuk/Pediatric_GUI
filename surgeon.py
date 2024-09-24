@@ -108,7 +108,7 @@ all_data_certificate = {
             "additional_medical_information": "Рост _____ см; Вес _____ кг; Vis OD/OS = __________; АД ________\n"
                                               "| Осмотрен на чесотку, педикулез, микроспорию |",
             "diagnosis": "Группа здоровья: _ ; Группа по физкультуре: _ ;",
-            "recommendation": "Режим _; Стол _; Закаливание по возрасту;",
+            "recommendation": "Режим _; Стол _;",
             "date_of_issue": "now"},
 
         "На кружки и секции": {
@@ -147,7 +147,7 @@ all_data_certificate = {
                                               "| Осмотрен на чесотку, педикулез, микроспорию |\n"
                                               "Данные о профилактических прививках прилагаются",
             "diagnosis": f"Группа здоровья: _ ; Группа по физкультуре: _ ;",
-            "recommendation": "Режим _; Стол _; Закаливание по возрасту;",
+            "recommendation": "Режим _; Стол _;",
             "date_of_issue": "now",
             "validity_period": "1 год"},
 
@@ -172,7 +172,7 @@ all_data_certificate = {
                                               "Данные о профилактических прививках прилагаются",
             "diagnosis": f"Группа здоровья: _ ; Группа по физкультуре: _ ;\n"
                          "На момент осмотра соматически здоров",
-            "recommendation": "Режим _; Стол _; Закаливание по возрасту;",
+            "recommendation": "Режим _; Стол _;",
             "date_of_issue": "now",
             "validity_period": "5 дней"},
 
@@ -763,18 +763,19 @@ all_diagnosis = {
 }
 
 all_data_diagnosis = {
-    'diagnosis_ori': (('ринит', "синусит", 'фарингит', 'ринофaрингит', "тонзиллит", "ларингит"),
-                      ("отит", "конъюнктивит"),
-                      ("острый", "средний", "катаральный", "гнойный", "экссудативный", "буллезный", "аллергический"),
-                      ("справа", "слева", "двусторонний"),
-                      ("вирусная экзантема", "вирусная энантема"),
-                      ("обструктивный", 'бронхит', 'пневмония', 'плеврит', 'трахеит', "ДН 0", "ДН 1", "ДН 2"),
-                      ("кишечный с-м", "абдоминальный с-м"),
-                      ("анемия", "нормохромная", "гипохромная", "гиперхромная",
-                       "нормоцитарная", "микроцитарная", "макроцитарная"),
-                      ("легкой", "средней", "средне-тяжелой", "тяжелой", "степени"),
-                      ('реконвалесцент', "продолжает болеть", "улучшение", "соматически здоров", "на момент осмотра"),
-                      ("ОРИ", "ФРК", "Ветряная оспа", "ИМВП")
+    'diagnosis_ori': (("На момент осмотра без острой хирургической патологии", ),
+                      ('Вросший ноготь', "Панариций", "Паранихий", "1-го пальца", "стопы", "кисти"),
+                      ("Абсцесс", "Атерома", "Образование", "Гемангиома", "Папилома", "Гидроденит", "Инфильтрат"),
+                      ("Болевой синдром", "менископатия", "артропатия", "синовиит", "бурсит", "болезнь Шляттера", "болезнь Шинца"),
+                      ("головы", "лица", "шеи", "туловища", "грудной клетки", "передней брюшной стенки", "спины",),
+                      ("ягодицы", "там", "промежности", "мошенки"),
+                      ("верхней конечности", "плеча", "предплечья", "кисти"),
+                      ("нижней конечности", "бедра", "коленного сустава", "голени", "стопы"),
+                      ("медиально", "проксимально", "дистально", "справа", "слева", "нижней/3", "верхней/3"),
+                      ("Нарушение осанки", "Идиопатический сколиоз:", "Кифосколиоз?", "кифоз ГОП"),
+                       ("левосторонняя", "правосторонняя", "грудная", "поясничная", "грудо-поясничная"),
+
+                      ("деформация позвоночника","1 ст.", "2 ст.", "3 ст.", "Плоскостопие", "ПВУС",)
                       ),
     'diagnosis_key_child': (
                     ("период адаптации", "соматически здоров", "на момент осмотра"),
@@ -795,14 +796,12 @@ all_data_diagnosis = {
     "diagnosis": ("Предварительный диагноз", 'ОРИ', 'ФРК', "Ветряная оспа", "Здоров"),
 
     "place": ('на дому', 'в поликлинике'),
-    'complaints': ("сыпь", "гнойное отделяемое из глаз", "зуд", "тошнота", "ломота",
-                   "слабость", "беспокойство",
+    'complaints': ("образование", "гнойное содержимое", "зуд", "тошнота", "запор",
                    ("температура", '37', '37.5', '38', '38.5', '39', '39.5', '40', '40.5'),
-                   ("кашель", "сухой", "влажный", "приступообразный", "лающий"),
-                   ("боль в", "голове", "ушах", "горле", "глазах", "груди", "мышцах", "животе"),
-                   ("насморк", "заложенность носа", "сопли зеленые", "сопли прозрачные"),
+                   ("Боль", "сухой", "влажный", "приступообразный", "лающий"),
+                   ("Боль, отек, покраснение", "полового члена", "мошонки", "пальца", "кисти", "стопы"),
                    ("рвота", "однократная", "многократная", "едой", "жидкостью", "желчью", "приносящая облегчение"),
-                   ("диарея", "стул", "зеленый", "коричневый", "обесцвеченный", "желтый", "с кровью", "с слизью", "пенистый")),
+                   ("диарея", "стул", "регулярный", "частый", "с кровью", "с слизью", "пенистый")),
 
     "examination_child":
             (("Вскармливание", "грудное", "по требованию", '\n',
@@ -877,69 +876,55 @@ all_data_diagnosis = {
                      "геморрагическая", '\n',
                      "на лице", "на шее", "на туловище", "на руках", "на кистях", "на стопах", "на ногах",
                      "в паховой области", "в складках кожи", "по всему телу"),
-                    ("Глаза", "без изменений", "конъюнктива гиперемирована", "глазная щель сужена",
-                     "гнойное отделяемое", "отек век"),
+
                     ("Слизистая глотки", "зев спокоен", "неярко гиперемирована", "гиперемирована", "зернистая", "энантема"),
-                    ("Нёбные миндалины", "без изменений", '\n',
-                     "увеличены", "1ст.", "2ст.", "3ст.", '\n',
-                     "налетов нет", "обложены налетом", "белого цвета", "серого цвета"),
-                    ("Носовое дыхание", "свободное", '\n',
-                     "затруднено", "из носа -",
-                     "слизистое отделяемое", "гнойное отделяемое"),
                     ("Периферические лимфоузлы", "не увеличены", '\n',
                      "увеличены", "подчелюстные", "шейные", "надключичные",
                      "подмышечные", "паховые", "справа", "слева", "с обеих сторон", "плотные", "эластичные", '\n',
                      "болезненные", "безболезненные", "при пальпации", "подвижные", "не спаяны с окружающей тканью"),
-                    ("Легкие", "дыхание -", "везикулярное", "пуэрильное", "жесткое", "ослабленное",
-                     "проводится во все отделы", "хрипов нет", '\n',
-                     "хрипы -", "сухие", "влажные", "проводные", "свистящие", '\n',
-                    "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", '\n',
-                     "справа", "слева", "с обеих сторон"),
-                    ("Сердце", "тоны сердца -", "ясные", "приглушены", "ритмичные", '\n',
-                     "границы в пределах возрастной нормы", "систолический шум", "на верхушке"),
                     ("Живот", "мягкий", "безболезненный", "доступен глубокой пальпации", '\n',
                      "напряжен", "защитный дефанс -", "болезненный -", '\n',
                      "в эпигастральной обл", "в мезогастральной обл", "в гипогастральной обл", '\n',
                      "справа", "слева", '\n',
-                     "Печень у края реберной дуги", "плотная", "эластичная", "селезенка не пальпируется"),
+                     "Печень у края реберной дуги", "селезенка не пальпируется", '\n',
+                     "Менингеальные симптомы", "Аппендикулярные симптомы",
+                     "Перитониальные симптомы", "Пузырные симптомы", '\n',
+                     "отрицательные", "положительные", "сомнительные"),
                     ("Мочеиспускание", "регулярное", "безболезненное", "диурез снижен", "боль при мочеиспускании"),
                     ("Стул", "оформленный", "послабленный", "разжиженный", "кашицеобразный", '\n',
-                     "коричневый", "зеленый", "обесцвеченный", "желтый", "черный", '\n',
                      "без патологических примесей", "с кровью", "с слизью", '\n',
-                     "регулярный", "частый", "редкий"),
-                    ("Отоскопия", "не проводилась", "без патологии",
-                     "гиперемия", "серозное содержимое", "гнойное содержимое", "выбухание",
-                     "серная пробка", "отит", "катаральный", "гнойный", "экссудативный", "наружный диффузный"),
+                     "регулярный", "частый", "редкий"
+                     ),
+                    ("Грудная клетка", "не деформирована", "килевидная", "воронкообразная", '\n',
+                     "надплечья, углы лопаток и треугольники талии -", "на одном уровне", "асимметричные", '\n',
+                     "Ось позвоночника -", "ровная", "отклонена от срединной линии", "вправо", "влево", '\n',
+                     "при наклоне мышечные выбухания -", "в ГОП", "в ГПОП"),
+                    ("Нижние конечности", "не деформированы", "длинна одинакова", "движения в суставах в полном объеме, безболезненны",
+                     "своды стоп не уплощены", '\n',
+                     "вальгусная деформация -", "варусная деформация -", "голеней", "стоп", '\n',
+                     "Укорочение конечности -", "слева", "справа", '\n',
+                     "движения в суставах -", "ограничены", "болезнены", "при ротации", "при сгибании", '\n',
+                     "своды стоп -", "уплощены", "ротация пяточных костей наружу"),
+
                     ("Дополнительно", "Менингеальные симптомы", "Аппендикулярные симптомы",
                      "Перитониальные симптомы", "Пузырные симптомы", '\n',
                      "отрицательные", "положительные", "сомнительные")),
 
 
     "prescription": (("Рекомендации",
-                      ("домашний режим", "питьевой режим", "постельный режим на время лихорадки"),
-                      ("полоскать горло", "орошать горло", "промывать нос солевыми растворами"),
-                      ("дренажный массаж", "ингалляции с физраствором"),
+                      ("домашний режим", "питьевой режим", "постельный режим"),
+                      ("ванночки с", "раствором марганцовки", "отвары трав (ромашки, коры дуба)", "солевые", "ТЕПЛЫЕ", "3-5 минут", "5-7 минут", "3 раза в день"),
+                      ("Обработка раствором", "Бетадин", "Хлоргексидин", "перекись водорода 3%", "Септоцид", "3 раза в день"),
+                      ("Компрессы с", "Обработка мазью", "Бетадин", "Димексид 25% 1к4 (воды)", "Меколь", "Повидон-йод", "Адгезин"),
+                      ("Синтомицин 5%", "Индовазин", "Вольтарен", "Димексид гель 25%", "Ибупрофен гель/ Дип-гель", "Троксевазин гель", "Целестодерм", "Тридерм","Метилурацидл"),
                       ("безмолочная диета", "диета с ограничением сырых продуктов", "Пробиотик")),
                      ("Разрешена вакцинация",
                       ("V -", "V1 -", "V2 -", "V3 -", "V4 -", "R -", "R1 -", "R2 -", "R3 -", "R4 -"),
-                      ("БЦЖ-М", "ХИБ", "ИПВ"),
-                      ("ВГВ", "(Эувакс)"),
-                      ("ВГА", "(Хаврикс)", "(Хеалив)", "(Альгавак)", "(Аваксим)"),
-                      ("КПК", "(Приорикс)"),
                       ("А(а)КДС", "АДС", "АДМ"),
                       ("АДС-М", "(Инфанрикс)", "(Адасель)"),
-                      ("от Гриппа", "(Гриппол +)", "(Гриппол)", "(Ваксигрипп тетра)"),
-                      ("от ротавируса", "(Рота-V-Эйд)"),
-                      ("от Ветряной оспы", "(Варилрикс)", "(Варицелла)"),
-                      ("от Клещевого энцефалита", "(Тиковак Джуниор)", "(Тиковак)"),
-
-                      ("от Пневмококковой инфекции", "(Превенар-13)", "(Синфлорикс)"),
-                      ("от Менингококковой инфекции", "(Менактра)", "(Труменба)"),
                       ("Реакция Манту", "Диаскинтест"),
+                      ("От бешенства", ),
 
-                      ("ВГВ + А(а)КДС + ХИБ + ИПВ", "(Инфанрикс гекса)", "(Гексаксим)"),
-                      ("А(а)КДС + ХИБ", "(Тетраксим)"),
-                      ("А(а)КДС + ВГА", ),
                       ("На бесплатной основе", ),
 
                       )),
@@ -4919,7 +4904,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             if not data['examination']['analyzes'].get('patient_anal'):
                 messagebox.showerror('Ошибка!', "Выберите хотя бы один анализ!")
             else:
-                render_data.clear()
 
                 render_data['ped_div'] = user.get('ped_div')
                 render_data['doc_name'] = user.get('doctor_name')
@@ -4930,7 +4914,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 render_data['gender'] = patient.get('gender')
                 render_data['date'] = datetime.now().strftime("%d.%m.%Y")
                 render_data['amb_cart'] = patient.get('amb_cart')
-                render_data['diagnosis'] = f"{txt_diagnosis.get(1.0, 'end').strip()}"
 
                 print(data['examination']['analyzes'].get('patient_anal'))
                 if 'blood-inf__ГЕПАТИТ' in data['examination']['analyzes'].get('patient_anal'):
@@ -5436,10 +5419,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         if not weight:
             weight = data['examination']['anthro']['txt_weight_variable'].get()
             if child_marker:
-                if weight:
-                    weight = float(weight.replace(',', '.')) / 1000
-                else:
-                    weight = "None"
+                weight = float(weight.replace(',', '.')) / 1000
 
         if weight:
             if weight == "None":
@@ -20735,6 +20715,7 @@ def fast_certificate():
                                 '\nУЗИ сердца: _________________________________________________________' \
                                 '\nЭлектрокардиограмма: ________________________________________________' \
                                 '\nУЗИ щитовидной  железы : ____________________________________________'
+
                             render_data['diagnosis'] += \
                                 '\n' \
                                 'Врачебное профессионально-консультативное заключение: ' \
@@ -21630,13 +21611,10 @@ def fast_certificate():
                 if not all_data_certificate['all_info'].get(type_certificate).get('place_of_requirement'):
                     def select_place():
                         type_cert, place = selected_place.get().split('__')
-                        print(type_cert, place)
                         data['certificate']['place_of_requirement'] = place
                         label_place_text.set(f"Место требования справки: {place}")
 
                         if type_cert == "Оформление в ДДУ / СШ / ВУЗ" and place == 'ВУЗ (колледж)':
-                            data['certificate']['type_cert_info'][type_cert]['validity_period'].set('1 год')
-
                             if not data['certificate'].get('frame_specialties'):
                                 frame_place = data['certificate']['type_cert_info'][type_cert].get("frame_place")
                                 frame_specialties = Frame(master=frame_place,
@@ -21662,13 +21640,6 @@ def fast_certificate():
                                     data['certificate']['specialties_txt'].get(1.0, 'end').strip()
                                 data['certificate']['frame_specialties'].pack_forget()
                                 data['certificate']['frame_specialties'] = None
-                            if type_cert == "Оформление в ДДУ / СШ / ВУЗ":
-                                if place == 'Кадетское училище':
-                                    data['certificate']['type_cert_info'][type_cert]['validity_period'].set('3 месяца')
-                                else:
-                                        data['certificate']['type_cert_info'][type_cert]['validity_period'].set('1 год')
-
-
 
                     frame_place = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
                     data['certificate']['type_cert_info'][type_certificate]['frame_place'] = frame_place
@@ -21883,7 +21854,7 @@ def fast_certificate():
 
                 if type_certificate == 'По выздоровлении':
                     def selected_combo_diagnosis(event=None):
-                        if combo_diagnosis.get() == 'ребенок был в поликлинике на приеме у педиатра':
+                        if combo_diagnosis.get() == 'ребенок был в поликлинике на приеме у хирурга':
                             ori_until.set(datetime.now().strftime('%d.%m.%Y до %H:%M'))
                         else:
                             ori_until.set(datetime.now().strftime('%d.%m.%Y'))
@@ -21897,9 +21868,10 @@ def fast_certificate():
 
                     combo_diagnosis = Combobox(frame, width=40,
                                                font=('Comic Sans MS', user.get('text_size')))
-                    combo_diagnosis['values'] = ['ОРИ', "ФРК", "Ветряная оспа",
-                                                 "ребенок был в поликлинике на приеме у педиатра",
-                                                 "ребенок был в поликлинике для вакцинации",
+                    combo_diagnosis['values'] = ['Вросший ноготь',
+                                                 "Вросший ноготь, состояние после оперативного лечения",
+                                                 "Состояние после оперативного лечения",
+                                                 "ребенок был в поликлинике на приеме у хирурга",
                                                  "лечение в стационаре"]
                     combo_diagnosis.current(0)
                     data['certificate']['combo_diagnosis'] = combo_diagnosis
@@ -22387,87 +22359,9 @@ def analyzes__ask_analyzes():
     analyzes_root.config(bg='white')
     analyzes_root.geometry('+0+0')
 
-    def analyzes__create_doc(analyzes):
-        render_data['ped_div'] = data.get('ped_div')
-        render_data['district'] = data.get('patient_district')
-        render_data['doc_name'] = data.get('doctor_name')
-        render_data['name'] = data.get('patient_name')
-        render_data['birth_date'] = data.get('birth_date')
-        render_data['address'] = data.get('address')
-        render_data['gender'] = data.get('gender')
-        render_data['date'] = datetime.now().strftime("%d.%m.%Y")
-        render_data['amb_cart'] = data.get('amb_cart')
-        render_data['diagnosis'] = diagnosis.get()
-
-        if 'ОАК' in analyzes.get('blood', []) \
-                and ('ОАК + ФОРМУЛА' in analyzes.get('blood', [])
-                     or 'ОАК + СВЕРТЫВАЕМОСТЬ' in analyzes.get('blood', [])):
-            pass
-            analyzes['blood'].remove('ОАК')
-
-        if 'ГЕПАТИТ' in analyzes.get('blood-inf', []):
-            with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute(f"SELECT Прививки FROM patient_data WHERE amb_cart LIKE '{data.get('amb_cart')}'")
-                vaccination = cur.fetchone()[0]
-            if vaccination:
-                vaccination = vaccination.split('\n')
-                start = vaccination.index('Прививки против гепатита В')
-                stop = vaccination.index('Прививки против кори, эпидемического паротита и краснухи')
-                text = ''
-                counter = 0
-                for index in range(start + 1, stop):
-                    counter += 1
-                    if counter % 2 == 0:
-                        end = '\n'
-                    else:
-                        end = '\t\t'
-
-                    index_str = vaccination[index].split('__')
-                    text += f"V_{counter}: {index_str[1]} --- {index_str[3]} --- {index_str[6]}{end}"
-                if not text:
-                    text = 'Нет данных о вакцинации\n'
-
-            else:
-                text = 'Нет данных о вакцинации\n'
-
-            render_data['VGB_vaccination'] = text
-
-        if 'МАЗОК НА КОВИД' in analyzes.get('swab', []):
-
-            with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute(f"SELECT Домашний_телефон FROM patient_data WHERE amb_cart LIKE '{data.get('amb_cart')}'")
-
-                phone = cur.fetchone()
-            if phone:
-                render_data['phone'] = phone[0]
-            else:
-                render_data['phone'] = '__________________________'
-
-        all_links = list()
-        for category in analyzes:
-            for anal in analyzes.get(category):
-                doc = DocxTemplate(f".{os.sep}example{os.sep}{category}{os.sep}{anal}.docx")
-                doc.render(render_data)
-                doc.save(f".{os.sep}generated{os.sep}{anal}.docx")
-                all_links.append(f".{os.sep}generated{os.sep}{anal}.docx")
-
-        master = Document(all_links.pop(0))
-        composer = Composer(master)
-        for link in all_links:
-            master.add_page_break()
-            doc_temp = Document(link)
-            composer.append(doc_temp)
-        doc_name = f".{os.sep}generated{os.sep}Анализы.docx"
-        doc_name = save_document(doc=composer, doc_name=doc_name)
-
-        # composer.save(")
-        run_document(doc_name)
-        data_base(command="statistic_write",
-                  insert_data="Анализы")
-        render_data.clear()
-        data.clear()
+    Label(analyzes_root, text='Выберите анализы',
+          font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True,
+                                                                          padx=2, pady=2)
 
     def create_analyzes():
         user_analyzes = dict()
@@ -22514,36 +22408,8 @@ def analyzes__ask_analyzes():
                                 active_btn = analyzes_vars[category_b].get(button)
                                 active_btn.set(1)
 
-    def pack_diagnosis_frame():
-        frame = Frame(analyzes_root)
-        Label(frame, text='Диагноз:',
-              font=('Comic Sans MS', user.get('text_size')),
-              bg='white').pack(fill='both', expand=True, padx=2, pady=2, side='left')
-        Entry(frame, width=30,
-              textvariable=diagnosis,
-              font=('Comic Sans MS', user.get('text_size'))
-              ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
-        frame.pack(fill='both', expand=True, padx=2, pady=2)
-        frame = Frame(analyzes_root)
-
-        for but_name in ('ОРИ', "ФРК", "ИМВП", "Анемия", "Профосмотр"):
-            Radiobutton(frame, text=but_name,
-                        font=('Comic Sans MS', user.get('text_size')),
-                        value=but_name, variable=diagnosis,
-                        # command=select_where,
-                        indicatoron=False, selectcolor='#77f1ff'
-                        ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
-        frame.pack(fill='both', expand=True, padx=2, pady=2)
-
-
     analyzes_vars = dict()
     analyzes_buttons = dict()
-    diagnosis = StringVar()
-
-    Label(analyzes_root, text='Выберите анализы',
-          font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True,
-                                                                          padx=2, pady=2)
-
     for category in all_blanks_anal:
         analyzes_vars[category] = dict()
         for analyzes in all_blanks_anal.get(category)[1:]:
@@ -22591,7 +22457,6 @@ def analyzes__ask_analyzes():
         frame.columnconfigure(index='all', minsize=40, weight=1)
         frame.rowconfigure(index='all', minsize=20)
         frame.pack(fill='both', expand=True, padx=2, pady=2)
-    pack_diagnosis_frame()
 
     Button(analyzes_root, text='Создать документ', command=create_analyzes,
            font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
@@ -22599,6 +22464,86 @@ def analyzes__ask_analyzes():
     analyzes_root.mainloop()
 
 
+def analyzes__create_doc(analyzes):
+    render_data['ped_div'] = data.get('ped_div')
+    render_data['district'] = data.get('patient_district')
+    render_data['doc_name'] = data.get('doctor_name')
+    render_data['name'] = data.get('patient_name')
+    render_data['birth_date'] = data.get('birth_date')
+    render_data['address'] = data.get('address')
+    render_data['gender'] = data.get('gender')
+    render_data['date'] = datetime.now().strftime("%d.%m.%Y")
+    render_data['amb_cart'] = data.get('amb_cart')
+
+    if 'ОАК' in analyzes.get('blood', []) \
+            and ('ОАК + ФОРМУЛА' in analyzes.get('blood', [])
+                 or 'ОАК + СВЕРТЫВАЕМОСТЬ' in analyzes.get('blood', [])):
+        pass
+        analyzes['blood'].remove('ОАК')
+
+    if 'ГЕПАТИТ' in analyzes.get('blood-inf', []):
+        with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
+            cur = conn.cursor()
+            cur.execute(f"SELECT Прививки FROM patient_data WHERE amb_cart LIKE '{data.get('amb_cart')}'")
+            vaccination = cur.fetchone()[0]
+        if vaccination:
+            vaccination = vaccination.split('\n')
+            start = vaccination.index('Прививки против гепатита В')
+            stop = vaccination.index('Прививки против кори, эпидемического паротита и краснухи')
+            text = ''
+            counter = 0
+            for index in range(start + 1, stop):
+                counter += 1
+                if counter % 2 == 0:
+                    end = '\n'
+                else:
+                    end = '\t\t'
+
+                index_str = vaccination[index].split('__')
+                text += f"V_{counter}: {index_str[1]} --- {index_str[3]} --- {index_str[6]}{end}"
+            if not text:
+                text = 'Нет данных о вакцинации\n'
+
+        else:
+            text = 'Нет данных о вакцинации\n'
+
+        render_data['VGB_vaccination'] = text
+
+    if 'МАЗОК НА КОВИД' in analyzes.get('swab', []):
+
+        with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
+            cur = conn.cursor()
+            cur.execute(f"SELECT Домашний_телефон FROM patient_data WHERE amb_cart LIKE '{data.get('amb_cart')}'")
+
+            phone = cur.fetchone()
+        if phone:
+            render_data['phone'] = phone[0]
+        else:
+            render_data['phone'] = '__________________________'
+
+    all_links = list()
+    for category in analyzes:
+        for anal in analyzes.get(category):
+            doc = DocxTemplate(f".{os.sep}example{os.sep}{category}{os.sep}{anal}.docx")
+            doc.render(render_data)
+            doc.save(f".{os.sep}generated{os.sep}{anal}.docx")
+            all_links.append(f".{os.sep}generated{os.sep}{anal}.docx")
+
+    master = Document(all_links.pop(0))
+    composer = Composer(master)
+    for link in all_links:
+        master.add_page_break()
+        doc_temp = Document(link)
+        composer.append(doc_temp)
+    doc_name = f".{os.sep}generated{os.sep}Анализы.docx"
+    doc_name = save_document(doc=composer, doc_name=doc_name)
+
+    # composer.save(")
+    run_document(doc_name)
+    data_base(command="statistic_write",
+              insert_data="Анализы")
+    render_data.clear()
+    data.clear()
 
 
 def vaccination_cmd():
@@ -23525,10 +23470,9 @@ def main_root():
                         patient['amb_cart'] = f"{local_data.get('№ амбулаторной карты').get().strip()}"
                         patient['patient_district'] = f"{local_data.get('№ участка').get().strip()}"
                         patient['address'] = f"{local_data.get('Адрес').get().strip()}"
-                        patient['age'] = get_age_d_m_y(patient.get('birth_date'))
 
                         patient_info.set(f"ФИО: {patient.get('name')}\t"
-                                         f"Дата рождения: {patient.get('birth_date')}    {patient.get('age')}\n"
+                                         f"Дата рождения: {patient.get('birth_date')}\n"
                                          f"Адрес: {patient.get('address')}\n"
                                          f"№ амб: {patient.get('amb_cart')}\t"
                                          f"Участок: {patient.get('patient_district')}")
