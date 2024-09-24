@@ -1818,7 +1818,8 @@ user = {'text_size': 12,
         'doctor_district': ''}
 
 app_info = {
-    'all_doctor_info': dict()
+    'all_doctor_info': dict(),
+    'roots': dict()
 }
 
 class ScrolledRoot(tk.Toplevel):
@@ -4930,7 +4931,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 render_data['gender'] = patient.get('gender')
                 render_data['date'] = datetime.now().strftime("%d.%m.%Y")
                 render_data['amb_cart'] = patient.get('amb_cart')
-                render_data['diagnosis'] = f"{txt_diagnosis.get(1.0, 'end').strip()}"
+                render_data['diagnosis'] = txt_diagnosis.get(1.0, 'end').strip().replace('Диагноз:', "")
 
                 print(data['examination']['analyzes'].get('patient_anal'))
                 if 'blood-inf__ГЕПАТИТ' in data['examination']['analyzes'].get('patient_anal'):
@@ -19463,7 +19464,6 @@ def data_base(command,
             print(ex)
             return '__________'
 
-
     elif command == 'statistic_write':
         date_now, time_now = datetime.now().strftime("%d.%m.%Y %H:%M:%S").split()
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
@@ -19898,6 +19898,30 @@ def data_base(command,
             return False, ex
         else:
             return True, True
+
+
+    elif command == 'last_examination':
+
+        path = f".{os.sep}data_base{os.sep}"
+        if user['app_data'].get('path_examination_data_base'):
+            path = user['app_data'].get('path_examination_data_base')
+        path_examination = f"{path}data_base.db"
+
+        found_info = dict()
+
+        with sq.connect(f"{path_examination}") as conn:
+            cur = conn.cursor()
+
+            for date in insert_data:
+                cur.execute(f"SELECT date_time, status, patient_info "
+                            # f"examination_text, examination_key "
+                            f"FROM examination "
+                            f"WHERE status NOT LIKE 'deleted' "
+                            f"AND date_time LIKE '{date}%'"
+                            f"AND doctor_name LIKE '{user.get('doctor_name')}'")
+                found_info[date] = cur.fetchall()
+
+        return found_info
 
 
 def updating_patient_data_base():
@@ -22599,8 +22623,6 @@ def analyzes__ask_analyzes():
     analyzes_root.mainloop()
 
 
-
-
 def vaccination_cmd():
     file_name_vac = create_vaccination(user_id=patient.get('amb_cart'), size=5)
     if file_name_vac:
@@ -23241,6 +23263,525 @@ def keypress(event):
         event.widget.event_generate('<<Copy>>')
     elif event.keycode == 88 or event.keycode == 117440536:
         event.widget.event_generate('<<Cut>>')
+
+
+def paste_main_calendar(txt_variable, main_title=''):
+
+    if app_info['roots'].get('calendar_root'):
+        app_info['roots']['calendar_root'].destroy()
+
+    calendar_root = Toplevel()
+    app_info['roots']['calendar_root'] = calendar_root
+    calendar_root.title(f'Календарь {main_title}')
+    calendar_root.config(bg='white')
+
+    selected_day = StringVar()
+    actual_data = dict()
+    destroy_elements = dict()
+
+    now = datetime.now()
+    actual_data['year'] = now.year
+    actual_data['month'] = now.month
+
+    def prev_month():
+        curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+        new = curr - timedelta(days=1)
+        actual_data['year'] = int(new.year)
+        actual_data['month'] = int(new.month)
+        create_calendar()
+
+    def next_month():
+        curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+        new = curr + timedelta(days=31)
+        actual_data['year'] = int(new.year)
+        actual_data['month'] = int(new.month)
+        create_calendar()
+
+    def select_day():
+        app_info['roots']['calendar_root'] = None
+        day = selected_day.get()
+        edit_day = list()
+        for i in day.split('.'):
+            if len(i) == 1:
+                i = f"0{i}"
+            edit_day.append(i)
+        answer = '.'.join(edit_day)
+        if txt_variable:
+            txt_variable.set(answer)
+
+        calendar_root.destroy()
+
+    frame_month_year = Frame(calendar_root, relief="solid", padx=1, pady=1)
+
+    frame_month_year.columnconfigure(index='all', minsize=40, weight=1)
+    frame_month_year.rowconfigure(index='all', minsize=20)
+    frame_month_year.pack(fill='both', expand=True)
+
+    def create_calendar():
+        if destroy_elements.get('loc_calendar_frame'):
+            loc_calendar_frame = destroy_elements.get('loc_calendar_frame')
+            loc_calendar_frame.destroy()
+
+        loc_calendar_frame = Frame(calendar_root, relief="solid", padx=1, pady=1)
+        destroy_elements['loc_calendar_frame'] = loc_calendar_frame
+
+        for calendar_mark in ('prev', 'curr', 'next'):
+            row, col = 0, 0
+
+            frame_days = Frame(loc_calendar_frame, relief="ridge", borderwidth=0.5, padx=1, pady=1)
+            if calendar_mark == 'prev':
+                but_prev_month = Button(frame_days, text='<', command=prev_month,
+                                        font=('Comic Sans MS', user.get('text_size')))
+                but_prev_month.grid(row=row, column=0, sticky='ew', columnspan=7)
+
+
+            elif calendar_mark == 'next':
+                but_next_month = Button(frame_days, text='>', command=next_month,
+                                        font=('Comic Sans MS', user.get('text_size')))
+                but_next_month.grid(row=row, column=0, sticky='ew', columnspan=7)
+
+
+            else:
+                btn = Radiobutton(frame_days, text="Сегодня",
+                                  font=('Comic Sans MS', user.get('text_size')),
+                                  value=datetime.now().strftime("%d.%m.%Y"),
+                                  variable=selected_day, command=select_day,
+                                  indicatoron=False, selectcolor='#77f1ff')
+                btn.grid(row=row, column=0, sticky='ew', columnspan=7)
+
+            if calendar_mark == 'prev':
+                curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+                new = curr - timedelta(days=1)
+                year = int(new.year)
+                month = int(new.month)
+
+            elif calendar_mark == 'next':
+                curr = datetime(actual_data.get('year'), actual_data.get('month'), 1)
+                new = curr + timedelta(days=31)
+                year = int(new.year)
+                month = int(new.month)
+
+            else:
+                year = actual_data.get('year')
+                month = actual_data.get('month')
+
+            month_name = {
+                'January': 'Январь',
+                'February': 'Февраль',
+                'March': 'Март',
+                'April': 'Апрель',
+                'May': 'Май',
+                'June': 'Июнь',
+                'July': 'Июль',
+                'August': 'Август',
+                'September': 'Сентябрь',
+                'October': 'Октябрь',
+                'November': 'Ноябрь',
+                'December': 'Декабрь'
+            }
+
+            row += 1
+            lbl_month_year = Label(frame_days,
+                                   text=f"{month_name.get(calendar.month_name[month])}",
+                                   font=('Comic Sans MS', user.get('text_size')),
+                                   bg='white')
+            lbl_month_year.grid(column=0, row=row, sticky='ew', columnspan=7)
+
+            if calendar_mark == 'curr':
+                lbl_month_year['text'] = f"{month_name.get(calendar.month_name[month])} {str(year)}"
+
+            # Second row - Week Days
+            column = 0
+            row += 1
+            for day in ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]:
+                lbl = Label(frame_days, text=day,
+                            relief="solid", borderwidth=0.5,
+                            font=('Comic Sans MS', user.get('text_size')), bg='white')
+                lbl.grid(column=column, row=row, sticky='ew', padx=2, pady=2)
+                column += 1
+
+            row += 1
+            column = 0
+
+            my_calendar = calendar.monthcalendar(year, month)
+            for week in my_calendar:
+                row += 1
+                col = 0
+                for day in week:
+                    if day == 0:
+                        col += 1
+                    else:
+                        # day = str(day)
+                        # day = str(day)
+                        # if len(day) == 1:
+                        #     day = f"0{day}"
+                        # if len(str(month)) == 1:
+                        #     month = f"0{month}"
+                        btn_value = ''
+
+                        btn = Radiobutton(frame_days, text=day,
+                                          font=('Comic Sans MS', user.get('text_size')),
+                                          value=f"{day}.{month}.{year}", variable=selected_day,
+                                          command=select_day,
+                                          indicatoron=False, selectcolor='#77f1ff')
+                        btn.grid(row=row, column=col, sticky='ew')
+                        col += 1
+
+                        if datetime.strptime(f"{day}.{month}.{year}", "%d.%m.%Y").weekday() in (5, 6):
+                            btn['bg'] = '#b4ffff'
+                        if datetime.now().year == year and datetime.now().month == month and datetime.now().day == int(
+                                day):
+                            btn['bg'] = '#ff7b81'
+
+            frame_days.columnconfigure(index='all', minsize=40, weight=1)
+            frame_days.rowconfigure(index='all', minsize=20)
+            frame_days.pack(fill='both', expand=True, side='left')
+
+        loc_calendar_frame.columnconfigure(index='all', minsize=40, weight=1)
+        loc_calendar_frame.rowconfigure(index='all', minsize=20)
+        loc_calendar_frame.pack(fill='both', expand=True, side='left')
+
+    create_calendar()
+
+
+def open_last_examination():
+
+    last_examination_main_root = Toplevel()
+    last_examination_main_root.bind("<Control-KeyPress>", keypress)
+    last_examination_main_root.config(bg='white')
+    last_examination_main_root.title(f'Список принятых пациентов')
+
+    selected_button = StringVar()
+    animation = StringVar()
+    main_label = StringVar()
+
+    start_selection = StringVar()
+    stop_selection = StringVar()
+    start_selection.set(datetime.now().strftime('%d.%m.%Y'))
+    stop_selection.set(datetime.now().strftime('%d.%m.%Y'))
+
+    data['last_examination'] = dict()
+
+
+    def pack_frame_last_examination():
+        def start_action(func=None):
+            def check_thread(thread):
+                if thread.is_alive():
+                    animation.set(animation.get()[-1] + animation.get()[:-1])
+                    # root.update()
+                    last_examination_main_root.after(200, lambda: check_thread(thread))
+                else:
+                    animation.set("")
+                    but_start_selection.configure(state='normal')
+                    main_label.set(f"Список принятых пациентов за период "
+                                   f"с {start_selection.get()} по {stop_selection.get()}")
+
+            def run_action():
+                main_label.set(f"Список принятых пациентов за период "
+                               f"с {start_selection.get()} по {stop_selection.get()}\n"
+                               f"Загрузка...")
+
+                but_start_selection.configure(state='disabled')
+                if func:
+                    func()
+                else:
+                    time.sleep(2)
+
+            animation.set("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░")
+            thread = threading.Thread(target=run_action)
+            thread.start()
+            check_thread(thread)
+
+        def pack_scrolled_frame():
+            def resize(event=None):
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+
+            def on_binds(event):
+                canvas.idbind = canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+            def off_binds(event=None):
+                canvas.unbind_all("<MouseWheel>")
+
+            def on_mousewheel(event):
+                region = canvas.bbox(tk.ALL)
+                canvas.configure(scrollregion=region)
+                if os.name == 'posix':
+                    canvas.yview_scroll(int(-1 * event.delta), "units")
+                else:
+                    canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+            last_examination_main_root.update_idletasks()
+            height = (last_examination_main_root.winfo_screenheight() - last_examination_main_root.winfo_height() - 200)
+            width = last_examination_main_root.winfo_screenheight()
+            if last_examination_main_root.winfo_screenwidth() < width:
+                width = last_examination_main_root.winfo_screenwidth()
+
+            # print(f"height - {last_examination_main_root.winfo_screenheight()}\n"
+            #       f"width - {width}\n"
+            #       f"{last_examination_main_root.winfo_screenwidth()}")
+
+            master_frame = Frame(last_examination_main_root)
+            master_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+            scroll_x = tk.Scrollbar(master_frame, orient=tk.HORIZONTAL)
+            scroll_y = tk.Scrollbar(master_frame, orient=tk.VERTICAL, width=user.get('text_size', 10) * 2)
+
+            canvas = tk.Canvas(master_frame,
+                               xscrollcommand=scroll_x.set,
+                               yscrollcommand=scroll_y.set, height=height, width=width)
+            scroll_x.config(command=canvas.xview)
+            scroll_y.config(command=canvas.yview)
+
+            canvas_frame = Frame(canvas)
+            data['last_examination']['scrolled_frame'] = canvas_frame
+            data['last_examination']['canvas'] = canvas
+            data['last_examination']['scroll_x'] = scroll_x
+
+            # canvas['width'] = int(canvas.winfo_geometry().split('x')[0])
+            # canvas_frame['width'] = int(canvas.winfo_geometry().split('x')[0])
+            canvas.grid(row=0, column=0, sticky="nsew")
+            scroll_x.grid(row=1, column=0, sticky="we")
+            scroll_y.grid(row=0, column=1, sticky="ns")
+
+            master_frame.rowconfigure(0, weight=1)
+            master_frame.columnconfigure(0, weight=1)
+
+            master_frame.bind("<Configure>", resize)
+            master_frame.update_idletasks()
+            canvas_frame['height'] = height
+            canvas_frame['height'] = canvas.winfo_width()
+
+            canvas.bind("<Enter>", on_binds)
+            canvas.bind("<Leave>", off_binds)
+            last_examination_main_root.update_idletasks()
+
+            # canvas.create_window((0, 0), window=canvas_frame, anchor="nw",
+            #                      width=canvas.winfo_width())
+
+        def paste_calendar():
+            calendar_val = {
+                'start_selection': {'txt_variable': start_selection,
+                                    'main_title': 'Начало выборки'},
+                'stop_selection': {'txt_variable': stop_selection,
+                                    'main_title': 'Окончание выборки'}
+            }
+
+            paste_main_calendar(txt_variable=calendar_val[selected_button.get()].get('txt_variable'),
+                                main_title=calendar_val[selected_button.get()].get('main_title'))
+
+        def select_type_cert():
+            if data['certificate']['type_cert_frames'].get('selected_cert'):
+                data['certificate']['type_cert_frames']['selected_cert'].pack_forget()
+
+            canvas = data['certificate'].get('canvas')
+            type_cert_frame = data['certificate']['type_cert_frames'].get(selected_button.get())
+            data['certificate']['type_cert_frames']['selected_cert'] = type_cert_frame
+            scrolled_frame = data['certificate'].get('scrolled_frame')
+
+            certificate_main_root.update_idletasks()
+            type_cert_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+            scrolled_frame.configure(height=type_cert_frame.winfo_height())
+            region = canvas.bbox(tk.ALL)
+            canvas.configure(scrollregion=region)
+            canvas.create_window((0, 0), window=scrolled_frame, anchor="nw",
+                                 width=canvas.winfo_width())
+            canvas.yview_moveto(0)
+            certificate_main_root.update()
+
+        def is_valid__date(date, type_selection):
+            local_data = {
+                'start_selection': entry_start_selection,
+                'stop_selection': entry_stop_selection
+            }
+            validate_entry = local_data.get(type_selection)
+            try:
+                datetime.strptime(date, "%d.%m.%Y")
+                validate_entry.configure(bg='white')
+            except ValueError:
+                validate_entry.configure(bg='red')
+
+            return True
+
+        def start_create_selection():
+            start_action(func=create_selection)
+        def create_selection():
+            try:
+                datetime.strptime(start_selection.get(), "%d.%m.%Y")
+            except ValueError:
+                messagebox.showerror('Ошибка', "Неверный формат даты начала выборки!")
+                return
+
+            try:
+                datetime.strptime(stop_selection.get(), "%d.%m.%Y")
+            except ValueError:
+                messagebox.showerror('Ошибка', "Неверный формат даты окончания выборки!")
+                return
+
+            try:
+                if (datetime.strptime(start_selection.get(), "%d.%m.%Y") -
+                      datetime.strptime(stop_selection.get(), "%d.%m.%Y")).days > 0:
+                    raise ValueError
+            except ValueError:
+                messagebox.showerror('Ошибка', "Дата начала выборки не может быть больше даты окончания выборки!")
+                return
+
+            date_start_selection = start_selection.get()
+            date_stop_selection = stop_selection.get()
+            all_date = [date_start_selection, ]
+            date_temp = date_start_selection
+            while date_start_selection != date_stop_selection:
+                date_start_selection = (datetime.strptime(date_start_selection, "%d.%m.%Y") + timedelta(days=1)).strftime("%d.%m.%Y")
+                all_date.append(date_start_selection)
+
+            try:
+                found_info = data_base(command='last_examination',
+                                       insert_data=all_date)
+            except Exception as ex:
+                messagebox.showerror('Ошибка', f"Ошибка базы данных!\n"
+                                               f"{ex}")
+                return
+
+            canvas = data['last_examination'].get('canvas')
+            canvas_frame = data['last_examination'].get('scrolled_frame')
+            last_frame = data['last_examination'].get('last_scrolled_frame')
+            if last_frame:
+                last_frame.pack_forget()
+
+            frame_main = Frame(canvas_frame)
+            data['last_examination']['last_scrolled_frame'] = frame_main
+
+            for date in found_info:
+                frame_date = Frame(frame_main, bg="#36566d")
+                Radiobutton(
+                    frame_date,
+                    text=f"{date}    --    Пациентов: {len(found_info.get(date))}",
+                    font=('Comic Sans MS', user.get('text_size')),
+                    value="start_selection",
+                    variable=selected_button,
+                    command=create_selection,
+                    indicatoron=False,
+                    bg="#36566d",
+                    fg='white',
+                    anchor='w'
+
+                    # selectcolor='#77f1ff'
+                ).pack(fill='both', expand=True)
+                # Label(master=frame_date,
+                #       text=f"{date}    Всего пациентов: {len(found_info.get(date))}",
+                #       font=('Comic Sans MS', user.get('text_size')),
+                #       bg="#36566d",
+                #       fg='white',
+                #       anchor='w',
+                #       padx=4, pady=4
+                #       ).pack(fill='both', expand=True)
+                # frame = Frame(frame_date)
+                # if
+                # for patient_info
+
+                frame_date.pack(fill='both', expand=True, pady=3)
+
+            last_examination_main_root.update_idletasks()
+            frame_main.pack(fill='both', expand=True)
+            canvas_frame.configure(height=frame_main.winfo_height())
+
+            region = canvas.bbox(tk.ALL)
+            canvas.configure(scrollregion=region)
+            canvas.create_window((0, 0), window=canvas_frame, anchor="nw",
+                                 width=canvas.winfo_width())
+            canvas.yview_moveto(0)
+
+            last_examination_main_root.update()
+
+        frame_last_examination_main = Frame(last_examination_main_root, bg="#36566d")
+        frame = Frame(frame_last_examination_main, bg="#36566d")
+
+
+        main_label.set("Список принятых пациентов за период")
+
+        Label(master=frame,
+              textvariable=main_label,
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d",
+              fg='white',
+              padx=4, pady=4
+              ).pack(fill='both', expand=True)
+
+        Label(master=frame,
+              textvariable=animation,
+              bg="#36566d",
+              fg='white',
+              ).pack(fill='both', expand=True)
+
+        frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+        frame = Frame(frame_last_examination_main)
+
+        Label(master=frame,
+              text="Начало выборки",
+              font=('Comic Sans MS', user.get('text_size')),
+              ).grid(row=0, column=0, sticky='ew')
+
+        entry_start_selection = Entry(frame, width=30,
+              textvariable=start_selection,
+              font=('Comic Sans MS', user.get('text_size'))
+              )
+        entry_start_selection.grid(row=0, column=1, sticky='ew')
+
+        Radiobutton(frame, image=user.get('сalendar_img'),
+                    font=('Comic Sans MS', user.get('text_size')),
+                    value="start_selection",
+                    variable=selected_button,
+                    command=paste_calendar,
+                    indicatoron=False, selectcolor='#77f1ff'
+                    ).grid(row=0, column=2, sticky='ew')
+
+        Label(master=frame,
+              text="Окончание выборки",
+              font=('Comic Sans MS', user.get('text_size')),
+              ).grid(row=1, column=0, sticky='ew')
+
+        entry_stop_selection = Entry(
+            frame, width=30,
+            textvariable=stop_selection,
+            font=('Comic Sans MS', user.get('text_size'))
+        )
+        entry_stop_selection.grid(row=1, column=1, sticky='ew')
+
+        Radiobutton(frame, image=user.get('сalendar_img'),
+                    font=('Comic Sans MS', user.get('text_size')),
+                    value="stop_selection",
+                    variable=selected_button,
+                    command=paste_calendar,
+                    indicatoron=False, selectcolor='#77f1ff'
+                    ).grid(row=1, column=2, sticky='ew')
+
+        but_start_selection = Button(
+                    frame,
+                    text="Генерация \nвыборки",
+                    font=('Comic Sans MS', user.get('text_size')),
+                    command=start_create_selection)
+        but_start_selection.grid(row=0, column=3, sticky='nsew', rowspan=2)
+
+
+        frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+        frame_last_examination_main.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
+
+        check_date_start_selection = (frame_last_examination_main.register(is_valid__date), "%P", "start_selection")
+        check_date_stop_selection = (frame_last_examination_main.register(is_valid__date), "%P", "stop_selection")
+
+        entry_start_selection.configure(validatecommand=check_date_start_selection,
+                                       validate="all")
+        entry_stop_selection.configure(validatecommand=check_date_stop_selection,
+                                       validate="all")
+        pack_scrolled_frame()
+    pack_frame_last_examination()
+
+
+    last_examination_main_root.geometry('+0+0')
+
+    last_examination_main_root.mainloop()
 
 
 def main_root():
@@ -24392,7 +24933,7 @@ def main_root():
               font=('Comic Sans MS', user.get('text_size'))
                ).grid(column=0, row=3, sticky='ew')
 
-        Button(frame_main_loc, text='Мой прием', command=direction_cmd,
+        Button(frame_main_loc, text='Мой прием', command=open_last_examination,
               font=('Comic Sans MS', user.get('text_size'))
                ).grid(column=1, row=3, sticky='ew')
 
