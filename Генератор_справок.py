@@ -108,7 +108,7 @@ all_data_certificate = {
             "additional_medical_information": "Рост _____ см; Вес _____ кг; Vis OD/OS = __________; АД ________\n"
                                               "| Осмотрен на чесотку, педикулез, микроспорию |",
             "diagnosis": "Группа здоровья: _ ; Группа по физкультуре: _ ;",
-            "recommendation": "Режим _; Стол _;",
+            "recommendation": "Режим _; Стол _; Закаливание по возрасту;",
             "date_of_issue": "now"},
 
         "На кружки и секции": {
@@ -147,7 +147,7 @@ all_data_certificate = {
                                               "| Осмотрен на чесотку, педикулез, микроспорию |\n"
                                               "Данные о профилактических прививках прилагаются",
             "diagnosis": f"Группа здоровья: _ ; Группа по физкультуре: _ ;",
-            "recommendation": "Режим _; Стол _;",
+            "recommendation": "Режим _; Стол _; Закаливание по возрасту;",
             "date_of_issue": "now",
             "validity_period": "1 год"},
 
@@ -172,7 +172,7 @@ all_data_certificate = {
                                               "Данные о профилактических прививках прилагаются",
             "diagnosis": f"Группа здоровья: _ ; Группа по физкультуре: _ ;\n"
                          "На момент осмотра соматически здоров",
-            "recommendation": "Режим _; Стол _;",
+            "recommendation": "Режим _; Стол _; Закаливание по возрасту;",
             "date_of_issue": "now",
             "validity_period": "5 дней"},
 
@@ -5434,7 +5434,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         if not weight:
             weight = data['examination']['anthro']['txt_weight_variable'].get()
             if child_marker:
-                weight = float(weight.replace(',', '.')) / 1000
+                if weight:
+                    weight = float(weight.replace(',', '.')) / 1000
+                else:
+                    weight = "None"
 
         if weight:
             if weight == "None":
@@ -20143,7 +20146,7 @@ def fast_certificate():
             'type_cert_info': dict(),
         }
 
-        age = get_age_d_m_y(patient.get('birth_date'))
+        age = patient.get('age')
 
         certificate_main_root = Toplevel()
         certificate_main_root.bind("<Control-KeyPress>", keypress)
@@ -20674,14 +20677,14 @@ def fast_certificate():
                     place_of_requirement = render_data.get('place_of_requirement')
 
                     if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
-                        if place_of_req == 'Детское Дошкольное Учреждение':
+                        if place_of_requirement == 'Детское Дошкольное Учреждение':
                             render_data['place_of_requirement'] = "Оформление в детское дошкольное учреждение"
                             render_data['type'] = 'Оформление в Детское Дошкольное Учреждение'
                             render_data['recommendation'] = \
                                 render_data.get('recommendation').replace('Режим _',
                                                                           'Режим щадящий 1 мес, затем Режим _') \
                                 + "\nМебель по росту"
-                        if place_of_req == 'Средняя школа (гимназия)':
+                        if place_of_requirement == 'Средняя школа (гимназия)':
                             render_data['place_of_requirement'] = "Оформление в учреждение общего среднего образования"
                             render_data['type'] = 'Оформление в Среднюю школу (гимназию)'
                             if patient.get('gender', '') == 'женский':
@@ -20690,7 +20693,7 @@ def fast_certificate():
                             else:
                                 render_data['diagnosis'] += '\nГотов к обучению в учреждении общего среднего образования'
 
-                        if place_of_req == 'ВУЗ (колледж)':
+                        if place_of_requirement == 'ВУЗ (колледж)':
                             render_data['type'] = 'Оформление в ВУЗ'
                             render_data['additional_medical_information'] = "_____________________________________________"
                             render_data['recommendation'] = "_____________________________________________"
@@ -20703,9 +20706,11 @@ def fast_certificate():
                                                         "(пункт 2 приложения к постановлению " \
                                                         "МЗ РБ от 25.07.2022г. №71)"
 
-                        if place_of_req == 'Кадетское училище':
+                        if place_of_requirement == 'Кадетское училище':
                             render_data['type'] = 'Оформление в Кадетское училище'
-                            render_data['place_of_requirement'] = 'Для обучения в кадетском училище '
+                            render_data['place_of_requirement'] = 'Для обучения в кадетском училище / ' \
+                                                                  'специализированном лицее Министерства внутренних дел / ' \
+                                                                  'специализированном лицее Министерства по чрезвычайным ситуациям»'
 
                             render_data['additional_medical_information'] = \
                                 render_data.get('additional_medical_information') + \
@@ -20728,7 +20733,6 @@ def fast_certificate():
                                 '\nУЗИ сердца: _________________________________________________________' \
                                 '\nЭлектрокардиограмма: ________________________________________________' \
                                 '\nУЗИ щитовидной  железы : ____________________________________________'
-
                             render_data['diagnosis'] += \
                                 '\n' \
                                 'Врачебное профессионально-консультативное заключение: ' \
@@ -20896,7 +20900,9 @@ def fast_certificate():
                         diagnosis_cert = render_data.get('diagnosis', '')
                         if type_certificate in ('В детский лагерь',
                                                 'Об усыновлении (удочерении)',
-                                                'О нуждаемости в сан-кур лечении'):
+                                                'О нуждаемости в сан-кур лечении') \
+                                or type_certificate == 'Оформление в ДДУ / СШ / ВУЗ' \
+                                and place_of_requirement == 'Кадетское училище':
 
                             diagnosis_cert = f"{diagnosis_txt.get(1.0, 'end').strip()}\n{diagnosis_cert}"
 
@@ -20964,6 +20970,12 @@ def fast_certificate():
                         render_data['imt'] = round(float(render_data.get('weight')) /
                                                    (float(render_data.get('height')) / 100) ** 2, 1)
 
+                    if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь'):
+                        if age.get('year') < 14:
+                            render_data['recommendation'] = render_data.get('recommendation', '') + \
+                                    "\nНа основании ст. 44 Закона Республики Беларусь от 18.06.1993 №2435-XII  " \
+                                    "'О здравоохранении' от законного представителя несовершеннолетнего получено устное" \
+                                    "  предварительное информированное добровольное согласие на оказание медицинской помощи"
 
 
                     if type_certificate == 'О нуждаемости в сан-кур лечении':
@@ -20979,6 +20991,7 @@ def fast_certificate():
                                       f"{data['certificate']['type_cert_info'][type_certificate][f'{doctors}_txt'].get()}"
                         render_data['additional_medical_information'] = result
                         render_data['diagnosis'] = diagnosis_txt.get(1.0, 'end').strip()
+
 
 
                     if not render_data.get('additional_medical_information'):
@@ -21615,10 +21628,13 @@ def fast_certificate():
                 if not all_data_certificate['all_info'].get(type_certificate).get('place_of_requirement'):
                     def select_place():
                         type_cert, place = selected_place.get().split('__')
+                        print(type_cert, place)
                         data['certificate']['place_of_requirement'] = place
                         label_place_text.set(f"Место требования справки: {place}")
 
                         if type_cert == "Оформление в ДДУ / СШ / ВУЗ" and place == 'ВУЗ (колледж)':
+                            data['certificate']['type_cert_info'][type_cert]['validity_period'].set('1 год')
+
                             if not data['certificate'].get('frame_specialties'):
                                 frame_place = data['certificate']['type_cert_info'][type_cert].get("frame_place")
                                 frame_specialties = Frame(master=frame_place,
@@ -21644,6 +21660,13 @@ def fast_certificate():
                                     data['certificate']['specialties_txt'].get(1.0, 'end').strip()
                                 data['certificate']['frame_specialties'].pack_forget()
                                 data['certificate']['frame_specialties'] = None
+                            if type_cert == "Оформление в ДДУ / СШ / ВУЗ":
+                                if place == 'Кадетское училище':
+                                    data['certificate']['type_cert_info'][type_cert]['validity_period'].set('3 месяца')
+                                else:
+                                        data['certificate']['type_cert_info'][type_cert]['validity_period'].set('1 год')
+
+
 
                     frame_place = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
                     data['certificate']['type_cert_info'][type_certificate]['frame_place'] = frame_place
