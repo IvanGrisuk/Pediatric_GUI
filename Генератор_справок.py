@@ -19913,8 +19913,8 @@ def data_base(command,
             cur = conn.cursor()
 
             for date in insert_data:
-                cur.execute(f"SELECT date_time, status, patient_info "
-                            # f"examination_text, examination_key "
+                cur.execute(f"SELECT date_time, status, patient_info, "
+                            f"examination_text, examination_key "
                             f"FROM examination "
                             f"WHERE status NOT LIKE 'deleted' "
                             f"AND date_time LIKE '{date}%'"
@@ -23606,7 +23606,32 @@ def open_last_examination():
 
         def start_create_selection():
             start_action(func=create_selection)
+
         def create_selection():
+            data['last_examination']['selection'] = dict()
+
+            def open_selected_day():
+
+                date = selected_button.get()
+                last_frame = data['last_examination'].get('last_frame_day')
+                if last_frame:
+                    last_frame.pack_forget()
+
+                frame = data['last_examination']['selection'][date].get('frame_day')
+                print(date, data['last_examination']['selection'].get(date))
+                data['last_examination']['last_frame_day'] = frame
+                frame.pack(fill='both', expand=True)
+
+            def open_selected_patient():
+                date, patient_info = selected_button.get().split('____')
+                last_frame = data['last_examination'].get('last_frame_patient')
+                if last_frame:
+                    last_frame.pack_forget()
+
+                frame = data['last_examination']['selection'][date][patient_info].get('frame_patient')
+                data['last_examination']['last_frame_patient'] = frame
+                frame.pack(fill='both', expand=True)
+
             try:
                 datetime.strptime(start_selection.get(), "%d.%m.%Y")
             except ValueError:
@@ -23653,32 +23678,112 @@ def open_last_examination():
             data['last_examination']['last_scrolled_frame'] = frame_main
 
             for date in found_info:
+                data['last_examination']['selection'][date] = dict()
+                data['last_examination']['selection'][date]['button_date_var'] = StringVar()
                 frame_date = Frame(frame_main, bg="#36566d")
                 Radiobutton(
                     frame_date,
-                    text=f"{date}    --    Пациентов: {len(found_info.get(date))}",
+                    textvariable=data['last_examination']['selection'][date].get('button_date_var'),
                     font=('Comic Sans MS', user.get('text_size')),
-                    value="start_selection",
+                    value=date,
                     variable=selected_button,
-                    command=create_selection,
+                    command=open_selected_day,
                     indicatoron=False,
                     bg="#36566d",
                     fg='white',
                     anchor='w'
-
-                    # selectcolor='#77f1ff'
                 ).pack(fill='both', expand=True)
-                # Label(master=frame_date,
-                #       text=f"{date}    Всего пациентов: {len(found_info.get(date))}",
-                #       font=('Comic Sans MS', user.get('text_size')),
-                #       bg="#36566d",
-                #       fg='white',
-                #       anchor='w',
-                #       padx=4, pady=4
-                #       ).pack(fill='both', expand=True)
-                # frame = Frame(frame_date)
-                # if
-                # for patient_info
+
+                frame_day = Frame(frame_date, bg="#36566d")
+                data['last_examination']['selection'][date]['frame_day'] = frame_day
+                if not found_info.get(date):
+                    Label(master=frame_day,
+                          text="История за этот день пуста!",
+                          font=('Comic Sans MS', user.get('text_size')),
+                          # anchor='w',
+                          padx=4, pady=4
+                          ).pack(fill='both', expand=True)
+                else:
+                    for patient_info_day in sorted(found_info.get(date),
+                                                   reverse=True,
+                                                   key=lambda i: (datetime.now() -
+                                                 datetime.strptime(f"{i[0]}", "%d.%m.%Y %H:%M:%S")).total_seconds()):
+
+                        if len(patient_info_day) == 5:
+                            date_time, status, patient_info, examination_text, examination_key = patient_info_day
+                            marker = ''
+                            for mark, name in (('type_examination:____child__', "осмотр до года"),
+                                               ('type_examination:____adult__', "осмотр"),
+                                               ('type_examination:____certificate__', "справка")):
+                                if examination_key.startswith(mark):
+                                    marker = name
+
+
+                            if not data['last_examination']['selection'][date].get(patient_info):
+                                data['last_examination']['selection'][date][patient_info] = dict()
+                                frame_patient = Frame(frame_day, borderwidth=1)
+                                frame_patient.pack(fill='both', expand=True, padx=2, pady=3)
+                                frame = Frame(frame_patient)
+
+                                data['last_examination']['selection'][date][patient_info]['frame_patient'] = frame
+                                data['last_examination']['selection'][date][patient_info]['button_patient'] = StringVar()
+                                Radiobutton(
+                                    frame_patient,
+                                    textvariable=data['last_examination']['selection'][date][patient_info].get('button_patient'),
+                                    font=('Comic Sans MS', user.get('text_size')),
+                                    value=f"{date}____{patient_info}",
+                                    variable=selected_button,
+                                    command=open_selected_patient,
+                                    indicatoron=False,
+                                    anchor='w'
+                                ).pack(fill='both', expand=True)
+                                patient_name, patient_birth_date = patient_info.split('__')
+
+                                data['last_examination']['selection'][date][patient_info]['button_patient'].set(
+                                    f"{date_time.split()[-1]}  --  {patient_name}  {patient_birth_date} -- {marker}"
+                                )
+                                height = 0
+                                for string in examination_text.split('\n'):
+                                    height += (1 + len(string)//120)
+
+                                info = ScrolledText(master=frame, width=150, height=height,
+                                                    font=('Comic Sans MS', user.get('text_size')), wrap="word")
+                                info.pack(fill='both', expand=True, padx=4, pady=4)
+                                info.insert(1.0, examination_text)
+
+
+                                # Label(master=frame,
+                                #       text=examination_text,
+                                #       font=('Comic Sans MS', user.get('text_size')),
+                                #       # anchor='w',
+                                #       borderwidth=1,
+                                #       padx=4, pady=4
+                                #       ).pack(fill='both', expand=True, padx=4, pady=4)
+
+                            else:
+                                if marker:
+                                    if len(data['last_examination']['selection'][date][patient_info]['button_patient'].get().split('\n')[-1]) > 150:
+                                        data['last_examination']['selection'][date][patient_info]['button_patient'].set(
+                                            data['last_examination']['selection'][date][patient_info][
+                                                'button_patient'].get() + "\n")
+                                    data['last_examination']['selection'][date][patient_info]['button_patient'].set(
+                                        data['last_examination']['selection'][date][patient_info]['button_patient'].get() +
+                                        f"  --  {marker}"
+                                    )
+
+                                frame = data['last_examination']['selection'][date][patient_info].get('frame_patient')
+                                height = 0
+                                for string in examination_text.split('\n'):
+                                    height += (1 + len(string)//120)
+
+                                info = ScrolledText(master=frame, width=150, height=height,
+                                                    font=('Comic Sans MS', user.get('text_size')), wrap="word")
+                                info.pack(fill='both', expand=True, padx=4, pady=4)
+                                info.insert(1.0, examination_text)
+
+
+                data['last_examination']['selection'][date]['button_date_var'].set(f"{date}    --    "
+                                                                                   f"Пациентов: {len(data['last_examination']['selection'].get(date)) - 2}")
 
                 frame_date.pack(fill='both', expand=True, pady=3)
 
