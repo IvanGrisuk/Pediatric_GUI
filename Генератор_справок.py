@@ -261,11 +261,11 @@ all_blanks_anal = {
 
 }
 
-blanks = ('Диспансеризация',
-          "Информирование_законного_представителя",
-          "Тест_аутизма_у_детей",
+blanks = (('Диспансеризация',
+          "Информирование_законного_представителя"),
+          ("Тест_аутизма_у_детей",
           "Анкета_по_слуху",
-          "Анкета_ПАВ")
+          "Анкета_ПАВ"))
 
 all_blanks_direction = {
     'hospital': (' - - - РНПЦ: - - - ',
@@ -19544,8 +19544,6 @@ def data_base(command,
             found_info['select_past_examination'] = cur.fetchall()
         return found_info
 
-
-
     elif command.startswith('examination'):
         try:
             path = f".{os.sep}data_base{os.sep}"
@@ -19902,7 +19900,6 @@ def data_base(command,
             return False, ex
         else:
             return True, True
-
 
     elif command == 'last_examination':
 
@@ -20712,8 +20709,7 @@ def fast_certificate():
                             render_data['type'] = 'Оформление в Детское Дошкольное Учреждение'
                             render_data['recommendation'] = \
                                 render_data.get('recommendation').replace('Режим _',
-                                                                          'Режим щадящий 1 мес, затем Режим _') \
-                                + "\nМебель по росту"
+                                                                          'Режим щадящий 1 мес, затем Режим _')
                         if place_of_requirement == 'Средняя школа (гимназия)':
                             render_data['place_of_requirement'] = "Оформление в учреждение общего среднего образования"
                             render_data['type'] = 'Оформление в Среднюю школу (гимназию)'
@@ -20976,7 +20972,7 @@ def fast_certificate():
 
                             if render_data.get('place_of_requirement') in ('Средняя школа (гимназия)',
                                                                            'Детское Дошкольное Учреждение'):
-                                recommendation = f"{recommendation} \nРазрешены занятия в бассейне"
+                                recommendation = f"{recommendation} Разрешены занятия в бассейне"
 
                         render_data['recommendation'] = recommendation
 
@@ -22638,22 +22634,171 @@ def vaccination_cmd():
 def blanks_cmd():
     if not patient.get('name'):
         messagebox.showinfo('Ошибка', "Не выбран пациент!")
-    else:
-        data.clear()
-        render_data.clear()
+        return
 
-        data['text_size'] = user.get('text_size')
-        data['patient_name'] = patient.get('name', '')
-        data['birth_date'] = patient.get('birth_date', '')
-        data['gender'] = patient.get('gender', '')
-        data['amb_cart'] = patient.get('amb_cart', '')
-        data['patient_district'] = patient.get('patient_district', '')
-        data['address'] = patient.get('address', '')
 
-        data['doctor_name'] = user.get('doctor_name', '')
-        data['ped_div'] = user.get('ped_div', '')
+    data['blanks'] = dict()
 
-        create_blanks__ask_type_blanks()
+    type_blanks_root = Toplevel()
+    type_blanks_root.title('Выбор бланков')
+    type_blanks_root.config(bg='white')
+    type_blanks_root.geometry('+0+0')
+
+    blank_name = StringVar()
+    weight = StringVar()
+    height = StringVar()
+    vision = StringVar()
+    blood_p = StringVar()
+    type_disp_card = StringVar()
+    type_disp_card.set("Короткая")
+
+    def select_blank_name():
+        if data['blanks'].get('add_frame'):
+            data['blanks']['add_frame'].destroy()
+            data['blanks']['add_frame'] = None
+        if blank_name.get() == "Диспансеризация":
+            frame_disp = Frame(add_frame)
+            local_data = (
+                ('Рост: ', height),
+                ('Вес: ', weight),
+                ('Зрение: ', vision),
+                ("Давление:", blood_p)
+            )
+            frame = Frame(frame_disp)
+            for lbl_name, var in local_data:
+                Label(frame, text=lbl_name,
+                      font=('Comic Sans MS', user.get('text_size')),
+                      ).pack(fill='both', expand=True, side='left')
+                Entry(frame, width=15,
+                      textvariable=var,
+                      justify="center",
+                      font=('Comic Sans MS', user.get('text_size'))
+                      ).pack(fill='both', expand=True, side='left')
+            frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+            frame = Frame(frame_disp)
+            Label(frame, text="Какую диспасеризацию печатать: ",
+                  font=('Comic Sans MS', user.get('text_size')),
+                  ).pack(fill='both', expand=True, side='left')
+            for but_name in ("Короткая", "Полная", "Лицевая сторона", "Оборот"):
+                Radiobutton(frame, text=but_name,
+                            font=('Comic Sans MS', user.get('text_size')),
+                            value=but_name, variable=type_disp_card,
+                            indicatoron=False, selectcolor='#77f1ff'
+                            ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
+            frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+            frame_disp.pack(fill='both', expand=True)
+            data['blanks']['add_frame'] = frame_disp
+
+
+    def create_blanks():
+
+        if not blank_name.get():
+            messagebox.showinfo('Ошибка', "Не выбран бланк!")
+            return
+
+        render_data['ped_div'] = user.get('ped_div')
+        render_data['doc_name'] = user.get('doctor_name')
+        render_data['district'] = patient.get('patient_district')
+        render_data['name'] = patient.get('name')
+        render_data['birth_date'] = patient.get('birth_date')
+        render_data['address'] = patient.get('address')
+        render_data['gender'] = patient.get('gender')
+        render_data['date'] = datetime.now().strftime("%d.%m.%Y")
+        render_data['amb_cart'] = patient.get('amb_cart')
+
+        doc_name = f".{os.sep}example{os.sep}амб_карта{os.sep}{blank_name.get()}.docx"
+        if blank_name.get() == 'Диспансеризация':
+
+            local_data = (
+                ('height', height),
+                ('weight', weight),
+                ('disp_visus', vision),
+                ("bp", blood_p)
+            )
+            render_data['year'] = datetime.now().strftime("%d.%m.%Y")
+            render_data['disp_diagnosis'] = f"\n{'_' * 40}\n{'_' * 40}\n{'_' * 40}"
+            render_data['disp_health'] = "________"
+            render_data['disp_group'] = "________________"
+
+
+            for lbl_name, var in local_data:
+                render_data[lbl_name] = var.get()
+                var.set(0)
+
+            doc_name = f".{os.sep}example{os.sep}амб_карта{os.sep}{blank_name.get()}_{type_disp_card.get()}.docx"
+
+        doc = DocxTemplate(doc_name)
+        doc.render(render_data)
+        file_name = f".{os.sep}generated{os.sep}{blank_name.get()}_{data.get('patient_name').split()[0]}.docx"
+        file_name = save_document(doc=doc, doc_name=file_name)
+        run_document(file_name)
+        data_base(command="statistic_write",
+                  insert_data="Вкладыши")
+        if render_data.get('height') and render_data.get('weight') and render_data.get('disp_visus'):
+            active_examination = f"Кабинет доврачебного приема\n" \
+                                 f"Рост: {render_data.get('height')}; " \
+                                 f"Вес: {render_data.get('weight')}; " \
+                                 f"Зрение: {render_data.get('disp_visus')}; " \
+                                 f"АД: {render_data.get('bp')}"
+
+            active_but = f"type_examination:____certificate__<end!>__\n" \
+f"patient_anthro:____" \
+f"height__{height.get()}____" \
+f"weight__{weight.get()}____" \
+f"vision__{vision.get()}____" \
+f"__<end!>__\n"
+
+            save_info_examination = [
+                f"{datetime.now().strftime('%d.%m.%Y %H:%M:%S')}",
+                f"{user.get('doctor_name')}",
+                'loc',
+                ln_data,
+                f"{patient.get('name').strip()}__{patient.get('birth_date').strip()}",
+                active_examination,
+                active_but,
+                None]
+
+            answer, message = data_base(command='examination__save',
+                                        insert_data=save_info_examination)
+
+    Label(type_blanks_root, text='Какие бланки создать?',
+          font=('Comic Sans MS', user.get('text_size')),
+          bg="#36566d", fg='white'
+          ).pack(fill='both', expand=True, padx=2, pady=2)
+    for blanks_list in blanks:
+        frame = Frame(type_blanks_root)
+        for but_name in blanks_list:
+            Radiobutton(frame, text=but_name.replace('_', ' '),
+                        font=('Comic Sans MS', user.get('text_size')),
+                        value=but_name, variable=blank_name,
+                        command=select_blank_name,
+                        indicatoron=False, selectcolor='#77f1ff'
+                        ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
+        frame.pack(fill='both', expand=True, padx=2)
+
+    add_frame = Frame(type_blanks_root)
+    add_frame.pack(fill='both', expand=True, padx=2, pady=2)
+    Button(type_blanks_root, text='Создать бланк', command=create_blanks,
+           font=('Comic Sans MS', user.get('text_size'))
+           ).pack(fill='both', expand=True, padx=2, pady=2)
+
+
+
+
+        # data['text_size'] = user.get('text_size')
+        # data['patient_name'] = patient.get('name', '')
+        # data['birth_date'] = patient.get('birth_date', '')
+        # data['gender'] = patient.get('gender', '')
+        # data['amb_cart'] = patient.get('amb_cart', '')
+        # data['patient_district'] = patient.get('patient_district', '')
+        # data['address'] = patient.get('address', '')
+        #
+        # data['doctor_name'] = user.get('doctor_name', '')
+        # data['ped_div'] = user.get('ped_div', '')
+        #
+        # create_blanks__ask_type_blanks()
 
 
 def create_blanks__ask_type_blanks():
@@ -24178,7 +24323,7 @@ def main_root():
                         patient['age'] = get_age_d_m_y(patient.get('birth_date'))
 
                         patient_info.set(f"ФИО: {patient.get('name')}\t"
-                                         f"Дата рождения: {patient.get('birth_date')}    {patient.get('age')}\n"
+                                         f"Дата рождения: {patient.get('birth_date')}    {patient['age'].get('age_txt')}\n"
                                          f"Адрес: {patient.get('address')}\n"
                                          f"№ амб: {patient.get('amb_cart')}\t"
                                          f"Участок: {patient.get('patient_district')}")
