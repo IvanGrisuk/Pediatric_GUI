@@ -20388,18 +20388,10 @@ def fast_certificate():
 
             def create_certificate():
                 def certificate__create_doc():
-                    if not type_certificate == 'О нуждаемости в сан-кур лечении' \
+
+                    if not (type_certificate == 'О нуждаемости в сан-кур лечении'
                             or (type_certificate == "Оформление в ДДУ / СШ / ВУЗ"
-                                and data['certificate'].get('place_of_requirement') in
-                                ('ВУЗ (колледж)', 'Кадетское училище')):
-                    #     pass
-                    # if type_certificate in ('ЦКРОиР',
-                    #                         'О нуждаемости в сан-кур лечении',
-                    #                         'Об усыновлении (удочерении)',
-                    #                         'Бесплатное питание') \
-                    #         or (type_certificate == 'Оформление в ДДУ / СШ / ВУЗ' and not
-                    # ('Для поступления в учреждения высшего' in render_data.get('place_of_requirement') or
-                    #  ('Для обучения в кадетском училище' in render_data.get('place_of_requirement')))):
+                                and place_of_requirement in ('ВУЗ (колледж)', 'Кадетское училище'))):
                         doctor_name, district, pediatric_division = (user.get('doctor_name'),
                                                                      user.get('doctor_district'),
                                                                      user.get('ped_div'))
@@ -20434,7 +20426,7 @@ def fast_certificate():
 
 
                     if (type_certificate == "Оформление в ДДУ / СШ / ВУЗ"
-                        and data['certificate'].get('place_of_requirement') == "Средняя школа (гимназия)") \
+                        and place_of_requirement in ("Средняя школа (гимназия)", "Кадетское училище")) \
                             or type_certificate == 'Об усыновлении (удочерении)':
                         doc_name = ""
                         if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
