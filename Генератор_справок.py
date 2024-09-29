@@ -22638,9 +22638,6 @@ def blanks_cmd():
 
 
     data['blanks'] = dict()
-    blanks_data = {
-
-    }
 
     type_blanks_root = Toplevel()
     type_blanks_root.title('Выбор бланков')
