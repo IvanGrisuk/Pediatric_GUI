@@ -2037,15 +2037,19 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                     if not local_info.get('get_last_anthro_data'):
                         if ('type_examination:____adult__' in examination_key
-                                and 'txt_weight_variable' in examination_key):
+                                and 'txt_weight_variable' in examination_key) or (
+                                'type_examination:____certificate__' in examination_key
+                            and 'weight__' in examination_key
+                        ):
 
                             for string in examination_key.split('__<end!>__\n'):
-                                if string.startswith('patient_anthro_data:____'):
-                                    for marker in string.replace('patient_anthro_data:____', '').split("____"):
+                                if string.startswith('patient_anthro'):
+                                    for marker in string.split("____"):
                                         if len(marker.split('__')) == 2:
                                             name, variable = marker.split('__')
-                                            if name == 'txt_weight_variable':
-                                                local_info['get_last_anthro_data'][name] = variable
+                                            if name in ('txt_weight_variable', 'weight'):
+                                                local_info['get_last_anthro_data']['txt_weight_variable'] = variable
+
 
                     if 'LN_blank_data:____' in examination_key:
                         for string in examination_key.split('__<end!>__\n'):
@@ -22680,8 +22684,8 @@ def blanks_cmd():
             Label(frame, text="Какую диспасеризацию печатать: ",
                   font=('Comic Sans MS', user.get('text_size')),
                   ).pack(fill='both', expand=True, side='left')
-            for but_name in ("Короткая", "Полная", "Лицевая сторона", "Оборот"):
-                Radiobutton(frame, text=but_name,
+            for but_name in ("Короткая", "Полная", "Лицевая_сторона", "Оборот"):
+                Radiobutton(frame, text=but_name.replace('_', ' '),
                             font=('Comic Sans MS', user.get('text_size')),
                             value=but_name, variable=type_disp_card,
                             indicatoron=False, selectcolor='#77f1ff'
@@ -22697,7 +22701,7 @@ def blanks_cmd():
         if not blank_name.get():
             messagebox.showinfo('Ошибка', "Не выбран бланк!")
             return
-
+        render_data.clear()
         render_data['ped_div'] = user.get('ped_div')
         render_data['doc_name'] = user.get('doctor_name')
         render_data['district'] = patient.get('patient_district')
@@ -22707,6 +22711,7 @@ def blanks_cmd():
         render_data['gender'] = patient.get('gender')
         render_data['date'] = datetime.now().strftime("%d.%m.%Y")
         render_data['amb_cart'] = patient.get('amb_cart')
+        render_data['age'] = patient['age'].get('age_txt')
 
         doc_name = f".{os.sep}example{os.sep}амб_карта{os.sep}{blank_name.get()}.docx"
         if blank_name.get() == 'Диспансеризация':
@@ -22717,8 +22722,8 @@ def blanks_cmd():
                 ('disp_visus', vision),
                 ("bp", blood_p)
             )
-            render_data['year'] = datetime.now().strftime("%d.%m.%Y")
-            render_data['disp_diagnosis'] = f"\n{'_' * 40}\n{'_' * 40}\n{'_' * 40}"
+            render_data['year'] = datetime.now().strftime("%Y")
+            render_data['disp_diagnosis'] = f"\n{'_' * 40}\n{'_' * 40}\n{'_' * 40}\n{'_' * 40}\n{'_' * 40}"
             render_data['disp_health'] = "________"
             render_data['disp_group'] = "________________"
 
@@ -22731,7 +22736,7 @@ def blanks_cmd():
 
         doc = DocxTemplate(doc_name)
         doc.render(render_data)
-        file_name = f".{os.sep}generated{os.sep}{blank_name.get()}_{data.get('patient_name').split()[0]}.docx"
+        file_name = f".{os.sep}generated{os.sep}{blank_name.get()}_{patient.get('name').split()[0]}.docx"
         file_name = save_document(doc=doc, doc_name=file_name)
         run_document(file_name)
         data_base(command="statistic_write",
@@ -22744,17 +22749,17 @@ def blanks_cmd():
                                  f"АД: {render_data.get('bp')}"
 
             active_but = f"type_examination:____certificate__<end!>__\n" \
-f"patient_anthro:____" \
-f"height__{height.get()}____" \
-f"weight__{weight.get()}____" \
-f"vision__{vision.get()}____" \
-f"__<end!>__\n"
+                            f"patient_anthro:____" \
+                            f"height__{height.get()}____" \
+                            f"weight__{weight.get()}____" \
+                            f"vision__{vision.get()}____" \
+                            f"__<end!>__\n"
 
             save_info_examination = [
                 f"{datetime.now().strftime('%d.%m.%Y %H:%M:%S')}",
                 f"{user.get('doctor_name')}",
                 'loc',
-                ln_data,
+                '',
                 f"{patient.get('name').strip()}__{patient.get('birth_date').strip()}",
                 active_examination,
                 active_but,
@@ -22762,6 +22767,7 @@ f"__<end!>__\n"
 
             answer, message = data_base(command='examination__save',
                                         insert_data=save_info_examination)
+        render_data.clear()
 
     Label(type_blanks_root, text='Какие бланки создать?',
           font=('Comic Sans MS', user.get('text_size')),
