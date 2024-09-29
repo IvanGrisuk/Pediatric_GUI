@@ -1961,7 +1961,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         def run_action():
             if func:
-                time.sleep(3)
                 func()
             else:
                 time.sleep(5)
@@ -2329,8 +2328,11 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                           justify='left',
                           font=('Comic Sans MS', user.get('text_size')),
                           bg='white').pack(fill='both', expand=True, side="top")
+                    height = 1
+                    for string in examination_text.split('\n'):
+                        height += (1 + len(string) // 100)
 
-                    txt_examination_past = ScrolledText(local_frame, width=100, height=20,
+                    txt_examination_past = ScrolledText(local_frame, width=100, height=height,
                                                         font=('Comic Sans MS', user.get('text_size')),
                                                         wrap="word")
 
@@ -19652,7 +19654,6 @@ def data_base(command,
                     'srv': f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db"
                 }
                 load_info_text.set("Извлечение локальных осмотров... ")
-                time.sleep(1)
 
                 with sq.connect(database=f"{local_data.get('loc')}") as conn:
                     cur = conn.cursor()
@@ -19662,7 +19663,6 @@ def data_base(command,
                     local_data[f"examination_loc"] = cur.fetchall()
 
                 load_info_text.set("Синхронизация...")
-                time.sleep(1)
 
                 for examination in local_data.get("examination_loc"):
                     (date_time, doctor_name, status, LN_type,
@@ -19682,7 +19682,6 @@ def data_base(command,
 
 
                 load_info_text.set("Изменение локальной БД")
-                time.sleep(1)
 
                 for path_mark in ('srv', 'loc'):
                     try:
@@ -19713,7 +19712,6 @@ def data_base(command,
                             elif path_mark == 'loc':
                                 load_info_text.set("Локальные... ")
 
-                                time.sleep(1)
 
                                 cur.execute("DELETE from examination WHERE status LIKE 'deleted'")
                                 cur.execute(f"UPDATE examination SET status = 'srv'")
@@ -19726,7 +19724,6 @@ def data_base(command,
 
                 load_info_text.set("Запись на сервер... ")
 
-                time.sleep(1)
 
                 if 'examination_db_place:____srv' in user.get('add_info'):
                     for examination in local_data.get("examination_srv"):
@@ -19754,7 +19751,6 @@ def data_base(command,
                                             local_data.get(f"sorted_examination_srv"))
 
                 load_info_text.set("Запись статистики... ")
-                time.sleep(1)
 
 
                 with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
@@ -20158,7 +20154,6 @@ def fast_certificate():
         def run_action():
             if func:
                 func()
-                time.sleep(1)
             else:
                 time.sleep(5)
 
@@ -22643,6 +22638,9 @@ def blanks_cmd():
 
 
     data['blanks'] = dict()
+    blanks_data = {
+
+    }
 
     type_blanks_root = Toplevel()
     type_blanks_root.title('Выбор бланков')
@@ -22656,29 +22654,63 @@ def blanks_cmd():
     blood_p = StringVar()
     type_disp_card = StringVar()
     type_disp_card.set("Короткая")
+    imt = StringVar()
+
+    def is_valid__anthro(num, type_anthro):
+        weight_loc, height_loc = None, None
+
+        if type_anthro == 'Вес':
+            weight_loc = num
+            height_loc = height.get()
+        if type_anthro == 'Рост':
+            weight_loc = num
+            height_loc = weight.get()
+
+        if height_loc and weight_loc:
+            try:
+                height_loc = float(height_loc.replace(',', '.'))
+                weight_loc = float(weight_loc.replace(',', '.'))
+                imt_loc = round(weight_loc / (height_loc/100)**2, 1)
+                imt.set(f"{imt_loc}")
+            except Exception:
+                imt.set('')
+        else:
+            imt.set('')
+
+
+
+        return True
 
     def select_blank_name():
         if data['blanks'].get('add_frame'):
             data['blanks']['add_frame'].destroy()
             data['blanks']['add_frame'] = None
+            add_frame.configure(height=1)
         if blank_name.get() == "Диспансеризация":
             frame_disp = Frame(add_frame)
             local_data = (
-                ('Рост: ', height),
-                ('Вес: ', weight),
-                ('Зрение: ', vision),
-                ("Давление:", blood_p)
+                ('Рост', height),
+                ('Вес', weight),
+                ('Зрение', vision),
+                ("Давление", blood_p),
+                ("ИМТ", imt),
             )
             frame = Frame(frame_disp)
             for lbl_name, var in local_data:
-                Label(frame, text=lbl_name,
+                Label(frame, text=f"{lbl_name}: ",
                       font=('Comic Sans MS', user.get('text_size')),
                       ).pack(fill='both', expand=True, side='left')
-                Entry(frame, width=15,
+
+                txt = Entry(frame, width=15,
                       textvariable=var,
                       justify="center",
                       font=('Comic Sans MS', user.get('text_size'))
-                      ).pack(fill='both', expand=True, side='left')
+                      )
+                if lbl_name in ('Рост', 'Вес'):
+                    check_anthro = (type_blanks_root.register(is_valid__anthro), "%P", lbl_name)
+                    txt.configure(validatecommand=check_anthro, validate="all")
+
+                txt.pack(fill='both', expand=True, side='left')
             frame.pack(fill='both', expand=True, padx=2, pady=2)
 
             frame = Frame(frame_disp)
@@ -22718,10 +22750,13 @@ def blanks_cmd():
         if blank_name.get() == 'Диспансеризация':
 
             local_data = (
+                ("imt", imt),
                 ('height', height),
                 ('weight', weight),
                 ('disp_visus', vision),
                 ("bp", blood_p)
+
+
             )
             render_data['year'] = datetime.now().strftime("%Y")
             render_data['disp_diagnosis'] = f"\n{'_' * 40}\n{'_' * 40}\n{'_' * 40}\n{'_' * 40}\n{'_' * 40}"
@@ -22731,7 +22766,7 @@ def blanks_cmd():
 
             for lbl_name, var in local_data:
                 render_data[lbl_name] = var.get()
-                var.set(0)
+                var.set('')
 
             doc_name = f".{os.sep}example{os.sep}амб_карта{os.sep}{blank_name.get()}_{type_disp_card.get()}.docx"
 
@@ -22747,13 +22782,14 @@ def blanks_cmd():
                                  f"Рост: {render_data.get('height')}; " \
                                  f"Вес: {render_data.get('weight')}; " \
                                  f"Зрение: {render_data.get('disp_visus')}; " \
-                                 f"АД: {render_data.get('bp')}"
+                                 f"АД: {render_data.get('bp')}; " \
+                                 f"ИМТ: {render_data.get('imt')}"
 
             active_but = f"type_examination:____certificate__<end!>__\n" \
                             f"patient_anthro:____" \
-                            f"height__{height.get()}____" \
-                            f"weight__{weight.get()}____" \
-                            f"vision__{vision.get()}____" \
+                            f"height__{render_data.get('height')}____" \
+                            f"weight__{render_data.get('weight')}____" \
+                            f"vision__{render_data.get('disp_visus')}____" \
                             f"__<end!>__\n"
 
             save_info_examination = [
@@ -22764,7 +22800,7 @@ def blanks_cmd():
                 f"{patient.get('name').strip()}__{patient.get('birth_date').strip()}",
                 active_examination,
                 active_but,
-                None]
+                'certificate']
 
             answer, message = data_base(command='examination__save',
                                         insert_data=save_info_examination)
@@ -22790,73 +22826,6 @@ def blanks_cmd():
     Button(type_blanks_root, text='Создать бланк', command=create_blanks,
            font=('Comic Sans MS', user.get('text_size'))
            ).pack(fill='both', expand=True, padx=2, pady=2)
-
-
-
-
-        # data['text_size'] = user.get('text_size')
-        # data['patient_name'] = patient.get('name', '')
-        # data['birth_date'] = patient.get('birth_date', '')
-        # data['gender'] = patient.get('gender', '')
-        # data['amb_cart'] = patient.get('amb_cart', '')
-        # data['patient_district'] = patient.get('patient_district', '')
-        # data['address'] = patient.get('address', '')
-        #
-        # data['doctor_name'] = user.get('doctor_name', '')
-        # data['ped_div'] = user.get('ped_div', '')
-        #
-        # create_blanks__ask_type_blanks()
-
-
-def create_blanks__ask_type_blanks():
-    def select_type_blanks(event):
-        num = ''
-        for i in str(event.widget).split('.!')[-1]:
-            if i.isdigit():
-                num += i
-
-        doc = DocxTemplate(f".{os.sep}example{os.sep}амб_карта{os.sep}{blanks[int(num) - 2]}.docx")
-        doc.render(render_data)
-        file_name = f".{os.sep}generated{os.sep}{blanks[int(num) - 2]}_{data.get('patient_name').split()[0]}.docx"
-        file_name = save_document(doc=doc, doc_name=file_name)
-        os.system(f"start {file_name}")
-        data_base(command="statistic_write",
-                  insert_data="Вкладыши")
-
-    def close_window():
-        data.clear()
-        render_data.clear()
-        type_blanks_root.destroy()
-        type_blanks_root.quit()
-
-    type_blanks_root = Toplevel()
-    type_blanks_root.title('Выбор бланков')
-    type_blanks_root.config(bg='white')
-    type_blanks_root.geometry('+0+0')
-
-    Label(type_blanks_root, text='Какие бланки создать?\n',
-          font=('Comic Sans MS', user.get('text_size')), bg='white').pack(fill='both', expand=True, padx=2, pady=2)
-    for text in blanks:
-        lbl_0 = Label(type_blanks_root, text=text,
-                      font=('Comic Sans MS', user.get('text_size')), border=1, compound='left',
-                      bg='#f0fffe', relief='ridge')
-        lbl_0.pack(fill='both', expand=True, padx=2, pady=2)
-        lbl_0.bind('<Button-1>', select_type_blanks)
-
-    Button(type_blanks_root, text='Закрыть окно', command=close_window,
-           font=('Comic Sans MS', user.get('text_size'))).pack(fill='both', expand=True, padx=2, pady=2)
-
-    render_data['ped_div'] = data.get('ped_div')
-    render_data['district'] = data.get('patient_district')
-    render_data['doc_name'] = data.get('doctor_name')
-    render_data['name'] = data.get('patient_name')
-    render_data['birth_date'] = data.get('birth_date')
-    render_data['address'] = data.get('address')
-    render_data['gender'] = data.get('gender')
-    render_data['date'] = datetime.now().strftime("%d.%m.%Y")
-    render_data['amb_cart'] = data.get('amb_cart')
-
-    type_blanks_root.mainloop()
 
 
 def direction_cmd():
@@ -24074,7 +24043,7 @@ def main_root():
         answer = data_base(command='examination__edit_examination_loc')
 
         if 'Exception' in answer:
-            load_info_text.set("answer")
+            load_info_text.set(f"{answer}")
             time.sleep(1)
 
         load_info_text.set("")
