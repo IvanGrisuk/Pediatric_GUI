@@ -20619,7 +20619,7 @@ def fast_certificate():
                                                                       "Группа здоровья: "
                                                                       f"{data['certificate'].get('health_group', '')};  "
                                                                       "Группа по физкультуре: "
-                                                                      f"{data['certificate'].get('physical', '')}};\n"
+                                                                      f"{data['certificate'].get('physical', '')};\n"
                                                                       "Выдана справка о годности к работе",
 
                                 "Бесплатное питание": "Перенесенные заболевания: "
