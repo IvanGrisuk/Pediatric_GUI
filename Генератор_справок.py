@@ -20619,35 +20619,40 @@ def fast_certificate():
 
                             }
 
-                            examination_text = f"ФИО: {patient.get('name')}    " \
-                                               f"Дата рождения: {patient.get('birth_date')}    " \
+                            examination_text = f"ФИО: {patient.get('name')}  " \
+                                               f"Дата рождения: {patient.get('birth_date')}  " \
                                                f"Участок: {patient.get('patient_district')}\n" \
                                                f"Дата и время: {datetime.now().strftime('%d.%m.%Y %H:%M')}\n" \
                                                f"{local_data.get(type_certificate)}\n" \
                                                f"Врач-педиатр: {user.get('doctor_name')}"
+                            render_data['patient_info'] = examination_text
 
-
-
-
-                            document = Document()
-                            paragraph = document.add_paragraph()
-                            p = paragraph.add_run(examination_text)
-                            r_fmt = p.font
-                            r_fmt.name = 'Times New Roman'
-                            r_fmt.size = Pt(10)
-                            if type_certificate in ('ЦКРОиР', 'Об отсутствии контактов'):
-                                r_fmt.size = Pt(9)
-                            sections = document.sections
-                            for section in sections:
-                                section.top_margin = Cm(1.5)
-                                section.bottom_margin = Cm(1.5)
-                                section.left_margin = Cm(1.5)
-                                section.right_margin = Cm(1.5)
-                                section.page_height = Cm(10.5)
-                                section.page_width = Cm(14.8)
-                            doc_name = save_document(doc=document, doc_name=f"Вкладыш_осмотра_"
-                                                                            f"{patient.get('name').split()[0]}.docx")
+                            doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}Вкладыш_справка.docx")
+                            doc.render(render_data)
+                            doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]} " \
+                                       f"Вкладыш_осмотра.docx".replace(' ', '_')
+                            doc_name = save_document(doc=doc, doc_name=doc_name)
                             run_document(doc_name)
+
+                            # document = Document()
+                            # paragraph = document.add_paragraph()
+                            # p = paragraph.add_run(examination_text)
+                            # r_fmt = p.font
+                            # r_fmt.name = 'Times New Roman'
+                            # r_fmt.size = Pt(10)
+                            # if type_certificate in ('ЦКРОиР', 'Об отсутствии контактов'):
+                            #     r_fmt.size = Pt(9)
+                            # sections = document.sections
+                            # for section in sections:
+                            #     section.top_margin = Cm(1.5)
+                            #     section.bottom_margin = Cm(1.5)
+                            #     section.left_margin = Cm(1.5)
+                            #     section.right_margin = Cm(1.5)
+                            #     section.page_height = Cm(10.5)
+                            #     section.page_width = Cm(14.8)
+                            # doc_name = save_document(doc=document, doc_name=f"Вкладыш_осмотра_"
+                            #                                                 f"{patient.get('name').split()[0]}.docx")
+                            # run_document(doc_name)
 
                     data_base(command="statistic_write",
                               insert_data="Справка")
