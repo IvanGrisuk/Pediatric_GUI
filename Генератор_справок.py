@@ -19394,6 +19394,7 @@ def data_base(command,
                                 [doctor_name, district, ped_div, manager, False, text_size])
 
     elif command == 'append_local_doctor_data':
+        print(insert_data)
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
 
@@ -22836,7 +22837,7 @@ def blanks_cmd():
 
 
     def create_blanks():
-
+        print(patient)
         if not blank_name.get():
             messagebox.showinfo('Ошибка', "Не выбран бланк!")
             return
@@ -25055,9 +25056,10 @@ def main_root():
                 event.widget.event_generate('<<Cut>>')
 
         def save_doctor(new_doctor_name):
+            print('new_doctor_name', new_doctor_name)
             data_base(command='append_local_doctor_data', insert_data=new_doctor_name)
             data_base(command='save_doctor_local',
-                      insert_data=[new_doctor_name])
+                      insert_data=new_doctor_name)
             write_lbl_doc()
             update_font_main()
 
@@ -25105,11 +25107,6 @@ def main_root():
 
         def selected(event=None):
             save_doctor(new_doctor_name=combo_doc.get())
-
-            # data_base(command='append_local_doctor_data',
-            #           insert_data=combo_doc.get())
-
-            update_font_main()
 
         def delete_txt_patient_data():
             txt_patient_data_variable.set('')
