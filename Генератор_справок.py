@@ -2031,7 +2031,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             if 'anamnesis:____' in examination_key:
                                 for string in examination_key.split('__<end!>__\n'):
                                     if string.startswith('anamnesis:____'):
-                                        print(string)
                                         txt_anamnesis.insert(1.0, string.replace('anamnesis:____', ''))
                                         local_info['anamnesis'] = 'True'
                         else:
@@ -2559,10 +2558,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                              f"anamnesis:____{anamnesis}__<end!>__\n"
                 if anamnesis:
                     anamnesis = f"\nАнамнез заболевания: {anamnesis}"
-                    print(anamnesis)
             render_data['anamnesis'] = anamnesis
 
-            print(active_but)
 
             patient_anthro_data = render_data.get('patient_anthro_data', '').replace('\n', '  ')
             active_examination = f"{render_data.get('date_time')}{render_data.get('patient_info')}\n" \
@@ -3341,7 +3338,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     marker_age = patient_age.get('month')
                     if patient_age.get('year') > 0:
                         marker_age = 12
-                print(f"marker_age_y {marker_age_y}, marker_age {marker_age}")
 
                 data['examination']['anthro']['anthro_height_weight'] = dict()
                 marker_gender = 'женский'
@@ -3369,7 +3365,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             elif data['examination']['anthro'].get('txt_height_variable').get():
                 height = float(data['examination']['anthro'].get('txt_height_variable').get().replace(',', '.'))
 
-            print(f"anthro_weight {anthro_weight}, \nanthro_height {anthro_height} \nweight {weight}, height {height}")
 
             patient_physical_anthro = ""
 
@@ -3389,7 +3384,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                             index_weight = anthro_weight.index(a_weight)
                             break
 
-                    print(f"index_height {index_height}, index_weight {index_weight}\n")
                     if index_height == 0:
                         anthro = 'Низкое '
                     elif index_height <= 2:
@@ -4946,7 +4940,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 render_data['amb_cart'] = patient.get('amb_cart')
                 render_data['diagnosis'] = txt_diagnosis.get(1.0, 'end').strip().replace('Диагноз:', "")
 
-                print(data['examination']['analyzes'].get('patient_anal'))
                 if 'blood-inf__ГЕПАТИТ' in data['examination']['analyzes'].get('patient_anal'):
                     with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
                         cur = conn.cursor()
@@ -5175,7 +5168,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 render_data['date'] = datetime.now().strftime("%d.%m.%Y")
                 render_data['amb_cart'] = patient.get('amb_cart')
 
-                print(data['examination']['consultation'].get('patient_consult'))
 
                 all_links = list()
                 for consult_name in data['examination']['consultation'].get('patient_consult'):
@@ -5336,8 +5328,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         edited_string = ''
         if mark_1 == 'Разрешена вакцинация':
             if 'Информирован(а)' in mark_2 and mark_2 in prescription_text:
-                print(f"'{mark_2}'\n")
-                print(f"'{prescription_text}'")
                 prescription_text = prescription_text.replace(mark_2, '')
             if 'Медотвод от проф' in mark_2 and mark_2 in prescription_text:
                 prescription_text = prescription_text.replace(mark_2, '')
@@ -6038,7 +6028,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             drug_category, drug_name, marker_rp = selected_button.get().split('__')
             selected_button.set('')
 
-            print(drug_name, marker_rp)
             prescription_text = txt_prescription.get(1.0, 'end').strip().split('\n')
             edited_string = ''
             for string in prescription_text:
@@ -6113,7 +6102,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             all_drug_frame = data['examination']['all_drug_frame'].get(selected_button.get())
             all_drug_frame.pack(fill='both', expand=True)
             all_drug_frame.update_idletasks()
-            print("all_drug_frame", all_drug_frame.winfo_width())
             data['examination']['canvas_frame_scrolled'].yview_moveto(0)
 
         def select_drugs_name():
@@ -19442,7 +19430,6 @@ def data_base(command,
                             f" FROM certificate_single_window__{datetime.now().year}")
 
                 number = cur.fetchone()[0]
-                print(number)
                 if not number:
                     number = 0
                 number += 1
@@ -20589,7 +20576,7 @@ def fast_certificate():
                                                            "Периферические лимфоузлы не увеличены. "
                                                            "Живот мягкий, безболезненный. "
                                                            "Стул и диурез без особенностей.\n"
-                                                           "Перенесенные заболевания: "
+                                                           "Перенесенные заболевания: \n"
                                                            f"{render_data.get('past_illnesses')}\n"
                                                            "Заключение: на момент осмотра соматически здоров. "
                                                            "Может находиться в детском коллективе\n"
@@ -20599,14 +20586,12 @@ def fast_certificate():
                                                       f"{diagnosis_txt}\n"
                                                       f"Заключение: {render_data.get('diagnosis')}\n"
                                                       "Выдана справка: На кружки и секции",
-                                "ЦКРОиР": "Перенесенные заболевания: "
-                                          f"{render_data.get('past_illnesses')}\n"
-                                          "Дополнительные медицинские сведения: "
+                                "ЦКРОиР": "Дополнительные медицинские сведения: "
                                           f"{render_data.get('additional_medical_information')}\n"
                                           f"Заключение: {render_data.get('diagnosis')}\n"
                                           "Выписка дана для предоставления в "
                                           f"{render_data.get('place_of_requirement')}",
-                                "О нуждаемости в сан-кур лечении": "Перенесенные заболевания: "
+                                "О нуждаемости в сан-кур лечении": "Перенесенные заболевания: \n"
                                                                    f"{render_data.get('past_illnesses')}\n"
                                                                    "Диагноз: "
                                                                    f"{diagnosis_txt}\n"
@@ -20622,7 +20607,7 @@ def fast_certificate():
                                                                       f"{data['certificate'].get('physical', '')};\n"
                                                                       "Выдана справка о годности к работе",
 
-                                "Бесплатное питание": "Перенесенные заболевания: "
+                                "Бесплатное питание": "Перенесенные заболевания: \n"
                                                       f"{render_data.get('past_illnesses')}\n"
                                                       "Дополнительные медицинские сведения: "
                                                       f"{render_data.get('additional_medical_information')}\n"
@@ -20650,6 +20635,8 @@ def fast_certificate():
                             r_fmt = p.font
                             r_fmt.name = 'Times New Roman'
                             r_fmt.size = Pt(10)
+                            if type_certificate in ('ЦКРОиР', 'Об отсутствии контактов'):
+                                r_fmt.size = Pt(9)
                             sections = document.sections
                             for section in sections:
                                 section.top_margin = Cm(1.5)
@@ -21735,7 +21722,6 @@ def fast_certificate():
                 if not all_data_certificate['all_info'].get(type_certificate).get('place_of_requirement'):
                     def select_place():
                         type_cert, place = selected_place.get().split('__')
-                        print(type_cert, place)
                         data['certificate']['place_of_requirement'] = place
                         label_place_text.set(f"Место требования справки: {place}")
 
@@ -23858,7 +23844,6 @@ def open_last_examination():
                     last_frame.pack_forget()
 
                 frame = data['last_examination']['selection'][date].get('frame_day')
-                print(date, data['last_examination']['selection'].get(date))
                 data['last_examination']['last_frame_day'] = frame
                 frame.pack(fill='both', expand=True)
 
@@ -24168,9 +24153,7 @@ def main_root():
 
     def start_edit_local_db(event=None):
         crynet_systems_label.unbind('<Double-Button-1>')
-        print(1)
         start_action(edit_local_db)
-        print(2)
 
 
     def paste_log_in_root():
@@ -24661,7 +24644,6 @@ def main_root():
                     per_num_data = dict()
                     for per_num in (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1):
                         per_num_data[round(len_doc * per_num)] = per_num
-                    print(per_num_data)
                     download_camp_variable.set(f"{download_camp_variable.get()} \n"
                                                f"Таблица создана. Заполняю ячейки данными...")
                     download_camp_root.update()
@@ -24979,8 +24961,6 @@ def main_root():
                             write_lbl_doc()
                             update_font_main()
                             root.update()
-                            print('user', user)
-                            print('all_doctor_info', app_info['all_doctor_info'].get(doctor_name))
 
                         else:
                             messagebox.showinfo('Ошибка', f'Ошибка записи в базу данных:\n{mess}')
@@ -25126,8 +25106,8 @@ def main_root():
         def selected(event=None):
             save_doctor(new_doctor_name=combo_doc.get())
 
-            data_base(command='append_local_doctor_data',
-                      insert_data=combo_doc.get())
+            # data_base(command='append_local_doctor_data',
+            #           insert_data=combo_doc.get())
 
             update_font_main()
 
