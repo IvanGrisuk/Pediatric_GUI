@@ -267,8 +267,8 @@ all_blanks_anal = {
 blanks = (('Диспансеризация',
           "Информирование_законного_представителя"),
           ("Тест_аутизма_у_детей",
-          "Анкета_по_слуху",
-          "Анкета_ПАВ", "Суицид"))
+          "Анкета_по_слуху"),
+          ("Анкета_ПАВ", "Суицид", "Титульник"))
 
 all_blanks_direction = {
     'hospital': (' - - - РНПЦ: - - - ',
@@ -22871,6 +22871,20 @@ def blanks_cmd():
 
             doc_name = f".{os.sep}example{os.sep}амб_карта{os.sep}{blank_name.get()}_{type_disp_card.get()}.docx"
 
+        if blank_name.get() == "Титульник":
+            render_data['name_1'] = patient.get('name').split()[0]
+            render_data['name_2'] = ' '.join(patient.get('name').split()[1:])
+
+            with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute(f"SELECT Домашний_телефон FROM patient_data WHERE amb_cart LIKE '{patient.get('amb_cart')}'")
+
+                phone = cur.fetchone()
+            if phone:
+                render_data['phone'] = phone[0]
+            else:
+                render_data['phone'] = '__________________________'
+
         doc = DocxTemplate(doc_name)
         doc.render(render_data)
         file_name = f".{os.sep}generated{os.sep}{blank_name.get()}_{patient.get('name').split()[0]}.docx"
@@ -23796,26 +23810,6 @@ def open_last_examination():
             paste_main_calendar(txt_variable=calendar_val[selected_button.get()].get('txt_variable'),
                                 main_title=calendar_val[selected_button.get()].get('main_title'))
 
-        def select_type_cert():
-            if data['certificate']['type_cert_frames'].get('selected_cert'):
-                data['certificate']['type_cert_frames']['selected_cert'].pack_forget()
-
-            canvas = data['certificate'].get('canvas')
-            type_cert_frame = data['certificate']['type_cert_frames'].get(selected_button.get())
-            data['certificate']['type_cert_frames']['selected_cert'] = type_cert_frame
-            scrolled_frame = data['certificate'].get('scrolled_frame')
-
-            certificate_main_root.update_idletasks()
-            type_cert_frame.pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
-
-            scrolled_frame.configure(height=type_cert_frame.winfo_height())
-            region = canvas.bbox(tk.ALL)
-            canvas.configure(scrollregion=region)
-            canvas.create_window((0, 0), window=scrolled_frame, anchor="nw",
-                                 width=canvas.winfo_width())
-            canvas.yview_moveto(0)
-            certificate_main_root.update()
-
         def is_valid__date(date, type_selection):
             local_data = {
                 'start_selection': entry_start_selection,
@@ -24710,6 +24704,7 @@ def main_root():
                 patient['vac_1'] = vac_1
                 patient['vac_2'] = vac_2
                 patient['age'] = get_age_d_m_y(patient.get('birth_date'))
+                patient['phone'] = phone
 
                 patient_info.set(f"ФИО: {patient.get('name')}    "
                                  f"Дата рождения: {patient.get('birth_date')}\n"
@@ -24717,7 +24712,7 @@ def main_root():
                                  f"№ амб: {patient.get('amb_cart')}    "
                                  f"Участок: {patient.get('patient_district')}    "
                                  f"Возраст: {patient['age'].get('age_txt')}\n"
-                                 f"Телефон: {phone}")
+                                 f"Телефон: {patient.get('phone')}")
                 search_root.destroy()
                 delete_txt_patient_data()
 
