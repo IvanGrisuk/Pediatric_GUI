@@ -2448,7 +2448,7 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                           f"Возраст: {patient['age'].get('age_txt')}\n" \
                                           f"Место осмотра: {selected_place.get()}"
             if selected_place.get() == 'в поликлинике':
-                render_data['patient_info'] = f"{render_data.get('patient_info')}\tна приеме с {combo_company.get()}"
+                render_data['patient_info'] = f"{render_data.get('patient_info')}\tна приеме: {combo_company.get()}"
             render_data['patient_info'] = f"{render_data.get('patient_info')}    {patient.get('patient_district')}-й уч"
 
             render_data['complaints'] = f"{txt_complaints.get(1.0, 'end').strip()}"
