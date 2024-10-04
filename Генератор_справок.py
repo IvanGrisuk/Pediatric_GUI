@@ -3191,17 +3191,17 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     def paste_frame_place_company():
         def select_place():
             data['examination']['place'] = selected_place.get()
-            label_place['text'] = f"{all_data_diagnosis.get('place')[0]}: {selected_place.get()}"
+            label_place['text'] = f"место осмотра: {selected_place.get()}"
             if selected_place.get() == 'в поликлинике':
                 frame_company.pack(fill='both', expand=True, side="left")
             else:
                 frame_company.pack_forget()
 
-        label_place = Label(master=frame_place, text=f"{all_data_diagnosis.get('place')[0]}",
+        label_place = Label(master=frame_place, text=f"место осмотра: ",
                             font=('Comic Sans MS', user.get('text_size')), bg='white')
         label_place.pack(fill='both', expand=True, side="left")
 
-        for mark in all_data_diagnosis.get('place')[1:]:
+        for mark in all_data_diagnosis.get('place'):
             btn = Radiobutton(master=frame_place, text=mark,
                               font=('Comic Sans MS', user.get('text_size')),
                               value=mark, variable=selected_place, command=select_place,
