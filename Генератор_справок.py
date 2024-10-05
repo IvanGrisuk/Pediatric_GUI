@@ -1941,6 +1941,8 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
     patient_age = get_age_d_m_y(patient.get('birth_date'))
     age = patient_age.get('year')
+    patient_age_local = StringVar()
+    txt_date_time = StringVar()
 
     patient_banner = StringVar()
     animation = StringVar()
@@ -2447,6 +2449,10 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                           f"Дата рождения: {patient.get('birth_date')}\t" \
                                           f"Возраст: {patient['age'].get('age_txt')}\n" \
                                           f"Место осмотра: {selected_place.get()}"
+            age_loc = patient_age_local.get().replace("Текущий возраст: ", "")
+            if age_loc != "Ошибка даты осмотра":
+                render_data['patient_info'] = render_data.get("patient_info").replace(patient['age'].get('age_txt'),
+                                                                                      age_loc)
             if selected_place.get() == 'в поликлинике':
                 render_data['patient_info'] = f"{render_data.get('patient_info')}\tна приеме: {combo_company.get()}"
             render_data['patient_info'] = f"{render_data.get('patient_info')}    {patient.get('patient_district')}-й уч"
@@ -2798,11 +2804,32 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
         frame_diagnosis.pack(fill='both', expand=True, side=tk.LEFT)
 
     def paste_frame_date_time():
-        label_date_time = Label(master=frame_date_time, text="Дата и время осмотра:",
-                                font=('Comic Sans MS', user.get('text_size')), bg='white')
-        label_date_time.pack(fill='both', expand=True)
-        txt_date_time.pack(fill='both', expand=True)
-        txt_date_time.insert(0, datetime.now().strftime("%d.%m.%Y %H:%M"))
+        def is_valid__(date):
+            try:
+                date_exam = datetime.strptime(date.split()[0], "%d.%m.%Y")
+                age_loc = get_age_d_m_y(birth_date=patient.get('birth_date'), today=date_exam)
+                patient_age_local.set(f"Текущий возраст: {age_loc.get('age_txt')}")
+            except Exception:
+                patient_age_local.set("Ошибка даты осмотра")
+            return True
+
+        check = (root_examination.register(is_valid__), "%P")
+
+        Label(master=frame_date_time, text="Дата и время осмотра:",
+              font=('Comic Sans MS', user.get('text_size')), bg='white'
+              ).pack(fill='both', expand=True)
+        txt = Entry(frame_date_time, width=15, textvariable=txt_date_time,
+              font=('Comic Sans MS', user.get('text_size')),
+              justify="center",
+              validate="key",
+              validatecommand=check
+              )
+        txt.pack(fill='both', expand=True)
+        txt_date_time.set(datetime.now().strftime("%d.%m.%Y %H:%M"))
+
+        Label(master=frame_date_time, textvariable=patient_age_local,
+              font=('Comic Sans MS', user.get('text_size')), bg='white'
+              ).pack(fill='both', expand=True)
 
         frame_date_time.columnconfigure(index='all', minsize=40, weight=1)
         frame_date_time.rowconfigure(index='all', minsize=20)
@@ -3166,9 +3193,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
     frame_diagnosis = Frame(frame_1, borderwidth=1, relief="solid")
     frame_date_time = Frame(frame_1, borderwidth=1, relief="solid")
 
-    txt_date_time = Entry(frame_date_time, width=15,
-                          font=('Comic Sans MS', user.get('text_size')),
-                          justify="center")
     frame_button = Frame(frame_1, borderwidth=1, relief="solid")
 
     button_change_all_kb_status = Button(frame_button, text='Скрыть\nвсе\nклавиатуры',
@@ -19956,7 +19980,7 @@ def get_age(birth_date):
     return age
 
 
-def get_age_d_m_y(birth_date):
+def get_age_d_m_y(birth_date, today=datetime.today()):
     patient_age = {
         "day": 0,
         "month": 0,
@@ -19975,7 +19999,6 @@ def get_age_d_m_y(birth_date):
 
     birthday = datetime.strptime('.'.join(birthday), date_form)
 
-    today = datetime.today()
     age = today.year - birthday.year
     if (today.month < birthday.month) or (today.month == birthday.month and today.day < birthday.day):
         age -= 1
