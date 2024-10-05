@@ -1787,7 +1787,7 @@ anthropometry = {
         }}
 }
 
-program_version = '2.2.69'
+program_version = '2.2.71'
 # print("recipe_data = {")
 # for d_cat in all_data_diagnosis.get('drugs'):
 #     print(f"\t\"{d_cat}\":", '{')
