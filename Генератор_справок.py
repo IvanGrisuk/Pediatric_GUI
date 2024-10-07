@@ -802,7 +802,7 @@ all_data_diagnosis = {
     "diagnosis": ("Предварительный диагноз", 'ОРИ', 'ФРК', "Ветряная оспа", "Здоров"),
 
     "place": ('на дому', 'в поликлинике'),
-    'complaints': ("сыпь", "гнойное отделяемое из глаз", "зуд", "тошнота", "ломота",
+    'complaints': ('нет', 'обусловлены основным заболеванием', "_", "сыпь", "гнойное отделяемое из глаз", "зуд", "тошнота", "ломота",
                    "слабость", "беспокойство",
                    ("температура", '37', '37.5', '38', '38.5', '39', '39.5', '40', '40.5'),
                    ("кашель", "сухой", "влажный", "приступообразный", "лающий"),
@@ -948,8 +948,14 @@ all_data_diagnosis = {
                       ("А(а)КДС + ХИБ", "(Тетраксим)"),
                       ("А(а)КДС + ВГА", ),
                       ("На бесплатной основе", ),
-
-                      )),
+                      ),
+                     ("Направляется на ВКК",
+                      ("для решения вопроса о вакцинации на бюджетной основе",),
+                      ("для решения вопроса о вакцинации от пневмококковой инфекции на бюджетной основе",),
+                      ("для решения вопроса о нуждаемости в сопровождении на санаторно-курортное лечение",),
+                      ("для решения вопроса о необходимости обучения в ДДУ санаторного типа (санаторной группе)",),
+                      ("для выдачи ЛН взамен испорченному",),
+                      ("для обеспечения адресной помощью", ))),
 
     "drugs": {
         "Антибиотики": (
@@ -3690,6 +3696,12 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
         row, col = 0, 0
         for mark in all_data_diagnosis.get('complaints'):
+            if mark == '_':
+                frame_loc.columnconfigure(index='all', minsize=10, weight=1)
+                frame_loc.rowconfigure(index='all', minsize=10)
+                frame_loc.pack(fill='both', expand=True)
+                frame_loc = Frame(frame_complaints_buttons)
+                continue
             if not isinstance(mark, tuple):
                 btn = Radiobutton(frame_loc, text=f"{mark}",
                                   font=('Comic Sans MS', user.get('text_size')),
@@ -6579,8 +6591,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             for mark_group in mark_group_main[1:]:
                 frame = Frame(frame_loc_but)
                 for mark_2 in mark_group:
+                    mark_2_text = ""
+                    for i in mark_2.split(' '):
+                        if len(mark_2_text.split('\n')[-1]) > 30:
+                            mark_2_text += '\n'
+                        mark_2_text += f"{i} "
                     data['examination']['prescription_but'][f"{mark_group_main[0]}_{mark_2}"] = IntVar()
-                    btn = Radiobutton(frame, text=f"{mark_2}",
+                    btn = Radiobutton(frame, text=mark_2_text,
                                       font=('Comic Sans MS', user.get('text_size')),
                                       value=f"{mark_group_main[0]}_{mark_2}",
                                       variable=selected_button,
@@ -7166,7 +7183,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             lbl_ln_from['text'] = " с "
             but_ln_closed['text'] = "закрыть к труду"
             txt_ln_until.delete(0, 'end')
-
 
     def open_frame_ln_my_blanks():
         def select_ln_num():
