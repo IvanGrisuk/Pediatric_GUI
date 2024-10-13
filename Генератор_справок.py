@@ -3652,13 +3652,13 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
 
                 else:
                     if local_complaints.get("add"):
-                        for i in (f"{mark_2}, ", f"{mark_2},", f", {mark_2}", f"{mark_2}"):
+                        for i in (f"{complaints_button}, ", f"{complaints_button},", f", {complaints_button}", f"{complaints_button}"):
                             if i in local_complaints.get("add"):
                                 text = text.replace(local_complaints.get("add"),
                                                     local_complaints.get("add").replace(i, ''))
                                 break
                     else:
-                        for i in (f"{mark_2}, ", f"{mark_2},", f", {mark_2}", f"{mark_2}"):
+                        for i in (f"{complaints_button}, ", f"{complaints_button},", f", {complaints_button}", f"{complaints_button}"):
                             if i in text:
                                 text = text.replace(i, '')
                                 break
