@@ -104,7 +104,6 @@ all_data_certificate = {
     "all_info": {
 
         "По выздоровлении": {
-            "additional_medical_information": "| Осмотрен на чесотку, педикулез, микроспорию |",
             "recommendation": "",
             "validity_period": "5 дней"},
 
@@ -272,58 +271,16 @@ blanks = (('Диспансеризация',
           ("Анкета_ПАВ", "Суицид", "Титульник"))
 
 all_blanks_direction = {
-    'hospital': (' - - - РНПЦ: - - - ',
-                 'РНПЦ ДХ',
-                 'РНПЦ НиН',
-                 'РНПЦ Мать и дитя',
-                 'РНПЦ ТиО',
-                 'РНПЦ ЛОР',
-                 'РНПЦ ДОГиИ',
+    'hospital': (
                  ' - - - Стационары: - - - ',
-                 '1-я ГКБ',
-                 '2-я ГДКБ',
-                 '3-я ГДКБ',
-                 '3-я ГКБ',
-                 '4-я ГДКБ',
-                 '6-я ГКБ',
-                 'ДИКБ',
-                 'МГЦМР',
-                 'ГККВД',
-                 ' - - - Поликлиники: - - - ',
-                 '19-я ГДП',
-                 '1-я ГДП',
-                 '7-я ГДП',
-                 '8-я ГП',
-                 '11-я ГДП',
-                 '17-я ГДП'
-                 ),
 
-    'doctor': ('Аллерголога',
-               'Гастроэнтеролога',
-               'Гематолога',
-               'Генетика',
-               'Гемангиолога',
-               'Гинеколога',
-               "Дерматолога",
-               'Кардиохирурга',
-               'Кардиолога',
-               'Невролога',
-               'Нейрохирурга',
-               'Нефролога',
-               'Онколога',
-               'Онкогематолога',
-               'Ортопеда',
-               'Оториноларинголога',
-               'Офтальмолога',
-               'Педиатра',
-               'Реабилитолога',
+                 '4-я ГДКБ',
+                ),
+
+    'doctor': (
                "Стоматолога",
                "Стоматолога-хирурга",
-               'Травматолога',
-               'Уролога',
-               'Хирурга',
                "Челюстно-лицевого хирурга"
-               "Эндокринолога"
                )
 
 }
@@ -20350,7 +20307,7 @@ def fast_certificate():
 
                 if type_certificate == 'По выздоровлении':
                     def selected_combo_diagnosis(event=None):
-                        if combo_diagnosis.get() == 'ребенок был в поликлинике на приеме у педиатра':
+                        if combo_diagnosis.get() == 'Находился на лечении у врача-стоматолога':
                             ori_until.set(datetime.now().strftime('%d.%m.%Y до %H:%M'))
                         else:
                             ori_until.set(datetime.now().strftime('%d.%m.%Y'))
@@ -20364,9 +20321,7 @@ def fast_certificate():
 
                     combo_diagnosis = Combobox(frame, width=40,
                                                font=('Comic Sans MS', user.get('text_size')))
-                    combo_diagnosis['values'] = ['ОРИ', "ФРК", "Ветряная оспа",
-                                                 "ребенок был в поликлинике на приеме у педиатра",
-                                                 "ребенок был в поликлинике для вакцинации",
+                    combo_diagnosis['values'] = ['Находился на лечении у врача-стоматолога',
                                                  "лечение в стационаре"]
                     combo_diagnosis.current(0)
                     data['certificate']['combo_diagnosis'] = combo_diagnosis
@@ -20458,7 +20413,6 @@ def fast_certificate():
                     Entry(frame, width=15, textvariable=ori_fizra_days,
                           font=('Comic Sans MS', user.get('text_size'))
                           ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
-                    ori_fizra_days.set('семь')
 
                     frame.pack(fill='both', expand=True, padx=2, pady=2)
 
@@ -22497,12 +22451,9 @@ def main_root():
         load_info_text.set("")
         crynet_systems_label.bind('<Double-Button-1>', start_edit_local_db)
 
-
-
     def start_edit_local_db(event=None):
         crynet_systems_label.unbind('<Double-Button-1>')
         start_action(edit_local_db)
-
 
     def paste_log_in_root():
         def select_doctor_name():
@@ -23581,49 +23532,39 @@ def main_root():
 
         Label(frame_main_loc, text='Что хотите сделать?', anchor='center',
               font=('Comic Sans MS', user.get('text_size'))
-              ).grid(column=0, row=0, columnspan=2, sticky='ew')
+              ).grid(column=0, row=0, sticky='ew')
 
-        Button(frame_main_loc, text='Справка', command=fast_certificate,
+
+        Button(frame_main_loc, text='Осмотры', command=examination_cmd,
               font=('Comic Sans MS', user.get('text_size'))
                ).grid(column=0, row=1, sticky='ew')
 
-        Button(frame_main_loc, text='Анализы', command=analyzes_cmd,
-              font=('Comic Sans MS', user.get('text_size'))
-               ).grid(column=1, row=1, sticky='ew')
-
-        Button(frame_main_loc, text='Вкладыши', command=blanks_cmd,
+        Button(frame_main_loc, text='Справка', command=fast_certificate,
               font=('Comic Sans MS', user.get('text_size'))
                ).grid(column=0, row=2, sticky='ew')
-
-        Button(frame_main_loc, text='Прививки', command=vaccination_cmd,
-              font=('Comic Sans MS', user.get('text_size'))
-               ).grid(column=1, row=2, sticky='ew')
 
         Button(frame_main_loc, text='Направления', command=direction_cmd,
               font=('Comic Sans MS', user.get('text_size'))
                ).grid(column=0, row=3, sticky='ew')
 
-        Button(frame_main_loc, text='Мой прием', command=open_last_examination,
-              font=('Comic Sans MS', user.get('text_size'))
-               ).grid(column=1, row=3, sticky='ew')
-
-        Button(frame_main_loc, text='Осмотры', command=examination_cmd,
-              font=('Comic Sans MS', user.get('text_size'))
-               ).grid(column=0, row=4, sticky='ew')
-
-        Button(frame_main_loc, text='Осмотры до года', command=examination_cmd_child,
-              font=('Comic Sans MS', user.get('text_size'))
-               ).grid(column=1, row=4, sticky='ew')
-
-        Button(frame_main_loc, text='Выгрузить лагерь', command=download_camp,
-              font=('Comic Sans MS', user.get('text_size'))
-               ).grid(column=0, row=5, sticky='ew')
+        # Button(frame_main_loc, text='Мой прием', command=open_last_examination,
+        #       font=('Comic Sans MS', user.get('text_size'))
+        #        ).grid(column=1, row=3, sticky='ew')
 
 
-        if 'local_admin' in str(user.get('add_info', "")):
-            Button(frame_main_loc, text='Журнал справок', command=download_ped_div,
-                   font=('Comic Sans MS', user.get('text_size'))
-                   ).grid(column=1, row=5, sticky='ew')
+        # Button(frame_main_loc, text='Осмотры до года', command=examination_cmd_child,
+        #       font=('Comic Sans MS', user.get('text_size'))
+        #        ).grid(column=1, row=4, sticky='ew')
+
+        # Button(frame_main_loc, text='Выгрузить лагерь', command=download_camp,
+        #       font=('Comic Sans MS', user.get('text_size'))
+        #        ).grid(column=0, row=5, sticky='ew')
+
+
+        # if 'local_admin' in str(user.get('add_info', "")):
+        #     Button(frame_main_loc, text='Журнал справок', command=download_ped_div,
+        #            font=('Comic Sans MS', user.get('text_size'))
+        #            ).grid(column=1, row=5, sticky='ew')
 
         frame_main_loc.columnconfigure(index='all', minsize=40, weight=1)
         frame_main_loc.rowconfigure(index='all', minsize=20)
