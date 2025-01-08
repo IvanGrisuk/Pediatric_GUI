@@ -1801,7 +1801,7 @@ anthropometry = {
         }}
 }
 
-program_version = '2.2.72'
+program_version = '2.2.81'
 # print("recipe_data = {")
 # for d_cat in all_data_diagnosis.get('drugs'):
 #     print(f"\t\"{d_cat}\":", '{')
@@ -6872,7 +6872,6 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 txt_second_examination.delete(0, 'end')
                 txt_second_examination.insert(0, data['examination']['LN_data']['current_data'].get("Дата окончания ВН").get().strip())
 
-
                 data['examination']['LN_data']['current_data']['save'] = True
                 render_data['patient_info_1'] = \
                     data['examination']['LN_data']['current_data'].get('Информация про ребенка (в корешок)').get().strip()
@@ -6888,36 +6887,72 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                     data['examination']['LN_data']['current_data'].get('Место работы (службы, учебы)').get().strip()
                 render_data['doctor_name'] = \
                     user.get('doctor_name').split()[0]
+                if selected_type_ln.get() == "Справка ВН":
+                    for marker_1, marker_2, counter in (('do', 'Дата выдачи', 6),
+                                               ('df', 'Дата начала ВН', 6),
+                                               ('du', 'Дата окончания ВН', 6),
+                                               ('bd', 'Дата рождения', 6),
+                                               ('n1', 'Фамилия', 24),
+                                               ('n2', 'Имя', 24),
+                                               ('n3', 'Отчество', 24)):
 
-                for marker_1, marker_2 in (('d_open', 'Дата выдачи'), ('d_from', 'Дата начала ВН'),
-                                           ('d_until', 'Дата окончания ВН'),
-                                           ('b_d_1', 'Дата рождения'), ('b_d_2', 'Дата рождения'),
-                                           ('parent_name_1', 'Фамилия'), ('parent_name_2', 'Имя'),
-                                           ('parent_name_3', 'Отчество')):
-                    if marker_1 in ('d_open', 'd_from', 'd_until', 'b_d_1', 'b_d_2'):
-                        date = ''
-                        for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
-                            if word.isdigit():
-                                date += word
-                            else:
-                                date += '.'
-                        date = date.split('.')
-                        if len(date[-1]) == 4:
-                            year = date.pop(-1)
-                            date.append(f"{year[-2]}{year[-1]}")
-                        date = ''.join(date)
-                        text = list()
-                        for word in date:
-                            text.append(word)
-                        render_data[marker_1] = '  '.join(text)
-                    else:
-                        text = list()
-                        for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
-                            text.append(word)
-                        if marker_1 in ('parent_name_1', 'parent_name_2', 'parent_name_3'):
+                        val_list = [f"{marker_1}_{num}" for num in range(counter)]
+                        text = data['examination']['LN_data']['current_data'].get(marker_2).get().strip()
+                        if marker_1 in ('do', 'df', 'du', 'bd'):
+                            date = ''
+                            for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
+                                if word.isdigit():
+                                    date += word
+                                else:
+                                    date += '.'
+                            date = date.split('.')
+                            if len(date[-1]) == 4:
+                                year = date.pop(-1)
+                                date.append(f"{year[-2]}{year[-1]}")
+                            text = ''.join(date)
+                        if marker_1 in ('n1', 'n2', 'n3'):
+
+
+                        for val, word in zip(val_list, text):
+                            render_data[val] = word
+                        for val in val_list:
+                            if not render_data.get(val):
+                                render_data[val] = ''
+                    number = txt_ln_num.get().strip()
+                    while len(number) < 6:
+                        number = '0' + number
+                    render_data['number'] = number
+
+                else:
+                    for marker_1, marker_2 in (('d_open', 'Дата выдачи'), ('d_from', 'Дата начала ВН'),
+                                               ('d_until', 'Дата окончания ВН'),
+                                               ('b_d_1', 'Дата рождения'), ('b_d_2', 'Дата рождения'),
+                                               ('parent_name_1', 'Фамилия'), ('parent_name_2', 'Имя'),
+                                               ('parent_name_3', 'Отчество')):
+                        if marker_1 in ('d_open', 'd_from', 'd_until', 'b_d_1', 'b_d_2'):
+                            date = ''
+                            for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
+                                if word.isdigit():
+                                    date += word
+                                else:
+                                    date += '.'
+                            date = date.split('.')
+                            if len(date[-1]) == 4:
+                                year = date.pop(-1)
+                                date.append(f"{year[-2]}{year[-1]}")
+                            date = ''.join(date)
+                            text = list()
+                            for word in date:
+                                text.append(word)
                             render_data[marker_1] = '  '.join(text)
                         else:
-                            render_data[marker_1] = ' '.join(text)
+                            text = list()
+                            for word in data['examination']['LN_data']['current_data'].get(marker_2).get().strip():
+                                text.append(word)
+                            if marker_1 in ('parent_name_1', 'parent_name_2', 'parent_name_3'):
+                                render_data[marker_1] = '  '.join(text)
+                            else:
+                                render_data[marker_1] = ' '.join(text)
 
                 doc = DocxTemplate(f".{os.sep}example{os.sep}certificate{os.sep}"
                                    f"БЛАНК_ВН_{selected_type_ln.get().replace(' ', '_'.capitalize())}.docx")
