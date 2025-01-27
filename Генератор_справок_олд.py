@@ -99,7 +99,10 @@ all_data_certificate = {
              "Может работать по специальности...",
              'Об усыновлении (удочерении)',
              "Бесплатное питание",
-             "Об обслуживании в поликлинике"),
+             "Об обслуживании в поликлинике",
+             "Оздоровление",
+             "Эпикриз 15 лет",
+             "Эпикриз 18 лет"),
 
     "all_info": {
 
@@ -188,6 +191,25 @@ all_data_certificate = {
         "Об обслуживании в поликлинике": {
             "place_of_requirement": "По месту требования",
             "diagnosis": "Ребенок обслуживается в УЗ '19-я городская детская поликлиника' с ___________",
+            "date_of_issue": "now",
+            "validity_period": "1 год"},
+
+        "Эпикриз 15 лет": {
+            "place_of_requirement": "По месту требования",
+            "diagnosis": "Ребенок обслуживается в УЗ '19-я городская детская поликлиника' с ___________",
+            "date_of_issue": "now",
+            "validity_period": "1 год"},
+
+        "Эпикриз 18 лет": {
+            "place_of_requirement": "По месту требования",
+            "diagnosis": "Ребенок обслуживается в УЗ '19-я городская детская поликлиника' с ___________",
+            "date_of_issue": "now",
+            "validity_period": "1 год"},
+
+        "Оздоровление": {
+            "place_of_requirement": "По месту требования",
+            "diagnosis": "Заключение: Отсутствуют медицинские противопоказания к оздоровлению "
+                         "(Постановление МЗ РБ Nº 53 от 20.03.08)",
             "date_of_issue": "now",
             "validity_period": "1 год"},
 
@@ -6910,7 +6932,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                                 year = date.pop(-1)
                                 date.append(f"{year[-2]}{year[-1]}")
                             text = ''.join(date)
-                        if marker_1 in ('n1', 'n2', 'n3'):
+                        # if marker_1 in ('n1', 'n2', 'n3'):
+
+
 
 
                         for val, word in zip(val_list, text):
@@ -6999,6 +7023,9 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
                 "Место работы (службы, учебы)": StringVar(),
                 "Информация про ребенка (в корешок)": StringVar(),
                 "Особые отметки": StringVar(),
+                "Предварительный диагноз": StringVar(),
+                "Тип_документа_1": StringVar(),
+                "Тип_документа_2": StringVar(),
             }
 
         data['examination']['LN_data']['current_data']['Дата выдачи'].set(datetime.now().strftime("%d.%m.%y"))
@@ -7074,6 +7101,25 @@ def paste_examination_cmd_main(root_examination: Toplevel, examination_root: Fra
             row += 1
         frame.pack(fill='both', expand=True, padx=2, pady=2)
         frame.columnconfigure(index='all', minsize=40, weight=1)
+
+        if selected_type_ln.get() == "Справка ВН":
+            loc_data = {"Тип_документа_1": ("основная", "дополнительная"),
+                        "Тип_документа_2": ("первичная", "продолжение", "дубликат"),}
+            for type_lbl in loc_data:
+                frame = Frame(new_root)
+                Label(frame, text=type_lbl.replace('_', ' '),
+                      font=('Comic Sans MS', user.get('text_size')),
+                      bg="#36566d", fg='white').pack(fill='both', expand=True, padx=2, pady=2)
+                frame_but = Frame(frame)
+                for but_name in loc_data.get(type_lbl):
+                    Radiobutton(frame, text=but_name,
+                                font=('Comic Sans MS', user.get('text_size')),
+                                value=f"{but_name}",
+                                variable=data['examination']['LN_data']['current_data'].get(type_lbl),
+                                indicatoron=False, bg='#f0fffe', selectcolor='#77f1ff'
+                                ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
+                frame_but.pack(fill='both', expand=True, padx=2, pady=2)
+                frame.pack(fill='both', expand=True, padx=2, pady=2)
 
         Button(new_root, text='Создать документ', command=save,
                font=('Comic Sans MS', user.get('text_size'))
@@ -20323,6 +20369,20 @@ def fast_certificate():
         examination_blank = StringVar()
         examination_blank.set("Да")
 
+        work_place = StringVar()
+        dispensary_observation = StringVar()
+        registered_from = StringVar()
+        registered_from = StringVar()
+        registered_from = StringVar()
+        registered_from = StringVar()
+        registered_from = StringVar()
+        registered_from = StringVar()
+        registered_from = StringVar()
+        registered_from = StringVar()
+        registered_from = StringVar()
+
+
+
 
 
         date_of_issue = StringVar()
@@ -20502,7 +20562,6 @@ def fast_certificate():
                     else:
                         render_data['number_cert'] = '№ ______'
 
-
                     if (type_certificate == "Оформление в ДДУ / СШ / ВУЗ"
                         and place_of_requirement in ("Средняя школа (гимназия)", "Кадетское училище")) \
                             or type_certificate == 'Об усыновлении (удочерении)':
@@ -20513,7 +20572,6 @@ def fast_certificate():
                                 render_data['number_cert'] = '№ ______'
                         elif type_certificate == 'Об усыновлении (удочерении)':
                             doc_name = f".{os.sep}generated{os.sep}{patient.get('name').split()[0]}_справка_Об_усыновлении.docx"
-
 
                         render_data['manager'] = user.get('manager', '______________________')
 
@@ -21793,7 +21851,6 @@ def fast_certificate():
                     frame.pack(fill='both', expand=True, padx=2, pady=2)
                     frame_diagnosis.pack(fill='both', expand=True, padx=2, pady=2)
 
-
                 data['certificate']['type_cert_info'][type_certificate] = dict()
 
                 master_frame = Frame(canvas_frame, bg="#36566d")
@@ -21805,7 +21862,6 @@ def fast_certificate():
                       bg="#36566d",
                       fg='white'
                       ).pack(fill='both', expand=True, padx=2, pady=2, ipadx=2, ipady=2)
-
 
                 if not all_data_certificate['all_info'].get(type_certificate).get('place_of_requirement'):
                     def select_place():
@@ -22081,7 +22137,6 @@ def fast_certificate():
                                             ).pack(fill='both', expand=True, side='left')
                             frame.pack(fill='both', expand=True, padx=2, pady=2)
 
-
                 if type_certificate == 'По выздоровлении':
                     def selected_combo_diagnosis(event=None):
                         if combo_diagnosis.get() == 'ребенок был в поликлинике на приеме у педиатра':
@@ -22201,7 +22256,9 @@ def fast_certificate():
                     frame_ori.rowconfigure(index='all', minsize=20)
                     frame_ori.pack(fill='both', expand=True, padx=2, pady=2)
 
-                if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь', 'Об усыновлении (удочерении)', 'Об отсутствии контактов', 'Бесплатное питание', 'О нуждаемости в сан-кур лечении'):
+                if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь',
+                                        'Об усыновлении (удочерении)', 'Об отсутствии контактов', 'Бесплатное питание',
+                                        'О нуждаемости в сан-кур лечении', 'Эпикриз 15 лет', 'Эпикриз 18 лет'):
 
 
                     frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
@@ -22237,9 +22294,7 @@ def fast_certificate():
                     frame.pack(fill='both', expand=True)
                     frame_allergy.pack(fill='both', expand=True, padx=2, pady=2)
 
-
-
-                    if type_certificate == 'Оформление в ДДУ / СШ / ВУЗ':
+                    if type_certificate in ('Оформление в ДДУ / СШ / ВУЗ', 'Эпикриз 15 лет', 'Эпикриз 18 лет'):
 
                         frame_injury_operation = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
                         data['certificate']['type_cert_info'][type_certificate]['frame_injury'] = frame_injury_operation
@@ -22279,8 +22334,8 @@ def fast_certificate():
 
                         frame.pack(fill='both', expand=True, padx=2, pady=2)
 
-
-                if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь', 'Об усыновлении (удочерении)'):
+                if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь',
+                                        'Об усыновлении (удочерении)', 'Эпикриз 15 лет', 'Эпикриз 18 лет'):
 
                     frame_body = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
                     frame = Frame(frame_body, borderwidth=1, relief="solid", padx=2, pady=2)
@@ -22315,8 +22370,8 @@ def fast_certificate():
                               validatecommand=check
                               ).pack(fill='both', expand=True, side='left')
 
-
-                    if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь'):
+                    if type_certificate in ('Годовой медосмотр', 'Оформление в ДДУ / СШ / ВУЗ', 'В детский лагерь',
+                                            'Эпикриз 15 лет', 'Эпикриз 18 лет'):
                         Label(frame, text="    Зрение:",
                               font=('Comic Sans MS', user.get('text_size')), bg='white'
                               ).pack(fill='both', expand=True, side='left')
@@ -22335,10 +22390,8 @@ def fast_certificate():
                               font=('Comic Sans MS', user.get('text_size'))
                               ).pack(fill='both', expand=True, side='left')
 
-
                     frame.pack(fill='both', expand=True, padx=2, pady=2)
                     frame_body.pack(fill='both', expand=True, padx=2, pady=2)
-
 
                     frame = Frame(frame_body, borderwidth=1, relief="solid", padx=2, pady=2)
                     Label(frame, text="Физическое развитие: ",
@@ -22349,35 +22402,35 @@ def fast_certificate():
                           ).pack(fill='both', expand=True)
 
                     frame.pack(fill='both', expand=True, padx=2, pady=2)
+                    if type_certificate not in ('Эпикриз 15 лет', 'Эпикриз 18 лет'):
+                        paste_diagnosis_frame()
 
-                    paste_diagnosis_frame()
+                        for txt, marker, variable in (('Группа здоровья', 'group', selected_health_group),
+                                                      ('Группа по физ-ре', 'physical', selected_fiz_group),
+                                                      ('Режим', 'regime', regime_vars),
+                                                      ('Стол', 'diet', selected_diet),
+                                                      ('Парта', 'desk', desk_vars)):
+                            frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
 
-                    for txt, marker, variable in (('Группа здоровья', 'group', selected_health_group),
-                                                  ('Группа по физ-ре', 'physical', selected_fiz_group),
-                                                  ('Режим', 'regime', regime_vars),
-                                                  ('Стол', 'diet', selected_diet),
-                                                  ('Парта', 'desk', desk_vars)):
-                        frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                            Label(frame, text=f"{txt}:",
+                                  font=('Comic Sans MS', user.get('text_size')), bg='white'
+                                    ).pack(fill='both', expand=True, side='left')
 
-                        Label(frame, text=f"{txt}:",
-                              font=('Comic Sans MS', user.get('text_size')), bg='white'
-                                ).pack(fill='both', expand=True, side='left')
+                            for mark in all_data_certificate.get('health').get(marker):
+                                if marker in ('group', 'physical', 'diet'):
+                                    Radiobutton(frame, text=mark,
+                                                font=('Comic Sans MS', user.get('text_size')),
+                                                value=mark, variable=variable,
+                                                command=select_health, indicatoron=False, selectcolor='#77f1ff'
+                                                ).pack(fill='both', expand=True, side='left')
+                                else:
+                                    Checkbutton(frame, text=mark,
+                                                font=('Comic Sans MS', user.get('text_size')),
+                                                variable=variable.get(mark), command=select_health,
+                                                onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff'
+                                                ).pack(fill='both', expand=True, side='left')
 
-                        for mark in all_data_certificate.get('health').get(marker):
-                            if marker in ('group', 'physical', 'diet'):
-                                Radiobutton(frame, text=mark,
-                                            font=('Comic Sans MS', user.get('text_size')),
-                                            value=mark, variable=variable,
-                                            command=select_health, indicatoron=False, selectcolor='#77f1ff'
-                                            ).pack(fill='both', expand=True, side='left')
-                            else:
-                                Checkbutton(frame, text=mark,
-                                            font=('Comic Sans MS', user.get('text_size')),
-                                            variable=variable.get(mark), command=select_health,
-                                            onvalue=1, offvalue=0, indicatoron=False, selectcolor='#77f1ff'
-                                            ).pack(fill='both', expand=True, side='left')
-
-                        frame.pack(fill='both', expand=True, padx=2, pady=2)
+                            frame.pack(fill='both', expand=True, padx=2, pady=2)
 
                     if type_certificate == 'Годовой медосмотр':
                         frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
@@ -22393,8 +22446,6 @@ def fast_certificate():
                                         indicatoron=False, selectcolor='#77f1ff'
                                         ).pack(fill='both', expand=True, side='left')
                         frame.pack(fill='both', expand=True, padx=2, pady=2)
-
-
 
                 if type_certificate == 'О нуждаемости в сан-кур лечении':
                     def select_profile():
@@ -22503,6 +22554,91 @@ def fast_certificate():
                                     indicatoron=False, selectcolor='#77f1ff'
                                     ).pack(fill='both', expand=True, side='left')
                     frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                if type_certificate in ('Эпикриз 15 лет', 'Эпикриз 18 лет'):
+                    frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                    Label(frame, text="Место учебы (работы):",
+                          font=('Comic Sans MS', user.get('text_size')), bg='white'
+                          ).pack(fill='both', expand=True, side='left')
+                    Entry(frame, width=30,
+                          textvariable=work_place,
+                          font=('Comic Sans MS', user.get('text_size'))
+                          ).pack(fill='both', expand=True, side='left')
+                    frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    # frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                    # Label(frame, text="Диспансерное наблюдение:",
+                    #       font=('Comic Sans MS', user.get('text_size')), bg='white'
+                    #       ).pack(fill='both', expand=True, side='left')
+                    # Entry(frame, width=30,
+                    #       textvariable=dispensary_observation,
+                    #       font=('Comic Sans MS', user.get('text_size'))
+                    #       ).pack(fill='both', expand=True, side='left')
+                    # frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    if type_certificate == "Эпикриз 15 лет":
+                        for doctors in ("Диспансерное наблюдение",
+                                        'УЗИ сердца', 'УЗИ шитовидной железы', 'УЗИ органов брюшной полости',
+                                        'Электрокардиограмма', 'OAK', 'Глюкоза', 'OAM'):
+                            frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                            Label(frame, text=f"{doctors}:",
+                                  font=('Comic Sans MS', user.get('text_size')), bg='white'
+                                  ).pack(fill='both', expand=True)
+
+                            scrolled_text = ScrolledText(frame, width=80, height=3,
+                                                         font=('Comic Sans MS', user.get('text_size')),
+                                                         wrap="word")
+                            data['certificate']['type_cert_info'][type_certificate][f"{doctors}_scrolled_txt"] = scrolled_text
+
+                            scrolled_text.pack(fill='both', expand=True)
+                            frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    if type_certificate == "Эпикриз 18 лет":
+                        frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                        Label(frame, text="Состоит на учете поликлиники с:",
+                              font=('Comic Sans MS', user.get('text_size')), bg='white'
+                              ).pack(fill='both', expand=True, side='left')
+                        Entry(frame, width=30,
+                              textvariable=registered_from,
+                              font=('Comic Sans MS', user.get('text_size'))
+                              ).pack(fill='both', expand=True, side='left')
+                        frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                        for doctors in ("Диспансерное наблюдение", "Педиатр", "Хирург", "Офтальмолог", "Невролог",
+                                        "Стоматолог", "Гинеколог", "Другие врачи-специалисты",
+                                        'УЗИ сердца', 'УЗИ шитовидной железы',
+                                        'УЗИ органов брюшной полости', "УЗИ мочеполовой системы",
+                                        'Электрокардиограмма', 'OAK', 'OAM',
+                                        'Глюкоза', "Слух", "Флюорография", "Половое развитие"):
+                            frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+                            Label(frame, text=f"{doctors}:",
+                                  font=('Comic Sans MS', user.get('text_size')), bg='white'
+                                  ).pack(fill='both', expand=True)
+
+                            scrolled_text = ScrolledText(frame, width=80, height=3,
+                                                         font=('Comic Sans MS', user.get('text_size')),
+                                                         wrap="word")
+                            data['certificate']['type_cert_info'][type_certificate][f"{doctors}_txt"] = scrolled_text
+
+                            scrolled_text.pack(fill='both', expand=True)
+                            frame.pack(fill='both', expand=True, padx=2, pady=2)
+
+                    paste_diagnosis_frame()
+                    for txt, marker, variable in (('Группа здоровья', 'group', selected_health_group),
+                                                  ('Группа по физ-ре', 'physical', selected_fiz_group)):
+                        frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
+
+                        Label(frame, text=f"{txt}:",
+                              font=('Comic Sans MS', user.get('text_size')), bg='white'
+                              ).pack(fill='both', expand=True, side='left')
+
+                        for mark in all_data_certificate.get('health').get(marker):
+                            Radiobutton(frame, text=mark,
+                                        font=('Comic Sans MS', user.get('text_size')),
+                                        value=mark, variable=variable,
+                                        command=select_health, indicatoron=False, selectcolor='#77f1ff'
+                                        ).pack(fill='both', expand=True, side='left')
+                        frame.pack(fill='both', expand=True, padx=2, pady=2)
 
                 def paste_validaty_period():
                     frame = Frame(master_frame, borderwidth=1, relief="solid", padx=4, pady=4)
