@@ -1797,5 +1797,11 @@ user = {'text_size': 12,
 
 app_info = {
     'all_doctor_info': dict(),
-    'roots': dict()
+    'roots': dict(),
+    'title_frame': {
+        'doctor_info_text': None,
+        'patient_info_text': None,
+        'animation': None,
+        'load_info_text': None,
+    }
 }

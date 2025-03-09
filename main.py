@@ -30,7 +30,7 @@ from post_1201 import post_1201
 import subprocess, platform
 
 from database import data_base
-from examination import paste_examination
+# from examination import paste_examination
 
 
 from variables import all_patient, patient, app_info, user, program_version
@@ -39,6 +39,8 @@ from variables import all_patient, patient, app_info, user, program_version
 def main_root():
 
     def start_action(func=None):
+        animation = app_info['title_frame'].get('animation')
+
         def check_thread(thread_):
             if thread_.is_alive():
                 animation.set(animation.get()[-1] + animation.get()[:-1])
@@ -57,7 +59,37 @@ def main_root():
         thread.start()
         check_thread(thread)
 
+    def finish():
+        root.destroy()  # ручное закрытие окна и всего приложения
+        print("Закрытие приложения")
+
     def edit_local_db():
+        last_edit_srv = data_base('last_edit_patient_db_srv')
+        if last_edit_srv:
+            load_info_text.set("Соединение с сервером установлено")
+        else:
+            load_info_text.set("Ошибка подключения к базе данных!")
+        if not last_edit_srv:
+            user['error_connection'] = True
+        else:
+            last_edit_loc = data_base('last_edit_patient_db_loc')
+            if last_edit_loc != last_edit_srv:
+                load_info_text.set("Обнаружена новая версия базы данных пациентов\n"
+                                   "Начинаю обновление...")
+                shutil.copy2(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db",
+                             f".{os.sep}data_base{os.sep}patient_data_base.db")
+                load_info_text.set(f"База данных пациентов обновлена")
+            else:
+                load_info_text.set(f"У вас актуальная версия базы данных")
+        if not all_patient:
+            load_info_text.set(f"Создание базы данных пациентов")
+            data_base('select_all_patient')
+            load_info_text.set(f"Загрузка завершена")
+
+
+
+
+
 
         load_info_text.set("Синхронизация осмотров...")
 
@@ -76,10 +108,12 @@ def main_root():
         start_action(edit_local_db)
 
     def paste_log_in_root():
+        load_info_text = app_info['title_frame'].get('load_info_text')
+
         def select_doctor_name():
             load_info_text.set(f"Выбран доктор: {selected_doctor_name.get()}")
 
-            if app_info['all_doctor_info'][selected_doctor_name.get()].get('password'):
+            if app_info['all_doctor_info'][int(selected_doctor_name.get())].get('password'):
                 frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
                 pass_txt.focus()
             else:
@@ -111,93 +145,96 @@ def main_root():
 
         def connect_to_srv_data_base():
             load_info_text.set(f"Попытка подключения к базе данных...")
-            if not os.path.exists(path=f".{os.sep}data_base"):
-                os.mkdir(path=f".{os.sep}data_base")
-            data_base('create_db')
-            last_edit_srv = data_base('last_edit_patient_db_srv')
-            if last_edit_srv:
+
+            status = data_base('get_all_doctor_info')
+            if status == 'srv':
                 load_info_text.set("Соединение с сервером установлено")
+                data_base('activate_app')
             else:
                 load_info_text.set("Ошибка подключения к базе данных!")
-            if not last_edit_srv:
-                user['error_connection'] = True
-            else:
-                last_edit_loc = data_base('last_edit_patient_db_loc')
-                if last_edit_loc != last_edit_srv:
-                    load_info_text.set("Обнаружена новая версия базы данных пациентов\n"
-                                       "Начинаю обновление...")
-                    shutil.copy2(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db",
-                                 f".{os.sep}data_base{os.sep}patient_data_base.db")
-                    load_info_text.set(f"База данных пациентов обновлена")
-                else:
-                    load_info_text.set(f"У вас актуальная версия базы данных")
-            if not all_patient:
-                load_info_text.set(f"Создание базы данных пациентов")
-                data_base('select_all_patient')
-                load_info_text.set(f"Загрузка завершена")
 
-            if not user.get('error_connection'):
-                if not app_info.get('all_doctor_info'):
-                    data_base('get_all_doctor_info')
+            if user['app_data'].get('last_reg_password'):
+                if (datetime.now() - datetime.strptime(user['app_data'].get('last_reg_password'),
+                                                       "%Y-%m-%d %H:%M:%S.%f")).days > 60:
+                    load_info_text.set('Срок активации истек! '
+                                       '\nВведите пароль для продления 60-дневной подписки')
 
+                    frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
+                    app_info['check_pass_app'] = True
+
+            if not app_info.get('check_pass_app'):
                 if app_info.get('all_doctor_info'):
                     frame_doc = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
                     app_info['frame_doc'] = frame_doc
-                    load_info_text.set("Выберите учетную запись")
+
+                    doctor_info_text = app_info['title_frame'].get('doctor_info_text')
+                    doctor_info_text.set("")
 
                     users_sorted_pd = dict()
-                    for doctor_name in sorted(app_info.get('all_doctor_info')):
-                        ped_div = app_info['all_doctor_info'][doctor_name].get('ped_div')
-                        if ped_div not in users_sorted_pd:
-                            users_sorted_pd[ped_div] = list()
-                        users_sorted_pd[ped_div].append(doctor_name)
 
-                    row, col = 0, 0
+                    for doctor_id in sorted(app_info.get('all_doctor_info'),
+                                            key=lambda i: app_info['all_doctor_info'][i].get('doctor_name')):
+                        ped_div = app_info['all_doctor_info'][doctor_id].get('ped_div')
+                        doctor_name = app_info['all_doctor_info'][doctor_id].get('doctor_name')
+                        if ped_div not in users_sorted_pd:
+                            users_sorted_pd[ped_div] = [[]]
+                        if len(users_sorted_pd.get(ped_div)[-1]) == 5:
+                            users_sorted_pd[ped_div].append([])
+                        users_sorted_pd[ped_div][-1].append((doctor_name, doctor_id))
+
+                    Label(frame_doc, text="Выберите учетную запись",
+                          bg="#36566d", fg='white',
+                          font=('Comic Sans MS', user.get('text_size'))
+                          ).pack(fill='x', expand=True, padx=2, pady=2, ipady=2)
+
                     for ped_div in sorted(users_sorted_pd):
-                        row += 1
+                        print(ped_div, users_sorted_pd.get(ped_div))
                         if ped_div.isdigit():
                             text = f'{ped_div}-е ПО'
                         else:
                             text = f'{ped_div}'
                         Label(frame_doc, text=text,
                               font=('Comic Sans MS', user.get('text_size')),
-                              bg='white').grid(row=row, column=0, sticky='ew', columnspan=4)
-                        row += 1
-                        col = 0
-                        for doctor_name in users_sorted_pd.get(ped_div):
+                              bg='white').pack(fill='x', expand=True, padx=2, pady=2, anchor='n')
+                        for list_doc in users_sorted_pd.get(ped_div):
+                            frame = Frame(frame_doc)
+                            for doctor_name, doctor_id in list_doc:
+                                Radiobutton(master=frame, text=doctor_name,
+                                            font=('Comic Sans MS', user.get('text_size')),
+                                            command=select_doctor_name,
+                                            value=doctor_id, variable=selected_doctor_name,
+                                            indicatoron=False, selectcolor='#77f1ff'
+                                            ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
+                            frame.pack(fill='x', expand=True, padx=2, pady=2, anchor='n')
 
-                            btn = Radiobutton(master=frame_doc, text=doctor_name,
-                                              font=('Comic Sans MS', user.get('text_size')),
-                                              command=select_doctor_name,
-                                              value=doctor_name, variable=selected_doctor_name,
-                                              indicatoron=False, selectcolor='#77f1ff')
-                            btn.grid(row=row, column=col, sticky='ew')
-                            col += 1
-                            if col == 4:
-                                col = 0
-                                row += 1
-                    frame_doc.columnconfigure(index='all', minsize=40, weight=1)
-                    frame_doc.rowconfigure(index='all', minsize=20)
+
+                    # row, col = 0, 0
+                    # for ped_div in sorted(users_sorted_pd):
+                    #     row += 1
+                    #     if ped_div.isdigit():
+                    #         text = f'{ped_div}-е ПО'
+                    #     else:
+                    #         text = f'{ped_div}'
+                    #     Label(frame_doc, text=text,
+                    #           font=('Comic Sans MS', user.get('text_size')),
+                    #           bg='white').grid(row=row, column=0, sticky='ew', columnspan=4)
+                    #     row += 1
+                    #     col = 0
+                    #     for doctor_name in users_sorted_pd.get(ped_div):
+                    #
+                    #         btn = Radiobutton(master=frame_doc, text=doctor_name,
+                    #                           font=('Comic Sans MS', user.get('text_size')),
+                    #                           command=select_doctor_name,
+                    #                           value=doctor_name, variable=selected_doctor_name,
+                    #                           indicatoron=False, selectcolor='#77f1ff')
+                    #         btn.grid(row=row, column=col, sticky='ew')
+                    #         col += 1
+                    #         if col == 4:
+                    #             col = 0
+                    #             row += 1
+                    # frame_doc.columnconfigure(index='all', minsize=40, weight=1)
+                    # frame_doc.rowconfigure(index='all', minsize=20)
                     frame_doc.pack(fill='both', expand=True, padx=2, pady=2)
-
-
-                else:
-                    user['error_connection'] = True
-
-            if user.get('error_connection'):
-                if user['app_data'].get('last_reg_password'):
-                    if (datetime.now() - datetime.strptime(user['app_data'].get('last_reg_password'),
-                                                           "%d.%m.%Y")).days > 60:
-                        load_info_text.set('Срок активации истек! '
-                                           '\nВведите пароль для продления 60-дневной подписки')
-
-                        frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
-                        app_info['check_pass_app'] = True
-
-                    else:
-                        open_main_root()
-                else:
-                    open_main_root()
 
         def is_valid__password(password):
             if app_info.get('check_pass_app'):
@@ -209,7 +246,7 @@ def main_root():
                 else:
                     text_is_correct_password.set('Пароль не верен!')
             else:
-                if password == app_info['all_doctor_info'][selected_doctor_name.get()].get('password'):
+                if password == app_info['all_doctor_info'][int(selected_doctor_name.get())].get('password'):
                     text_is_correct_password.set('Пароль принят')
                     open_main_root()
                 else:
@@ -225,32 +262,10 @@ def main_root():
         txt_password_variable = StringVar()
         text_is_correct_password = StringVar()
 
-
         log_in_root = Frame(master=root, bg="#36566d")
+        log_in_root.pack(fill='both', expand=True, padx=2, pady=2)
         app_info['log_in_root'] = log_in_root
         user['error_connection'] = False
-
-        frame_lbl = Frame(log_in_root, padx=3, pady=3, bg="#36566d")
-
-        frame_animation = Frame(frame_lbl, padx=3, pady=3, bg="#36566d")
-
-        Label(frame_animation, textvariable=animation,
-              anchor='ne', bg="#36566d", fg='white', compound='bottom'
-              ).pack(fill='both', expand=True, padx=2, pady=2)
-
-        Label(frame_animation, textvariable=load_info_text,
-              anchor='ne', bg="#36566d", fg='white', compound='bottom'
-              ).pack(fill='both', expand=True, padx=2, pady=2)
-
-        frame_animation.pack(fill='both', expand=True, padx=2, pady=2, side='left')
-
-
-        crynet_systems_label = Label(frame_lbl, image=image_crynet_systems,
-                                     anchor='ne', bg="#36566d", fg='white', compound='bottom')
-        crynet_systems_label.pack(fill='both', expand=True, padx=2, pady=2, side='left')
-        frame_lbl.pack(fill='both', expand=True, padx=2, pady=2)
-        crynet_systems_label.bind('<Double-Button-1>', start_edit_local_db)
-
 
         load_info_text.set('Запуск программы...')
 
@@ -258,7 +273,7 @@ def main_root():
         check_pass = (log_in_root.register(is_valid__password), "%P")
 
         Label(frame_pass, text='Введите пароль: ',
-              font=('Comic Sans MS', 12), bg='white'
+              font=('Comic Sans MS', user.get('text_size')), bg='white'
               ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
         pass_txt = Entry(frame_pass, width=40,
               font=('Comic Sans MS', user.get('text_size')),
@@ -269,25 +284,15 @@ def main_root():
               show="*"
               )
         pass_txt.pack(fill='both', expand=True, padx=2, pady=2, side='left')
-        # Entry(frame_pass, width=40,
-        #       font=('Comic Sans MS', user.get('text_size')),
-        #       justify="center",
-        #       validate="all",
-        #       textvariable=txt_password_variable,
-        #       validatecommand=check_pass,
-        #       show="*"
-        #       ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
 
         Label(frame_pass, textvariable=text_is_correct_password,
-              font=('Comic Sans MS', 12), bg='white', foreground="red"
+              font=('Comic Sans MS', user.get('text_size')), bg='white', foreground="red"
               ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
-
 
         log_in_root.columnconfigure(index='all', minsize=40, weight=1)
         log_in_root.rowconfigure(index='all', minsize=20)
-        log_in_root.pack(fill='both', expand=True, padx=2, pady=2)
 
-
+        root.geometry(f"+50+50")
         start_action(connect_to_srv_data_base)
 
     def paste_frame_main():
@@ -1314,19 +1319,69 @@ def main_root():
         txt_patient_data_variable = StringVar()
         patient_info = StringVar()
         pack_main_frame()
-        сalendar_img = ImageTk.PhotoImage(Image.open('сalendar_img.png').resize((user.get('text_size')*2, user.get('text_size')*2)))
+        сalendar_img = ImageTk.PhotoImage(Image.open('img/сalendar_img.png').resize((user.get('text_size') * 2, user.get('text_size') * 2)))
         user['сalendar_img'] = сalendar_img
 
+    def paste_frame_title():
+
+        frame_main = Frame(root, bg="red")
+
+        frame = Frame(frame_main, bg="green")
+
+        doctor_info_text = StringVar()
+        patient_info_text = StringVar()
+        animation = StringVar()
+        load_info_text = StringVar()
+
+        doctor_info_text.set("")
+        patient_info_text.set("")
+        animation.set("")
+        load_info_text.set("")
+
+        app_info['title_frame']['doctor_info_text'] = doctor_info_text
+        app_info['title_frame']['patient_info_text'] = patient_info_text
+        app_info['title_frame']['animation'] = animation
+        app_info['title_frame']['load_info_text'] = load_info_text
+
+        Label(frame, textvariable=doctor_info_text,
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white', anchor='nw', justify='left'
+              ).pack(fill='x', expand=True, padx=2, pady=4)
+        Label(frame, textvariable=patient_info_text,
+              font=('Comic Sans MS', user.get('text_size')),
+              bg="#36566d", fg='white', anchor='nw', justify='left',
+              ).pack(fill='x', expand=True, padx=2, pady=4, anchor='nw')
+        frame.pack(padx=2, pady=2, side='left', anchor='nw')
+
+        frame = Frame(frame_main, bg="green")
+
+        crynet_systems_label = Label(frame, image=image_crynet_systems,
+                                     anchor='ne', bg="#36566d", fg='white',)
+        crynet_systems_label.pack(fill='both', expand=True, padx=2, pady=2)
+        crynet_systems_label.bind('<Double-Button-1>', start_edit_local_db)
+
+        Label(frame, textvariable=load_info_text,
+              anchor='ne', bg="#36566d", fg='white', compound='bottom'
+              ).pack(fill='x', expand=True, padx=2, pady=2, side='left')
+        Label(frame, textvariable=animation,
+              anchor='ne', bg="#36566d", fg='white', compound='bottom'
+              ).pack(padx=2, pady=2, side='left')
+
+        frame.pack(fill='x', expand=True, padx=2, pady=2,  anchor='ne')
+        frame_main.pack(fill='x', expand=True, padx=2, pady=2, side='top', anchor='n')
+
+    data_base('create_db')
     root = Tk()
-    root.title(f"Генератор справок v_{program_version}")
+    root.title(f"Генератор v_{program_version}")
     root.config(bg="#36566d")
-    root.geometry('+0+0')
+    # root.geometry(f"{root.winfo_screenwidth()-50}x{root.winfo_screenheight()-100}+0+0")
+    # root.resizable(False, False)
+    root.iconbitmap(default=f"img{os.sep}Crynet_systems.ico")
+    root.protocol("WM_DELETE_WINDOW", finish)
 
-    animation = StringVar()
-    animation.set("")
-    load_info_text = StringVar()
-    image_crynet_systems = ImageTk.PhotoImage(Image.open('Crynet_systems.png').resize((200, 50)))
+    image_crynet_systems = ImageTk.PhotoImage(Image.open('img/Crynet_systems.png').resize((200, 50)))
 
+    paste_frame_title()
     paste_log_in_root()
     root.mainloop()
 

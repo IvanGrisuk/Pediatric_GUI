@@ -1,6 +1,6 @@
 import os
 import sqlite3 as sq
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from variables import all_patient, patient, app_info, user
 
@@ -9,54 +9,224 @@ def data_base(command,
               insert_data=None,
               delete_data=None):
     if command == 'create_db':
+        if not os.path.exists(path=f".{os.sep}data_base"):
+            os.mkdir(path=f".{os.sep}data_base")
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
 
-            cur.execute("CREATE TABLE IF NOT EXISTS врачи "
-                        "(doctor_name text, district text, ped_div text, "
-                        "manager text, open_mark text, text_size text)")
+            cur.execute("CREATE TABLE IF NOT EXISTS doctors_data "
+                        "(doctor_name text, doctor_id INTEGER, password text, district text, ped_div text, "
+                        "manager text, admin_status text, specialities text, add_info text)")
+            cur.execute(f"SELECT * FROM doctors_data")
+            found_info = cur.fetchall()
+            print('found_info', found_info)
+            if not found_info:
+                print('found_info', found_info)
+                cur.execute("INSERT INTO doctors_data VALUES"
+                            "(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            ['Грисюк И.А.', 1, 0, 14, 1, "Терешкова Г.В.", "main_admin", 'педиатр', ''])
+
             cur.execute("CREATE TABLE IF NOT EXISTS examination "
-                        "(date_time text, doctor_name text, status text, "
-                        "LN_type text, patient_info text, examination_text text, "
+                        "(date_write timestamp, date_edit timestamp, date_exam timestamp, "
+                        "doctor_id INTEGER, status text, "
+                        "LN_type text, patient_ID INTEGER, examination_text text, "
                         "examination_key text, add_info text)")
+
             cur.execute("CREATE TABLE IF NOT EXISTS my_saved_diagnosis "
-                        "(doctor_name text, diagnosis text, examination_key text)")
+                        "(doctor_id INTEGER, diagnosis text, examination_key text)")
+
             cur.execute("CREATE TABLE IF NOT EXISTS my_LN "
-                        "(doctor_name text, ln_type text, ln_num text)")
+                        "(doctor_id INTEGER, ln_type text, series text, ln_num INTEGER)")
+
             cur.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
-                        "(doctor_name text, sport_section text)")
-            cur.execute("CREATE TABLE IF NOT EXISTS app_data "
-                        "(path_examination_data_base text, path_srv_data_base text, "
-                        "app_password text, last_reg_password text)")
+                        "(doctor_id INTEGER, sport_section text)")
+
             cur.execute('''CREATE TABLE IF NOT EXISTS statistic_DOC_db (
             date TEXT, time TEXT, user_id TEXT, info TEXT, district TEXT)''')
 
+            cur.execute("CREATE TABLE IF NOT EXISTS app_data "
+                        "(path_examination_data_base text, path_srv_data_base text, "
+                        "app_password text, last_reg_password timestamp, text_size INTEGER)")
+
+            cur.execute(f"SELECT * FROM app_data")
+            found_info = cur.fetchall()
+            print('found_info', found_info)
+
+            if not found_info:
+                print('found_info', found_info)
+                cur.execute("INSERT INTO app_data VALUES"
+                            "(?, ?, ?, ?, ?)",
+                            [None, f"{os.sep}{os.sep}192.168.19.1{os.sep}database{os.sep}",
+                             'profkiller_10539008', datetime.now(), 12])
+
             user['app_data'] = dict()
-            for mark in ('path_examination_data_base', 'path_srv_data_base', 'app_password', 'last_reg_password'):
+            for mark in ('path_examination_data_base', 'path_srv_data_base',
+                         'app_password', 'last_reg_password', 'text_size'):
                 cur.execute(f"SELECT {mark} FROM app_data")
                 app_data = cur.fetchone()
                 if isinstance(app_data, tuple):
                     user['app_data'][mark] = app_data[0]
                 else:
                     user['app_data'][mark] = None
-            cur.execute(f"SELECT doctor_name FROM врачи")
-            doctor_data = list()
-            for i in cur.fetchall():
-                doctor_data.append(i[0])
-            if not doctor_data:
-                cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
-                            ['Иванов И.И.', 1, 1, 'Петров П.П.', True, 20])
 
-            cur.execute(f"SELECT doctor_name, district, ped_div, manager, open_mark FROM врачи")
-            flag = False
-            doctor_data = cur.fetchall()
-            for doctor_name, district, ped_div, manager, open_mark in doctor_data:
-                if open_mark:
-                    flag = True
-            if not flag:
-                cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE 'Иванов И.И.'")
-                cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
-                            ['Иванов И.И.', 1, 1, 'Петров П.П.', True, 20])
+            print(user['app_data'])
+            user['text_size'] = user['app_data'].get('text_size', 12)
+
+        with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
+            cur = conn.cursor()
+
+            cur.execute(f'''CREATE TABLE IF NOT EXISTS patient_data (
+                        district TEXT,
+                        amb_cart TEXT,
+                        Surname TEXT,
+                        Name TEXT,
+                        Patronymic TEXT,
+                        gender TEXT,
+                        birth_date TEXT,
+                        address TEXT,
+                        phone TEXT,
+                        vacc_title TEXT,
+                        vacc_data TEXT, 
+                        passport TEXT, 
+                        weight TEXT, 
+                        height TEXT, 
+                        vision TEXT, 
+                        chickenpox TEXT, 
+                        allergy TEXT, 
+                        injury TEXT, 
+                        posture TEXT, 
+                        health_group TEXT, 
+                        fiz_group TEXT, 
+                        diet TEXT, 
+                        diagnosis TEXT,
+                        add_info TEXT)''')
+
+    elif command == 'create_srv_db':
+        try:
+            print(user['app_data'].get('path_srv_data_base'))
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute("CREATE TABLE IF NOT EXISTS examination "
+                            "(date_write timestamp, date_edit timestamp, date_exam timestamp, "
+                            "doctor_id INTEGER, status text, "
+                            "LN_type text, patient_ID INTEGER, examination_text text, "
+                            "examination_key text, add_info text)")
+
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
+                cur = conn.cursor()
+
+                cur.execute("CREATE TABLE IF NOT EXISTS doctors_data "
+                            "(doctor_name text, doctor_id INTEGER, password text, district text, ped_div text, "
+                            "manager text, admin_status text, specialities text, add_info text)")
+
+                cur.execute("CREATE TABLE IF NOT EXISTS my_saved_diagnosis "
+                            "(doctor_id INTEGER, diagnosis text, examination_key text)")
+
+                cur.execute("CREATE TABLE IF NOT EXISTS my_LN "
+                            "(doctor_id INTEGER, ln_type text, series text, ln_num INTEGER)")
+
+                cur.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
+                            "(doctor_id INTEGER, sport_section text)")
+
+                cur.execute("CREATE TABLE IF NOT EXISTS statistic_DOC_db "
+                            "(date TEXT, time TEXT, user_id TEXT, info TEXT, district TEXT)")
+        except sq.Error as ex:
+            print(ex)
+
+    elif command == 'get_all_doctor_info':
+        def make_query(sql_query):
+            with sq.connect(database=sql_query) as conn:
+                cur = conn.cursor()
+                cur.execute("SELECT "
+                            "doctor_name, doctor_id, password, district, ped_div, "
+                            "manager, admin_status, specialities, add_info "
+                            "FROM doctors_data")
+                all_doctor_info = cur.fetchall()
+                for marker in ('my_saved_diagnosis', 'my_LN', 'my_sport_section'):
+                    cur.execute(f"SELECT * FROM {marker}")
+                    local_data[marker] = cur.fetchall()
+
+            for doctor_name, doctor_id, password, district, ped_div, manager, admin_status, specialities, add_info \
+                    in all_doctor_info:
+                app_info['all_doctor_info'][doctor_id] = {
+                    'doctor_name': doctor_name,
+                    'doctor_id': doctor_id,
+                    'password': password,
+                    'district': district,
+                    'ped_div': ped_div,
+                    'manager': manager,
+                    'admin_status': admin_status,
+                    'specialities': specialities,
+                    'add_info': add_info,
+                    'my_saved_diagnosis': list(),
+                    'my_LN': list(),
+                    'my_sport_section': list()}
+
+            for marker in ('my_saved_diagnosis', 'my_LN', 'my_sport_section'):
+                for info in local_data.get(marker):
+                    doctor_id = info[0]
+                    if doctor_id in app_info.get('all_doctor_info'):
+                        app_info['all_doctor_info'][doctor_id][marker].append(info[1:])
+
+        def update_loc():
+            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute("DELETE from doctors_data")
+                for doctor_id in app_info.get('all_doctor_info'):
+                    cur.execute("INSERT INTO doctors_data VALUES"
+                                "(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                [app_info['all_doctor_info'][doctor_id].get('doctor_name'),
+                                 app_info['all_doctor_info'][doctor_id].get('doctor_id'),
+                                 app_info['all_doctor_info'][doctor_id].get('password'),
+                                 app_info['all_doctor_info'][doctor_id].get('district'),
+                                 app_info['all_doctor_info'][doctor_id].get('ped_div'),
+                                 app_info['all_doctor_info'][doctor_id].get('manager'),
+                                 app_info['all_doctor_info'][doctor_id].get('admin_status'),
+                                 app_info['all_doctor_info'][doctor_id].get('specialities'),
+                                 app_info['all_doctor_info'][doctor_id].get('add_info')])
+
+                for marker in ('my_saved_diagnosis', 'my_LN', 'my_sport_section'):
+                    for info in local_data.get(marker):
+                        cur.execute(f"DELETE from {marker}")
+                        cur.execute(f"INSERT INTO {marker} VALUES "
+                                    f"({'?, ' * (len(info) - 1)}?)", info)
+
+        local_data = dict()
+
+        user['my_saved_diagnosis'] = list()
+        user['my_LN'] = list()
+        user['my_sport_section'] = list()
+
+        if os.path.exists(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db"):
+            try:
+                make_query(sql_query=f"{user['app_data'].get('path_srv_data_base')}application_data_base.db")
+                update_loc()
+                return 'srv'
+
+            except sq.Error:
+                pass
+        make_query(sql_query=f".{os.sep}data_base{os.sep}data_base.db")
+        return 'loc'
+
+    elif command == 'activate_app':
+        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE from app_data")
+
+            cur.execute("INSERT INTO app_data VALUES (?, ?, ?, ?, ?)",
+                        [user['app_data'].get('path_examination_data_base'),
+                         user['app_data'].get('path_srv_data_base'),
+                         user['app_data'].get('app_password'),
+                         datetime.now(),
+                         user.get('text_size')])
+
+
+
+
+
+
+
+
 
     elif command == 'edit_path_db':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
@@ -85,38 +255,7 @@ def data_base(command,
         except Exception:
             return False
 
-    elif command == 'activate_app':
-        with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-            cur = conn.cursor()
-            cur.execute("DELETE from app_data")
-            cur.execute("INSERT INTO app_data VALUES (?, ?, ?, ?)",
-                        [user['app_data'].get('path_examination_data_base'),
-                         user['app_data'].get('path_srv_data_base'),
-                         user['app_data'].get('app_password'),
-                         datetime.now().strftime("%d.%m.%Y")])
 
-    elif command == 'create_SRV_db':
-        try:
-            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute("CREATE TABLE IF NOT EXISTS examination "
-                            "(date_time text, doctor_name text, status text, "
-                            "LN_type text, patient_info text, examination_text text, "
-                            "examination_key text, add_info text)")
-
-            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute("CREATE TABLE IF NOT EXISTS врачи "
-                            "(doctor_name text, password text, district text, ped_div text, "
-                            "manager text, open_mark text, text_size text, add_info text)")
-                cur.execute("CREATE TABLE IF NOT EXISTS my_saved_diagnosis "
-                            "(doctor_name text, diagnosis text, examination_key text)")
-                cur.execute("CREATE TABLE IF NOT EXISTS my_LN "
-                            "(doctor_name text, ln_type text, ln_num text)")
-                cur.execute("CREATE TABLE IF NOT EXISTS my_sport_section "
-                            "(doctor_name text, sport_section text)")
-        except Exception:
-            pass
 
     elif command == 'last_edit_patient_db_srv':
         try:
@@ -140,7 +279,7 @@ def data_base(command,
     elif command == 'select_all_patient':
         with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
             cur = conn.cursor()
-            cur.execute(f"SELECT * FROM patient_data")
+            cur.execute(f"SELECT * FROM doctors_data")
             found_data = cur.fetchall()
             for patient_data in found_data:
                 district, amb_num, name_1, name_2, name_3, gender, birth_date, address, phone, vac_1, vac_2 = \
@@ -160,45 +299,6 @@ def data_base(command,
 
                 }
 
-    elif command == 'get_all_doctor_info':
-        user['my_saved_diagnosis'] = list()
-        user['my_LN'] = list()
-        user['my_sport_section'] = list()
-
-        try:
-            local_data = dict()
-            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
-                cur = conn.cursor()
-                cur.execute("SELECT * FROM врачи")
-                all_doctor_info = cur.fetchall()
-                for marker in ('my_saved_diagnosis', 'my_LN', 'my_sport_section'):
-                    cur.execute(f"SELECT * FROM {marker}")
-                    local_data[marker] = cur.fetchall()
-
-            for doctor_name, password, district, ped_div, manager, open_mark, text_size, add_info in all_doctor_info:
-                app_info['all_doctor_info'][doctor_name] = {
-                    'doctor_name': doctor_name,
-                    'password': password,
-                    'district': district,
-                    'ped_div': ped_div,
-                    'manager': manager,
-                    'open_mark': open_mark,
-                    'text_size': text_size,
-                    'add_info': add_info,
-                    'my_saved_diagnosis': list(),
-                    'my_LN': list(),
-                    'my_sport_section': list()}
-
-            for marker in ('my_saved_diagnosis', 'my_LN', 'my_sport_section'):
-                for info in local_data.get(marker):
-                    doctor_name = info[0]
-                    if doctor_name in app_info.get('all_doctor_info'):
-                        app_info['all_doctor_info'][doctor_name][marker].append(info[1:])
-
-                        # print(app_info['all_doctor_info'][doctor_name].get(marker))
-
-        except Exception:
-            return False
 
     elif command.startswith('get_certificate_for_district'):
         _, type_table, marker = command.split('__')
@@ -825,3 +925,8 @@ def data_base(command,
                 found_info[date] = cur.fetchall()
 
         return found_info
+
+# user = {'app_data': {
+#     'path_srv_data_base': f'srv_data_base\\'
+# }}
+# data_base('create_srv_db')
