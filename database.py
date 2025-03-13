@@ -19,9 +19,7 @@ def data_base(command,
                         "manager text, admin_status text, specialities text, add_info text)")
             cur.execute(f"SELECT * FROM doctors_data")
             found_info = cur.fetchall()
-            print('found_info', found_info)
             if not found_info:
-                print('found_info', found_info)
                 cur.execute("INSERT INTO doctors_data VALUES"
                             "(?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             ['Грисюк И.А.', 1, 0, 14, 1, "Терешкова Г.В.", "main_admin", 'педиатр', ''])
@@ -50,14 +48,12 @@ def data_base(command,
 
             cur.execute(f"SELECT * FROM app_data")
             found_info = cur.fetchall()
-            print('found_info', found_info)
 
             if not found_info:
-                print('found_info', found_info)
                 cur.execute("INSERT INTO app_data VALUES"
                             "(?, ?, ?, ?, ?)",
                             [None, f"{os.sep}{os.sep}192.168.19.1{os.sep}database{os.sep}",
-                             'profkiller_10539008', datetime.now(), 12])
+                             '', datetime.now(), 12])
 
             user['app_data'] = dict()
             for mark in ('path_examination_data_base', 'path_srv_data_base',
@@ -69,7 +65,6 @@ def data_base(command,
                 else:
                     user['app_data'][mark] = None
 
-            print(user['app_data'])
             user['text_size'] = user['app_data'].get('text_size', 12)
 
         with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
@@ -103,7 +98,6 @@ def data_base(command,
 
     elif command == 'create_srv_db':
         try:
-            print(user['app_data'].get('path_srv_data_base'))
             with sq.connect(f"{user['app_data'].get('path_srv_data_base')}examination_data_base.db") as conn:
                 cur = conn.cursor()
                 cur.execute("CREATE TABLE IF NOT EXISTS examination "
@@ -418,7 +412,6 @@ def data_base(command,
                                 [doctor_name, district, ped_div, manager, False, text_size])
 
     elif command == 'append_local_doctor_data':
-        print(insert_data)
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
 
