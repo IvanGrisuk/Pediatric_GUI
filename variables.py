@@ -1781,12 +1781,30 @@ data = dict()
 all_patient = dict()
 
 patient = {
-    'name': '',
-    'birth_date': '',
-    'gender': '',
-    'amb_cart': '',
-    'patient_district': '',
-    'address': ''
+    "district": '',
+    "amb_cart": '',
+    "Surname": '',
+    "Name": '',
+    "Patronymic": '',
+    "gender": '',
+    "birth_date": '',
+    "address": '',
+    "phone": '',
+    "vacc_title": '',
+    "vacc_data": '',
+    "passport": '',
+    "weight": '',
+    "height": '',
+    "vision": '',
+    "chickenpox": '',
+    "allergy": '',
+    "injury": '',
+    "posture": '',
+    "health_group": '',
+    "fiz_group": '',
+    "diet": '',
+    "diagnosis": '',
+    "add_info": '',
 }
 
 user = {'text_size': 12,
@@ -1803,5 +1821,12 @@ app_info = {
         'patient_info_text': None,
         'animation': None,
         'load_info_text': None,
+    },
+    'scrolled_frame': {
+        'scrolled_frame': None,
+        'canvas': None,
+        'scroll_x': None,
+        'selected_frame': None,
+
     }
 }

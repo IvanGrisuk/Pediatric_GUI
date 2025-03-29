@@ -25500,7 +25500,7 @@ def main_root():
 
         frame_main.pack(fill='both', expand=True, padx=2, pady=2)
 
-        сalendar_img = ImageTk.PhotoImage(Image.open('сalendar_img.png').resize((user.get('text_size')*2, user.get('text_size')*2)))
+        сalendar_img = ImageTk.PhotoImage(Image.open('img/сalendar_img.png').resize((user.get('text_size') * 2, user.get('text_size') * 2)))
         user['сalendar_img'] = сalendar_img
 
 
@@ -25532,7 +25532,7 @@ def main_root():
 
     frame_animation.pack(fill='both', expand=True, padx=2, pady=2, side='left')
 
-    image = ImageTk.PhotoImage(Image.open('Crynet_systems.png').resize((200, 50)))
+    image = ImageTk.PhotoImage(Image.open('img/Crynet_systems.png').resize((200, 50)))
 
     crynet_systems_label = Label(frame_lbl, image=image, anchor='ne', bg="#36566d", fg='white', compound='bottom')
     crynet_systems_label.pack(fill='both', expand=True, padx=2, pady=2, side='left')
