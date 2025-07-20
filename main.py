@@ -37,6 +37,7 @@ from variables import all_patient, patient, app_info, user, program_version
 
 
 def main_root():
+
     def start_action(func=None):
         animation = app_info['title_frame'].get('animation')
 
@@ -85,6 +86,11 @@ def main_root():
             data_base('select_all_patient')
             load_info_text.set(f"Загрузка завершена")
 
+
+
+
+
+
         load_info_text.set("Синхронизация осмотров...")
 
         app_info['load_info_text'] = load_info_text
@@ -105,8 +111,7 @@ def main_root():
         load_info_text = app_info['title_frame'].get('load_info_text')
 
         def select_doctor_name():
-            load_info_text.set(f"Выбран доктор: "
-                               f"{app_info['all_doctor_info'][int(selected_doctor_name.get())].get('doctor_name')}")
+            load_info_text.set(f"Выбран доктор: {selected_doctor_name.get()}")
 
             if app_info['all_doctor_info'][int(selected_doctor_name.get())].get('password'):
                 frame_pass.pack_configure(fill='both', expand=True, padx=2, pady=2)
@@ -116,23 +121,26 @@ def main_root():
                 frame_pass.pack_forget()
 
         def open_main_root():
-            frame_pass.destroy()
+            if app_info.get('frame_doc'):
+                app_info['frame_doc'].destroy()
+                app_info['frame_doc'] = None
+            frame_pass.pack_forget()
 
             if not user.get('error_connection'):
+                doctor_name = selected_doctor_name.get()
+                user['doctor_name'] = app_info['all_doctor_info'][doctor_name].get('doctor_name')
+                user['password'] = app_info['all_doctor_info'][doctor_name].get('password')
+                user['doctor_district'] = app_info['all_doctor_info'][doctor_name].get('district')
+                user['ped_div'] = app_info['all_doctor_info'][doctor_name].get('ped_div')
+                user['manager'] = app_info['all_doctor_info'][doctor_name].get('manager')
+                user['text_size'] = int(app_info['all_doctor_info'][doctor_name].get('text_size'))
+                user['add_info'] = app_info['all_doctor_info'][doctor_name].get('add_info')
+
+                user['my_saved_diagnosis'] = app_info['all_doctor_info'][doctor_name].get('my_saved_diagnosis')
+                user['my_LN'] = app_info['all_doctor_info'][doctor_name].get('my_LN')
+                user['my_sport_section'] = app_info['all_doctor_info'][doctor_name].get('my_sport_section')
+
                 data_base('activate_app')
-
-            doctor_name = int(selected_doctor_name.get())
-            user['doctor_name'] = app_info['all_doctor_info'][doctor_name].get('doctor_name')
-            user['password'] = app_info['all_doctor_info'][doctor_name].get('password')
-            user['doctor_district'] = app_info['all_doctor_info'][doctor_name].get('district')
-            user['ped_div'] = app_info['all_doctor_info'][doctor_name].get('ped_div')
-            user['manager'] = app_info['all_doctor_info'][doctor_name].get('manager')
-            user['add_info'] = app_info['all_doctor_info'][doctor_name].get('add_info')
-
-            user['my_saved_diagnosis'] = app_info['all_doctor_info'][doctor_name].get('my_saved_diagnosis')
-            user['my_LN'] = app_info['all_doctor_info'][doctor_name].get('my_LN')
-            user['my_sport_section'] = app_info['all_doctor_info'][doctor_name].get('my_sport_section')
-
             paste_frame_main()
 
         def connect_to_srv_data_base():
@@ -157,6 +165,7 @@ def main_root():
             if not app_info.get('check_pass_app'):
                 if app_info.get('all_doctor_info'):
                     frame_doc = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
+                    app_info['frame_doc'] = frame_doc
 
                     doctor_info_text = app_info['title_frame'].get('doctor_info_text')
                     doctor_info_text.set("")
@@ -179,6 +188,7 @@ def main_root():
                           ).pack(fill='x', expand=True, padx=2, pady=2, ipady=2)
 
                     for ped_div in sorted(users_sorted_pd):
+                        print(ped_div, users_sorted_pd.get(ped_div))
                         if ped_div.isdigit():
                             text = f'{ped_div}-е ПО'
                         else:
@@ -197,17 +207,42 @@ def main_root():
                                             ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
                             frame.pack(fill='x', expand=True, padx=2, pady=2, anchor='n')
 
+
+                    # row, col = 0, 0
+                    # for ped_div in sorted(users_sorted_pd):
+                    #     row += 1
+                    #     if ped_div.isdigit():
+                    #         text = f'{ped_div}-е ПО'
+                    #     else:
+                    #         text = f'{ped_div}'
+                    #     Label(frame_doc, text=text,
+                    #           font=('Comic Sans MS', user.get('text_size')),
+                    #           bg='white').grid(row=row, column=0, sticky='ew', columnspan=4)
+                    #     row += 1
+                    #     col = 0
+                    #     for doctor_name in users_sorted_pd.get(ped_div):
+                    #
+                    #         btn = Radiobutton(master=frame_doc, text=doctor_name,
+                    #                           font=('Comic Sans MS', user.get('text_size')),
+                    #                           command=select_doctor_name,
+                    #                           value=doctor_name, variable=selected_doctor_name,
+                    #                           indicatoron=False, selectcolor='#77f1ff')
+                    #         btn.grid(row=row, column=col, sticky='ew')
+                    #         col += 1
+                    #         if col == 4:
+                    #             col = 0
+                    #             row += 1
+                    # frame_doc.columnconfigure(index='all', minsize=40, weight=1)
+                    # frame_doc.rowconfigure(index='all', minsize=20)
                     frame_doc.pack(fill='both', expand=True, padx=2, pady=2)
 
-        def is_valid__password(password=None):
-            password = txt_password_variable.get()
+        def is_valid__password(password):
             if app_info.get('check_pass_app'):
                 if password == "profkiller_10539008":
                     text_is_correct_password.set('Пароль принят')
-                    app_info['check_pass_app'] = False
+
+                    open_main_root()
                     data_base('activate_app')
-                    log_in_root.destroy()
-                    paste_log_in_root()
                 else:
                     text_is_correct_password.set('Пароль не верен!')
             else:
@@ -227,7 +262,7 @@ def main_root():
         txt_password_variable = StringVar()
         text_is_correct_password = StringVar()
 
-        log_in_root = Frame(master=root, bg="green")
+        log_in_root = Frame(master=root, bg="#36566d")
         log_in_root.pack(fill='both', expand=True, padx=2, pady=2)
         app_info['log_in_root'] = log_in_root
         user['error_connection'] = False
@@ -235,22 +270,20 @@ def main_root():
         load_info_text.set('Запуск программы...')
 
         frame_pass = Frame(log_in_root, borderwidth=1, relief="solid", padx=8, pady=10)
+        check_pass = (log_in_root.register(is_valid__password), "%P")
 
         Label(frame_pass, text='Введите пароль: ',
               font=('Comic Sans MS', user.get('text_size')), bg='white'
               ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
         pass_txt = Entry(frame_pass, width=40,
-                         font=('Comic Sans MS', user.get('text_size')),
-                         justify="center",
-                         textvariable=txt_password_variable,
-                         show="*"
-                         )
+              font=('Comic Sans MS', user.get('text_size')),
+              justify="center",
+              validate="all",
+              textvariable=txt_password_variable,
+              validatecommand=check_pass,
+              show="*"
+              )
         pass_txt.pack(fill='both', expand=True, padx=2, pady=2, side='left')
-        pass_txt.bind('<Return>', is_valid__password)
-
-        Button(frame_pass, text='Подтвердить', command=is_valid__password,
-               font=('Comic Sans MS', user.get('text_size'))
-               ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
 
         Label(frame_pass, textvariable=text_is_correct_password,
               font=('Comic Sans MS', user.get('text_size')), bg='white', foreground="red"
@@ -263,93 +296,6 @@ def main_root():
         start_action(connect_to_srv_data_base)
 
     def paste_frame_main():
-
-        def pack_main_frame():
-
-            frame_main = Frame(master=root, bg="red")
-
-            app_info['frame_main'] = frame_main
-
-            lbl_doc_text.set(f"Учетная запись: "
-                             f"Доктор: {user.get('doctor_name').upper()}    "
-                             f"Зав: {user.get('manager')};    "
-                             f"Участок: {user.get('doctor_district')};    "
-                             f"ПО: {user.get('ped_div')}")
-
-            crynet_systems_label.bind('<Double-Button-1>', start_edit_local_db)
-
-            frame_patient = Frame(master=frame_main, bg="#36566d")
-            Label(frame_patient, text="Поиск пациента",
-                  anchor='w', font=('Comic Sans MS', user.get('text_size'))
-                  ).pack(fill='both', expand=True, padx=2, side='left')
-
-            txt_patient_data = Entry(frame_patient, width=100,
-                                     textvariable=txt_patient_data_variable,
-                                     font=('Comic Sans MS', user.get('text_size')))
-            txt_patient_data.pack(fill='both', expand=True, padx=2, side='left')
-            txt_patient_data.bind('<Control-KeyPress>', paste_txt_patient_data)
-            txt_patient_data.bind('<Return>', search_patient)
-
-            Button(frame_patient, text='X', command=delete_txt_patient_data,
-                   font=('Comic Sans MS', user.get('text_size'))
-                   ).pack(fill='both', expand=True, padx=2, side='left')
-
-            Button(frame_patient, text='Добавить нового пациента', command=add_new_patient,
-                   font=('Comic Sans MS', user.get('text_size'))
-                   ).pack(fill='both', expand=True, padx=2, side='left')
-
-            frame_patient.pack(fill='both', padx=2, pady=2, anchor='n')
-
-            # frame_buttons = Frame(master=frame_main, bg="#36566d", padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Справка', command=fast_certificate,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Анализы', command=analyzes_cmd,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Вкладыши', command=blanks_cmd,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Прививки', command=vaccination_cmd,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Направления', command=direction_cmd,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Мой прием', command=open_last_examination,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Осмотры', command=examination_cmd,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Осмотры до года', command=examination_cmd_child,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # if 'local_admin' in str(user.get('add_info', "")):
-            #     Button(frame_buttons, text='Журнал справок', command=download_ped_div,
-            #            font=('Comic Sans MS', user.get('text_size'))
-            #            ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # Button(frame_buttons, text='Сменить пользователя', command=change_account,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            # Button(frame_buttons, text='Редактировать данные', command=redact_doctor,
-            #        font=('Comic Sans MS', user.get('text_size'))
-            #        ).pack(fill='both', expand=True, padx=2, pady=2)
-            #
-            # frame_buttons.pack(fill='both', expand=True, padx=2, pady=2)
-
-            # frame_main.pack(fill='both', padx=2, pady=2, anchor='n')
-            frame_main.pack(fill='both', padx=2, pady=2, side='top', anchor='n')
 
         def add_new_patient():
             def save():
@@ -1058,6 +1004,13 @@ def main_root():
             elif event.keycode == 88 or event.keycode == 117440536:
                 event.widget.event_generate('<<Cut>>')
 
+        def save_doctor(new_doctor_name):
+            print('new_doctor_name', new_doctor_name)
+            data_base(command='append_local_doctor_data', insert_data=new_doctor_name)
+            data_base(command='save_doctor_local',
+                      insert_data=new_doctor_name)
+            write_lbl_doc()
+            update_font_main()
 
         def search_patient(*args, **kwargs):
             patient_data = txt_patient_data_variable.get()
@@ -1101,6 +1054,8 @@ def main_root():
 
             root.update()
 
+        def selected(event=None):
+            save_doctor(new_doctor_name=combo_doc.get())
 
         def delete_txt_patient_data():
             txt_patient_data_variable.set('')
@@ -1112,25 +1067,260 @@ def main_root():
 
             paste_frame_main()
 
+        def delete_doc_local():
+            result = messagebox.askyesno(title='Удаление учетной записи',
+                                         message=f"Удалить пользователя?\n"
+                                                 f"{combo_doc.get()}")
+            if result:
+                with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                    cur = conn.cursor()
+                    cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{combo_doc.get()}'")
+
+                messagebox.showinfo("Результат", "Учетная запись удалена")
+                data_base('create_db')
+                combo_doc['values'] = data_base(command='get_doc_names_local')
+                combo_doc.current(0)
+                selected()
+
         def change_account():
             paste_log_in_root()
 
-        root.geometry(f"{root.winfo_screenwidth()-50}x{root.winfo_screenheight()-100}+0+0")
-        root.resizable(False, False)
+        def pack_main_frame():
+            # height = root.winfo_screenheight() - 200
+            # width = root.winfo_screenwidth() - 100
+            # print(height, width)
+            # root.config(height=height, width=width)
+
+            frame_main = Frame(master=root, bg="#36566d")
+            frame_main.pack(fill='both', expand=True, padx=2, pady=2)
+
+            app_info['frame_main'] = frame_main
+
+            frame_title = Frame(master=frame_main, bg="#36566d", padx=2, pady=2)
+
+            frame = Frame(master=frame_title, bg="#36566d", padx=2, pady=2)
+            Label(frame, textvariable=lbl_doc_text,
+                  anchor='w', bg="#36566d", fg='white', compound='bottom',
+                  font=('Comic Sans MS', user.get('text_size'))
+                  ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Label(frame, textvariable=patient_info,
+                  anchor='w', bg="#36566d", fg='white', compound='bottom',
+                  font=('Comic Sans MS', user.get('text_size'))
+                  ).pack(fill='both', expand=True, padx=2, pady=2)
+            frame.pack(fill='both', expand=True, padx=2, pady=2, side='left')
+            lbl_doc_text.set(f"Учетная запись: "
+                             f"Доктор: {user.get('doctor_name').upper()}    "
+                             f"Зав: {user.get('manager')};    "
+                             f"Участок: {user.get('doctor_district')};    "
+                             f"ПО: {user.get('ped_div')}")
+
+            crynet_systems_label = Label(frame_title, image=image_crynet_systems,
+                                         anchor='ne', bg="#36566d", fg='white', compound='bottom')
+            crynet_systems_label.pack(fill='both', expand=True, padx=2, pady=2, side='left')
+            crynet_systems_label.bind('<Double-Button-1>', start_edit_local_db)
+
+
+            frame_title.pack(fill='both', padx=2, pady=2, anchor='n')
+
+            frame_patient = Frame(master=frame_main, bg="#36566d", padx=2, pady=2)
+            frame_patient_but = Frame(master=frame_patient, padx=2, pady=2)
+
+            Label(frame_patient_but, text="Поиск пациента",
+                  anchor='w',  font=('Comic Sans MS', user.get('text_size'))
+
+                  ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
+
+            txt_patient_data = Entry(frame_patient_but, width=100,
+                                     textvariable=txt_patient_data_variable,
+                                     font=('Comic Sans MS', user.get('text_size')))
+            txt_patient_data.pack(fill='both', expand=True, padx=2, pady=2, side='left')
+            txt_patient_data.bind('<Control-KeyPress>', paste_txt_patient_data)
+            txt_patient_data.bind('<Return>', search_patient)
+
+            Button(frame_patient_but, text='X', command=delete_txt_patient_data,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
+
+            Button(frame_patient_but, text='Добавить нового пациента', command=add_new_patient,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2, side='left')
+
+            frame_patient_but.pack(fill='both', padx=2, pady=2, anchor='n')
+
+            Label(frame_patient, textvariable=patient_info,
+                  font=('Comic Sans MS', user.get('text_size'))
+                  ).pack(fill='both', expand=True, padx=2, pady=2)
+            frame_patient.pack(fill='both', padx=2, pady=2, anchor='n')
+
+            frame_buttons = Frame(master=frame_main, bg="#36566d", padx=2, pady=2)
+
+            Button(frame_buttons, text='Справка', command=fast_certificate,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Button(frame_buttons, text='Анализы', command=analyzes_cmd,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Button(frame_buttons, text='Вкладыши', command=blanks_cmd,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Button(frame_buttons, text='Прививки', command=vaccination_cmd,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Button(frame_buttons, text='Направления', command=direction_cmd,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Button(frame_buttons, text='Мой прием', command=open_last_examination,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Button(frame_buttons, text='Осмотры', command=examination_cmd,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Button(frame_buttons, text='Осмотры до года', command=examination_cmd_child,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            if 'local_admin' in str(user.get('add_info', "")):
+                Button(frame_buttons, text='Журнал справок', command=download_ped_div,
+                       font=('Comic Sans MS', user.get('text_size'))
+                       ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            Button(frame_buttons, text='Сменить пользователя', command=change_account,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+            Button(frame_buttons, text='Редактировать данные', command=redact_doctor,
+                   font=('Comic Sans MS', user.get('text_size'))
+                   ).pack(fill='both', expand=True, padx=2, pady=2)
+
+            frame_buttons.pack(fill='both', expand=True, padx=2, pady=2)
+
+
+
+            # Label(frame_animation, textvariable=animation,
+            #       anchor='ne', bg="#36566d", fg='white', compound='bottom'
+            #       ).pack(fill='both', expand=True, padx=2, pady=2)
+            #
+            #
+            # frame_lbl = Frame(log_in_root, padx=3, pady=3, bg="#36566d")
+            #
+            # frame_animation = Frame(frame_lbl, padx=3, pady=3, bg="#36566d")
+            #
+            # Label(frame_animation, textvariable=animation,
+            #       anchor='ne', bg="#36566d", fg='white', compound='bottom'
+            #       ).pack(fill='both', expand=True, padx=2, pady=2)
+            #
+            # Label(frame_animation, textvariable=load_info_text,
+            #       anchor='ne', bg="#36566d", fg='white', compound='bottom'
+            #       ).pack(fill='both', expand=True, padx=2, pady=2)
+            #
+            # frame_animation.pack(fill='both', expand=True, padx=2, pady=2, side='left')
+
+            # frame_main_loc = Frame(master=frame_main, borderwidth=1, relief="solid", padx=8, pady=10)
+            #
+            #
+            # combo_doc = Combobox(frame_main_loc, state="readonly")
+            #
+            # if user.get('error_connection'):
+            #     combo_doc['values'] = data_base(command='get_doc_names_local')
+            #     combo_doc.current(0)
+            #     combo_doc.grid(column=0, row=1, columnspan=3)
+            #     combo_doc.bind("<<ComboboxSelected>>", selected)
+            #     data_base(command='append_local_doctor_data',
+            #               insert_data=combo_doc.get())
+            #
+            #     Label(frame_main_loc, textvariable=lbl_doc_text,
+            #           font=('Comic Sans MS', user.get('text_size'))
+            #           ).grid(column=0, row=0, columnspan=3)
+            #
+            #     Button(frame_main_loc, text='Добавить доктора', command=add_new_doctor,
+            #            font=('Comic Sans MS', user.get('text_size'))
+            #            ).grid(column=0, row=2, sticky='ew')
+            #     Button(frame_main_loc, text='Редактировать данные', command=redact_doctor,
+            #            font=('Comic Sans MS', user.get('text_size'))
+            #            ).grid(column=1, row=2, sticky='ew')
+            #     Button(frame_main_loc, text='Удалить пользователя', command=delete_doc_local,
+            #            font=('Comic Sans MS', user.get('text_size'))
+            #            ).grid(column=2, row=2, sticky='ew')
+            #
+            #     write_lbl_doc()
+            #
+            # else:
+            #     start_action(edit_local_db)
+            #
+            #     Label(frame_main_loc, textvariable=lbl_doc_text,
+            #           font=('Comic Sans MS', user.get('text_size'))
+            #           ).grid(column=0, row=0, columnspan=2)
+            #
+            #     lbl_doc_text.set(f"Учетная запись:\n"
+            #                      f"Доктор: {user.get('doctor_name')}\n"
+            #                      f"Зав: {user.get('manager')};    "
+            #                      f"Участок: {user.get('doctor_district')};    "
+            #                      f"ПО: {user.get('ped_div')}")
+            #
+            #
+            # frame_main_loc.columnconfigure(index='all', minsize=40, weight=1)
+            # frame_main_loc.rowconfigure(index='all', minsize=20)
+            # frame_main_loc.pack(fill='both', expand=True, padx=2, pady=2)
+            #
+            # frame_main_loc = Frame(master=frame_main, borderwidth=1, relief="solid", padx=8, pady=10)
+            #
+            # Label(frame_main_loc, text='Окно данных пациента',
+            #       font=('Comic Sans MS', user.get('text_size'))
+            #       ).grid(column=0, row=2, columnspan=3, sticky='ew')
+            #
+            # txt_patient_data = Entry(frame_main_loc, width=40, textvariable=txt_patient_data_variable,
+            #                          font=('Comic Sans MS', user.get('text_size')))
+            # txt_patient_data.grid(column=0, row=3)
+            # txt_patient_data.bind('<Control-KeyPress>', paste_txt_patient_data)
+            # txt_patient_data.bind('<Return>', search_patient)
+            # patient_info = StringVar()
+            # Label(frame_main_loc, textvariable=patient_info,
+            #       font=('Comic Sans MS', user.get('text_size'))
+            #       ).grid(column=0, row=4, sticky='ew', columnspan=2, ipadx=3)
+            #
+            # Button(frame_main_loc, text='Добавить\nнового\nпациента', command=add_new_patient,
+            #        font=('Comic Sans MS', user.get('text_size'))
+            #        ).grid(column=2, row=3, rowspan=2, sticky='nswe')
+            #
+            # Button(frame_main_loc, text='X', command=delete_txt_patient_data,
+            #        font=('Comic Sans MS', user.get('text_size'))
+            #        ).grid(column=1, row=3, sticky='ew')
+            #
+            # frame_main_loc.columnconfigure(index='all', minsize=40, weight=1)
+            # frame_main_loc.rowconfigure(index='all', minsize=20)
+            # frame_main_loc.pack(fill='both', expand=True, padx=2, pady=2)
+            #
+            # frame_main_loc = Frame(master=frame_main, borderwidth=1, relief="solid", padx=8, pady=10)
+            #
+            # Label(frame_main_loc, text='Что хотите сделать?', anchor='center',
+            #       font=('Comic Sans MS', user.get('text_size'))
+            #       ).grid(column=0, row=0, columnspan=2, sticky='ew')
+            #
+            #
+            # frame_main_loc.columnconfigure(index='all', minsize=40, weight=1)
+            # frame_main_loc.rowconfigure(index='all', minsize=20)
+            # frame_main_loc.pack(fill='both', expand=True, padx=2, pady=2)
+
+
+
 
         if app_info.get('log_in_root'):
-
-            app_info['log_in_root'].pack_forget()
             app_info['log_in_root'].destroy()
             app_info['log_in_root'] = None
 
-        lbl_doc_text = app_info['title_frame'].get('doctor_info_text')
-        patient_info = app_info['title_frame'].get('patient_info_text')
-        crynet_systems_label = app_info['title_frame'].get('crynet_systems_label')
-
+        lbl_doc_text = StringVar()
         txt_patient_data_variable = StringVar()
-        paste_frame_title()
+        patient_info = StringVar()
         pack_main_frame()
+        сalendar_img = ImageTk.PhotoImage(Image.open('img/сalendar_img.png').resize((user.get('text_size') * 2, user.get('text_size') * 2)))
+        user['сalendar_img'] = сalendar_img
 
     def paste_frame_title():
 
@@ -1166,9 +1356,9 @@ def main_root():
         frame = Frame(frame_main, bg="green")
 
         crynet_systems_label = Label(frame, image=image_crynet_systems,
-                                     anchor='ne', bg="#36566d", fg='white', )
+                                     anchor='ne', bg="#36566d", fg='white',)
         crynet_systems_label.pack(fill='both', expand=True, padx=2, pady=2)
-        app_info['title_frame']['crynet_systems_label'] = crynet_systems_label
+        crynet_systems_label.bind('<Double-Button-1>', start_edit_local_db)
 
         Label(frame, textvariable=load_info_text,
               anchor='ne', bg="#36566d", fg='white', compound='bottom'
@@ -1177,25 +1367,23 @@ def main_root():
               anchor='ne', bg="#36566d", fg='white', compound='bottom'
               ).pack(padx=2, pady=2, side='left')
 
-        frame.pack(fill='x', expand=True, padx=2, pady=2, anchor='ne')
+        frame.pack(fill='x', expand=True, padx=2, pady=2,  anchor='ne')
         frame_main.pack(fill='x', expand=True, padx=2, pady=2, side='top', anchor='n')
 
     data_base('create_db')
     root = Tk()
     root.title(f"Генератор v_{program_version}")
     root.config(bg="#36566d")
-    root.iconbitmap(default=f"img{os.sep}Crynet_systems.ico")
+    # root.geometry(f"{root.winfo_screenwidth()-50}x{root.winfo_screenheight()-100}+0+0")
+    # root.resizable(False, False)
+    # root.iconbitmap(default=f"img{os.sep}Crynet_systems.ico")
     root.protocol("WM_DELETE_WINDOW", finish)
 
     image_crynet_systems = ImageTk.PhotoImage(Image.open('img/Crynet_systems.png').resize((200, 50)))
-    calendar_img = ImageTk.PhotoImage(
-        Image.open('img/calendar_img.png').resize((user.get('text_size') * 2, user.get('text_size') * 2)))
-    user['calendar_img'] = calendar_img
 
     paste_frame_title()
     paste_log_in_root()
     root.mainloop()
-
 
 if __name__ == "__main__":
     main_root()
