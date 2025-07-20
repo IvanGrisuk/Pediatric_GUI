@@ -536,7 +536,7 @@ def paste_examination(root_examination: Toplevel, examination_root: Frame, child
                                                                                       age_loc)
             if selected_place.get() == 'в поликлинике':
                 render_data['patient_info'] = f"{render_data.get('patient_info')}\tна приеме: {combo_company.get()}"
-            render_data['patient_info'] = f"{render_data.get('patient_info')}    {patient.get('patient_district')}-й уч"
+            render_data['patient_info'] = f"{render_data.get('patient_info')}    {patient.get('district')}-й уч"
 
             render_data['complaints'] = f"{txt_complaints.get(1.0, 'end').strip()}"
             examination_text = txt_examination.get(1.0, 'end').replace('\n', ' ').replace('  ', ' ').strip()
@@ -3042,7 +3042,7 @@ def paste_examination(root_examination: Toplevel, examination_root: Frame, child
 
                 render_data['ped_div'] = user.get('ped_div')
                 render_data['doc_name'] = user.get('doctor_name')
-                render_data['district'] = patient.get('patient_district')
+                render_data['district'] = patient.get('district')
                 render_data['name'] = patient.get('name')
                 render_data['birth_date'] = patient.get('birth_date')
                 render_data['address'] = patient.get('address')
@@ -3271,7 +3271,7 @@ def paste_examination(root_examination: Toplevel, examination_root: Frame, child
 
                 render_data['ped_div'] = user.get('ped_div')
                 render_data['doc_name'] = user.get('doctor_name')
-                render_data['district'] = patient.get('patient_district')
+                render_data['district'] = patient.get('district')
                 render_data['name'] = patient.get('name')
                 render_data['birth_date'] = patient.get('birth_date')
                 render_data['address'] = patient.get('address')

@@ -9,7 +9,7 @@ def data_base(command,
               insert_data=None,
               delete_data=None):
     if command == 'create_db':
-        if not os.path.exists(path=f".{os.sep}data_base"):
+        if not os.path.exists(f".{os.sep}data_base"):
             os.mkdir(path=f".{os.sep}data_base")
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
@@ -214,23 +214,85 @@ def data_base(command,
                          datetime.now(),
                          user.get('text_size')])
 
-
-
-
-
-
-
-
-
     elif command == 'edit_path_db':
         with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
             cur = conn.cursor()
             cur.execute("DELETE from app_data")
-            cur.execute("INSERT INTO app_data VALUES (?, ?, ?, ?)",
+            cur.execute("INSERT INTO app_data VALUES (?, ?, ?, ?, ?)",
                         [user['app_data'].get('path_examination_data_base'),
                          user['app_data'].get('path_srv_data_base'),
                          user['app_data'].get('app_password'),
-                         user['app_data'].get('last_reg_password')])
+                         user['app_data'].get('last_reg_password'),
+                         user.get('text_size')])
+
+    elif command == 'save_new_doc':
+        try:
+            with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute(f"DELETE FROM doctors_data WHERE doctor_name LIKE '{insert_data[0]}'")
+                cur.execute(f"INSERT INTO doctors_data VALUES({'?, ' * (len(insert_data) - 1)}?)", insert_data)
+
+        except Exception as ex:
+            return 'loc', ex
+
+        try:
+
+            with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
+                cur = conn.cursor()
+                cur.execute(f"DELETE FROM doctors_data WHERE doctor_name LIKE '{insert_data[0]}'")
+                cur.execute(f"INSERT INTO doctors_data VALUES({'?, ' * (len(insert_data) - 1)}?)", insert_data)
+
+        except Exception as ex:
+            return 'srv', ex
+        else:
+            return True, True
+
+    elif command == 'redact_patient':
+        try:
+            with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as connect:
+                cursor = connect.cursor()
+                cursor.execute(f"UPDATE patient_data SET "
+                               f"district = '{insert_data.get('district')}', "
+                               f"amb_cart = '{insert_data.get('amb_cart')}', "
+                               f"Surname = '{insert_data.get('Surname')}', "
+                               f"Name = '{insert_data.get('Name')}', "
+                               f"Patronymic = '{insert_data.get('Patronymic')}', "
+                               f"gender = '{insert_data.get('gender')}', "
+                               f"birth_date = '{insert_data.get('birth_date')}', "
+                               f"phone = '{insert_data.get('phone')}', "
+                               f"passport = '{insert_data.get('passport')}' "
+                               f"WHERE Surname LIKE '{patient.get('Surname')}' "
+                               f"AND Name LIKE '{patient.get('Name')}' "
+                               f"AND Patronymic LIKE '{patient.get('Patronymic')}' "
+                               f"AND birth_date LIKE '{patient.get('birth_date')}' ")
+
+        except Exception as ex:
+            return 'srv', ex
+        return True, True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     elif command == 'save_new_patient':
         try:
@@ -511,33 +573,6 @@ def data_base(command,
                         f"WHERE open_mark LIKE '1'")
         return cur.fetchone()
 
-    elif command == 'save_new_doc':
-        try:
-            if user.get('error_connection'):
-                with sq.connect(f".{os.sep}data_base{os.sep}data_base.db") as conn:
-                    cur = conn.cursor()
-                    # cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{doctor_name}'")
-
-                    cur.execute(f"SELECT doctor_name, district, ped_div, manager, text_size FROM врачи")
-                    all_doc = cur.fetchall()
-                    cur.execute(f"DELETE FROM врачи")
-
-                    for doctor_name, district, ped_div, manager, text_size in all_doc:
-                        if doctor_name != insert_data[0]:
-                            cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)",
-                                        [doctor_name, district, ped_div, manager, False, text_size])
-
-                    cur.execute("INSERT INTO врачи VALUES(?, ?, ?, ?, ?, ?)", insert_data)
-            else:
-                with sq.connect(f"{user['app_data'].get('path_srv_data_base')}application_data_base.db") as conn:
-                    cur = conn.cursor()
-                    cur.execute(f"DELETE FROM врачи WHERE doctor_name LIKE '{insert_data[0]}'")
-                    cur.execute(f"INSERT INTO врачи VALUES({'?, ' * (len(insert_data) - 1)}?)", insert_data)
-
-        except Exception as ex:
-            return False, ex
-        else:
-            return True, True
 
     elif command == 'certificate__upload_last_data':
         path = f".{os.sep}data_base{os.sep}"
