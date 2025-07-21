@@ -24416,7 +24416,7 @@ def main_root():
 
         def connect_to_srv_data_base():
             load_info_text.set(f"Попытка подключения к базе данных...")
-            if not os.path.exists(path=f".{os.sep}data_base"):
+            if not os.path.exists(f".{os.sep}data_base"):
                 os.mkdir(path=f".{os.sep}data_base")
             data_base('create_db')
             last_edit_srv = data_base('last_edit_patient_db_srv')
@@ -24488,7 +24488,7 @@ def main_root():
             if user.get('error_connection'):
                 if user['app_data'].get('last_reg_password'):
                     if (datetime.now() - datetime.strptime(user['app_data'].get('last_reg_password'),
-                                                           "%d.%m.%Y")).days > 60:
+                                                           "%Y-%m-%d %H:%M:%S.%f")).days > 60:
                         load_info_text.set('Срок активации истек! '
                                            '\nВведите пароль для продления 60-дневной подписки')
 

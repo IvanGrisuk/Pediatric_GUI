@@ -16,6 +16,7 @@ def search_patient():
 
 
     def select_patient():
+        patient.clear()
         with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as conn:
             cur = conn.cursor()
             cur.execute(f"SELECT "
@@ -51,6 +52,10 @@ def search_patient():
             patient["diagnosis"],
             patient["add_info"]) = found_data
 
+
+        for key in patient:
+            if patient.get(key) == '':
+                patient[key] = "Нет данных"
 
         patient['name'] = f"{patient.get('Surname')} {patient.get('Name')} {patient.get('Patronymic')}"
         patient['age'] = get_age_d_m_y(patient.get('birth_date'))

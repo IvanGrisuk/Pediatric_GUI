@@ -248,48 +248,82 @@ def data_base(command,
             return True, True
 
     elif command == 'redact_patient':
-        try:
-            with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as connect:
-                cursor = connect.cursor()
-                cursor.execute(f"UPDATE patient_data SET "
-                               f"district = '{insert_data.get('district')}', "
-                               f"amb_cart = '{insert_data.get('amb_cart')}', "
-                               f"Surname = '{insert_data.get('Surname')}', "
-                               f"Name = '{insert_data.get('Name')}', "
-                               f"Patronymic = '{insert_data.get('Patronymic')}', "
-                               f"gender = '{insert_data.get('gender')}', "
-                               f"birth_date = '{insert_data.get('birth_date')}', "
-                               f"phone = '{insert_data.get('phone')}', "
-                               f"passport = '{insert_data.get('passport')}' "
-                               f"WHERE Surname LIKE '{patient.get('Surname')}' "
-                               f"AND Name LIKE '{patient.get('Name')}' "
-                               f"AND Patronymic LIKE '{patient.get('Patronymic')}' "
-                               f"AND birth_date LIKE '{patient.get('birth_date')}' ")
+        if insert_data.get('redact_marker'):
+            try:
+                with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"UPDATE patient_data SET "
+                                   f"district = '{insert_data.get('district')}', "
+                                   f"amb_cart = '{insert_data.get('amb_cart')}', "
+                                   f"Surname = '{insert_data.get('Surname')}', "
+                                   f"Name = '{insert_data.get('Name')}', "
+                                   f"Patronymic = '{insert_data.get('Patronymic')}', "
+                                   f"gender = '{insert_data.get('gender')}', "
+                                   f"birth_date = '{insert_data.get('birth_date')}', "
+                                   f"phone = '{insert_data.get('phone')}', "
+                                   f"address = '{insert_data.get('address')}', "
+                                   f"passport = '{insert_data.get('passport')}' "
+                                   f"WHERE Surname LIKE '{patient.get('Surname')}' "
+                                   f"AND Name LIKE '{patient.get('Name')}' "
+                                   f"AND Patronymic LIKE '{patient.get('Patronymic')}' "
+                                   f"AND birth_date LIKE '{patient.get('birth_date')}' ")
 
-        except Exception as ex:
-            return 'srv', ex
-        return True, True
+            except Exception as ex:
+                return 'loc', ex
+            try:
+                with sq.connect(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db") as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"UPDATE patient_data SET "
+                                   f"district = '{insert_data.get('district')}', "
+                                   f"amb_cart = '{insert_data.get('amb_cart')}', "
+                                   f"Surname = '{insert_data.get('Surname')}', "
+                                   f"Name = '{insert_data.get('Name')}', "
+                                   f"Patronymic = '{insert_data.get('Patronymic')}', "
+                                   f"gender = '{insert_data.get('gender')}', "
+                                   f"birth_date = '{insert_data.get('birth_date')}', "
+                                   f"phone = '{insert_data.get('phone')}', "
+                                   f"passport = '{insert_data.get('passport')}' "
+                                   f"WHERE Surname LIKE '{patient.get('Surname')}' "
+                                   f"AND Name LIKE '{patient.get('Name')}' "
+                                   f"AND Patronymic LIKE '{patient.get('Patronymic')}' "
+                                   f"AND birth_date LIKE '{patient.get('birth_date')}' ")
 
+            except Exception as ex:
+                return 'srv', ex
+            return True, True
 
+        else:
+            try:
+                with sq.connect(f".{os.sep}data_base{os.sep}patient_data_base.db") as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"INSERT INTO patient_data "
+                                   f"(district, amb_cart, Surname, Name, Patronymic, "
+                                   f"gender, birth_date, address, phone, passport) "
+                                   f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                   (insert_data.get('district'), insert_data.get('amb_cart'),
+                                    insert_data.get('Surname'), insert_data.get('Name'),
+                                    insert_data.get('Patronymic'), insert_data.get('gender'),
+                                    insert_data.get('birth_date'), insert_data.get('address'),
+                                    insert_data.get('phone'), insert_data.get('passport')))
 
+            except Exception as ex:
+                return 'loc', ex
+            try:
+                with sq.connect(f"{user['app_data'].get('path_srv_data_base')}patient_data_base.db") as connect:
+                    cursor = connect.cursor()
+                    cursor.execute(f"INSERT INTO patient_data "
+                                   f"(district, amb_cart, Surname, Name, Patronymic, "
+                                   f"gender, birth_date, address, phone, passport) "
+                                   f"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                   (insert_data.get('district'), insert_data.get('amb_cart'),
+                                    insert_data.get('Surname'), insert_data.get('Name'),
+                                    insert_data.get('Patronymic'), insert_data.get('gender'),
+                                    insert_data.get('birth_date'), insert_data.get('address'),
+                                    insert_data.get('phone'), insert_data.get('passport')))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            except Exception as ex:
+                return 'srv', ex
+            return True, True
 
 
 
